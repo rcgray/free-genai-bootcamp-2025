@@ -64,8 +64,14 @@ Other notes:
 - XML's tag-based structure improves output accuracy for machine-readable data by 18-23% compared to JSON in benchmarks. Developers report fewer syntax errors when using basic XML tags like `<summary>` or `<analysis>` compared to JSON's strict formatting.
 - YAML reduces token usage by 30-50% compared to JSON while maintaining human readability. Its minimal syntax makes it particularly effective for configuration templates and multi-step workflows.
 - While JSON remains standard for API integrations, its strict syntax leads to 12-15% more formatting errors than XML/YAML in free-form generation tasks. Best practice is to generate in YAML/XML first then convert to JSON post-processing.
- 
-## Response Evaluation
+
+### Support for Hosted (SaaS) and Local Deployments
+
+Because this project is open source, it would be a benefit if users could be able to easily launch their own local version of this application. This would enable users to have more control over their language learning experience. Though it's also expected that there would be a hosted version, it's almost certain that this hosted version would be a paid application due to its dependency on SaaS LLM services such as ChatGPT and Claude. If a user decided to run the application in their own local environment, they would of course have to provide their own model. However, this could also be a benefit, where many local models may offer not only a cheaper cost but also more flexibility in implementation and variance in execution. It should also be the case that if a local user still wants to use a SaaS LLM backend, they should be able to provide their own API keys and accomplish this without too much hassle.
+
+This also coordinates with other objectives in the current design, such as the desire to investigate Japanese language-specific, open-weight models, which are easier to experiment with when running locally. One concern or technical risk is that local models may be lacking the maturity or overall power to render accurate and high quality language teaching capability.
+
+### Response Evaluation
 
 Unlike when working with curated curriculum, we don't have the luxury of getting to see exactly what the user is going to see before it goes out to them. While the LLM is a very powerful tool in generating dynamic content on demand, this use of artificial intelligence only creates a need for a different artificial intelligence. Specifically, we will need to develop methods for evaluating and verifying the correctness and quality of the LLM response so that we can equally ensure the quality of the learning experience.
 
@@ -78,7 +84,7 @@ Some of these may not be applicable to our situation. Most solutions seem to be 
 
 In any case, it would seem that having a "judge" in the loop in some capacity is likely our most viable solution. However, it may not be something that we implement in the MVP.
 
-## In-Browser Inference
+### In-Browser Inference
 
 This is not likely to be needed in the early iterations of the application, but recent breakthroughs have made browser-based inference of LLM models viable. In the case that we have very minor or trivial language tasks that could be performed more quickly in the user's local environment and avoid the round trip back to the server and to the LLM service, we may find ways to make use of it. This could be simple translations, pronunciation look-ups (e.g., 振り仮名 generation), analysis of single sentences or words, and so on. Of particular interest are the very small open-weight models, particularly those that are Japanese language specific (see below).
 

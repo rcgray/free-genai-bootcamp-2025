@@ -1,6 +1,6 @@
 # YAML Prompt
 
-The following is a prompt for the Sentence Creator feature catering toward LLMs that prefer Plaintext (or Markdown) formats.
+The following is a prompt for the Sentence Creator feature catering toward LLMs that prefer YAML formats.
 - **Target Models:** This should work best with GPT-3.5, Mistral 7B and 8x7B, and Gemini 1.5 Flash.
 - **Development:** It was developed with the help of Claude Sonnet 3.5 and DeepSeek R1.
 - **Testing:** This prompt has been evaluated on the following models:
@@ -10,7 +10,7 @@ The following is a prompt for the Sentence Creator feature catering toward LLMs 
   - 🟨 Microsoft Phi-4 14B Q6_K_L - (boilerplate, included some kana in kanji breakdown)
   - 🟨 Qwen2.5 14B Instruct 1M Q6_K_L - (boilerplate, kanji notes referenced parts of speech, not characters)
   - ✅ Mistral Small 24B Instruct 2501 13B Q6_K_L - (included some closing notes)
-  - 🟨 DeepSeek R1 - 🧠51s - (extra fluff, romaji with translation, kanji table, "server busy" on 3 attempts)
+  - 🟨 DeepSeek R1 - 🧠51s - (extra fluff, romaji with translation, kanji table, ❌ "server busy" on 3x attempts)
   - ✨ **DeepSeek R1 Distill Llama 8B Q6_K_L - 🧠49s - (✅perfect✅)**
   - ❌ DeepSeek R1 Distill Qwen2.5 1.5B Q6_K_L - 🧠2s - (attempted, but garbled/incomplete)
 - **Criteria:** that it is expected there will be some surrounding boilerplate on instruct models, tests pass if it's reasonable that simple post-processing could get everything it needed from the response.

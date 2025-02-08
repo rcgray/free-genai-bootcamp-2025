@@ -1,6 +1,6 @@
 # Markdown Prompt
 
-The following is a prompt for the Sentence Creator feature catering toward LLMs that prefer Plaintext (or Markdown) formats.
+The following is a prompt for the Sentence Creator feature catering toward LLMs that prefer XML formats.
 - **Target Models:** This should work best with Llama 2, GPT-4, and Claude 3.
 - **Development:** It was developed with the help of Claude Sonnet 3.5 and DeepSeek R1.
 - **Testing:** This prompt has been evaluated on the following models:
@@ -10,7 +10,7 @@ The following is a prompt for the Sentence Creator feature catering toward LLMs 
   - 🟨 Microsoft Phi-4 14B Q6_K_L - (scattered kanji breakdown, discusses parts of speech)
   - 🟨 Qwen2.5 14B Instruct 1M Q6_K_L - (kanji breakdown categorizes parts of speech)
   - 🟨 Mistral Small 24B Instruct 2501 13B Q6_K_L - (printed out the XML as MD before answer, ✅ but answer perfect)
-  - ✅ DeepSeek R1 - 🧠30s - (included concluding thoughts)
+  - ✅ DeepSeek R1 - 🧠30s - (included concluding thoughts, ❌ "server busy" on 7x attempts)
   - 🟨 DeepSeek R1 Distill Llama 8B Q6_K_L - 🧠6s - (missed kanji, ✅ responded in xml)
   - ❌ DeepSeek R1 Distill Qwen2.5 1.5B Q6_K_L - 🧠3s - (attempted, but garbled/incomplete)
 - **Criteria:** that it is expected there will be some surrounding boilerplate on instruct models, tests pass if it's reasonable that simple post-processing could get everything it needed from the response.
