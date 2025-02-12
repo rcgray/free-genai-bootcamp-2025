@@ -34,7 +34,7 @@ A React-based single-page application (SPA) that provides:
 
 2. **Study Activities** (`/activities`)
    - Comprehensive list of available study activities
-   - Activity descriptions and previews
+   - Abbreviated activity descriptions and previews
       - Thumbnail image
       - Name of the activity
       - Description of the activity
@@ -42,30 +42,46 @@ A React-based single-page application (SPA) that provides:
    - Usage statistics per activity
    - Quick launch options
 
-3. **Word List** (`/words`)
+3. **Study Activity Details** (`/activities/:id`)
+   - Detailed view of a specific study activity
+   - Thumbnail image
+   - Name of the activity
+   - Description of the activity
+   - Number of times played
+   - Usage statistics
+   - Form for launch options
+   - Launch button
+
+4. **Word List** (`/words`)
    - Paginated list of all vocabulary
    - Sorting and filtering capabilities
    - Individual word statistics
+      - Correct/incorrect count
    - Search functionality
 
-4. **Groups** (`/groups`)
+5. **Groups** (`/groups`)
    - List of word groups
    - Group creation/editing
    - Word count per group
    - Study activity launch buttons
 
-5. **Group Details** (`/groups/:id`)
+6. **Group Details** (`/groups/:id`)
    - Words in the selected group
    - Group statistics
    - Study activity options
    - Review history
 
-6. **Study Sessions** (`/study/:activityId/:groupId`)
+7. **Study Sessions** (`/study/:activityId/:groupId`)
    - Study interface wrapper
+   - Details regarding the study session
+      - Name of the activity
+      - Start/end time of the session
+      - Number of words studied
+      - Number of correct/incorrect answers
    - Progress tracking
    - Session controls
 
-7. **Settings** (`/settings`)
+8. **Settings** (`/settings`)
    - Theme preferences (Light/Dark mode)
    - Display preferences
    - Default sorting preferences
