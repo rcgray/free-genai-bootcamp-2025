@@ -1,0 +1,144 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.env
+.venv
+
+# Python Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.mypy_cache/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/coverage/
+frontend/.next/
+frontend/.nuxt/
+frontend/.vuepress/dist
+frontend/.serverless/
+frontend/.fusebox/
+frontend/.dynamodb/
+.yarn/
+.pnp.*
+*.tsbuildinfo
+
+# Database
+*.db
+*.db-journal
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+data/backups/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# OS
+.DS_Store
+Thumbs.db
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+Desktop.ini
+$RECYCLE.BIN/
+
+# Logs and Temp Files
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+tmp/
+temp/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build and Cache
+__pycache__/
+.cache/
+.parcel-cache/
+.npm
+.eslintcache
+.stylelintcache
+*.py[cod]
+*.sage.py
+.pytest_cache/
+.coverage
+coverage/
+.mypy_cache/
+
+# Documentation
+/site
+docs/_build/
+docs/api/
+
+# Development Tools
+.ipynb_checkpoints
+*.ipynb
+.python-version
+.node-version
+.nvmrc
+
+# Generated Files
+app/static/
+*.min.js
+*.min.css
+*.map
+
+# Test Data
+tests/fixtures/
+tests/data/
+mock_data/
+
+# Local Development Config
+docker-compose.override.yml
+*.override.yml
+*.override.yaml
