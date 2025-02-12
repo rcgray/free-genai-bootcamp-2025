@@ -1,0 +1,60 @@
+---
+description: 
+globs: 
+---
+You are an expert professional developer that has a mastery of the following technologies:
+
+- Frontend:
+  - React (with Vite): The project is built using React, a JavaScript library for building user interfaces. The presence of vite.config.js indicates that Vite is used as the build tool and development server, providing fast development builds and hot module replacement.
+  - TypeScript: Files with .ts and .tsx extensions show that TypeScript, a superset of JavaScript that adds static typing, is used.
+  - Tailwind CSS: The tailwind.config.js file, along with usage in the components, indicates that Tailwind CSS, a utility-first CSS framework, is used for styling.
+  - Radix UI: The use of @radix-ui/ packages suggests that Radix UI, a set of unstyled, accessible components, is used for building some UI elements.
+  - Framer Motion: The framer-motion library is used for animations and transitions.
+  - React Router: The project uses react-router-dom for handling navigation and routing within the application.
+  - Zustand: The project uses zustand for the state management.
+  - React Icons: The project uses react-icons for the icons.
+  - @supabase/ssr, @supabase/supabase-js: The project uses Supabase for different functionalities.
+- Backend (Inferred):
+  - Supabase: The presence of Supabase client configurations (supabase-client.ts, supabase-browser.ts, supabase-server.ts) strongly suggests that Supabase, a Backend-as-a-Service (BaaS) platform, is used. This likely provides features like:
+    - Database (PostgreSQL)
+    - Authentication
+    - Realtime subscriptions (though not explicitly confirmed, it's a common Supabase feature)
+    - Edge Functions (possibly, given the SSR setup)
+- Project Structure and Tooling:
+  - app directory: This likely follows the Next.js-inspired "App Router" structure, even though it's a Vite project. This structures the application around routes and server/client components.
+  - components directory: Contains reusable UI components.
+  - lib directory: Likely contains utility functions, helper code, and configurations (like the Supabase client setup).
+  - middleware.ts: Suggests the use of middleware to intercept requests, likely for authentication or other checks.
+  - providers directory: Contains context providers for managing global state or providing access to services (like Supabase).
+  - types directory: Contains TypeScript type definitions.
+- Server-Side Rendering (SSR):
+  - The presence of @supabase/ssr and the file structure suggest that the application is set up for server-side rendering. This means that parts of the application are rendered on the server before being sent to the client, improving initial load performance and SEO.
+
+# Rules for things you SHOULD DO:
+
+- Do use existing UI components: Utilize the components from the components/ui directory (Button, Input, Sheet, Tooltip, etc.) whenever possible. This ensures consistency and saves time. Familiarize yourself with the available components and their props.
+- Do follow Tailwind CSS conventions: Use Tailwind classes for styling. Refer to tailwind.config.js and src/index.css for custom color definitions and existing styles. Avoid inline styles.
+- Do use cn for conditional class names: Use the cn utility function (from lib/utils.ts) to combine and conditionally apply Tailwind classes. This keeps your JSX cleaner. Example:
+- Do use absolute imports: Use absolute imports (starting with @/) for project files. This makes imports consistent and easier to refactor. Example: import { Button } from "@/components/ui/button" instead of relative paths.
+- Do use Radix UI primitives: For complex components like Dialogs, Dropdowns, etc., use the Radix UI primitives as a base and build upon them. This ensures accessibility.
+- Do use the useSidebar hook: When working with the sidebar, use the useSidebar hook to access and manage its state (open/closed, mobile/desktop).
+- Do follow the existing file structure: Place new components in the appropriate directories (e.g., components/ui for reusable UI elements, components for page-specific components).
+- Do use TypeScript properly: Pay attention to types. Define interfaces or types for props and state. This helps prevent errors and improves code maintainability.
+- Do keep components small and focused: Break down large components into smaller, reusable pieces. This improves readability and testability.
+- Do use the ThemeProvider and useTheme: Use the useTheme hook to access the current theme and setTheme to change it.
+- Do use the NavigationProvider and useNavigation: If you need to add a new route, use the existing context.
+- Do look at prompt.md: This file contains a lot of useful information about the project.
+
+# Rules for things you SHOULD NOT DO:
+
+- Don't modify components.json directly: This file is used by shadcn/ui for managing components. Use the shadcn/ui CLI to add or update components.
+- Don't introduce new CSS files: Stick to Tailwind CSS within the existing index.css file. Avoid creating separate CSS files for individual components.
+- Don't use inline styles: Use Tailwind classes instead. This keeps styling consistent and maintainable.
+- Don't ignore TypeScript errors: Address any TypeScript errors before committing code.
+- Don't write overly complex components: Break down large components into smaller, more manageable pieces.
+- Don't reinvent the wheel: Before building a new UI element, check if it already exists in components/ui or if a Radix UI primitive can be used.
+- Don't use relative imports for project files: Always use absolute imports (starting with @/).
+- Don't directly manipulate the DOM: Use React's state and props to manage UI updates. Avoid using document.getElementById or similar methods.
+- Don't commit commented-out code: Remove any unused or commented-out code before committing.
+- Don't forget to test your changes: While there isn't explicit testing setup shown, make sure your changes work as expected and don't break existing functionality. Manually test in the browser.
+- Don't introduce new dependencies without discussion: If you think a new library is needed, discuss it with the team first.
