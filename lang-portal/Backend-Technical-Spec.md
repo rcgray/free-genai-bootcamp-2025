@@ -32,7 +32,9 @@ A language learning school wants to build a learning portal website which will a
 
 ### API Routes
 
-#### GET /api/words
+#### Words
+
+##### GET /api/words
 Get paginated list of words with review statistics
 
 Query Parameters:
@@ -45,18 +47,57 @@ Response:
 ```json
 {
     "data": {
-        "items": [...],
-        "total": 0,
+        "items": [{
+            "id": 0,
+            "kanji": "猫",
+            "romaji": "neko",
+            "english": "cat",
+            "parts": ["noun"],
+            "correct_count": 0,
+            "wrong_count": 0
+        }],
+        "total": 1,
         "page": 1,
         "per_page": 20,
-        "total_pages": 0
+        "total_pages": 1
     },
     "error": null
 }
 ```
 
-#### GET /api/groups
-Get paginated list of word groups with word counts
+##### POST /api/words
+Create a new word
+
+Request Body:
+```json
+{
+    "kanji": "猫",
+    "romaji": "neko",
+    "english": "cat",
+    "parts": ["noun"]
+}
+```
+
+##### PUT /api/words/{word_id}
+Update an existing word
+
+Request Body:
+```json
+{
+    "kanji": "食べる",
+    "romaji": "taberu",
+    "english": "to eat",
+    "parts": ["verb"],
+}
+```
+
+##### DELETE /api/words/{word_id}
+Delete a word
+
+#### Groups
+
+##### GET /api/groups
+Get paginated list of word groups
 
 Query Parameters:
 - `page`: Integer, Page number (default: 1)
@@ -69,24 +110,21 @@ Response:
 {
     "data": {
         "items": [{
-            "id": 0,
-            "name": "string",
-            "words_count": 0
+            "id": 1,
+            "name": "Animals",
+            "words_count": 10
         }],
-        "total": 0,
+        "total": 1,
         "page": 1,
         "per_page": 20,
-        "total_pages": 0
+        "total_pages": 1
     },
     "error": null
 }
 ```
 
-#### GET /api/groups/:id
-Get words from a specific group (This is intended to be used by target apps)
-
-Path Parameters:
-- `id`: Integer, Group ID
+##### GET /api/groups/{group_id}
+Get words from a specific group
 
 Query Parameters:
 - `page`: Integer, Page number (default: 1)
@@ -99,30 +137,46 @@ Response:
 {
     "data": {
         "group": {
-            "id": 0,
-            "name": "string",
-            "words_count": 0
+            "id": 1,
+            "name": "Animals",
+            "words_count": 2
         },
         "words": {
-            "items": [...],
-            "total": 0,
+            "items": [{
+                "id": 1,
+                "kanji": "猫",
+                "romaji": "neko",
+                "english": "cat",
+                "parts": ["noun"],
+                "correct_count": 5,
+                "wrong_count": 1
+            }, {
+                "id": 2,
+                "kanji": "犬",
+                "romaji": "inu",
+                "english": "dog",
+                "parts": ["noun"],
+                "correct_count": 3,
+                "wrong_count": 0
+            }],
+            "total": 2,
             "page": 1,
             "per_page": 20,
-            "total_pages": 0
+            "total_pages": 1
         }
     },
     "error": null
 }
 ```
 
-#### POST /api/study_sessions
-Create a new study session for a group
+##### POST /api/groups
+Create a new group
 
 Request Body:
 ```json
 {
-    "group_id": 0,
-    "study_activity_id": 0
+    "name": "Animals",
+    "word_ids": [1, 2, 3]
 }
 ```
 
@@ -130,25 +184,95 @@ Response:
 ```json
 {
     "data": {
-        "id": 0,
-        "group_id": 0,
-        "study_activity_id": 0,
+        "id": 1,
+        "name": "Animals",
+        "words_count": 3
+    },
+    "error": null
+}
+```
+
+##### PUT /api/groups/{group_id}
+Update a group
+
+Request Body:
+```json
+{
+    "name": "Animals",
+    "word_ids": [1, 2, 3, 4]
+}
+```
+
+Response:
+```json
+{
+    "data": {
+        "id": 1,
+        "name": "Animals",
+        "words_count": 4
+    },
+    "error": null
+}
+```
+
+##### DELETE /api/groups/{group_id}
+Delete a group
+
+#### Study Sessions
+
+##### POST /api/study_sessions
+Create a new study session
+
+Request Body:
+```json
+{
+    "group_id": 1,
+    "study_activity_id": 1
+}
+```
+
+Response:
+```json
+{
+    "data": {
+        "id": 1,
+        "group_id": 1,
+        "study_activity_id": 1,
         "created_at": "2024-03-20T12:00:00Z"
     },
     "error": null
 }
 ```
 
-#### POST /api/study_sessions/:id/review
-Log a review attempt for a word during a study session
+##### GET /api/study_sessions/{session_id}
+Get details of a specific study session
 
-Path Parameters:
-- `id`: Integer, Study session ID
+Response:
+```json
+{
+    "data": {
+        "id": 1,
+        "group_id": 1,
+        "study_activity_id": 1,
+        "created_at": "2024-03-20T12:00:00Z",
+        "reviews": [{
+            "id": 1,
+            "word_id": 1,
+            "correct": true,
+            "created_at": "2024-03-20T12:01:00Z"
+        }]
+    },
+    "error": null
+}
+```
+
+##### POST /api/study_sessions/{session_id}/review
+Log a review attempt for a word
 
 Request Body:
 ```json
 {
-    "word_id": 0,
+    "word_id": 1,
     "correct": true
 }
 ```
@@ -157,11 +281,11 @@ Response:
 ```json
 {
     "data": {
-        "id": 0,
-        "word_id": 0,
-        "study_session_id": 0,
+        "id": 1,
+        "word_id": 1,
+        "study_session_id": 1,
         "correct": true,
-        "created_at": "2024-03-20T12:00:00Z"
+        "created_at": "2024-03-20T12:01:00Z"
     },
     "error": null
 }
@@ -171,7 +295,7 @@ Response:
 
 ```
 /backend-fastapi/
-├── alembic/                    # Database migrations
+├── alembic/                   # Database migrations
 │   └── versions/
 ├── app/
 │   ├── __init__.py
@@ -236,9 +360,9 @@ Response:
 - BOOLEAN fields are implemented as INTEGER (0 or 1)
 - JSON fields are stored as TEXT
 - Recommended indexes:
-  - `word_groups`: (word_id, group_id)
   - `word_review_items`: (word_id), (study_session_id)
   - `study_sessions`: (group_id), (study_activity_id)
+  - Note: No need for word_groups index as it uses a composite primary key
 
 The following is the schema of the database, written in Mermaid format:
 
@@ -259,8 +383,8 @@ erDiagram
     }
     
     word_groups {
-        int word_id FK
-        int group_id FK
+        int word_id PK,FK
+        int group_id PK,FK
     }
     
     study_activities {
@@ -284,8 +408,8 @@ erDiagram
         timestamp created_at
     }
     
-    words ||--o{ word_groups : has
-    groups ||--o{ word_groups : has
+    words ||--|{ word_groups : "has (cascade)"
+    groups ||--|{ word_groups : "has (cascade)"
     groups ||--o{ study_sessions : has
     study_activities ||--o{ study_sessions : has
     study_sessions ||--o{ word_review_items : has
@@ -294,55 +418,61 @@ erDiagram
 
 ## Table Descriptions
 
-**words** — Stores individual Japanese vocabulary words.
+### **words** — Stores individual Japanese vocabulary words.
 - `id` (INTEGER PRIMARY KEY): Unique identifier for each word
 - `kanji` (TEXT NOT NULL): The word written in Japanese kanji
 - `romaji` (TEXT NOT NULL): Romanized version of the word
 - `english` (TEXT NOT NULL): English translation of the word
 - `parts` (JSON NOT NULL): Word components stored in JSON format
+
 Foreign Key Relationships:
 - Has many word_groups
 - Has many word_review_items
 
-**groups** — Manages collections of words.
+### **groups** — Manages collections of words.
 - `id` (INTEGER PRIMARY KEY): Unique identifier for each group
 - `name` (TEXT NOT NULL): Name of the group
 - `words_count` (INTEGER DEFAULT 0): Counter cache for the number of words in the group
+
 Foreign Key Relationships:
 - Has many word_groups
 - Has many study_sessions
 
-**word_groups** — Junction table enabling many-to-many relationship between words and groups.
-- `word_id` (INTEGER NOT NULL): References words.id
-- `group_id` (INTEGER NOT NULL): References groups.id
-Foreign Key Relationships:
-- Belongs to words
-- Belongs to groups
-Note: Composite primary key of (word_id, group_id) is recommended
+### **word_groups** — Junction table enabling many-to-many relationship between words and groups.
+- `word_id` (INTEGER NOT NULL): References words.id, part of primary key
+- `group_id` (INTEGER NOT NULL): References groups.id, part of primary key
+- PRIMARY KEY (word_id, group_id)
 
-**study_activities** — Defines different types of study activities available.
+Foreign Key Relationships:
+- Belongs to words (FOREIGN KEY (word_id) REFERENCES words(id) ON DELETE CASCADE)
+- Belongs to groups (FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE)
+
+### **study_activities** — Defines different types of study activities available.
 - `id` (INTEGER PRIMARY KEY): Unique identifier for each activity
 - `name` (TEXT NOT NULL): Name of the activity (e.g., "Flashcards", "Quiz")
 - `url` (TEXT NOT NULL): The full URL of the study activity
+
 Foreign Key Relationships:
 - Has many study_sessions
 
-**study_sessions** — Records individual study sessions.
+### **study_sessions** — Records individual study sessions.
 - `id` (INTEGER PRIMARY KEY): Unique identifier for each session
 - `group_id` (INTEGER NOT NULL): References groups.id
 - `study_activity_id` (INTEGER NOT NULL): References study_activities.id
 - `created_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP): When the session was created
+
 Foreign Key Relationships:
 - Belongs to groups
 - Belongs to study_activities
 - Has many word_review_items
 
-**word_review_items** — Tracks individual word reviews within study sessions.
+### **word_review_items** — Tracks individual word reviews within study sessions.
 - `id` (INTEGER PRIMARY KEY): Unique identifier for each review
 - `word_id` (INTEGER NOT NULL): References words.id
 - `study_session_id` (INTEGER NOT NULL): References study_sessions.id
 - `correct` (BOOLEAN NOT NULL): Whether the answer was correct
 - `created_at` (TIMESTAMP DEFAULT CURRENT_TIMESTAMP): When the review occurred
+
 Foreign Key Relationships:
 - Belongs to words
 - Belongs to study_sessions

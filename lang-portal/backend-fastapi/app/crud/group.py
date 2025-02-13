@@ -1,0 +1,112 @@
+from typing import List, Optional, Tuple
+from sqlalchemy import func, select
+from sqlalchemy.orm import selectinload
+
+from app.crud.base import CRUDBase
+from app.models.group import Group
+from app.models.word import Word
+from app.models.word_group import WordGroup
+from app.schemas.group import GroupCreate, GroupUpdate
+
+
+class CRUDGroup(CRUDBase[Group, GroupCreate, GroupUpdate]):
+    async def get_group_words(
+        self,
+        db,
+        *,
+        group_id: int,
+        skip: int = 0,
+        limit: int = 100,
+        order_by: Optional[str] = None,
+        order: Optional[str] = "asc"
+    ) -> Tuple[List[Word], int]:
+        """Get paginated words for a specific group."""
+        # Get total count
+        count_query = (
+            select(func.count(Word.id))
+            .join(WordGroup)
+            .filter(WordGroup.group_id == group_id)
+        )
+        total = await db.scalar(count_query)
+
+        # Build query for words
+        query = (
+            select(Word)
+            .join(WordGroup)
+            .filter(WordGroup.group_id == group_id)
+        )
+        
+        if order_by:
+            column = getattr(Word, order_by)
+            if order == "desc":
+                column = column.desc()
+            query = query.order_by(column)
+            
+        query = query.offset(skip).limit(limit)
+        
+        result = await db.execute(query)
+        return result.scalars().all(), total
+
+    async def add_words(
+        self,
+        db,
+        *,
+        group_id: int,
+        word_ids: List[int]
+    ) -> Group:
+        """Add words to a group."""
+        # Create word_group relationships
+        for word_id in word_ids:
+            word_group = WordGroup(group_id=group_id, word_id=word_id)
+            db.add(word_group)
+        
+        await db.flush()
+        
+        # Update words_count
+        await self._update_words_count(db, group_id)
+        
+        # Return updated group
+        return await self.get(db, group_id)
+
+    async def set_words(
+        self,
+        db,
+        *,
+        group_id: int,
+        word_ids: List[int]
+    ) -> None:
+        """Replace all words in a group with a new list."""
+        # Remove existing relationships
+        delete_query = (
+            WordGroup.__table__.delete()
+            .where(WordGroup.group_id == group_id)
+        )
+        await db.execute(delete_query)
+        
+        # Add new relationships
+        for word_id in word_ids:
+            word_group = WordGroup(group_id=group_id, word_id=word_id)
+            db.add(word_group)
+        
+        await db.flush()
+        
+        # Update words_count
+        await self._update_words_count(db, group_id)
+
+    async def _update_words_count(self, db, group_id: int) -> None:
+        """Update the words_count for a group."""
+        count_query = (
+            select(func.count(WordGroup.word_id))
+            .filter(WordGroup.group_id == group_id)
+        )
+        count = await db.scalar(count_query)
+        
+        update_query = (
+            Group.__table__.update()
+            .where(Group.id == group_id)
+            .values(words_count=count)
+        )
+        await db.execute(update_query)
+
+
+group = CRUDGroup(Group) 
