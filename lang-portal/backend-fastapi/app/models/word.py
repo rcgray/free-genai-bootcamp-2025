@@ -3,7 +3,7 @@ from sqlalchemy import JSON, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
 from app.models.word_group import WordGroup  # Import the junction table
-from app.models.study_session import WordReviewItem  # Import for relationship
+from app.models.word_review_item import WordReviewItem  # Fixed import path
 
 
 class Word(Base):
@@ -27,8 +27,8 @@ class Word(Base):
         back_populates="words",
         viewonly=True
     )
-    review_items: Mapped[List[WordReviewItem]] = relationship(
-        WordReviewItem,
+    reviews: Mapped[List["WordReviewItem"]] = relationship(  # Fixed relationship name
+        "WordReviewItem",  # Use string to avoid circular imports
         back_populates="word",
         cascade="all, delete-orphan"
     ) 

@@ -49,4 +49,38 @@ async def test_get_word(client: AsyncClient, db: AsyncSession):
     response = await client.get(f"/api/words/{word_id}")
     assert response.status_code == 200
     data = response.json()["data"]
-    assert data["kanji"] == TEST_WORD["kanji"] 
+    assert data["kanji"] == TEST_WORD["kanji"]
+
+
+async def test_get_words_sorting(client: AsyncClient, db: AsyncSession):
+    # Create words in non-sorted order
+    await client.post("/api/words", json={
+        "kanji": "猫",
+        "romaji": "neko",
+        "english": "cat",
+        "parts": ["noun"]
+    })
+    await client.post("/api/words", json={
+        "kanji": "犬",
+        "romaji": "inu",
+        "english": "dog",
+        "parts": ["noun"]
+    })
+
+    # Test sorting by romaji ascending
+    response = await client.get("/api/words?sort_by=romaji&order=asc")
+    assert response.status_code == 200
+    data = response.json()["data"]
+    items = data["items"]
+    assert len(items) == 2
+    assert items[0]["romaji"] == "inu"  # dog should come first
+    assert items[1]["romaji"] == "neko"  # cat should come second
+
+    # Test sorting by romaji descending
+    response = await client.get("/api/words?sort_by=romaji&order=desc")
+    assert response.status_code == 200
+    data = response.json()["data"]
+    items = data["items"]
+    assert len(items) == 2
+    assert items[0]["romaji"] == "neko"  # cat should come first
+    assert items[1]["romaji"] == "inu"  # dog should come second 

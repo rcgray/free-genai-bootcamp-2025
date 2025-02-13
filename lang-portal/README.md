@@ -67,6 +67,7 @@ python scripts/db/init_db.py --force
 # Seed the database with initial data
 python scripts/db/seed_db.py
 ```
+As a backup, a copy of a fresh database is available in `data/empty.db` that you can simply copy to `lang_portal.db` and start using immediately.
 
 4. Set up the frontend
 ```bash
