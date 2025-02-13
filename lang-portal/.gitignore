@@ -33,9 +33,9 @@ ENV/
 *.swo
 
 # SQLite
-*.db
-*.sqlite3
-*.sqlite
+#*.db
+#*.sqlite3
+#*.sqlite
 
 # Logs
 *.log

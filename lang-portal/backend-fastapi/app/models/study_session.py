@@ -1,3 +1,4 @@
+from typing import List
 from sqlalchemy import ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base, TimestampMixin
@@ -14,9 +15,16 @@ class StudySession(Base, TimestampMixin):
     )
 
     # Relationships
-    group = relationship("Group", back_populates="study_sessions")
-    study_activity = relationship("StudyActivity", back_populates="study_sessions")
-    review_items = relationship("WordReviewItem", back_populates="study_session")
+    group: Mapped["Group"] = relationship("Group", back_populates="study_sessions")
+    study_activity: Mapped["StudyActivity"] = relationship(
+        "StudyActivity",
+        back_populates="study_sessions"
+    )
+    review_items: Mapped[List["WordReviewItem"]] = relationship(
+        "WordReviewItem",
+        back_populates="study_session",
+        cascade="all, delete-orphan"
+    )
 
 
 class WordReviewItem(Base, TimestampMixin):
@@ -31,5 +39,8 @@ class WordReviewItem(Base, TimestampMixin):
     correct: Mapped[bool] = mapped_column(nullable=False)
 
     # Relationships
-    word = relationship("Word", back_populates="review_items")
-    study_session = relationship("StudySession", back_populates="review_items") 
+    word: Mapped["Word"] = relationship("Word", back_populates="review_items")
+    study_session: Mapped["StudySession"] = relationship(
+        "StudySession",
+        back_populates="review_items"
+    ) 

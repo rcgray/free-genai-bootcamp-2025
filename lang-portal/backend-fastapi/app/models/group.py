@@ -1,6 +1,8 @@
+from typing import List
 from sqlalchemy import String, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
+from app.models.word_group import WordGroup  # Import the junction table
 
 
 class Group(Base):
@@ -11,9 +13,19 @@ class Group(Base):
     words_count: Mapped[int] = mapped_column(Integer, default=0)
 
     # Relationships
-    words = relationship(
+    word_groups: Mapped[List["WordGroup"]] = relationship(
+        "WordGroup",
+        back_populates="group",
+        cascade="all, delete-orphan"
+    )
+    words: Mapped[List["Word"]] = relationship(
         "Word",
         secondary="word_groups",
-        back_populates="groups"
+        back_populates="groups",
+        viewonly=True
     )
-    study_sessions = relationship("StudySession", back_populates="group") 
+    study_sessions: Mapped[List["StudySession"]] = relationship(
+        "StudySession",
+        back_populates="group",
+        cascade="all, delete-orphan"
+    ) 

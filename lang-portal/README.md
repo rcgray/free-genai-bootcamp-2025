@@ -11,6 +11,9 @@ A web-based language learning platform that serves as:
 - FastAPI (Python 3.12)
 - SQLite3 database
 - RESTful JSON API
+- SQLAlchemy for ORM
+- Alembic for database migrations
+- uv for Python package management
 
 ### Frontend
 - React 18+ with TypeScript
@@ -23,6 +26,7 @@ A web-based language learning platform that serves as:
 
 ### Prerequisites
 - Python 3.12 or higher
+- optional: uv package manager (`pip install uv`)
 - Yarn package manager
 - Node.js 18 or higher (for yarn)
 
@@ -39,29 +43,55 @@ cd lang-portal
 # Navigate to backend directory
 cd backend-fastapi
 
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Create and activate virtual environment using uv
+uv venv .venv
+  # or regular venv 
+  python -m venv .venv
 
-# Install backend dependencies
-pip install -e .
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install production dependencies using uv
+uv pip install -e .
+  # or regular pip
+  pip install -e .
 
 # Copy environment file and configure if needed
 cp .env.example .env
-
-# Initialize the database
-alembic upgrade head
-
-# Start the development server
-uvicorn app.main:app --reload
 ```
 
-3. Set up the frontend
+3. Initialize and seed the database
+```bash
+# Create a new database with schema
+python scripts/db/init_db.py --force
+
+# Seed the database with initial data
+python scripts/db/seed_db.py
+```
+
+4. Set up the frontend
 ```bash
 # Navigate to frontend directory
 cd ../frontend
 yarn install
 ```
+
+### Developer Setup
+
+For development, you'll need additional dependencies:
+
+```bash
+# Install development dependencies using uv
+uv pip install -e ".[dev]"
+  # or regular pip
+  pip install -e ".[dev]"
+```
+
+This will install additional packages needed for development:
+- pytest and pytest-asyncio for testing
+- black for code formatting
+- isort for import sorting
+- mypy for type checking
+- ruff for linting
 
 ### Development
 
@@ -95,7 +125,7 @@ Or test specific components:
 ```bash
 # Backend tests
 cd backend-fastapi
-pytest
+uv run pytest
 
 # Frontend tests
 cd frontend
@@ -108,9 +138,10 @@ Format and lint the code:
 ```bash
 # Backend
 cd backend-fastapi
-black .
-isort .
-mypy .
+uv run black .
+uv run isort .
+uv run mypy .
+uv run ruff check .
 
 # Frontend
 cd frontend
@@ -122,20 +153,74 @@ yarn format
 
 ```
 lang-portal/
-├── backend-fastapi/          # Backend FastAPI application
-│   ├── app/                 # Application code
-│   │   ├── core/           # Core components
+├── backend-fastapi/        # Backend FastAPI application
+│   ├── app/                # Application code
+│   │   ├── core/           # Core components (config, database)
 │   │   ├── api/            # API routes
 │   │   ├── models/         # SQLAlchemy models
 │   │   ├── schemas/        # Pydantic models
-│   │   ├── crud/          # Database operations
-│   │   └── services/      # Business logic
+│   │   ├── crud/           # Database operations
+│   │   └── services/       # Business logic
 │   ├── alembic/            # Database migrations
-│   └── tests/             # Backend tests
-├── frontend/              # Frontend React application
-├── scripts/               # Development and utility scripts
-├── docs/                 # Documentation
-└── data/                 # Database and data files
+│   │   ├── versions/       # Migration scripts
+│   │   └── env.py          # Alembic configuration
+│   ├── seed/               # Seed data files
+│   │   ├── words.*.json          # Word data files (verbs, adjectives, etc.)
+│   │   ├── groups.json           # Group definitions
+│   │   ├── word_groups.json      # Word-group associations
+│   │   └── study_activities.json # Study activity definitions
+│   └── tests/              # Backend tests
+├── frontend/               # Frontend React application
+├── scripts/                # Development and utility scripts
+│   └── db/                 # Database management scripts
+│       ├── init_db.py      # Database initialization
+│       └── seed_db.py      # Database seeding
+├── docs/                   # Documentation
+└── data/                   # Database and data files
+    └── lang_portal.db      # SQLite database file
+```
+
+## Database Management
+
+The project uses SQLite with SQLAlchemy ORM and Alembic for migrations.
+
+### Database Setup
+
+1. Initialize a new database:
+```bash
+python scripts/db/init_db.py --force
+```
+This will:
+- Create a new SQLite database in `data/lang_portal.db`
+- Run all Alembic migrations to create the schema
+
+2. Seed the database with initial data:
+```bash
+python scripts/db/seed_db.py
+```
+This will populate the database with:
+- Words (verbs and adjectives)
+- Groups (e.g., "Verbs", "Adjectives")
+- Word-group associations
+- Study activities
+
+### Working with Migrations
+
+Create a new migration:
+```bash
+cd backend-fastapi
+alembic revision --autogenerate -m "Description of changes"
+```
+
+Apply migrations:
+```bash
+alembic upgrade head
+```
+
+Revert migrations:
+```bash
+alembic downgrade -1  # Revert last migration
+alembic downgrade base  # Revert all migrations
 ```
 
 ## API Documentation
@@ -149,8 +234,8 @@ Once the development server is running, API documentation is available at:
 The project includes several development tools and scripts:
 
 1. Database Management
-   - Database migrations (Alembic)
-   - Data import/export utilities
+   - Database initialization and migrations (Alembic)
+   - Data seeding utilities
    - Backup/restore utilities
 
 2. Testing Tools

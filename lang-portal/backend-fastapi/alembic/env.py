@@ -1,5 +1,6 @@
 import asyncio
 from logging.config import fileConfig
+from pathlib import Path
 
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
@@ -20,7 +21,7 @@ from app.core.config import get_settings
 # access to the values within the .ini file in use.
 config = context.config
 
-# Import settings and override sqlalchemy.url
+# Import settings and override sqlalchemy.url with absolute path
 settings = get_settings()
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
 
@@ -74,6 +75,13 @@ async def run_async_migrations() -> None:
     """In this scenario we need to create an Engine
     and associate a connection with the context.
     """
+    # Create the directory for the database if it doesn't exist
+    db_url = settings.DATABASE_URL
+    if db_url.startswith("sqlite+aiosqlite:///"):
+        db_file = Path(db_url.replace("sqlite+aiosqlite:///", ""))
+        db_dir = db_file.parent
+        db_dir.mkdir(parents=True, exist_ok=True)
+
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",

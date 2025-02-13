@@ -1,6 +1,13 @@
 # Tools and Libraries
-- Do not use `npm` or Node.js for the backend (with exception of yarn for frontend).
-- Use `uv` when managing Python dependencies and environments.
+- Do not use `npm` or Node.js for the backend (with exception of yarn for frontend)
+- Do not use `rye` or `poetry` for managing Python dependencies
+- Use `uv` when managing Python dependencies (i.e., `uv sync` to install dependencies, `uv run <script>` to run a script, etc.)
+- Python environments are managed by the user (e.g., `conda`, `pyenv` + `uv venv`)
+- Use `ruff` for linting and formatting
+- Use `mypy` for type checking
+- Use `pytest` for testing
+- Use `black` for formatting
+- Use `isort` for sorting imports
 
 # General Recommendations
 - Use type hints in all Python code

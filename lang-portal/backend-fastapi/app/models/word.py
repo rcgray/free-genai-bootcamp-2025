@@ -1,7 +1,9 @@
-from typing import Dict
+from typing import Dict, List
 from sqlalchemy import JSON, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
+from app.models.word_group import WordGroup  # Import the junction table
+from app.models.study_session import WordReviewItem  # Import for relationship
 
 
 class Word(Base):
@@ -14,9 +16,19 @@ class Word(Base):
     parts: Mapped[Dict] = mapped_column(JSON, nullable=False)
 
     # Relationships
-    groups = relationship(
+    word_groups: Mapped[List["WordGroup"]] = relationship(
+        "WordGroup",
+        back_populates="word",
+        cascade="all, delete-orphan"
+    )
+    groups: Mapped[List["Group"]] = relationship(
         "Group",
         secondary="word_groups",
-        back_populates="words"
+        back_populates="words",
+        viewonly=True
     )
-    review_items = relationship("WordReviewItem", back_populates="word") 
+    review_items: Mapped[List[WordReviewItem]] = relationship(
+        WordReviewItem,
+        back_populates="word",
+        cascade="all, delete-orphan"
+    ) 

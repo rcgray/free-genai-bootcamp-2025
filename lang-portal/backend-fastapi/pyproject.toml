@@ -1,56 +1,58 @@
+
+# uv pip install -e ".[dev]"
+
 [project]
 name = "japanese-learning-portal"
 version = "0.1.0"
 description = "Backend API for Japanese Learning Portal"
 requires-python = ">=3.12"
+dependencies = [
+    # FastAPI and Server
+    "fastapi[all]>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
+
+    # Database and ORM
+    "sqlalchemy[asyncio]>=2.0.23",
+    "aiosqlite>=0.19.0",
+    "alembic>=1.12.1",
+
+    # Environment and Configuration
+    "python-dotenv>=1.0.0",
+    "pydantic[email]>=2.5.1",
+    "pydantic-settings>=2.1.0",
+
+    # Date/Time Handling
+    "python-dateutil>=2.8.2",
+    "pytz>=2023.3",
+
+    # Utilities
+    "email-validator>=2.1.0.post1",
+    "ujson>=5.8.0",
+    "python-multipart>=0.0.6",
+    "asyncer>=0.0.2"
+]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.rye]
-managed = true
-dev-dependencies = [
+[project.optional-dependencies]
+dev = [
     # Testing
     "pytest>=7.4.3",
     "pytest-asyncio>=0.23.2",
     "pytest-cov>=4.1.0",
-    "httpx>=0.25.1",           # For async HTTP testing
+    "httpx>=0.25.1",
     
     # Code Quality
     "black>=23.11.0",
     "isort>=5.12.0",
     "mypy>=1.7.1",
-    "ruff>=0.1.5",            # Fast Python linter
+    "ruff>=0.1.5",
     
     # Type Checking
     "types-python-dateutil>=2.8.19.14",
 ]
-
-[project.dependencies]
-# FastAPI and Server
-fastapi = {version = ">=0.104.1", extras = ["all"]}
-uvicorn = {version = ">=0.24.0", extras = ["standard"]}
-
-# Database and ORM
-sqlalchemy = {version = ">=2.0.23", extras = ["asyncio"]}
-aiosqlite = ">=0.19.0"
-alembic = ">=1.12.1"
-
-# Environment and Configuration
-python-dotenv = ">=1.0.0"
-pydantic = {version = ">=2.5.1", extras = ["email"]}
-pydantic-settings = ">=2.1.0"
-
-# Date/Time Handling
-python-dateutil = ">=2.8.2"
-pytz = ">=2023.3"
-
-# Utilities
-email-validator = ">=2.1.0.post1"  # For email validation in Pydantic
-ujson = ">=5.8.0"                  # Fast JSON parsing
-python-multipart = ">=0.0.6"       # For form data parsing
-asyncer = ">=0.0.2"                # Async utility functions
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -115,4 +117,11 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "pass",
     "raise ImportError",
-] 
+]
+
+# Add this section to specify where our package files are
+[tool.hatch.build]
+packages = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"] 

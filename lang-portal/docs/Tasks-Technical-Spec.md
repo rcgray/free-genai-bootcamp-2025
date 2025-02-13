@@ -14,7 +14,15 @@ This document outlines the development tasks, scripts, and tools needed to suppo
    - Load initial study activities data
    - Load sample word and group data for development
 
-2. **Data Management**
+2. **Database Seeding**
+
+   - We have some JSON files for seeding a blank database (schema defined in the Backend-Technical-Spec.md and project file structure in Project-File-Structure.md files).
+   - We have 6 tables (`groups`, `study_activities`, `study_sessions`, `word_groups`, `word_review_items`, `words`).  We don't need to seed anything for `study_sessions` or `word_review_items` since these will be populated as the application is used.
+   - For the others, we want files with names of the format "[table].[optional info].json" - for example, data that needs to be seeded into the `study_activities` table should be found in `study_activities.json`.
+   - The data needing to be seeded into any given database may span across multiple files, and the "[optional info]" part of the filename is to provide convenience for the developer.
+   - For example, data that needs to be seeded into the `words` table can be found in `words.adjectives.json` and `words.verbs.json` (and any other words*.json file including if there existed a `words.json` file with no optional info).
+
+3. **Data Management**
    - Export database to JSON/CSV
    - Import data from JSON/CSV
    - Data validation scripts
