@@ -167,6 +167,69 @@ Response:
 }
 ```
 
+## Project Structure
+
+```
+/backend-fastapi/
+├── alembic/                    # Database migrations
+│   └── versions/
+├── app/
+│   ├── __init__.py
+│   ├── main.py                # FastAPI application entry point
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py          # Application configuration
+│   │   ├── database.py        # Database connection handling
+│   │   └── exceptions.py      # Custom exception handlers
+│   ├── api/
+│   │   ├── __init__.py
+│   │   ├── v1/
+│   │   │   ├── __init__.py
+│   │   │   ├── endpoints/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── words.py
+│   │   │   │   ├── groups.py
+│   │   │   │   └── study_sessions.py
+│   │   │   └── router.py
+│   │   └── deps.py            # Dependency injection
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── word.py
+│   │   ├── group.py
+│   │   ├── study_activity.py
+│   │   └── study_session.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── word.py
+│   │   ├── group.py
+│   │   ├── study_session.py
+│   │   └── common.py
+│   ├── crud/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── word.py
+│   │   ├── group.py
+│   │   └── study_session.py
+│   └── services/
+│       ├── __init__.py
+│       └── study_service.py
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py
+│   ├── test_api/
+│   │   └── test_v1/
+│   │       ├── test_words.py
+│   │       ├── test_groups.py
+│   │       └── test_study_sessions.py
+│   └── test_crud/
+├── .env                       # Environment variables
+├── .gitignore
+├── alembic.ini                # Alembic configuration
+├── pyproject.toml             # Project metadata and dependencies
+└── README.md
+```
+
+
 ## Database Schema
 
 ### SQLite Implementation Notes

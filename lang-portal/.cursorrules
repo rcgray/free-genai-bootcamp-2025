@@ -1,6 +1,6 @@
 # Tools and Libraries
-- Do not use NPM or Node.js.
-- Use pip for Python dependencies.
+- Do not use `npm` or Node.js for the backend (with exception of yarn for frontend).
+- Use `uv` when managing Python dependencies and environments.
 
 # General Recommendations
 - Use type hints in all Python code

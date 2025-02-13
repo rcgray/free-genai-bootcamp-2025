@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 *.so
 .Python
+env/
 build/
 develop-eggs/
 dist/
@@ -15,26 +16,38 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
 # Virtual Environment
-venv/
-env/
-ENV/
 .env
 .venv
+venv/
+ENV/
 
-# Python Testing
-.pytest_cache/
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# SQLite
+*.db
+*.sqlite3
+*.sqlite
+
+# Logs
+*.log
+
+# Testing
 .coverage
+.pytest_cache/
 htmlcov/
-.tox/
-.nox/
-.hypothesis/
-.mypy_cache/
+
+# Alembic
+alembic/versions/*
+!alembic/versions/.gitkeep
 
 # Frontend
 frontend/node_modules/
@@ -51,26 +64,6 @@ frontend/.dynamodb/
 .pnp.*
 *.tsbuildinfo
 
-# Database
-*.db
-*.db-journal
-data/*.db
-data/*.sqlite
-data/*.sqlite3
-data/backups/
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-.project
-.classpath
-.settings/
-*.sublime-workspace
-*.sublime-project
-
 # OS
 .DS_Store
 Thumbs.db
@@ -84,8 +77,6 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # Logs and Temp Files
-*.log
-logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -95,14 +86,12 @@ tmp/
 temp/
 
 # Environment Variables
-.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
 # Build and Cache
-__pycache__/
 .cache/
 .parcel-cache/
 .npm
@@ -110,9 +99,6 @@ __pycache__/
 .stylelintcache
 *.py[cod]
 *.sage.py
-.pytest_cache/
-.coverage
-coverage/
 .mypy_cache/
 
 # Documentation

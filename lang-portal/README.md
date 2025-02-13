@@ -36,20 +36,30 @@ cd lang-portal
 
 2. Set up the backend
 ```bash
+# Navigate to backend directory
+cd backend-fastapi
+
 # Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
-pip install -r requirements.txt
+# Install backend dependencies
+pip install -e .
+
+# Copy environment file and configure if needed
+cp .env.example .env
 
 # Initialize the database
-python scripts/db/init_db.py
+alembic upgrade head
+
+# Start the development server
+uvicorn app.main:app --reload
 ```
 
 3. Set up the frontend
 ```bash
-cd frontend
+# Navigate to frontend directory
+cd ../frontend
 yarn install
 ```
 
@@ -64,7 +74,8 @@ Or run them separately:
 
 Backend only:
 ```bash
-python -m uvicorn app.main:app --reload
+cd backend-fastapi
+uvicorn app.main:app --reload
 ```
 
 Frontend only:
@@ -83,7 +94,8 @@ python scripts/test/run_all.py
 Or test specific components:
 ```bash
 # Backend tests
-python -m pytest
+cd backend-fastapi
+pytest
 
 # Frontend tests
 cd frontend
@@ -95,9 +107,10 @@ yarn test
 Format and lint the code:
 ```bash
 # Backend
-python -m black .
-python -m pylint app/**/*.py
-python -m mypy app
+cd backend-fastapi
+black .
+isort .
+mypy .
 
 # Frontend
 cd frontend
@@ -109,16 +122,20 @@ yarn format
 
 ```
 lang-portal/
-├── app/                    # Backend FastAPI application
+├── backend-fastapi/          # Backend FastAPI application
+│   ├── app/                 # Application code
+│   │   ├── core/           # Core components
+│   │   ├── api/            # API routes
+│   │   ├── models/         # SQLAlchemy models
+│   │   ├── schemas/        # Pydantic models
+│   │   ├── crud/          # Database operations
+│   │   └── services/      # Business logic
+│   ├── alembic/            # Database migrations
+│   └── tests/             # Backend tests
 ├── frontend/              # Frontend React application
 ├── scripts/               # Development and utility scripts
-│   ├── db/               # Database management scripts
-│   ├── test/             # Test runners
-│   └── utils/            # Utility scripts
-├── data/                 # Database and data files
 ├── docs/                 # Documentation
-├── tests/                # Backend tests
-└── requirements.txt      # Python dependencies
+└── data/                 # Database and data files
 ```
 
 ## API Documentation
@@ -132,25 +149,25 @@ Once the development server is running, API documentation is available at:
 The project includes several development tools and scripts:
 
 1. Database Management
-   - Database initialization
-   - Data import/export
+   - Database migrations (Alembic)
+   - Data import/export utilities
    - Backup/restore utilities
 
 2. Testing Tools
-   - Unit tests
+   - Unit tests (pytest)
    - Integration tests
    - E2E tests
    - Coverage reports
 
 3. Documentation
-   - API documentation generation
+   - API documentation (OpenAPI/Swagger)
    - Frontend component documentation
    - Development guides
 
 4. Code Quality Tools
-   - Code formatting
-   - Linting
-   - Type checking
+   - Code formatting (black, prettier)
+   - Linting (mypy, eslint)
+   - Type checking (mypy, TypeScript)
 
 ## Contributing
 
