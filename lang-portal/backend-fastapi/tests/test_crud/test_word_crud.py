@@ -62,3 +62,70 @@ async def test_get_words_with_stats(db: AsyncSession):
     assert total == 1
     assert len(words) == 1
     assert words[0].id == db_word.id 
+
+
+async def test_update_word(db: AsyncSession):
+    # Create word
+    word_in = WordCreate(**TEST_WORD)
+    db_word = await word.create(db, obj_in=word_in)
+
+    # Update word
+    updated_data = {
+        "kanji": "食べる",
+        "romaji": "taberu",
+        "english": "to eat",
+        "parts": [
+            {"kanji": "食", "romaji": ["ta"]},
+            {"kanji": "べ", "romaji": ["be"]},
+            {"kanji": "る", "romaji": ["ru"]}
+        ]
+    }
+    updated_word = await word.update(db, db_obj=db_word, obj_in=updated_data)
+    assert updated_word.kanji == updated_data["kanji"]
+    assert updated_word.romaji == updated_data["romaji"]
+    assert updated_word.english == updated_data["english"]
+    assert updated_word.parts == updated_data["parts"]
+
+
+async def test_delete_word(db: AsyncSession):
+    # Create word
+    word_in = WordCreate(**TEST_WORD)
+    db_word = await word.create(db, obj_in=word_in)
+    
+    # Delete word
+    deleted_word = await word.remove(db, id=db_word.id)
+    assert deleted_word.id == db_word.id
+    
+    # Verify deletion
+    db_word = await word.get(db, id=db_word.id)
+    assert db_word is None
+
+
+async def test_get_word_not_found(db: AsyncSession):
+    stored_word = await word.get(db, id=999)
+    assert stored_word is None
+
+
+async def test_get_words_pagination(db: AsyncSession):
+    # Create multiple words
+    word1_in = WordCreate(**TEST_WORD)
+    word2_in = WordCreate(**{
+        "kanji": "食べる",
+        "romaji": "taberu",
+        "english": "to eat",
+        "parts": [
+            {"kanji": "食", "romaji": ["ta"]},
+            {"kanji": "べ", "romaji": ["be"]},
+            {"kanji": "る", "romaji": ["ru"]}
+        ]
+    })
+    await word.create(db, obj_in=word1_in)
+    await word.create(db, obj_in=word2_in)
+    
+    # Test pagination
+    words = await word.get_multi(db, skip=0, limit=1)
+    assert len(words) == 1
+    
+    # Get all words to verify total
+    all_words = await word.get_multi(db)
+    assert len(all_words) == 2 
