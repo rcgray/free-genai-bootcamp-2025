@@ -93,9 +93,11 @@
 │   │   ├── test_api
 │   │   │   └── test_v1
 │   │   │       ├── __pycache__
+│   │   │       ├── test_groups.py
 │   │   │       └── test_words.py
 │   │   └── test_crud
 │   │       ├── __pycache__
+│   │       ├── test_group_crud.py
 │   │       └── test_word_crud.py
 │   └── uv.lock
 ├── data
@@ -109,10 +111,13 @@
 │   └── Tasks-Technical-Spec.md
 ├── frontend-react
 │   └── .gitkeep
-└── scripts
-    └── db
-        ├── __pycache__
-        ├── init_db.py
-        └── seed_db.py
+├── scripts
+│   └── db
+│       ├── __pycache__
+│       ├── init_db.py
+│       └── seed_db.py
+└── tests
+    └── test_api
+        └── test_v1
 
-49 directories, 67 files
+52 directories, 69 files

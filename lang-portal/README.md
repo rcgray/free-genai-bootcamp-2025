@@ -44,14 +44,14 @@ cd lang-portal
 cd backend-fastapi
 
 # Create and activate virtual environment using uv
-uv venv .venv
+uv venv
   # or regular venv 
   python -m venv .venv
 
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
 # Install production dependencies using uv
-uv pip install -e .
+uv sync
   # or regular pip
   pip install -e .
 

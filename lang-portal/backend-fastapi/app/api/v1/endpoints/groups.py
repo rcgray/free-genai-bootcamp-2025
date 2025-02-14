@@ -1,12 +1,13 @@
 from typing import Optional
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.schemas.group import Group, GroupCreate, GroupUpdate
+from app.schemas.group import Group, GroupCreate, GroupUpdate, GroupWithWords
 from app.schemas.word import Word
 from app.schemas.base import PaginatedResponse
 from app.services.group_service import GroupService
+from app.core.exceptions import AppHTTPException
 
 router = APIRouter()
 
@@ -39,14 +40,14 @@ async def get_groups(
     total_pages = (total + per_page - 1) // per_page
     
     return {
-        "items": groups,
+        "items": [Group.model_validate(g) for g in groups],
         "total": total,
         "page": page,
         "per_page": per_page,
         "total_pages": total_pages
     }
 
-@router.get("/{group_id}", response_model=dict)
+@router.get("/{group_id}", response_model=GroupWithWords)
 async def get_group_words(
     group_id: int,
     page: int = Query(1, ge=1),
@@ -65,11 +66,11 @@ async def get_group_words(
         sort_by: Field to sort by (kanji, romaji, english)
         order: Sort order (asc or desc)
     """
-    skip = (page - 1) * per_page
     group = await GroupService.get_group(db, group_id)
     if not group:
-        raise HTTPException(status_code=404, detail=f"Group {group_id} not found")
+        raise AppHTTPException(status_code=404, detail=f"Group {group_id} not found")
     
+    skip = (page - 1) * per_page
     words, total = await GroupService.get_group_words(
         db,
         group_id=group_id,
@@ -79,18 +80,9 @@ async def get_group_words(
         order=order
     )
     
-    total_pages = (total + per_page - 1) // per_page
-    
-    return {
-        "group": group,
-        "words": {
-            "items": words,
-            "total": total,
-            "page": page,
-            "per_page": per_page,
-            "total_pages": total_pages
-        }
-    }
+    group_dict = Group.model_validate(group).model_dump()
+    group_dict["words"] = [Word.model_validate(w) for w in words]
+    return GroupWithWords(**group_dict)
 
 @router.post("", response_model=Group)
 async def create_group(
@@ -106,15 +98,19 @@ async def create_group(
     
     Returns:
         The created group
+    
+    Raises:
+        AppHTTPException: If a group with the same name already exists
     """
     try:
-        return await GroupService.create_group(
+        group = await GroupService.create_group(
             db,
             name=group_in.name,
             word_ids=group_in.word_ids
         )
+        return Group.model_validate(group)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise AppHTTPException(status_code=400, detail=str(e))
 
 @router.put("/{group_id}", response_model=Group)
 async def update_group(
@@ -132,21 +128,25 @@ async def update_group(
     
     Returns:
         The updated group
+    
+    Raises:
+        AppHTTPException: If the group doesn't exist or if there's a conflict
     """
     current_group = await GroupService.get_group(db, group_id)
     if not current_group:
-        raise HTTPException(status_code=404, detail=f"Group {group_id} not found")
+        raise AppHTTPException(status_code=404, detail=f"Group {group_id} not found")
     
     try:
-        return await GroupService.update_group(
+        group = await GroupService.update_group(
             db,
             group_id=group_id,
             group_in=group_in
         )
+        return Group.model_validate(group)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise AppHTTPException(status_code=400, detail=str(e))
 
-@router.delete("/{group_id}")
+@router.delete("/{group_id}", response_model=dict)
 async def delete_group(
     *,
     group_id: int,
@@ -157,10 +157,13 @@ async def delete_group(
     
     Parameters:
         group_id: ID of the group to delete
+    
+    Raises:
+        AppHTTPException: If the group doesn't exist
     """
     current_group = await GroupService.get_group(db, group_id)
     if not current_group:
-        raise HTTPException(status_code=404, detail=f"Group {group_id} not found")
+        raise AppHTTPException(status_code=404, detail=f"Group {group_id} not found")
     
     await GroupService.delete_group(db, group_id=group_id)
     return {"status": "success"} 

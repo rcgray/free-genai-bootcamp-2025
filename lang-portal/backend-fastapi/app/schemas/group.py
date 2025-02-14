@@ -37,4 +37,8 @@ class Group(GroupBase):
 
 
 class GroupWithWords(Group):
-    words: List[Word] 
+    """Schema for group responses that include the word list."""
+    words: List[Word]
+
+    class Config:
+        from_attributes = True 

@@ -72,8 +72,14 @@ class GroupService:
         Create a new group and optionally add words to it.
         
         Raises:
-            ValueError: If any of the word_ids don't exist
+            ValueError: If any of the word_ids don't exist or if group name already exists
         """
+        # Check if group with same name exists
+        query = select(Group).where(Group.name == name)
+        result = await db.execute(query)
+        if result.scalar_one_or_none():
+            raise ValueError(f"Group with name '{name}' already exists")
+
         # Verify all words exist if word_ids provided
         if word_ids:
             for word_id in word_ids:
@@ -81,7 +87,7 @@ class GroupService:
                     raise ValueError(f"Word with ID {word_id} not found")
 
         # Create group
-        group_in = GroupCreate(name=name)
+        group_in = GroupCreate(name=name, word_ids=word_ids)
         db_group = await group.create(db, obj_in=group_in)
 
         # Add words if provided
