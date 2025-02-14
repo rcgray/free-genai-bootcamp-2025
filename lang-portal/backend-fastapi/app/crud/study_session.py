@@ -1,14 +1,47 @@
-from typing import List, Optional, Dict
-from sqlalchemy import func, select
+from typing import List, Optional, Dict, Tuple
+from sqlalchemy import func, select, Integer
 from sqlalchemy.orm import selectinload
 
 from app.crud.base import CRUDBase
 from app.models.study_session import StudySession
 from app.models.word_review_item import WordReviewItem
-from app.schemas.study_session import StudySessionCreate, WordReviewCreate
+from app.schemas.study_session import (
+    StudySessionCreate,
+    StudySessionUpdate,
+    WordReviewCreate,
+    StudySessionStats
+)
 
 
-class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionCreate]):
+class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUpdate]):
+    async def get_multi(
+        self,
+        db,
+        *,
+        skip: int = 0,
+        limit: int = 100,
+        order_by: Optional[str] = None,
+        order: Optional[str] = "asc"
+    ) -> Tuple[List[StudySession], int]:
+        """Get multiple study sessions with pagination and total count."""
+        # Get total count
+        count_query = select(func.count()).select_from(self.model)
+        total = await db.scalar(count_query)
+
+        # Get items with pagination
+        query = select(self.model)
+        if order_by and hasattr(self.model, order_by):
+            order_column = getattr(self.model, order_by)
+            if order == "desc":
+                order_column = order_column.desc()
+            query = query.order_by(order_column)
+        
+        query = query.offset(skip).limit(limit)
+        result = await db.execute(query)
+        items = result.scalars().all()
+        
+        return items, total
+
     async def get_with_reviews(
         self,
         db,
@@ -23,14 +56,16 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionCr
         result = await db.execute(query)
         return result.scalar_one_or_none()
 
-    async def add_review(
+    async def create_word_review(
         self,
         db,
         *,
         session_id: int,
-        review: WordReviewCreate
+        word_id: int,
+        correct: bool
     ) -> WordReviewItem:
-        """Add a review to a study session."""
+        """Create a new word review for a study session."""
+        review = WordReviewCreate(word_id=word_id, correct=correct)
         db_review = WordReviewItem(
             study_session_id=session_id,
             word_id=review.word_id,
@@ -40,11 +75,11 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionCr
         await db.flush()
         return db_review
 
-    async def get_stats(
+    async def get_session_statistics(
         self,
         db,
         session_id: int
-    ) -> Optional[Dict]:
+    ) -> Optional[StudySessionStats]:
         """Get statistics for a study session."""
         # Verify session exists
         session = await self.get(db, session_id)
@@ -55,24 +90,22 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionCr
         stats_query = (
             select(
                 func.count().label("total_reviews"),
-                func.sum(
-                    func.cast(WordReviewItem.correct, func.Integer())
-                ).label("correct_reviews")
+                func.sum(func.cast(WordReviewItem.correct, Integer)).label("correct_reviews")
             )
-            .filter(WordReviewItem.study_session_id == session_id)
+            .where(WordReviewItem.study_session_id == session_id)
         )
         result = await db.execute(stats_query)
         row = result.one()
         
         total = row.total_reviews or 0
         correct = row.correct_reviews or 0
-        accuracy = (correct / total * 100) if total > 0 else 0.0
+        accuracy = (correct / total) if total > 0 else 0.0
 
-        return {
-            "total_reviews": total,
-            "correct_reviews": correct,
-            "accuracy": round(accuracy, 2)
-        }
+        return StudySessionStats(
+            total_reviews=total,
+            correct_reviews=correct,
+            accuracy=accuracy
+        )
 
 
 study_session = CRUDStudySession(StudySession) 

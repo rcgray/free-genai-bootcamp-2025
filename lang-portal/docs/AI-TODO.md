@@ -7,6 +7,7 @@ I'll help create a comprehensive test plan based on the coverage report and the 
       - test_create_duplicate_group
       - test_get_groups_pagination
       - test_get_groups_sorting
+      - test_get_group
       - test_get_group_details
       - test_update_group
       - test_update_nonexistent_group

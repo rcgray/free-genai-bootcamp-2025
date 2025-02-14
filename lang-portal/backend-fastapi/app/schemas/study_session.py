@@ -24,6 +24,12 @@ class StudySessionCreate(StudySessionBase):
     pass
 
 
+class StudySessionUpdate(BaseSchema):
+    """Schema for updating a study session."""
+    group_id: Optional[int] = Field(None, description="ID of the group being studied")
+    study_activity_id: Optional[int] = Field(None, description="ID of the study activity being used")
+
+
 class WordReviewBase(BaseSchema):
     """Base schema for word reviews."""
     word_id: int = Field(..., description="ID of the word being reviewed")

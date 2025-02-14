@@ -1,5 +1,10 @@
 from typing import Dict, List
 
+from app.crud.word import word
+from app.crud.group import group
+from app.schemas.word import WordCreate
+from app.schemas.group import GroupCreate
+
 # Test word data
 TEST_WORD = {
     "kanji": "開ける",
@@ -31,4 +36,72 @@ TEST_GROUP = {
 TEST_ACTIVITY = {
     "name": "Flashcards",
     "url": "http://localhost:5173/study/flashcards"
-} 
+}
+
+# Test study session data
+TEST_STUDY_SESSION = {
+    "group_id": 1,
+    "study_activity_id": 1
+}
+
+# Test word review data
+TEST_WORD_REVIEW = {
+    "word_id": 1,
+    "correct": True
+}
+
+# Test data setup functions
+async def create_test_word(db, word_data: Dict = TEST_WORD) -> Dict:
+    """Create a test word and return its data."""
+    word_in = WordCreate(**word_data)
+    db_word = await word.create(db, obj_in=word_in)
+    return {
+        "id": db_word.id,
+        "kanji": db_word.kanji,
+        "romaji": db_word.romaji,
+        "english": db_word.english,
+        "parts": db_word.parts
+    }
+
+async def create_test_group(db, group_data: Dict = TEST_GROUP) -> Dict:
+    """Create a test group and return its data."""
+    group_in = GroupCreate(**group_data)
+    db_group = await group.create(db, obj_in=group_in)
+    return {
+        "id": db_group.id,
+        "name": db_group.name,
+        "words_count": db_group.words_count
+    }
+
+async def create_test_activity(db, activity_data: Dict = TEST_ACTIVITY) -> Dict:
+    """Create a test study activity and return its data."""
+    from app.models.study_activity import StudyActivity
+    activity = StudyActivity(**activity_data)
+    db.add(activity)
+    await db.commit()
+    await db.refresh(activity)
+    return {
+        "id": activity.id,
+        "name": activity.name,
+        "url": activity.url
+    }
+
+async def setup_test_data(db) -> Dict:
+    """Set up all necessary test data and return their IDs."""
+    # Create word
+    word_data = await create_test_word(db)
+    
+    # Create group
+    group_data = await create_test_group(db)
+    
+    # Add word to group
+    await group.add_words(db, group_id=group_data["id"], word_ids=[word_data["id"]])
+    
+    # Create study activity
+    activity_data = await create_test_activity(db)
+    
+    return {
+        "word_id": word_data["id"],
+        "group_id": group_data["id"],
+        "activity_id": activity_data["id"]
+    } 
