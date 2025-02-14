@@ -99,6 +99,11 @@ class CRUDGroup(CRUDBase[Group, GroupCreate, GroupUpdate]):
         word_ids: List[int]
     ) -> Group:
         """Add words to a group."""
+        # Get the group
+        db_group = await self.get(db, group_id)
+        if not db_group:
+            return None
+
         # Create word_group relationships
         for word_id in word_ids:
             word_group = WordGroup(group_id=group_id, word_id=word_id)
@@ -107,10 +112,18 @@ class CRUDGroup(CRUDBase[Group, GroupCreate, GroupUpdate]):
         await db.flush()
         
         # Update words_count
-        await self._update_words_count(db, group_id)
+        count_query = (
+            select(func.count(WordGroup.word_id))
+            .filter(WordGroup.group_id == group_id)
+        )
+        count = await db.scalar(count_query)
+        db_group.words_count = count
         
-        # Return updated group
-        return await self.get(db, group_id)
+        # Commit all changes
+        await db.commit()
+        await db.refresh(db_group)
+        
+        return db_group
 
     async def set_words(
         self,
@@ -120,6 +133,11 @@ class CRUDGroup(CRUDBase[Group, GroupCreate, GroupUpdate]):
         word_ids: List[int]
     ) -> None:
         """Replace all words in a group with a new list."""
+        # Get the group
+        db_group = await self.get(db, group_id)
+        if not db_group:
+            return None
+
         # Remove existing relationships
         delete_query = (
             WordGroup.__table__.delete()
@@ -134,23 +152,25 @@ class CRUDGroup(CRUDBase[Group, GroupCreate, GroupUpdate]):
         
         await db.flush()
         
-        # Update words_count
-        await self._update_words_count(db, group_id)
-
-    async def _update_words_count(self, db, group_id: int) -> None:
-        """Update the words_count for a group."""
+        # Update words_count directly on the model
         count_query = (
             select(func.count(WordGroup.word_id))
             .filter(WordGroup.group_id == group_id)
         )
         count = await db.scalar(count_query)
+        db_group.words_count = count
         
-        update_query = (
-            Group.__table__.update()
-            .where(Group.id == group_id)
-            .values(words_count=count)
-        )
-        await db.execute(update_query)
+        # Commit all changes
+        await db.commit()
+        await db.refresh(db_group)
+        
+        return db_group
+
+    async def _update_words_count(self, db, group_id: int) -> None:
+        """Update the words_count for a group."""
+        # This method is no longer needed as we update the count directly
+        # in add_words and set_words
+        pass
 
     async def update(
         self,

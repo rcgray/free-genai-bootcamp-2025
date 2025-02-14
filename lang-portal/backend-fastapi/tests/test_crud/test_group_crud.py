@@ -2,9 +2,11 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.group import group
+from app.crud.word import word
 from app.models.group import Group
 from app.schemas.group import GroupCreate, GroupUpdate
-from tests.fixtures.test_data import TEST_GROUP, TEST_WORD
+from app.schemas.word import WordCreate
+from tests.fixtures.test_data import TEST_GROUP, TEST_WORD, TEST_WORD_2
 
 
 async def test_create_group(db: AsyncSession):
@@ -75,8 +77,14 @@ async def test_add_words_to_group(db: AsyncSession):
     group_in = GroupCreate(**TEST_GROUP)
     db_group = await group.create(db, obj_in=group_in)
     
+    # Create test words
+    word1_in = WordCreate(**TEST_WORD)
+    word2_in = WordCreate(**TEST_WORD_2)
+    db_word1 = await word.create(db, obj_in=word1_in)
+    db_word2 = await word.create(db, obj_in=word2_in)
+    word_ids = [db_word1.id, db_word2.id]
+    
     # Add words
-    word_ids = [1, 2]  # Assuming these words exist
     updated_group = await group.add_words(db, group_id=db_group.id, word_ids=word_ids)
     assert updated_group.words_count == len(word_ids)
 
@@ -86,8 +94,14 @@ async def test_set_words_in_group(db: AsyncSession):
     group_in = GroupCreate(**TEST_GROUP)
     db_group = await group.create(db, obj_in=group_in)
     
+    # Create test words
+    word1_in = WordCreate(**TEST_WORD)
+    word2_in = WordCreate(**TEST_WORD_2)
+    db_word1 = await word.create(db, obj_in=word1_in)
+    db_word2 = await word.create(db, obj_in=word2_in)
+    word_ids = [db_word1.id, db_word2.id]
+    
     # Set words
-    word_ids = [1, 2]  # Assuming these words exist
     await group.set_words(db, group_id=db_group.id, word_ids=word_ids)
     
     # Verify word count
