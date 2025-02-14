@@ -1,11 +1,12 @@
 from typing import Optional
-from fastapi import APIRouter, Depends, Query, HTTPException
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.schemas.word import Word, WordCreate, WordUpdate
 from app.schemas.base import PaginatedResponse
 from app.services.word_service import WordService
+from app.core.exceptions import AppHTTPException
 
 router = APIRouter()
 
@@ -61,7 +62,7 @@ async def create_word(
         The created word
     
     Raises:
-        HTTPException: If a word with the same kanji already exists
+        AppHTTPException: If a word with the same kanji already exists
     """
     try:
         return await WordService.create_word(
@@ -72,7 +73,29 @@ async def create_word(
             parts=word_in.parts
         )
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise AppHTTPException(status_code=400, detail=str(e))
+
+@router.get("/{word_id}", response_model=Word)
+async def get_word(
+    word_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Get a word by ID.
+    
+    Parameters:
+        word_id: ID of the word to retrieve
+    
+    Returns:
+        The word if found
+    
+    Raises:
+        AppHTTPException: If the word is not found
+    """
+    word = await WordService.get_word(db, word_id)
+    if not word:
+        raise AppHTTPException(status_code=404, detail=f"Word {word_id} not found")
+    return word
 
 @router.put("/{word_id}", response_model=Word)
 async def update_word(
@@ -92,11 +115,11 @@ async def update_word(
         The updated word
     
     Raises:
-        HTTPException: If the word doesn't exist or if there's a conflict
+        AppHTTPException: If the word doesn't exist or if there's a conflict
     """
     current_word = await WordService.get_word(db, word_id)
     if not current_word:
-        raise HTTPException(status_code=404, detail=f"Word {word_id} not found")
+        raise AppHTTPException(status_code=404, detail=f"Word {word_id} not found")
     
     try:
         return await WordService.update_word(
@@ -105,7 +128,7 @@ async def update_word(
             word_in=word_in
         )
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise AppHTTPException(status_code=400, detail=str(e))
 
 @router.delete("/{word_id}")
 async def delete_word(
@@ -120,11 +143,11 @@ async def delete_word(
         word_id: ID of the word to delete
     
     Raises:
-        HTTPException: If the word doesn't exist
+        AppHTTPException: If the word doesn't exist
     """
     current_word = await WordService.get_word(db, word_id)
     if not current_word:
-        raise HTTPException(status_code=404, detail=f"Word {word_id} not found")
+        raise AppHTTPException(status_code=404, detail=f"Word {word_id} not found")
     
     await WordService.delete_word(db, word_id=word_id)
     return {"status": "success"} 

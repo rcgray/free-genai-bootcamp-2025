@@ -5,9 +5,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 from fastapi.testclient import TestClient
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.core.database import get_db
+from app.core.config import get_settings
 
 # Create a separate Base class for tests
 class TestBase(DeclarativeBase):
@@ -89,7 +90,12 @@ async def client(db: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 
     app.dependency_overrides[get_db] = override_get_db
     
-    async with AsyncClient(base_url="http://test") as ac:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(
+        transport=transport,
+        base_url="http://test",
+        follow_redirects=True
+    ) as ac:
         yield ac
         
     app.dependency_overrides.clear()
