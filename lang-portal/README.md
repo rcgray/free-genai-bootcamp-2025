@@ -126,7 +126,7 @@ Or test specific components:
 ```bash
 # Backend tests
 cd backend-fastapi
-uv run pytest
+uv run pytest -v tests/
 
 # Frontend tests
 cd frontend

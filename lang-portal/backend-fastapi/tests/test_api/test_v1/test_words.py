@@ -91,4 +91,86 @@ async def test_get_words_sorting(client: AsyncClient, db: AsyncSession):
     items = data["items"]
     assert len(items) == 2
     assert items[0]["romaji"] == "neko"  # cat should come first
-    assert items[1]["romaji"] == "inu"  # dog should come second 
+    assert items[1]["romaji"] == "inu"  # dog should come second
+
+
+async def test_update_word(client: AsyncClient, db: AsyncSession):
+    # Create word
+    create_response = await client.post(f"{settings.API_V1_PREFIX}/words", json=TEST_WORD)
+    word_id = create_response.json()["data"]["id"]
+
+    # Update word
+    updated_word = {
+        "kanji": "食べる",
+        "romaji": "taberu",
+        "english": "to eat",
+        "parts": [
+            {"kanji": "食", "romaji": ["ta"]},
+            {"kanji": "べ", "romaji": ["be"]},
+            {"kanji": "る", "romaji": ["ru"]}
+        ]
+    }
+    response = await client.put(
+        f"{settings.API_V1_PREFIX}/words/{word_id}",
+        json=updated_word
+    )
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["kanji"] == updated_word["kanji"]
+    assert data["romaji"] == updated_word["romaji"]
+    assert data["english"] == updated_word["english"]
+    assert data["parts"] == updated_word["parts"]
+
+
+async def test_update_nonexistent_word(client: AsyncClient, db: AsyncSession):
+    updated_word = {
+        "kanji": "食べる",
+        "romaji": "taberu",
+        "english": "to eat",
+        "parts": [
+            {"kanji": "食", "romaji": ["ta"]},
+            {"kanji": "べ", "romaji": ["be"]},
+            {"kanji": "る", "romaji": ["ru"]}
+        ]
+    }
+    response = await client.put(
+        f"{settings.API_V1_PREFIX}/words/999",
+        json=updated_word
+    )
+    assert response.status_code == 404
+    assert "not found" in response.json()["error"]
+
+
+async def test_delete_word(client: AsyncClient, db: AsyncSession):
+    # Create word
+    create_response = await client.post(f"{settings.API_V1_PREFIX}/words", json=TEST_WORD)
+    word_id = create_response.json()["data"]["id"]
+
+    # Delete word
+    response = await client.delete(f"{settings.API_V1_PREFIX}/words/{word_id}")
+    assert response.status_code == 200
+
+    # Verify deletion
+    get_response = await client.get(f"{settings.API_V1_PREFIX}/words/{word_id}")
+    assert get_response.status_code == 404
+
+
+async def test_delete_nonexistent_word(client: AsyncClient, db: AsyncSession):
+    response = await client.delete(f"{settings.API_V1_PREFIX}/words/999")
+    assert response.status_code == 404
+    assert "not found" in response.json()["error"]
+
+
+async def test_get_word_with_review_stats(client: AsyncClient, db: AsyncSession):
+    # Create word
+    create_response = await client.post(f"{settings.API_V1_PREFIX}/words", json=TEST_WORD)
+    word_id = create_response.json()["data"]["id"]
+
+    # Get word with stats
+    response = await client.get(f"{settings.API_V1_PREFIX}/words/{word_id}")
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert "correct_count" in data
+    assert "wrong_count" in data
+    assert isinstance(data["correct_count"], int)
+    assert isinstance(data["wrong_count"], int) 

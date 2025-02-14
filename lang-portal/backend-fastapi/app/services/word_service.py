@@ -107,7 +107,13 @@ class WordService:
                     f"Another word with kanji '{word_in.kanji}' already exists"
                 )
 
-        return await word.update(db, id=word_id, obj_in=word_in)
+        # First get the existing word
+        db_obj = await word.get(db, word_id)
+        if not db_obj:
+            raise ValueError(f"Word with id {word_id} not found")
+
+        # Then update it
+        return await word.update(db, db_obj=db_obj, obj_in=word_in)
 
     @staticmethod
     async def delete_word(db: AsyncSession, *, word_id: int) -> None:
