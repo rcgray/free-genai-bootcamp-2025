@@ -104,6 +104,8 @@
 │   │   └── test_services
 │   │       ├── __pycache__
 │   │       ├── conftest.py
+│   │       ├── test_group_service.py
+│   │       ├── test_study_service.py
 │   │       └── test_word_service.py
 │   └── uv.lock
 ├── data
@@ -127,4 +129,4 @@
     └── test_api
         └── test_v1
 
-54 directories, 74 files
+54 directories, 76 files

@@ -117,7 +117,7 @@ class StudyService:
         session_id: int
     ) -> dict:
         """Get statistics for a study session."""
-        stats = await study_session.get_stats(db, session_id)
+        stats = await study_session.get_session_statistics(db, session_id)
         if not stats:
             raise ValueError(f"Study session {session_id} not found")
-        return stats 
+        return stats.dict() 

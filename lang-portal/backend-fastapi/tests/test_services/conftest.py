@@ -5,9 +5,17 @@ from sqlalchemy import delete, text
 from app.models.word import Word
 from app.models.group import Group
 from app.models.word_group import WordGroup
+from app.models.study_activity import StudyActivity
+from app.models.study_session import StudySession
 from app.schemas.word import WordCreate
 from app.schemas.group import GroupCreate
-from tests.fixtures.test_data import TEST_WORD, TEST_WORD_2, TEST_GROUP
+from tests.fixtures.test_data import (
+    TEST_WORD,
+    TEST_WORD_2,
+    TEST_GROUP,
+    TEST_ACTIVITY,
+    TEST_STUDY_SESSION
+)
 
 
 @pytest.fixture(autouse=True)
@@ -77,4 +85,31 @@ async def test_group(db: AsyncSession) -> Group:
     db.add(db_group)
     await db.commit()
     await db.refresh(db_group)
-    return db_group 
+    return db_group
+
+
+@pytest.fixture
+async def test_study_activity(db: AsyncSession) -> StudyActivity:
+    """Create a test study activity for testing."""
+    db_activity = StudyActivity(**TEST_ACTIVITY)
+    db.add(db_activity)
+    await db.commit()
+    await db.refresh(db_activity)
+    return db_activity
+
+
+@pytest.fixture
+async def test_study_session(
+    db: AsyncSession,
+    test_group: Group,
+    test_study_activity: StudyActivity
+) -> StudySession:
+    """Create a test study session for testing."""
+    db_session = StudySession(
+        group_id=test_group.id,
+        study_activity_id=test_study_activity.id
+    )
+    db.add(db_session)
+    await db.commit()
+    await db.refresh(db_session)
+    return db_session 
