@@ -101,6 +101,10 @@
 │   │   │   ├── test_group_crud.py
 │   │   │   ├── test_study_session_crud.py
 │   │   │   └── test_word_crud.py
+│   │   ├── test_db
+│   │   │   ├── __pycache__
+│   │   │   ├── conftest.py
+│   │   │   └── test_integration.py
 │   │   └── test_services
 │   │       ├── __pycache__
 │   │       ├── conftest.py
@@ -129,4 +133,4 @@
     └── test_api
         └── test_v1
 
-54 directories, 76 files
+56 directories, 78 files
