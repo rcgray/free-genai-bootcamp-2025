@@ -1,6 +1,7 @@
 from typing import List, Optional, Dict, Tuple
 from sqlalchemy import func, select, Integer
 from sqlalchemy.orm import selectinload
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.base import CRUDBase
 from app.models.study_session import StudySession
@@ -44,7 +45,7 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
 
     async def get_with_reviews(
         self,
-        db,
+        db: AsyncSession,
         session_id: int
     ) -> Optional[StudySession]:
         """Get a study session with its reviews."""
@@ -58,7 +59,7 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
 
     async def create_word_review(
         self,
-        db,
+        db: AsyncSession,
         *,
         session_id: int,
         word_id: int,
@@ -72,12 +73,13 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
             correct=review.correct
         )
         db.add(db_review)
-        await db.flush()
+        await db.commit()
+        await db.refresh(db_review)
         return db_review
 
     async def get_session_statistics(
         self,
-        db,
+        db: AsyncSession,
         session_id: int
     ) -> Optional[StudySessionStats]:
         """Get statistics for a study session."""

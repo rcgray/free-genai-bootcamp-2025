@@ -80,9 +80,12 @@ class StudyService:
             raise ValueError(f"Study session {session_id} not found")
 
         # Verify word exists and belongs to the session's group
-        db_word = await word.get_with_groups(db, word_id)
+        db_word = await word.get_with_groups(db=db, word_id=word_id)
         if not db_word:
-            raise ValueError(f"Word {word_id} not found")
+            raise AppHTTPException(
+                status_code=404,
+                detail=f"Word {word_id} not found"
+            )
 
         group_ids = {g.id for g in db_word.groups}
         if db_session.group_id not in group_ids:
@@ -93,10 +96,11 @@ class StudyService:
             word_id=word_id,
             correct=correct
         )
-        review = await study_session.add_review(
+        review = await study_session.create_word_review(
             db,
             session_id=session_id,
-            review=review_in
+            word_id=word_id,
+            correct=correct
         )
 
         return {

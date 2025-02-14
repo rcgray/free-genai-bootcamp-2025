@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple
 from sqlalchemy import func, select
 from sqlalchemy.orm import selectinload
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.base import CRUDBase
 from app.models.word import Word
@@ -8,7 +9,7 @@ from app.schemas.word import WordCreate, WordUpdate
 
 
 class CRUDWord(CRUDBase[Word, WordCreate, WordUpdate]):
-    async def get_with_groups(self, db, *, word_id: int) -> Optional[Word]:
+    async def get_with_groups(self, db: AsyncSession, *, word_id: int) -> Optional[Word]:
         """Get a word with its associated groups."""
         query = (
             select(self.model)
