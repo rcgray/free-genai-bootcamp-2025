@@ -1,8 +1,13 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
+
+if TYPE_CHECKING:
+    from app.models.word import Word
+    from app.models.study_session import StudySession
 
 
 class WordReviewItem(Base):
@@ -20,5 +25,7 @@ class WordReviewItem(Base):
     )
 
     # Relationships
-    word = relationship("Word", back_populates="reviews")
-    study_session = relationship("StudySession", back_populates="reviews") 
+    word: Mapped["Word"] = relationship("Word", back_populates="reviews")
+    study_session: Mapped["StudySession"] = relationship(
+        "StudySession", back_populates="reviews"
+    ) 

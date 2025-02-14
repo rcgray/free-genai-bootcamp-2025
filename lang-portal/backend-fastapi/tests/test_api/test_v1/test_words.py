@@ -58,13 +58,17 @@ async def test_get_words_sorting(client: AsyncClient, db: AsyncSession):
         "kanji": "猫",
         "romaji": "neko",
         "english": "cat",
-        "parts": ["noun"]
+        "parts": [
+            {"kanji": "猫", "romaji": ["ne", "ko"]}
+        ]
     })
     await client.post("/api/words", json={
         "kanji": "犬",
         "romaji": "inu",
         "english": "dog",
-        "parts": ["noun"]
+        "parts": [
+            {"kanji": "犬", "romaji": ["i", "nu"]}
+        ]
     })
 
     # Test sorting by romaji ascending

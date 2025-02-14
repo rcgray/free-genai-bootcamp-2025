@@ -423,7 +423,9 @@ erDiagram
 - `kanji` (TEXT NOT NULL): The word written in Japanese kanji
 - `romaji` (TEXT NOT NULL): Romanized version of the word
 - `english` (TEXT NOT NULL): English translation of the word
-- `parts` (JSON NOT NULL): Word components stored in JSON format
+- `parts` (JSON NOT NULL): Word components stored in JSON format. Each component is an object with:
+  - `kanji`: The kanji/kana character for this part
+  - `romaji`: Array of possible romaji readings for this part
 
 Foreign Key Relationships:
 - Has many word_groups
@@ -500,3 +502,26 @@ Key junction tables:
 - Database transactions should be used when:
   - Creating word reviews
   - Updating word counts in groups
+
+Example word JSON structure:
+```json
+{
+  "kanji": "食べる",
+  "romaji": "taberu",
+  "english": "to eat",
+  "parts": [
+    {
+      "kanji": "食",
+      "romaji": ["ta"]
+    },
+    {
+      "kanji": "べ",
+      "romaji": ["be"]
+    },
+    {
+      "kanji": "る",
+      "romaji": ["ru"]
+    }
+  ]
+}
+```

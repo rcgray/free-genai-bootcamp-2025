@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 # Test word data
 TEST_WORD = {
@@ -6,21 +6,21 @@ TEST_WORD = {
     "romaji": "akeru",
     "english": "to open",
     "parts": [
-      { "kanji": "開", "romaji": ["a"] },
-      { "kanji": "け", "romaji": ["ke"] },
-      { "kanji": "る", "romaji": ["ru"] }
+        {"kanji": "開", "romaji": ["a"]},
+        {"kanji": "け", "romaji": ["ke"]},
+        {"kanji": "る", "romaji": ["ru"]}
     ]
-},
+}
 
 TEST_WORD_2 = {
     "kanji": "作る",
     "romaji": "tsukuru",
     "english": "to make",
     "parts": [
-      { "kanji": "作", "romaji": ["tsu", "ku"] },
-      { "kanji": "る", "romaji": ["ru"] }
+        {"kanji": "作", "romaji": ["tsu", "ku"]},
+        {"kanji": "る", "romaji": ["ru"]}
     ]
-},
+}
 
 # Test group data
 TEST_GROUP = {

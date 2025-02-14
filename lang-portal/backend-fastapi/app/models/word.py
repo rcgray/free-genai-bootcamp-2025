@@ -13,7 +13,7 @@ class Word(Base):
     kanji: Mapped[str] = mapped_column(String, nullable=False)
     romaji: Mapped[str] = mapped_column(String, nullable=False)
     english: Mapped[str] = mapped_column(String, nullable=False)
-    parts: Mapped[Dict] = mapped_column(JSON, nullable=False)
+    parts: Mapped[List[Dict[str, str | List[str]]]] = mapped_column(JSON, nullable=False)
 
     # Relationships
     word_groups: Mapped[List["WordGroup"]] = relationship(

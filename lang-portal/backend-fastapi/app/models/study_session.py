@@ -1,8 +1,12 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 from sqlalchemy import ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base, TimestampMixin
-from app.models.word_review_item import WordReviewItem
+
+if TYPE_CHECKING:
+    from app.models.group import Group
+    from app.models.study_activity import StudyActivity
+    from app.models.word_review_item import WordReviewItem
 
 
 class StudySession(Base, TimestampMixin):

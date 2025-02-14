@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.word import word
 from app.models.word import Word
-from app.schemas.word import WordCreate, WordUpdate
+from app.schemas.word import WordCreate, WordUpdate, WordPart
 from app.core.exceptions import AppHTTPException
 
 
@@ -50,10 +50,16 @@ class WordService:
         kanji: str,
         romaji: str,
         english: str,
-        parts: Dict
+        parts: List[Dict[str, str | List[str]]]
     ) -> Word:
         """
         Create a new word with validation.
+        
+        Args:
+            kanji: The word in Japanese kanji
+            romaji: Romanized version of the word
+            english: English translation
+            parts: List of word components, each with kanji and possible romaji readings
         
         Raises:
             ValueError: If a word with the same kanji already exists
@@ -81,6 +87,10 @@ class WordService:
     ) -> Word:
         """
         Update an existing word.
+        
+        Args:
+            word_id: ID of the word to update
+            word_in: Update data including optional kanji, romaji, english, and parts
         
         Raises:
             ValueError: If updating to a kanji that already exists
