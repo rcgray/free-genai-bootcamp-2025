@@ -105,6 +105,10 @@
 │   │   │   ├── __pycache__
 │   │   │   ├── conftest.py
 │   │   │   └── test_integration.py
+│   │   ├── test_models
+│   │   │   ├── __pycache__
+│   │   │   ├── conftest.py
+│   │   │   └── test_word_model.py
 │   │   └── test_services
 │   │       ├── __pycache__
 │   │       ├── conftest.py
@@ -133,4 +137,4 @@
     └── test_api
         └── test_v1
 
-56 directories, 78 files
+58 directories, 80 files
