@@ -2,7 +2,14 @@ I'll help create a comprehensive test plan based on the coverage report and the 
 
   1. API Endpoint Tests (test_api/test_v1/)
 
-    a. Groups Endpoints (test_groups.py):
+    a. Words Endpoints (Additional tests for test_words.py):
+      - test_update_word
+      - test_update_nonexistent_word
+      - test_delete_word
+      - test_delete_nonexistent_word
+      - test_get_word_with_review_stats
+
+    b. Groups Endpoints (test_groups.py):
       - test_create_group
       - test_create_duplicate_group
       - test_get_groups_pagination
@@ -14,7 +21,7 @@ I'll help create a comprehensive test plan based on the coverage report and the 
       - test_delete_group
       - test_delete_nonexistent_group
 
-    b. Study Sessions Endpoints (test_study_sessions.py):
+    c. Study Sessions Endpoints (test_study_sessions.py):
       - test_create_study_session
       - test_create_session_invalid_group
       - test_create_session_invalid_activity
@@ -23,13 +30,6 @@ I'll help create a comprehensive test plan based on the coverage report and the 
       - test_create_word_review
       - test_create_review_invalid_word
       - test_create_review_invalid_session
-
-    c. Words Endpoints (Additional tests for test_words.py):
-      - test_update_word
-      - test_update_nonexistent_word
-      - test_delete_word
-      - test_delete_nonexistent_word
-      - test_get_word_with_review_stats
 
   2. CRUD Tests (test_crud/)
 
@@ -52,24 +52,24 @@ I'll help create a comprehensive test plan based on the coverage report and the 
 
   3. Service Layer Tests (test_services/)
 
-    a. Group Service (test_group_service.py):
+    c. Word Service (test_word_service.py):
+      - test_create_word_with_validation
+      - test_update_word_statistics
+      - test_calculate_word_review_stats
+      - test_validate_word_parts
+
+    b. Group Service (test_group_service.py):
       - test_create_group_with_words
       - test_update_group_words
       - test_calculate_group_statistics
       - test_validate_group_creation
       - test_handle_duplicate_group
 
-    b. Study Service (test_study_service.py):
+    c. Study Service (test_study_service.py):
       - test_create_session_with_validation
       - test_process_word_review
       - test_calculate_session_statistics
       - test_validate_review_submission
-
-    c. Word Service (test_word_service.py):
-      - test_create_word_with_validation
-      - test_update_word_statistics
-      - test_calculate_word_review_stats
-      - test_validate_word_parts
 
   4. Database Integration Tests (test_db/)
     - test_database_connection

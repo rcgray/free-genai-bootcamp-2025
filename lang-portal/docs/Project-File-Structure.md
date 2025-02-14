@@ -96,11 +96,15 @@
 │   │   │       ├── test_groups.py
 │   │   │       ├── test_study_sessions.py
 │   │   │       └── test_words.py
-│   │   └── test_crud
+│   │   ├── test_crud
+│   │   │   ├── __pycache__
+│   │   │   ├── test_group_crud.py
+│   │   │   ├── test_study_session_crud.py
+│   │   │   └── test_word_crud.py
+│   │   └── test_services
 │   │       ├── __pycache__
-│   │       ├── test_group_crud.py
-│   │       ├── test_study_session_crud.py
-│   │       └── test_word_crud.py
+│   │       ├── conftest.py
+│   │       └── test_word_service.py
 │   └── uv.lock
 ├── data
 │   ├── empty.db
@@ -123,4 +127,4 @@
     └── test_api
         └── test_v1
 
-52 directories, 72 files
+54 directories, 74 files
