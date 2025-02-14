@@ -2,28 +2,29 @@ from typing import Dict
 
 # Test word data
 TEST_WORD = {
-    "kanji": "猫",
-    "romaji": "neko",
-    "english": "cat",
-    "parts": {
-        "radical": "犭",
-        "phonetic": "苗"
-    }
-}
+    "kanji": "開ける",
+    "romaji": "akeru",
+    "english": "to open",
+    "parts": [
+      { "kanji": "開", "romaji": ["a"] },
+      { "kanji": "け", "romaji": ["ke"] },
+      { "kanji": "る", "romaji": ["ru"] }
+    ]
+},
 
 TEST_WORD_2 = {
-    "kanji": "犬",
-    "romaji": "inu",
-    "english": "dog",
-    "parts": {
-        "radical": "犭",
-        "phonetic": "大"
-    }
-}
+    "kanji": "作る",
+    "romaji": "tsukuru",
+    "english": "to make",
+    "parts": [
+      { "kanji": "作", "romaji": ["tsu", "ku"] },
+      { "kanji": "る", "romaji": ["ru"] }
+    ]
+},
 
 # Test group data
 TEST_GROUP = {
-    "name": "Animals"
+    "name": "Actions"
 }
 
 # Test study activity data
