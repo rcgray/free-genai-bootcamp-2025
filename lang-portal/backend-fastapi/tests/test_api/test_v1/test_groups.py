@@ -72,17 +72,31 @@ async def test_get_groups_sorting(client: AsyncClient, db: AsyncSession):
     assert items[1]["name"] == "Animals"  # Animals should come second
 
 
+async def test_get_group(client: AsyncClient, db: AsyncSession):
+    # Create group
+    create_response = await client.post(f"{settings.API_V1_PREFIX}/groups", json=TEST_GROUP)
+    group_id = create_response.json()["data"]["id"]
+
+    # Get group
+    response = await client.get(f"{settings.API_V1_PREFIX}/groups/{group_id}")
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["name"] == TEST_GROUP["name"]
+    assert "words" in data
+    assert isinstance(data["words"], list)  # words should be a list
+
+
 async def test_get_group_details(client: AsyncClient, db: AsyncSession):
     # Create group
     create_response = await client.post(f"{settings.API_V1_PREFIX}/groups", json=TEST_GROUP)
-    group_id = create_response.json()["id"]
+    group_id = create_response.json()["data"]["id"]
 
     # Create words
     word1_response = await client.post(f"{settings.API_V1_PREFIX}/words", json=TEST_WORD)
     word2_response = await client.post(f"{settings.API_V1_PREFIX}/words", json=TEST_WORD_2)
     word_ids = [
-        word1_response.json()["id"],
-        word2_response.json()["id"]
+        word1_response.json()["data"]["id"],
+        word2_response.json()["data"]["id"]
     ]
 
     # Update group with words
@@ -94,10 +108,10 @@ async def test_get_group_details(client: AsyncClient, db: AsyncSession):
     # Get group details
     response = await client.get(f"{settings.API_V1_PREFIX}/groups/{group_id}")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert data["name"] == TEST_GROUP["name"]
     assert data["words_count"] == 2
-    assert len(data["words"]) == 2
+    assert len(data["words"]) == 2  # words is a direct array
     assert {w["id"] for w in data["words"]} == set(word_ids)
 
 

@@ -108,6 +108,7 @@
 │   ├── Backend-Technical-Spec.md
 │   ├── Frontend-Technical-Spec.md
 │   ├── Project-File-Structure.md
+│   ├── Prompts.md
 │   └── Tasks-Technical-Spec.md
 ├── frontend-react
 │   └── .gitkeep
@@ -120,4 +121,4 @@
     └── test_api
         └── test_v1
 
-52 directories, 69 files
+52 directories, 70 files
