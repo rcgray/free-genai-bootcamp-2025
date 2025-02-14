@@ -21,3 +21,4 @@ Running all tests right now yields the following:
 
 ```
 
+We are creating an SPA with a FastAPI backend (spec and schema in @Backend-Technical-Spec.md and file heirarchy in @Project-File-Structure.md), and we're currently writing tests (see @AI-TODO.md, where we are on tests 3.A). Our DB is all set up, and we already have great tests running perfectly for words, groups, and study_sessions CRUD and API functions.  We now want to start on our service layer tests, beginning with the Words Service (see the @AI-TODO.md file section 3.A for details). We are breaking new ground here in terms of test _type_, so though we should use the existing words, groups, and study_sessions tests as a template, we will likely want to create a new directory for our service layer tests, mirroring the existing test_crud and test_api directories.  How should we proceed?

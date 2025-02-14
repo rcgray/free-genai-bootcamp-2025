@@ -86,17 +86,9 @@ class GroupService:
                 if not await word.get(db, word_id):
                     raise ValueError(f"Word with ID {word_id} not found")
 
-        # Create group
+        # Create group with words
         group_in = GroupCreate(name=name, word_ids=word_ids)
         db_group = await group.create(db, obj_in=group_in)
-
-        # Add words if provided
-        if word_ids:
-            db_group = await group.add_words(
-                db,
-                group_id=db_group.id,
-                word_ids=word_ids
-            )
 
         return db_group
 

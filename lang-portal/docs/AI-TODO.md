@@ -52,7 +52,7 @@ I'll help create a comprehensive test plan based on the coverage report and the 
 
   3. Service Layer Tests (test_services/)
 
-    c. Word Service (test_word_service.py):
+    a. Word Service (test_word_service.py):
       - test_create_word_with_validation
       - test_update_word_statistics
       - test_calculate_word_review_stats
