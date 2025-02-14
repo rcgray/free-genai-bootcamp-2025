@@ -8,6 +8,16 @@ from app.schemas.word import WordCreate, WordUpdate
 
 
 class CRUDWord(CRUDBase[Word, WordCreate, WordUpdate]):
+    async def get_with_groups(self, db, *, word_id: int) -> Optional[Word]:
+        """Get a word with its associated groups."""
+        query = (
+            select(self.model)
+            .options(selectinload(self.model.groups))
+            .filter(self.model.id == word_id)
+        )
+        result = await db.execute(query)
+        return result.scalar_one_or_none()
+
     async def get_multi_with_stats(
         self,
         db,
@@ -25,7 +35,7 @@ class CRUDWord(CRUDBase[Word, WordCreate, WordUpdate]):
         # Build query for words with review stats
         query = (
             select(self.model)
-            .options(selectinload(self.model.review_items))
+            .options(selectinload(self.model.reviews))
         )
         
         if order_by:
@@ -34,8 +44,8 @@ class CRUDWord(CRUDBase[Word, WordCreate, WordUpdate]):
                 subq = (
                     select(
                         self.model.id,
-                        func.count(Word.review_items).filter(
-                            Word.review_items.correct == (order_by == "correct_count")
+                        func.count(Word.reviews).filter(
+                            Word.reviews.correct == (order_by == "correct_count")
                         ).label(order_by)
                     )
                     .group_by(self.model.id)
