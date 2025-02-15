@@ -113,6 +113,13 @@
 │   │   │   ├── test_study_session_model.py
 │   │   │   ├── test_word_model.py
 │   │   │   └── test_word_review_item_model.py
+│   │   ├── test_schemas
+│   │   │   ├── __pycache__
+│   │   │   ├── conftest.py
+│   │   │   ├── test_base_schema.py
+│   │   │   ├── test_group_schema.py
+│   │   │   ├── test_study_session_schema.py
+│   │   │   └── test_word_schema.py
 │   │   └── test_services
 │   │       ├── __pycache__
 │   │       ├── conftest.py
@@ -141,4 +148,4 @@
     └── test_api
         └── test_v1
 
-58 directories, 84 files
+60 directories, 89 files
