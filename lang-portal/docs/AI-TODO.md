@@ -52,19 +52,19 @@ Below is our step-by-step plan for implementing the frontend:
   - [x] Configure lint-staged
 
 ## 3. Create Initial Project Structure
-- [ ] Set up directory structure as defined in Frontend-File-Structure.md
-- [ ] Create placeholder files for key components
-- [ ] Set up basic layouts
-  - [ ] MainLayout with navigation and footer
-  - [ ] StudyLayout for study sessions
-- [ ] Create essential utility files
-  - [ ] API client setup
-  - [ ] Type definitions
-  - [ ] Common utilities
-- [ ] Set up testing infrastructure
-  - [ ] Configure Vitest
-  - [ ] Set up MSW for API mocking
-  - [ ] Create test utilities
+- [x] Set up directory structure as defined in Frontend-File-Structure.md
+- [x] Create placeholder files for key components
+- [x] Set up basic layouts
+  - [x] MainLayout with navigation and footer
+  - [x] StudyLayout for study sessions
+- [x] Create essential utility files
+  - [x] API client setup
+  - [x] Type definitions
+  - [x] Common utilities
+- [x] Set up testing infrastructure
+  - [x] Configure Vitest
+  - [x] Set up MSW for API mocking
+  - [x] Create test utilities
 
 ## 4. Set up TailwindCSS
 - [ ] Install TailwindCSS and dependencies
