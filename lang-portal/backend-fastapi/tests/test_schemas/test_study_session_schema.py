@@ -1,6 +1,6 @@
 import pytest
 from typing import Dict, Any
-from pydantic import ValidationError
+from pydantic import ValidationError, HttpUrl
 from app.schemas.study_session import (
     StudyActivityBase, StudyActivity,
     StudySessionBase, StudySessionCreate, StudySessionUpdate, StudySession,
@@ -17,13 +17,13 @@ def test_study_activity_validation(sample_study_activity_data: Dict[str, Any]):
     }
     activity_base = StudyActivityBase(**base_data)
     assert activity_base.name == base_data["name"]
-    assert activity_base.url == base_data["url"]
+    assert str(activity_base.url) == base_data["url"]
 
     # Test full schema
     activity = StudyActivity(**sample_study_activity_data)
     assert activity.id == sample_study_activity_data["id"]
     assert activity.name == sample_study_activity_data["name"]
-    assert activity.url == sample_study_activity_data["url"]
+    assert str(activity.url) == sample_study_activity_data["url"]
 
     # Test invalid data - missing required fields
     with pytest.raises(ValidationError):

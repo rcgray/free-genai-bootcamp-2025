@@ -7,7 +7,7 @@ from app.schemas.word import Word
 
 class GroupBase(BaseSchema):
     """Base schema for Group with common attributes."""
-    name: str = Field(..., description="Name of the group")
+    name: str = Field(..., min_length=1, description="Name of the group")
 
 
 class GroupCreate(GroupBase):
