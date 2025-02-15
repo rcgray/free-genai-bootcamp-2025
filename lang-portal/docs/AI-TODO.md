@@ -5,24 +5,29 @@ We have created a comprehensive file structure for the frontend that aligns with
 Below is our step-by-step plan for implementing the frontend:
 
 ## 1. Initialize Vite Project with React and TypeScript
-- [ ] Create new Vite project with React and TypeScript template
+- [x] Create new Vite project with React and TypeScript template
   ```bash
   yarn create vite frontend-react --template react-ts
   ```
-- [ ] Clean up default Vite template files
-- [ ] Update package.json with project details
-- [ ] Add essential dependencies:
+- [x] Add essential dependencies:
   - react-router-dom
   - @tanstack/react-query
   - axios
   - clsx
   - @headlessui/react (for accessible UI components)
   - @heroicons/react (for icons)
-- [ ] Set up development dependencies:
+- [x] Set up development dependencies:
   - typescript
   - @types/* packages
   - vitest and testing libraries
-- [ ] Create initial README.md with setup instructions
+- [x] Clean up default Vite template files:
+  - [x] Remove App.css
+  - [x] Clean up index.css
+  - [x] Update App.tsx
+  - [x] Clean up main.tsx
+  - [x] Remove unnecessary assets
+- [x] Update package.json with project details
+- [x] Create initial README.md with setup instructions
 
 ## 2. Set up Configuration Files
 - [ ] ESLint Configuration
@@ -94,19 +99,23 @@ Below is our step-by-step plan for implementing the frontend:
   - [ ] Groups route (/groups)
   - [ ] Study Activities route (/activities)
   - [ ] Settings route (/settings)
+  - [ ] Error route (404 and other error states)
 - [ ] Implement layouts
   - [ ] Create layout components
   - [ ] Set up layout routes
+  - [ ] Add error boundary for route errors
 - [ ] Create basic page components
   - [ ] HomePage
   - [ ] WordsPage
   - [ ] GroupsPage
   - [ ] StudyActivitiesPage
   - [ ] SettingsPage
+  - [ ] ErrorPage
 - [ ] Set up navigation
   - [ ] Create Navigation component
   - [ ] Implement navigation links
   - [ ] Add active state styling
+  - [ ] Ensure navigation works with error states
 
 ## Next Steps After Initial Setup
 1. Implement core features:
