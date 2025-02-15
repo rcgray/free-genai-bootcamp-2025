@@ -120,6 +120,21 @@ Below is our step-by-step plan for implementing the frontend:
 ## Next Steps After Initial Setup
 1. Implement core features:
    - [ ] Word management
+     - [ ] Set up API integration
+       - [ ] Create API client with axios
+       - [ ] Implement word-related API endpoints
+       - [ ] Add response type definitions
+     - [ ] Create word-related components
+       - [ ] WordList component with pagination
+       - [ ] WordCard component
+       - [ ] WordForm for creating/editing
+       - [ ] WordDetails component
+     - [ ] Implement word management features
+       - [ ] List words with search and filters
+       - [ ] Create new words
+       - [ ] Edit existing words
+       - [ ] Delete words
+       - [ ] View word details with statistics
    - [ ] Group management
    - [ ] Study session handling
    - [ ] Progress tracking

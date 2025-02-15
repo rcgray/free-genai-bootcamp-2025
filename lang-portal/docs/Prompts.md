@@ -39,3 +39,7 @@ We are creating an SPA with a FastAPI backend and a React.js frontend: the backe
 We have our skeleton React.js app set up and running along with Vite and other tooling.  Let's now proceed with the next step in the @AI-TODO.md document (Step 2. Set up Configuration Files).
 
 
+
+We are creating an SPA with a FastAPI backend and a React.js frontend: the backend spec and database schema are in @Backend-Technical-Spec.md, project file hierarchy for the backend is in @Backend-File-Structure.md, the frontend spec is in @Frontend-Technical-Spec.md, and the file hierarchy for the frontend is still being constructed but will eventually be similar to what is described in @Frontend-File-Structure.md. The full file structure is currently in @Project-File-Structure.md.
+
+I would like to update the @Backend-File-Structure.md file with the current file structure of the _backend_ project, containing only the files that are currently present in the backend project and some extra information similar to how @Frontend-File-Structure.md is written.
