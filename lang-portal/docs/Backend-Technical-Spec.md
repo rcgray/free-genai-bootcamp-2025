@@ -49,10 +49,14 @@ Response:
     "data": {
         "items": [{
             "id": 0,
-            "kanji": "猫",
-            "romaji": "neko",
-            "english": "cat",
-            "parts": ["noun"],
+>>            "kanji": "新しい",
+            "romaji": "atarashii",
+            "english": "new",
+            "parts": [
+                { "kanji": "新", "romaji": ["a","ta","ra"] },
+                { "kanji": "し", "romaji": ["shi"] },
+                { "kanji": "い", "romaji": ["i"] }
+            ],
             "correct_count": 0,
             "wrong_count": 0
         }],
@@ -71,10 +75,14 @@ Create a new word
 Request Body:
 ```json
 {
-    "kanji": "猫",
-    "romaji": "neko",
-    "english": "cat",
-    "parts": ["noun"]
+    "kanji": "新しい",
+    "romaji": "atarashii",
+    "english": "new",
+    "parts": [
+        { "kanji": "新", "romaji": ["a","ta","ra"] },
+        { "kanji": "し", "romaji": ["shi"] },
+        { "kanji": "い", "romaji": ["i"] }
+    ],
 }
 ```
 
@@ -84,10 +92,13 @@ Update an existing word
 Request Body:
 ```json
 {
-    "kanji": "食べる",
-    "romaji": "taberu",
-    "english": "to eat",
-    "parts": ["verb"],
+    "kanji": "悪い",
+    "romaji": "warui",
+    "english": "bad",
+    "parts": [
+        { "kanji": "悪", "romaji": ["wa","ru"] },
+        { "kanji": "い", "romaji": ["i"] }
+    ]
 }
 ```
 
@@ -147,7 +158,9 @@ Response:
                 "kanji": "猫",
                 "romaji": "neko",
                 "english": "cat",
-                "parts": ["noun"],
+                "parts": [
+                    { "kanji": "猫", "romaji": ["ne","ko"] },
+                ],
                 "correct_count": 5,
                 "wrong_count": 1
             }, {
@@ -155,7 +168,9 @@ Response:
                 "kanji": "犬",
                 "romaji": "inu",
                 "english": "dog",
-                "parts": ["noun"],
+                "parts": [
+                    { "kanji": "犬", "romaji": ["in","u"] },
+                ],
                 "correct_count": 3,
                 "wrong_count": 0
             }],

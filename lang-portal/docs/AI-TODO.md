@@ -143,3 +143,4 @@ Below is our step-by-step plan for implementing the frontend:
    - [ ] User documentation
 
 Each step should be completed and tested before moving on to the next one. We'll track our progress by checking off completed items and adding any additional tasks that arise during development.
+
