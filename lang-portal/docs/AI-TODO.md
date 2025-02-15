@@ -30,26 +30,26 @@ Below is our step-by-step plan for implementing the frontend:
 - [x] Create initial README.md with setup instructions
 
 ## 2. Set up Configuration Files
-- [ ] ESLint Configuration
-  - [ ] Install ESLint and plugins
-  - [ ] Configure .eslintrc.js with React and TypeScript rules
-  - [ ] Add lint scripts to package.json
-- [ ] Prettier Configuration
-  - [ ] Install Prettier
-  - [ ] Create .prettierrc with project formatting rules
-  - [ ] Add format scripts to package.json
-- [ ] TypeScript Configuration
-  - [ ] Configure tsconfig.json with strict settings
-  - [ ] Set up path aliases
-  - [ ] Configure type checking
-- [ ] Vite Configuration
-  - [ ] Set up vite.config.ts with plugins
-  - [ ] Configure build options
-  - [ ] Set up environment variables
-- [ ] Git Configuration
-  - [ ] Update .gitignore
-  - [ ] Set up Husky for pre-commit hooks
-  - [ ] Configure lint-staged
+- [x] ESLint Configuration
+  - [x] Install ESLint and plugins
+  - [x] Configure .eslintrc.js with React and TypeScript rules
+  - [x] Add lint scripts to package.json
+- [x] Prettier Configuration
+  - [x] Install Prettier
+  - [x] Create .prettierrc with project formatting rules
+  - [x] Add format scripts to package.json
+- [x] TypeScript Configuration
+  - [x] Configure tsconfig.json with strict settings
+  - [x] Set up path aliases
+  - [x] Configure type checking
+- [x] Vite Configuration
+  - [x] Set up vite.config.ts with plugins
+  - [x] Configure build options
+  - [x] Set up environment variables
+- [x] Git Configuration
+  - [x] Update .gitignore
+  - [x] Set up Husky for pre-commit hooks
+  - [x] Configure lint-staged
 
 ## 3. Create Initial Project Structure
 - [ ] Set up directory structure as defined in Frontend-File-Structure.md
