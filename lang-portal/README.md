@@ -36,6 +36,9 @@ A web-based language learning platform that serves as:
 ```bash
 git clone https://github.com/yourusername/lang-portal.git
 cd lang-portal
+
+# Copy environment file and configure if needed
+cp .env.example .env
 ```
 
 2. Set up the backend
@@ -45,7 +48,7 @@ cd backend-fastapi
 
 # Create and activate virtual environment using uv
 uv venv
-  # or regular venv 
+  # or regular venv
   python -m venv .venv
 
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
@@ -54,16 +57,14 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 uv sync
   # or regular pip
   pip install -e .
-
-# Copy environment file and configure if needed
-cp .env.example .env
 ```
 
 3. Initialize and seed the database
 ```bash
+# Return to project root
+cd ..
 # Create a new database with schema
 python scripts/db/init_db.py --force
-
 # Seed the database with initial data
 python scripts/db/seed_db.py
 ```
@@ -72,7 +73,7 @@ As a backup, a copy of a fresh database is available in `data/empty.db` that you
 4. Set up the frontend
 ```bash
 # Navigate to frontend directory
-cd ../frontend
+cd frontend
 yarn install
 ```
 
@@ -119,15 +120,11 @@ yarn dev
 
 Run all tests:
 ```bash
-python scripts/test/run_all.py
-```
-
-Or test specific components:
-```bash
 # Backend tests
 cd backend-fastapi
 uv run pytest -v tests/
-
+  # or regular pip
+  python -m pytest tests/
 # Frontend tests
 cd frontend
 yarn test
