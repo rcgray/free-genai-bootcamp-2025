@@ -26024,6 +26024,7 @@
 │   │   └── vite.svg
 │   ├── src
 │   │   ├── App.tsx
+│   │   ├── Router.tsx
 │   │   ├── api
 │   │   │   └── axios.ts
 │   │   ├── assets
@@ -26078,13 +26079,10 @@
 │   ├── tsconfig.node.json
 │   ├── vite.config.ts
 │   └── yarn.lock
-├── scripts
-│   └── db
-│       ├── __pycache__
-│       ├── init_db.py
-│       └── seed_db.py
-└── tests
-    └── test_api
-        └── test_v1
+└── scripts
+    └── db
+        ├── __pycache__
+        ├── init_db.py
+        └── seed_db.py
 
-2400 directories, 23688 files
+2397 directories, 23689 files

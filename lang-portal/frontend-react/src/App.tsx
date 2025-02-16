@@ -1,41 +1,22 @@
-import { RouterProvider, createBrowserRouter, Navigate } from 'react-router-dom'
-import MainLayout from './layouts/MainLayout'
-import HomePage from './pages/Home'
-import WordsPage from './pages/Words'
-import GroupsPage from './pages/Groups'
-import GroupDetailsPage from './pages/Groups/[id]'
-import StudyActivitiesPage from './pages/StudyActivities'
-import ActivityDetailsPage from './pages/StudyActivities/[id]'
-import StudyPage from './pages/Study'
-import SettingsPage from './pages/Settings'
-import ErrorPage from './pages/Error'
-import { routes } from './config/routes'
+import { BrowserRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from './contexts/ThemeContext';
+import Router from './Router';
 
-// Simple placeholder pages for testing
-const Home = () => <div className="text-2xl">Home Page</div>
-const Words = () => <div className="text-2xl">Words Page</div>
-const Groups = () => <div className="text-2xl">Groups Page</div>
-const Activities = () => <div className="text-2xl">Study Activities Page</div>
-const Settings = () => <div className="text-2xl">Settings Page</div>
-const Error = () => <div className="text-2xl">Error Page</div>
-
-const router = createBrowserRouter([
-  {
-    element: <MainLayout />,
-    children: [
-      { path: '/', element: <HomePage /> },
-      { path: '/words', element: <WordsPage /> },
-      { path: '/groups', element: <GroupsPage /> },
-      { path: '/activities', element: <StudyActivitiesPage /> },
-      { path: '/settings', element: <SettingsPage /> },
-      { path: '/404', element: <ErrorPage /> },
-      { path: '*', element: <Navigate to="/404" replace /> },
-    ],
-  },
-])
+const queryClient = new QueryClient();
 
 function App() {
-  return <RouterProvider router={router} />
+    return (
+        <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+                <BrowserRouter>
+                    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+                        <Router />
+                    </div>
+                </BrowserRouter>
+            </ThemeProvider>
+        </QueryClientProvider>
+    );
 }
 
-export default App
+export default App;

@@ -132,9 +132,6 @@ ERROR:    Exception in ASGI application
 
 
 
-We have our skeleton React.js app set up and running along with Vite and other tooling.  Let's now proceed with the next step in the @AI-TODO.md document (Step 7. Implement core features), starting with the first item in that section - to implement "Word management".
-
-
 
 
 

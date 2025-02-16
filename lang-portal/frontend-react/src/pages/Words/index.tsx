@@ -76,14 +76,14 @@ const WordsPage = () => {
     if (isLoading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400"></div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="text-red-500 text-center p-4">
+            <div className="text-red-500 dark:text-red-400 text-center p-4">
                 Error loading words. Please try again later.
             </div>
         );
@@ -92,73 +92,68 @@ const WordsPage = () => {
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-semibold">Words</h1>
-                <button
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                    Add New Word
-                </button>
+                <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Words</h1>
             </div>
             
             {/* Table */}
-            <div className="overflow-x-auto rounded-lg border border-slate-200">
-                <table className="min-w-full divide-y divide-slate-200">
-                    <thead className="bg-slate-50">
+            <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                    <thead className="bg-slate-50 dark:bg-slate-800">
                         <tr>
                             <th 
                                 scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer hover:bg-slate-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700"
                                 onClick={() => handleSort('kanji')}
                             >
                                 Kanji {renderSortIcon('kanji')}
                             </th>
                             <th 
                                 scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer hover:bg-slate-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700"
                                 onClick={() => handleSort('romaji')}
                             >
                                 Romaji {renderSortIcon('romaji')}
                             </th>
                             <th 
                                 scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer hover:bg-slate-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700"
                                 onClick={() => handleSort('english')}
                             >
                                 English {renderSortIcon('english')}
                             </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                            <th 
+                                scope="col" 
+                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                            >
                                 Parts
                             </th>
                             <th 
                                 scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer hover:bg-slate-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700"
                                 onClick={() => handleSort('correct_count')}
                             >
                                 Score {renderSortIcon('correct_count')}
                             </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
-                                Actions
-                            </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-slate-200">
+                    <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700">
                         {data?.data?.items.map((word) => (
-                            <tr key={word.id} className="hover:bg-slate-50">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                            <tr key={word.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">
                                     {word.kanji}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                                     {word.romaji}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                                     {word.english}
                                 </td>
-                                <td className="px-6 py-4 text-sm text-slate-500">
+                                <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
                                     <div className="flex flex-wrap gap-1">
                                         {word.parts.map((part, index) => (
                                             <span
                                                 key={index}
-                                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-800"
+                                                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200"
                                                 title={part.romaji.join(',')}
                                             >
                                                 {part.kanji}
@@ -166,16 +161,10 @@ const WordsPage = () => {
                                         ))}
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                                     <div className="flex items-center gap-2">
-                                        <span className="text-green-600">✓ {word.correct_count || 0}</span>
-                                        <span className="text-red-600">✗ {word.wrong_count || 0}</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                                    <div className="flex items-center gap-2">
-                                        <button className="text-blue-600 hover:text-blue-900">Edit</button>
-                                        <button className="text-red-600 hover:text-red-900">Delete</button>
+                                        <span className="text-green-600 dark:text-green-400">✓ {word.correct_count || 0}</span>
+                                        <span className="text-red-600 dark:text-red-400">✗ {word.wrong_count || 0}</span>
                                     </div>
                                 </td>
                             </tr>
@@ -185,26 +174,26 @@ const WordsPage = () => {
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-between border-t border-slate-200 bg-white px-4 py-3 sm:px-6">
+            <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 sm:px-6">
                 <div className="flex flex-1 justify-between sm:hidden">
                     <button
                         onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
                         disabled={currentPage === 1}
-                        className="relative inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="relative inline-flex items-center rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Previous
                     </button>
                     <button
                         onClick={() => setCurrentPage(page => Math.min(data?.data?.total_pages || 1, page + 1))}
                         disabled={currentPage === (data?.data?.total_pages || 1)}
-                        className="relative ml-3 inline-flex items-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="relative ml-3 inline-flex items-center rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Next
                     </button>
                 </div>
                 <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                     <div>
-                        <p className="text-sm text-slate-700">
+                        <p className="text-sm text-slate-700 dark:text-slate-300">
                             Showing <span className="font-medium">{((currentPage - 1) * pageSize) + 1}</span> to{' '}
                             <span className="font-medium">{Math.min(currentPage * pageSize, data?.data?.total || 0)}</span> of{' '}
                             <span className="font-medium">{data?.data?.total}</span> results
@@ -215,7 +204,7 @@ const WordsPage = () => {
                             <button
                                 onClick={() => setCurrentPage(page => Math.max(1, page - 1))}
                                 disabled={currentPage === 1}
-                                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 dark:text-slate-500 ring-1 ring-inset ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span className="sr-only">Previous</span>
                                 ←
@@ -226,8 +215,8 @@ const WordsPage = () => {
                                     onClick={() => setCurrentPage(i + 1)}
                                     className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                                         currentPage === i + 1
-                                            ? 'z-10 bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
-                                            : 'text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0'
+                                            ? 'z-10 bg-blue-600 dark:bg-blue-500 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
+                                            : 'text-slate-900 dark:text-slate-200 ring-1 ring-inset ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 focus:z-20 focus:outline-offset-0'
                                     }`}
                                 >
                                     {i + 1}
@@ -236,7 +225,7 @@ const WordsPage = () => {
                             <button
                                 onClick={() => setCurrentPage(page => Math.min(data?.data?.total_pages || 1, page + 1))}
                                 disabled={currentPage === (data?.data?.total_pages || 1)}
-                                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 dark:text-slate-500 ring-1 ring-inset ring-slate-300 dark:ring-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <span className="sr-only">Next</span>
                                 →
