@@ -140,13 +140,13 @@ when i run `tree -a --gitignore > docs/Project-File-Structure.md` from the root 
 
 We are creating an SPA with a FastAPI backend and a React.js frontend. The backend spec and database schema are in @Backend-Technical-Spec.md (files: @backend-fastapi), and the frontend spec is in @Frontend-Technical-Spec.md (files: @frontend-react), and the full file structure is currently (via `tree -a > docs/Project-File-Structure.md`) in @Project-File-Structure.md.
 
-There is a seed file for the study_activities table in the backend-fastapi/seed directory, and I have updated it to include two new fields for the study_activity record: image_url and description.  We need to update our schema definition in our docs @Backend-Technical-Spec.md for the study_activities table to include these two new fields, which will also mean updating our code for the study_activities table (CRUD, and perhaps service layer, models, and schemas). We do not yet have an API endpoint, but we will do that in a later step, as well as create the necessary tests in a future step.
+There is a seed file for the study_activities table in the backend-fastapi/seed directory, and I have updated it to include two new fields for the study_activity record: image_url and description.  We need to update our schema definition in our docs `docs/Backend-Technical-Spec.md` for the study_activities table to include these two new fields, which will also mean updating our code for the study_activities table (CRUD, and perhaps service layer, models, and schemas). We do not yet have an API endpoint, but we will do that in a later step, as well as create the necessary tests in a future step.
 
-Reference the @Project-File-Structure.md file to locate the files you need to read and/or update. Here are a few that might be relevant:
- - Study Activity seed file: backend-fastapi/seed/study_activities.json
- - Study Activity model: backend-fastapi/app/models/study_activity.py
- - Study Activity schema: Not Yet Created (do we need one?) - if needed, it should be created in the backend-fastapi/app/schemas/ folder
- - Study Activity CRUD: Not Yet Created (do we need one?) - if needed, it should be created in the backend-fastapi/app/crud/ folder
+Reference the `docs/Project-File-Structure.md` file to locate the files you need to read and/or update. Here are a few that might be relevant:
+ - Study Activity seed file: `backend-fastapi/seed/study_activities.json`
+ - Study Activity model: `backend-fastapi/app/models/study_activity.py`
+ - Study Activity schema: Not Yet Created (do we need one?) - if needed, it should be created in the `backend-fastapi/app/schemas/` folder
+ - Study Activity CRUD: Not Yet Created (do we need one?) - if needed, it should be created in the `backend-fastapi/app/crud/` folder
 
 
 

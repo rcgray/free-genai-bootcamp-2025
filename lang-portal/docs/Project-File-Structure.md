@@ -28,6 +28,7 @@
 │   │   ├── crud
 │   │   │   ├── base.py
 │   │   │   ├── group.py
+│   │   │   ├── study_activity.py
 │   │   │   ├── study_session.py
 │   │   │   └── word.py
 │   │   ├── main.py
@@ -93,13 +94,13 @@
 │   │       └── test_word_service.py
 │   └── uv.lock
 ├── data
-│   ├── app.db
-│   ├── empty.db
-│   └── lang_portal.db
+│   └── empty.db
 ├── docs
 │   ├── AI-TODO.md
 │   ├── Backend-File-Structure.md
 │   ├── Backend-Technical-Spec.md
+│   ├── Database-Schema.md
+│   ├── Database-Schema.png
 │   ├── Frontend-Design.md
 │   ├── Frontend-File-Structure.md
 │   ├── Frontend-Technical-Spec.md
@@ -179,4 +180,4 @@
         ├── init_db.py
         └── seed_db.py
 
-55 directories, 125 files
+55 directories, 126 files
