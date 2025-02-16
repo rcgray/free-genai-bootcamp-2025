@@ -1,4 +1,4 @@
-import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import { RouterProvider, createBrowserRouter, Navigate } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/Home'
 import WordsPage from './pages/Words'
@@ -11,19 +11,24 @@ import SettingsPage from './pages/Settings'
 import ErrorPage from './pages/Error'
 import { routes } from './config/routes'
 
+// Simple placeholder pages for testing
+const Home = () => <div className="text-2xl">Home Page</div>
+const Words = () => <div className="text-2xl">Words Page</div>
+const Groups = () => <div className="text-2xl">Groups Page</div>
+const Activities = () => <div className="text-2xl">Study Activities Page</div>
+const Settings = () => <div className="text-2xl">Settings Page</div>
+const Error = () => <div className="text-2xl">Error Page</div>
+
 const router = createBrowserRouter([
   {
     element: <MainLayout />,
     children: [
-      { path: routes.home, element: <HomePage /> },
-      { path: routes.words, element: <WordsPage /> },
-      { path: routes.groups, element: <GroupsPage /> },
-      { path: routes.groupDetails(), element: <GroupDetailsPage /> },
-      { path: routes.activities, element: <StudyActivitiesPage /> },
-      { path: routes.activityDetails(), element: <ActivityDetailsPage /> },
-      { path: routes.study(), element: <StudyPage /> },
-      { path: routes.settings, element: <SettingsPage /> },
-      { path: '/404', element: <ErrorPage /> },
+      { path: '/', element: <Home /> },
+      { path: '/words', element: <Words /> },
+      { path: '/groups', element: <Groups /> },
+      { path: '/activities', element: <Activities /> },
+      { path: '/settings', element: <Settings /> },
+      { path: '/404', element: <Error /> },
       { path: '*', element: <Navigate to="/404" replace /> },
     ],
   },

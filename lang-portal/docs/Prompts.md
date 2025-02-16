@@ -48,6 +48,21 @@ We also want to make sure that any files in the backend are updated to reflect t
 
 
 
+We are creating an SPA with a React.js frontend: the frontend spec is in @Frontend-Technical-Spec.md, and the file hierarchy for the frontend is still being constructed but will eventually be similar to what is described in @Frontend-File-Structure.md.  Note that these files are contained within the "frontend-react/" folder off our project root (i.e., @frontend-react ), and where this frontend implementation fits in with the larger project can be seen in the overall project file hierarchy in @Project-File-Structure.md .
+
+We have our skeleton React.js app set up and running along with Vite and other tooling. However, right now our pages simply display the name of the page to the browser. In our @AI-TODO.md document, we are on step 6. Create the SPA template, and we want to proceed with that step.  Help me to design a basic template for our frontend using TailwindCSS.  For now, let's add a navigation bar to the left side of the page that displays the name of the page we are on, and a main content area that displays the name of the page.
+
+As we flesh out our design, please add our design description and decisions to the (currently empty) file @Frontend-Design.md.
+
+
+
+
+
+
+We are creating an SPA with a FastAPI backend and a React.js frontend: the backend spec and database schema are in @Backend-Technical-Spec.md, project file hierarchy for the backend is in @Backend-File-Structure.md, the frontend spec is in @Frontend-Technical-Spec.md, and the file hierarchy for the frontend is still being constructed but will eventually be similar to what is described in @Frontend-File-Structure.md. The full file structure is currently in @Project-File-Structure.md.
+
+We have our skeleton React.js app set up and running along with Vite and other tooling.  Let's now proceed with the next step in the @AI-TODO.md document (Step 7. Implement core features), starting with the first item in that section - to implement "Word management".
+
 
 
 

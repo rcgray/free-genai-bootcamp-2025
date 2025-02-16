@@ -4,21 +4,6 @@
 ├── .env.example
 ├── .gitignore
 ├── README.md
-├── app
-│   ├── api
-│   │   └── v1
-│   │       └── endpoints
-│   │           ├── groups.py
-│   │           └── study_sessions.py
-│   ├── crud
-│   │   ├── base.py
-│   │   ├── group.py
-│   │   ├── study_session.py
-│   │   └── word.py
-│   └── services
-│       ├── group_service.py
-│       ├── study_service.py
-│       └── word_service.py
 ├── backend-fastapi
 │   ├── .pytest_cache
 │   ├── alembic
@@ -25758,22 +25743,6 @@
 │   ├── tsconfig.node.json
 │   ├── vite.config.ts
 │   └── yarn.lock
-├── lang-portal
-│   └── frontend-react
-│       └── src
-│           ├── assets
-│           │   └── styles
-│           ├── config
-│           ├── contexts
-│           │   └── ThemeContext
-│           └── pages
-│               ├── Error
-│               ├── Groups
-│               ├── Home
-│               ├── Settings
-│               ├── Study
-│               ├── StudyActivities
-│               └── Words
 ├── scripts
 │   └── db
 │       ├── __pycache__
@@ -25783,4 +25752,4 @@
     └── test_api
         └── test_v1
 
-2420 directories, 23365 files
+2397 directories, 23356 files

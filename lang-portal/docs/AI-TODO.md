@@ -117,45 +117,46 @@ Below is our step-by-step plan for implementing the frontend:
   - [x] Add active state styling
   - [x] Ensure navigation works with error states
 
-## Next Steps After Initial Setup
-6. Implement core features:
-   - [ ] Word management
-     - [ ] Set up API integration
-       - [ ] Create API client with axios
-       - [ ] Implement word-related API endpoints
-       - [ ] Add response type definitions
-     - [ ] Create word-related components
-       - [ ] WordList component with pagination
-       - [ ] WordCard component
-       - [ ] WordForm for creating/editing
-       - [ ] WordDetails component
-     - [ ] Implement word management features
-       - [ ] List words with search and filters
-       - [ ] Create new words
-       - [ ] Edit existing words
-       - [ ] Delete words
-       - [ ] View word details with statistics
-   - [ ] Group management
-   - [ ] Study session handling
-   - [ ] Progress tracking
+## 6. Create the SPA template
 
-7. Add advanced features:
-   - [ ] Theme switching
-   - [ ] Data persistence
-   - [ ] Error handling
-   - [ ] Loading states
+## 7. Implement core features:
+- [ ] Word management
+  - [ ] Set up API integration
+    - [ ] Create API client with axios
+    - [ ] Implement word-related API endpoints
+    - [ ] Add response type definitions
+  - [ ] Create word-related components
+    - [ ] WordList component with pagination
+    - [ ] WordCard component
+    - [ ] WordForm for creating/editing
+    - [ ] WordDetails component
+  - [ ] Implement word management features
+    - [ ] List words with search and filters
+    - [ ] Create new words
+    - [ ] Edit existing words
+    - [ ] Delete words
+    - [ ] View word details with statistics
+- [ ] Group management
+- [ ] Study session handling
+- [ ] Progress tracking
 
-8. Polish and optimize:
-   - [ ] Performance optimization
-   - [ ] Accessibility improvements
-   - [ ] Animation and transitions
-   - [ ] Cross-browser testing
+## 8. Add advanced features:
+- [ ] Theme switching
+- [ ] Data persistence
+- [ ] Error handling
+- [ ] Loading states
 
-9. Testing and documentation:
-   - [ ] Unit tests
-   - [ ] Integration tests
-   - [ ] Component documentation
-   - [ ] User documentation
+##9. Polish and optimize:
+- [ ] Performance optimization
+- [ ] Accessibility improvements
+- [ ] Animation and transitions
+- [ ] Cross-browser testing
+
+## 10. Testing and documentation:
+- [ ] Unit tests
+- [ ] Integration tests
+- [ ] Component documentation
+- [ ] User documentation
 
 Each step should be completed and tested before moving on to the next one. We'll track our progress by checking off completed items and adding any additional tasks that arise during development.
 
