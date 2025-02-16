@@ -13,6 +13,35 @@ from app.core.exceptions import AppHTTPException
 
 class StudyService:
     @staticmethod
+    async def get_sessions(
+        db: AsyncSession,
+        *,
+        skip: int = 0,
+        limit: int = 100,
+        order_by: Optional[str] = None,
+        order: Optional[str] = "asc"
+    ) -> Tuple[List[StudySession], int]:
+        """
+        Get multiple study sessions with pagination and sorting.
+        
+        Args:
+            skip: Number of records to skip
+            limit: Maximum number of records to return
+            order_by: Field to sort by
+            order: Sort order ("asc" or "desc")
+            
+        Returns:
+            Tuple of (list of sessions, total count)
+        """
+        return await study_session.get_multi_with_reviews(
+            db,
+            skip=skip,
+            limit=limit,
+            order_by=order_by,
+            order=order
+        )
+
+    @staticmethod
     async def get_session(
         db: AsyncSession,
         session_id: int

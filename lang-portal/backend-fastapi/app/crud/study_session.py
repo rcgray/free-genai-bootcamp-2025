@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict, Tuple
-from sqlalchemy import func, select, Integer
+from sqlalchemy import func, select, Integer, case
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -42,6 +42,39 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
         items = result.scalars().all()
         
         return items, total
+
+    async def get_multi_with_reviews(
+        self,
+        db: AsyncSession,
+        *,
+        skip: int = 0,
+        limit: int = 100,
+        order_by: Optional[str] = None,
+        order: Optional[str] = "asc"
+    ) -> Tuple[List[StudySession], int]:
+        """Get multiple study sessions with their reviews."""
+        # Get total count
+        count_query = select(func.count()).select_from(self.model)
+        total = await db.scalar(count_query)
+
+        # Build main query with reviews
+        query = (
+            select(self.model)
+            .options(selectinload(self.model.reviews))
+        )
+        
+        if order_by:
+            column = getattr(self.model, order_by)
+            if order == "desc":
+                column = column.desc()
+            query = query.order_by(column)
+            
+        query = query.offset(skip).limit(limit)
+        
+        result = await db.execute(query)
+        sessions = result.scalars().all()
+            
+        return list(sessions), total
 
     async def get_with_reviews(
         self,

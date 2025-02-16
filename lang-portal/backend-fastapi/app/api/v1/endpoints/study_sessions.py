@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
+from typing import Optional
 
 from app.core.database import get_db
 from app.schemas.study_session import (
@@ -12,6 +13,80 @@ from app.schemas.study_session import (
 from app.services.study_service import StudyService
 
 router = APIRouter()
+
+@router.get("", response_model=dict)
+async def list_study_sessions(
+    db: AsyncSession = Depends(get_db),
+    page: int = Query(1, ge=1, description="Page number"),
+    per_page: int = Query(25, ge=1, le=100, description="Items per page"),
+    sort_by: Optional[str] = Query(None, description="Field to sort by"),
+    order: Optional[str] = Query("asc", description="Sort order (asc or desc)"),
+):
+    """
+    List study sessions with pagination and sorting.
+    
+    Parameters:
+        page: Page number (1-indexed)
+        per_page: Number of items per page
+        sort_by: Field to sort by (created_at, group_id, study_activity_id)
+        order: Sort order (asc or desc)
+    
+    Returns:
+        Paginated list of study sessions with their reviews
+    """
+    skip = (page - 1) * per_page
+    
+    # Validate sort field if provided
+    valid_sort_fields = {"created_at", "group_id", "study_activity_id"}
+    if sort_by and sort_by not in valid_sort_fields:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "data": None,
+                "error": f"Invalid sort field. Must be one of: {', '.join(valid_sort_fields)}"
+            }
+        )
+    
+    # Validate sort order
+    if order not in {"asc", "desc"}:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "data": None,
+                "error": "Invalid sort order. Must be 'asc' or 'desc'"
+            }
+        )
+    
+    try:
+        sessions, total = await StudyService.get_sessions(
+            db,
+            skip=skip,
+            limit=per_page,
+            order_by=sort_by,
+            order=order
+        )
+        
+        # Calculate pagination info
+        total_pages = (total + per_page - 1) // per_page
+        
+        # Convert SQLAlchemy models to Pydantic models
+        session_list = [StudySession.model_validate(session) for session in sessions]
+        
+        return {
+            "data": {
+                "items": [session.model_dump() for session in session_list],
+                "total": total,
+                "page": page,
+                "per_page": per_page,
+                "total_pages": total_pages
+            },
+            "error": None
+        }
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"data": None, "error": str(e)}
+        )
 
 @router.post("", response_model=dict)
 async def create_study_session(

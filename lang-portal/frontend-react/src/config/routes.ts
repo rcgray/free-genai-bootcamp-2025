@@ -3,6 +3,7 @@ export const routes = {
   words: '/words',
   groups: '/groups',
   activities: '/activities',
+  sessions: '/sessions',
   settings: '/settings',
 } as const;
 
