@@ -98,3 +98,77 @@ async def test_get_session_statistics(db: AsyncSession):
     assert stats.total_reviews == 2
     assert stats.correct_reviews == 1
     assert stats.accuracy == 0.5  # 1 correct out of 2 total 
+
+
+@pytest.mark.asyncio
+async def test_get_multi_with_reviews(db: AsyncSession):
+    """Test getting multiple study sessions with their reviews."""
+    # Create test data
+    session1 = await study_session.create(
+        db,
+        obj_in=StudySessionCreate(group_id=1, study_activity_id=1)
+    )
+    session2 = await study_session.create(
+        db,
+        obj_in=StudySessionCreate(group_id=1, study_activity_id=1)
+    )
+    
+    # Add reviews to sessions
+    await study_session.create_word_review(
+        db,
+        session_id=session1.id,
+        word_id=1,
+        correct=True
+    )
+    await study_session.create_word_review(
+        db,
+        session_id=session1.id,
+        word_id=2,
+        correct=False
+    )
+    await study_session.create_word_review(
+        db,
+        session_id=session2.id,
+        word_id=1,
+        correct=True
+    )
+    
+    # Test getting sessions with reviews
+    sessions, total = await study_session.get_multi_with_reviews(db)
+    
+    assert total >= 2  # Could be more from other tests
+    assert len(sessions) >= 2
+    
+    # Find our test sessions
+    test_sessions = [s for s in sessions if s.id in {session1.id, session2.id}]
+    assert len(test_sessions) == 2
+    
+    # Verify reviews are loaded
+    session1_found = next(s for s in test_sessions if s.id == session1.id)
+    session2_found = next(s for s in test_sessions if s.id == session2.id)
+    
+    assert len(session1_found.reviews) == 2
+    assert len(session2_found.reviews) == 1
+    
+    # Test pagination
+    sessions_page1, total = await study_session.get_multi_with_reviews(
+        db,
+        skip=0,
+        limit=1
+    )
+    assert len(sessions_page1) == 1
+    
+    # Test sorting
+    sessions_asc, _ = await study_session.get_multi_with_reviews(
+        db,
+        order_by="created_at",
+        order="asc"
+    )
+    sessions_desc, _ = await study_session.get_multi_with_reviews(
+        db,
+        order_by="created_at",
+        order="desc"
+    )
+    
+    assert sessions_asc[0].created_at <= sessions_asc[-1].created_at
+    assert sessions_desc[0].created_at >= sessions_desc[-1].created_at 
