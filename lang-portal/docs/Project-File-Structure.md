@@ -119,6 +119,7 @@
 │   ├── AI-TODO.md
 │   ├── Backend-File-Structure.md
 │   ├── Backend-Technical-Spec.md
+│   ├── Frontend-Design.md
 │   ├── Frontend-File-Structure.md
 │   ├── Frontend-Technical-Spec.md
 │   ├── Project-File-Structure.md
@@ -170,11 +171,14 @@
 │   │   │   └── yaml -> ../yaml/bin.mjs
 │   │   ├── .vite
 │   │   │   └── deps
+│   │   │       ├── @radix-ui_react-icons.js
 │   │   │       ├── @tanstack_react-query.js
 │   │   │       ├── _metadata.json
-│   │   │       ├── chunk-B44LCS7S.js
-│   │   │       ├── chunk-BGNFKFYN.js
-│   │   │       ├── chunk-JTW6KLZI.js
+│   │   │       ├── axios.js
+│   │   │       ├── chunk-2XWSOUCH.js
+│   │   │       ├── chunk-B4MOPC7G.js
+│   │   │       ├── chunk-WGQ5ZIYR.js
+│   │   │       ├── chunk-WOOG5QLI.js
 │   │   │       ├── package.json
 │   │   │       ├── react-dom.js
 │   │   │       ├── react-dom_client.js
@@ -7608,6 +7612,337 @@
 │   │   │       │   ├── index.cjs
 │   │   │       │   ├── index.d.ts
 │   │   │       │   └── index.js
+│   │   │       └── package.json
+│   │   ├── @radix-ui
+│   │   │   └── react-icons
+│   │   │       ├── LICENSE
+│   │   │       ├── README.md
+│   │   │       ├── dist
+│   │   │       │   ├── AccessibilityIcon.d.ts
+│   │   │       │   ├── ActivityLogIcon.d.ts
+│   │   │       │   ├── AlignBaselineIcon.d.ts
+│   │   │       │   ├── AlignBottomIcon.d.ts
+│   │   │       │   ├── AlignCenterHorizontallyIcon.d.ts
+│   │   │       │   ├── AlignCenterVerticallyIcon.d.ts
+│   │   │       │   ├── AlignLeftIcon.d.ts
+│   │   │       │   ├── AlignRightIcon.d.ts
+│   │   │       │   ├── AlignTopIcon.d.ts
+│   │   │       │   ├── AllSidesIcon.d.ts
+│   │   │       │   ├── AngleIcon.d.ts
+│   │   │       │   ├── ArchiveIcon.d.ts
+│   │   │       │   ├── ArrowBottomLeftIcon.d.ts
+│   │   │       │   ├── ArrowBottomRightIcon.d.ts
+│   │   │       │   ├── ArrowDownIcon.d.ts
+│   │   │       │   ├── ArrowLeftIcon.d.ts
+│   │   │       │   ├── ArrowRightIcon.d.ts
+│   │   │       │   ├── ArrowTopLeftIcon.d.ts
+│   │   │       │   ├── ArrowTopRightIcon.d.ts
+│   │   │       │   ├── ArrowUpIcon.d.ts
+│   │   │       │   ├── AspectRatioIcon.d.ts
+│   │   │       │   ├── AvatarIcon.d.ts
+│   │   │       │   ├── BackpackIcon.d.ts
+│   │   │       │   ├── BadgeIcon.d.ts
+│   │   │       │   ├── BarChartIcon.d.ts
+│   │   │       │   ├── BellIcon.d.ts
+│   │   │       │   ├── BlendingModeIcon.d.ts
+│   │   │       │   ├── BookmarkFilledIcon.d.ts
+│   │   │       │   ├── BookmarkIcon.d.ts
+│   │   │       │   ├── BorderAllIcon.d.ts
+│   │   │       │   ├── BorderBottomIcon.d.ts
+│   │   │       │   ├── BorderDashedIcon.d.ts
+│   │   │       │   ├── BorderDottedIcon.d.ts
+│   │   │       │   ├── BorderLeftIcon.d.ts
+│   │   │       │   ├── BorderNoneIcon.d.ts
+│   │   │       │   ├── BorderRightIcon.d.ts
+│   │   │       │   ├── BorderSolidIcon.d.ts
+│   │   │       │   ├── BorderSplitIcon.d.ts
+│   │   │       │   ├── BorderStyleIcon.d.ts
+│   │   │       │   ├── BorderTopIcon.d.ts
+│   │   │       │   ├── BorderWidthIcon.d.ts
+│   │   │       │   ├── BoxIcon.d.ts
+│   │   │       │   ├── BoxModelIcon.d.ts
+│   │   │       │   ├── ButtonIcon.d.ts
+│   │   │       │   ├── CalendarIcon.d.ts
+│   │   │       │   ├── CameraIcon.d.ts
+│   │   │       │   ├── CardStackIcon.d.ts
+│   │   │       │   ├── CardStackMinusIcon.d.ts
+│   │   │       │   ├── CardStackPlusIcon.d.ts
+│   │   │       │   ├── CaretDownIcon.d.ts
+│   │   │       │   ├── CaretLeftIcon.d.ts
+│   │   │       │   ├── CaretRightIcon.d.ts
+│   │   │       │   ├── CaretSortIcon.d.ts
+│   │   │       │   ├── CaretUpIcon.d.ts
+│   │   │       │   ├── ChatBubbleIcon.d.ts
+│   │   │       │   ├── CheckCircledIcon.d.ts
+│   │   │       │   ├── CheckIcon.d.ts
+│   │   │       │   ├── CheckboxIcon.d.ts
+│   │   │       │   ├── ChevronDownIcon.d.ts
+│   │   │       │   ├── ChevronLeftIcon.d.ts
+│   │   │       │   ├── ChevronRightIcon.d.ts
+│   │   │       │   ├── ChevronUpIcon.d.ts
+│   │   │       │   ├── CircleBackslashIcon.d.ts
+│   │   │       │   ├── CircleIcon.d.ts
+│   │   │       │   ├── ClipboardCopyIcon.d.ts
+│   │   │       │   ├── ClipboardIcon.d.ts
+│   │   │       │   ├── ClockIcon.d.ts
+│   │   │       │   ├── CodeIcon.d.ts
+│   │   │       │   ├── CodeSandboxLogoIcon.d.ts
+│   │   │       │   ├── ColorWheelIcon.d.ts
+│   │   │       │   ├── ColumnSpacingIcon.d.ts
+│   │   │       │   ├── ColumnsIcon.d.ts
+│   │   │       │   ├── CommitIcon.d.ts
+│   │   │       │   ├── Component1Icon.d.ts
+│   │   │       │   ├── Component2Icon.d.ts
+│   │   │       │   ├── ComponentBooleanIcon.d.ts
+│   │   │       │   ├── ComponentInstanceIcon.d.ts
+│   │   │       │   ├── ComponentNoneIcon.d.ts
+│   │   │       │   ├── ComponentPlaceholderIcon.d.ts
+│   │   │       │   ├── ContainerIcon.d.ts
+│   │   │       │   ├── CookieIcon.d.ts
+│   │   │       │   ├── CopyIcon.d.ts
+│   │   │       │   ├── CornerBottomLeftIcon.d.ts
+│   │   │       │   ├── CornerBottomRightIcon.d.ts
+│   │   │       │   ├── CornerTopLeftIcon.d.ts
+│   │   │       │   ├── CornerTopRightIcon.d.ts
+│   │   │       │   ├── CornersIcon.d.ts
+│   │   │       │   ├── CountdownTimerIcon.d.ts
+│   │   │       │   ├── CounterClockwiseClockIcon.d.ts
+│   │   │       │   ├── CropIcon.d.ts
+│   │   │       │   ├── Cross1Icon.d.ts
+│   │   │       │   ├── Cross2Icon.d.ts
+│   │   │       │   ├── CrossCircledIcon.d.ts
+│   │   │       │   ├── Crosshair1Icon.d.ts
+│   │   │       │   ├── Crosshair2Icon.d.ts
+│   │   │       │   ├── CrumpledPaperIcon.d.ts
+│   │   │       │   ├── CubeIcon.d.ts
+│   │   │       │   ├── CursorArrowIcon.d.ts
+│   │   │       │   ├── CursorTextIcon.d.ts
+│   │   │       │   ├── DashIcon.d.ts
+│   │   │       │   ├── DashboardIcon.d.ts
+│   │   │       │   ├── DesktopIcon.d.ts
+│   │   │       │   ├── DimensionsIcon.d.ts
+│   │   │       │   ├── DiscIcon.d.ts
+│   │   │       │   ├── DiscordLogoIcon.d.ts
+│   │   │       │   ├── DividerHorizontalIcon.d.ts
+│   │   │       │   ├── DividerVerticalIcon.d.ts
+│   │   │       │   ├── DotFilledIcon.d.ts
+│   │   │       │   ├── DotIcon.d.ts
+│   │   │       │   ├── DotsHorizontalIcon.d.ts
+│   │   │       │   ├── DotsVerticalIcon.d.ts
+│   │   │       │   ├── DoubleArrowDownIcon.d.ts
+│   │   │       │   ├── DoubleArrowLeftIcon.d.ts
+│   │   │       │   ├── DoubleArrowRightIcon.d.ts
+│   │   │       │   ├── DoubleArrowUpIcon.d.ts
+│   │   │       │   ├── DownloadIcon.d.ts
+│   │   │       │   ├── DragHandleDots1Icon.d.ts
+│   │   │       │   ├── DragHandleDots2Icon.d.ts
+│   │   │       │   ├── DragHandleHorizontalIcon.d.ts
+│   │   │       │   ├── DragHandleVerticalIcon.d.ts
+│   │   │       │   ├── DrawingPinFilledIcon.d.ts
+│   │   │       │   ├── DrawingPinIcon.d.ts
+│   │   │       │   ├── DropdownMenuIcon.d.ts
+│   │   │       │   ├── EnterFullScreenIcon.d.ts
+│   │   │       │   ├── EnterIcon.d.ts
+│   │   │       │   ├── EnvelopeClosedIcon.d.ts
+│   │   │       │   ├── EnvelopeOpenIcon.d.ts
+│   │   │       │   ├── EraserIcon.d.ts
+│   │   │       │   ├── ExclamationTriangleIcon.d.ts
+│   │   │       │   ├── ExitFullScreenIcon.d.ts
+│   │   │       │   ├── ExitIcon.d.ts
+│   │   │       │   ├── ExternalLinkIcon.d.ts
+│   │   │       │   ├── EyeClosedIcon.d.ts
+│   │   │       │   ├── EyeNoneIcon.d.ts
+│   │   │       │   ├── EyeOpenIcon.d.ts
+│   │   │       │   ├── FaceIcon.d.ts
+│   │   │       │   ├── FigmaLogoIcon.d.ts
+│   │   │       │   ├── FileIcon.d.ts
+│   │   │       │   ├── FileMinusIcon.d.ts
+│   │   │       │   ├── FilePlusIcon.d.ts
+│   │   │       │   ├── FileTextIcon.d.ts
+│   │   │       │   ├── FontBoldIcon.d.ts
+│   │   │       │   ├── FontFamilyIcon.d.ts
+│   │   │       │   ├── FontItalicIcon.d.ts
+│   │   │       │   ├── FontRomanIcon.d.ts
+│   │   │       │   ├── FontSizeIcon.d.ts
+│   │   │       │   ├── FontStyleIcon.d.ts
+│   │   │       │   ├── FrameIcon.d.ts
+│   │   │       │   ├── FramerLogoIcon.d.ts
+│   │   │       │   ├── GearIcon.d.ts
+│   │   │       │   ├── GitHubLogoIcon.d.ts
+│   │   │       │   ├── GlobeIcon.d.ts
+│   │   │       │   ├── GridIcon.d.ts
+│   │   │       │   ├── GroupIcon.d.ts
+│   │   │       │   ├── Half1Icon.d.ts
+│   │   │       │   ├── Half2Icon.d.ts
+│   │   │       │   ├── HamburgerMenuIcon.d.ts
+│   │   │       │   ├── HandIcon.d.ts
+│   │   │       │   ├── HeadingIcon.d.ts
+│   │   │       │   ├── HeartFilledIcon.d.ts
+│   │   │       │   ├── HeartIcon.d.ts
+│   │   │       │   ├── HeightIcon.d.ts
+│   │   │       │   ├── HobbyKnifeIcon.d.ts
+│   │   │       │   ├── HomeIcon.d.ts
+│   │   │       │   ├── IconJarLogoIcon.d.ts
+│   │   │       │   ├── IdCardIcon.d.ts
+│   │   │       │   ├── ImageIcon.d.ts
+│   │   │       │   ├── InfoCircledIcon.d.ts
+│   │   │       │   ├── InputIcon.d.ts
+│   │   │       │   ├── InstagramLogoIcon.d.ts
+│   │   │       │   ├── KeyboardIcon.d.ts
+│   │   │       │   ├── LapTimerIcon.d.ts
+│   │   │       │   ├── LaptopIcon.d.ts
+│   │   │       │   ├── LayersIcon.d.ts
+│   │   │       │   ├── LayoutIcon.d.ts
+│   │   │       │   ├── LetterCaseCapitalizeIcon.d.ts
+│   │   │       │   ├── LetterCaseLowercaseIcon.d.ts
+│   │   │       │   ├── LetterCaseToggleIcon.d.ts
+│   │   │       │   ├── LetterCaseUppercaseIcon.d.ts
+│   │   │       │   ├── LetterSpacingIcon.d.ts
+│   │   │       │   ├── LightningBoltIcon.d.ts
+│   │   │       │   ├── LineHeightIcon.d.ts
+│   │   │       │   ├── Link1Icon.d.ts
+│   │   │       │   ├── Link2Icon.d.ts
+│   │   │       │   ├── LinkBreak1Icon.d.ts
+│   │   │       │   ├── LinkBreak2Icon.d.ts
+│   │   │       │   ├── LinkNone1Icon.d.ts
+│   │   │       │   ├── LinkNone2Icon.d.ts
+│   │   │       │   ├── LinkedInLogoIcon.d.ts
+│   │   │       │   ├── ListBulletIcon.d.ts
+│   │   │       │   ├── LockClosedIcon.d.ts
+│   │   │       │   ├── LockOpen1Icon.d.ts
+│   │   │       │   ├── LockOpen2Icon.d.ts
+│   │   │       │   ├── LoopIcon.d.ts
+│   │   │       │   ├── MagicWandIcon.d.ts
+│   │   │       │   ├── MagnifyingGlassIcon.d.ts
+│   │   │       │   ├── MarginIcon.d.ts
+│   │   │       │   ├── MaskOffIcon.d.ts
+│   │   │       │   ├── MaskOnIcon.d.ts
+│   │   │       │   ├── MinusCircledIcon.d.ts
+│   │   │       │   ├── MinusIcon.d.ts
+│   │   │       │   ├── MixIcon.d.ts
+│   │   │       │   ├── MixerHorizontalIcon.d.ts
+│   │   │       │   ├── MixerVerticalIcon.d.ts
+│   │   │       │   ├── MobileIcon.d.ts
+│   │   │       │   ├── ModulzLogoIcon.d.ts
+│   │   │       │   ├── MoonIcon.d.ts
+│   │   │       │   ├── MoveIcon.d.ts
+│   │   │       │   ├── NotionLogoIcon.d.ts
+│   │   │       │   ├── OpacityIcon.d.ts
+│   │   │       │   ├── OpenInNewWindowIcon.d.ts
+│   │   │       │   ├── OverlineIcon.d.ts
+│   │   │       │   ├── PaddingIcon.d.ts
+│   │   │       │   ├── PaperPlaneIcon.d.ts
+│   │   │       │   ├── PauseIcon.d.ts
+│   │   │       │   ├── Pencil1Icon.d.ts
+│   │   │       │   ├── Pencil2Icon.d.ts
+│   │   │       │   ├── PersonIcon.d.ts
+│   │   │       │   ├── PieChartIcon.d.ts
+│   │   │       │   ├── PilcrowIcon.d.ts
+│   │   │       │   ├── PinBottomIcon.d.ts
+│   │   │       │   ├── PinLeftIcon.d.ts
+│   │   │       │   ├── PinRightIcon.d.ts
+│   │   │       │   ├── PinTopIcon.d.ts
+│   │   │       │   ├── PlayIcon.d.ts
+│   │   │       │   ├── PlusCircledIcon.d.ts
+│   │   │       │   ├── PlusIcon.d.ts
+│   │   │       │   ├── QuestionMarkCircledIcon.d.ts
+│   │   │       │   ├── QuestionMarkIcon.d.ts
+│   │   │       │   ├── QuoteIcon.d.ts
+│   │   │       │   ├── RadiobuttonIcon.d.ts
+│   │   │       │   ├── ReaderIcon.d.ts
+│   │   │       │   ├── ReloadIcon.d.ts
+│   │   │       │   ├── ResetIcon.d.ts
+│   │   │       │   ├── ResumeIcon.d.ts
+│   │   │       │   ├── RocketIcon.d.ts
+│   │   │       │   ├── RotateCounterClockwiseIcon.d.ts
+│   │   │       │   ├── RowSpacingIcon.d.ts
+│   │   │       │   ├── RowsIcon.d.ts
+│   │   │       │   ├── RulerHorizontalIcon.d.ts
+│   │   │       │   ├── RulerSquareIcon.d.ts
+│   │   │       │   ├── ScissorsIcon.d.ts
+│   │   │       │   ├── SectionIcon.d.ts
+│   │   │       │   ├── SewingPinFilledIcon.d.ts
+│   │   │       │   ├── SewingPinIcon.d.ts
+│   │   │       │   ├── ShadowIcon.d.ts
+│   │   │       │   ├── ShadowInnerIcon.d.ts
+│   │   │       │   ├── ShadowNoneIcon.d.ts
+│   │   │       │   ├── ShadowOuterIcon.d.ts
+│   │   │       │   ├── Share1Icon.d.ts
+│   │   │       │   ├── Share2Icon.d.ts
+│   │   │       │   ├── ShuffleIcon.d.ts
+│   │   │       │   ├── SizeIcon.d.ts
+│   │   │       │   ├── SketchLogoIcon.d.ts
+│   │   │       │   ├── SlashIcon.d.ts
+│   │   │       │   ├── SliderIcon.d.ts
+│   │   │       │   ├── SpaceBetweenHorizontallyIcon.d.ts
+│   │   │       │   ├── SpaceBetweenVerticallyIcon.d.ts
+│   │   │       │   ├── SpaceEvenlyHorizontallyIcon.d.ts
+│   │   │       │   ├── SpaceEvenlyVerticallyIcon.d.ts
+│   │   │       │   ├── SpeakerLoudIcon.d.ts
+│   │   │       │   ├── SpeakerModerateIcon.d.ts
+│   │   │       │   ├── SpeakerOffIcon.d.ts
+│   │   │       │   ├── SpeakerQuietIcon.d.ts
+│   │   │       │   ├── SquareIcon.d.ts
+│   │   │       │   ├── StackIcon.d.ts
+│   │   │       │   ├── StarFilledIcon.d.ts
+│   │   │       │   ├── StarIcon.d.ts
+│   │   │       │   ├── StitchesLogoIcon.d.ts
+│   │   │       │   ├── StopIcon.d.ts
+│   │   │       │   ├── StopwatchIcon.d.ts
+│   │   │       │   ├── StretchHorizontallyIcon.d.ts
+│   │   │       │   ├── StretchVerticallyIcon.d.ts
+│   │   │       │   ├── StrikethroughIcon.d.ts
+│   │   │       │   ├── SunIcon.d.ts
+│   │   │       │   ├── SwitchIcon.d.ts
+│   │   │       │   ├── SymbolIcon.d.ts
+│   │   │       │   ├── TableIcon.d.ts
+│   │   │       │   ├── TargetIcon.d.ts
+│   │   │       │   ├── TextAlignBottomIcon.d.ts
+│   │   │       │   ├── TextAlignCenterIcon.d.ts
+│   │   │       │   ├── TextAlignJustifyIcon.d.ts
+│   │   │       │   ├── TextAlignLeftIcon.d.ts
+│   │   │       │   ├── TextAlignMiddleIcon.d.ts
+│   │   │       │   ├── TextAlignRightIcon.d.ts
+│   │   │       │   ├── TextAlignTopIcon.d.ts
+│   │   │       │   ├── TextIcon.d.ts
+│   │   │       │   ├── TextNoneIcon.d.ts
+│   │   │       │   ├── ThickArrowDownIcon.d.ts
+│   │   │       │   ├── ThickArrowLeftIcon.d.ts
+│   │   │       │   ├── ThickArrowRightIcon.d.ts
+│   │   │       │   ├── ThickArrowUpIcon.d.ts
+│   │   │       │   ├── TimerIcon.d.ts
+│   │   │       │   ├── TokensIcon.d.ts
+│   │   │       │   ├── TrackNextIcon.d.ts
+│   │   │       │   ├── TrackPreviousIcon.d.ts
+│   │   │       │   ├── TransformIcon.d.ts
+│   │   │       │   ├── TransparencyGridIcon.d.ts
+│   │   │       │   ├── TrashIcon.d.ts
+│   │   │       │   ├── TriangleDownIcon.d.ts
+│   │   │       │   ├── TriangleLeftIcon.d.ts
+│   │   │       │   ├── TriangleRightIcon.d.ts
+│   │   │       │   ├── TriangleUpIcon.d.ts
+│   │   │       │   ├── TwitterLogoIcon.d.ts
+│   │   │       │   ├── UnderlineIcon.d.ts
+│   │   │       │   ├── UpdateIcon.d.ts
+│   │   │       │   ├── UploadIcon.d.ts
+│   │   │       │   ├── ValueIcon.d.ts
+│   │   │       │   ├── ValueNoneIcon.d.ts
+│   │   │       │   ├── VercelLogoIcon.d.ts
+│   │   │       │   ├── VideoIcon.d.ts
+│   │   │       │   ├── ViewGridIcon.d.ts
+│   │   │       │   ├── ViewHorizontalIcon.d.ts
+│   │   │       │   ├── ViewNoneIcon.d.ts
+│   │   │       │   ├── ViewVerticalIcon.d.ts
+│   │   │       │   ├── WidthIcon.d.ts
+│   │   │       │   ├── ZoomInIcon.d.ts
+│   │   │       │   ├── ZoomOutIcon.d.ts
+│   │   │       │   ├── index.d.ts
+│   │   │       │   ├── index.js
+│   │   │       │   ├── react-icons.cjs.development.js
+│   │   │       │   ├── react-icons.esm.js
+│   │   │       │   └── types.d.ts
+│   │   │       ├── index.js
+│   │   │       ├── manifest.json
 │   │   │       └── package.json
 │   │   ├── @react-aria
 │   │   │   ├── focus
@@ -25752,4 +26087,4 @@
     └── test_api
         └── test_v1
 
-2397 directories, 23356 files
+2400 directories, 23688 files

@@ -1,5 +1,5 @@
 from typing import Dict, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from app.schemas.base import BaseSchema
 
 
@@ -13,7 +13,7 @@ class WordBase(BaseSchema):
     kanji: str = Field(..., description="Word in Japanese kanji")
     romaji: str = Field(..., description="Romanized version of the word")
     english: str = Field(..., description="English translation")
-    parts: List[WordPart] = Field(..., description="Word components with their readings")
+    parts: List[Dict[str, str | List[str]]] = Field(..., description="Word components with their readings")
 
 
 class WordCreate(WordBase):
@@ -26,7 +26,7 @@ class WordUpdate(BaseModel):
     kanji: Optional[str] = Field(None, description="Word in Japanese kanji")
     romaji: Optional[str] = Field(None, description="Romanized version of the word")
     english: Optional[str] = Field(None, description="English translation")
-    parts: Optional[List[WordPart]] = Field(None, description="Word components with their readings")
+    parts: Optional[List[Dict[str, str | List[str]]]] = Field(None, description="Word components with their readings")
 
 
 class Word(WordBase):
@@ -35,8 +35,11 @@ class Word(WordBase):
     correct_count: int = Field(0, description="Number of correct reviews")
     wrong_count: int = Field(0, description="Number of incorrect reviews")
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(
+        from_attributes=True,
+        # Exclude reviews from response to prevent serialization issues
+        exclude={"reviews", "word_groups"}
+    )
 
 
 class WordInGroup(Word):

@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
@@ -19,7 +19,11 @@ app = FastAPI(
 # CORS middleware configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # Frontend dev server
+    allow_origins=[
+        "http://localhost:5173",  # Vite default dev server
+        "http://localhost:3000",  # Alternative dev server port
+        settings.FRONTEND_URL,    # From settings
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,25 +46,44 @@ async def wrap_response(request: Request, call_next):
     if response.headers.get("content-type") != "application/json":
         return response
     
+    # Get the response body
     body = b""
     async for chunk in response.body_iterator:
         body += chunk
     
-    # Parse the response body
-    if body:
+    # If no body, return empty response
+    if not body:
+        return JSONResponse(
+            content={"data": None, "error": None},
+            status_code=response.status_code,
+        )
+    
+    try:
+        # Parse and wrap the response data
         import json
         data = json.loads(body)
-        # Only wrap if not already in our format
         if not isinstance(data, dict) or ("data" not in data and "error" not in data):
             data = {"data": data, "error": None}
-    else:
-        data = {"data": None, "error": None}
-    
-    return JSONResponse(
-        content=data,
-        status_code=response.status_code,
-        headers=dict(response.headers),
-    )
+        
+        # Create new response with wrapped data
+        return Response(
+            content=json.dumps(data),
+            status_code=response.status_code,
+            headers={
+                "content-type": "application/json",
+                **{
+                    k: v for k, v in response.headers.items()
+                    if k.lower() not in ("content-type", "content-length")
+                }
+            },
+        )
+    except json.JSONDecodeError:
+        # If response is not valid JSON, return it as-is
+        return Response(
+            content=body,
+            status_code=response.status_code,
+            headers=response.headers
+        )
 
 
 # Health check endpoint

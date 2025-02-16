@@ -31,4 +31,10 @@ class Word(Base):
         "WordReviewItem",  # Use string to avoid circular imports
         back_populates="word",
         cascade="all, delete-orphan"
-    ) 
+    )
+
+    # Computed properties for review statistics
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.correct_count: int = 0
+        self.wrong_count: int = 0 
