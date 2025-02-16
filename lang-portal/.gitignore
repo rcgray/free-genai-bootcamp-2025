@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
@@ -23,6 +24,7 @@ var/
 # Virtual Environment
 .env
 .venv
+**/.venv/
 venv/
 ENV/
 
@@ -33,9 +35,10 @@ ENV/
 *.swo
 
 # SQLite
-#*.db
-#*.sqlite3
-#*.sqlite
+*.db
+!data/empty.db
+*.sqlite3
+*.sqlite
 
 # Logs
 *.log
@@ -50,6 +53,7 @@ alembic/versions/*
 !alembic/versions/.gitkeep
 
 # Frontend
+node_modules/
 frontend/node_modules/
 frontend/dist/
 frontend/build/
@@ -128,3 +132,5 @@ mock_data/
 docker-compose.override.yml
 *.override.yml
 *.override.yaml
+
+frontend-react/node_modules/

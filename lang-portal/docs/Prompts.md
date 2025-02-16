@@ -133,5 +133,20 @@ ERROR:    Exception in ASGI application
 
 
 
+when i run `tree -a --gitignore > docs/Project-File-Structure.md` from the root of the project, it should create a file tree of the entire project while observing ignored files specified by the `.gitignore` file (@.gitignore) and save the output in `docs/Project-File-Structure.md` (attached).  However, even though we ignore files in  __pycache_ directories throughout the project, we are not successfully ignoring the files in `frontend-react/node_modules` - however, our git status does successfully ignore them, leading me to believe that our .gitignore file is set up correctly and that this is a problem with the `tree` program interpreting the `--gitignore` flag.  Do you have any insight into this?  How can we get the `tree` program to ignore the `frontend-react/node-modules` folder successfully just like it is properly ignoring files within `__pycache__` directories?
+
+
+
+
+We are creating an SPA with a FastAPI backend and a React.js frontend. The backend spec and database schema are in @Backend-Technical-Spec.md (files: @backend-fastapi), and the frontend spec is in @Frontend-Technical-Spec.md (files: @frontend-react), and the full file structure is currently (via `tree -a > docs/Project-File-Structure.md`) in @Project-File-Structure.md.
+
+There is a seed file for the study_activities table in the backend-fastapi/seed directory, and I have updated it to include two new fields for the study_activity record: image_url and description.  We need to update our schema definition in our docs @Backend-Technical-Spec.md for the study_activities table to include these two new fields, which will also mean updating our code for the study_activities table (CRUD, and perhaps service layer, models, and schemas). We do not yet have an API endpoint, but we will do that in a later step, as well as create the necessary tests in a future step.
+
+Reference the @Project-File-Structure.md file to locate the files you need to read and/or update. Here are a few that might be relevant:
+ - Study Activity seed file: backend-fastapi/seed/study_activities.json
+ - Study Activity model: backend-fastapi/app/models/study_activity.py
+ - Study Activity schema: Not Yet Created (do we need one?) - if needed, it should be created in the backend-fastapi/app/schemas/ folder
+ - Study Activity CRUD: Not Yet Created (do we need one?) - if needed, it should be created in the backend-fastapi/app/crud/ folder
+
 
 
