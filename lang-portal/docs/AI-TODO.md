@@ -118,7 +118,7 @@ Below is our step-by-step plan for implementing the frontend:
   - [x] Ensure navigation works with error states
 
 ## Next Steps After Initial Setup
-1. Implement core features:
+6. Implement core features:
    - [ ] Word management
      - [ ] Set up API integration
        - [ ] Create API client with axios
@@ -139,19 +139,19 @@ Below is our step-by-step plan for implementing the frontend:
    - [ ] Study session handling
    - [ ] Progress tracking
 
-2. Add advanced features:
+7. Add advanced features:
    - [ ] Theme switching
    - [ ] Data persistence
    - [ ] Error handling
    - [ ] Loading states
 
-3. Polish and optimize:
+8. Polish and optimize:
    - [ ] Performance optimization
    - [ ] Accessibility improvements
    - [ ] Animation and transitions
    - [ ] Cross-browser testing
 
-4. Testing and documentation:
+9. Testing and documentation:
    - [ ] Unit tests
    - [ ] Integration tests
    - [ ] Component documentation

@@ -42,4 +42,13 @@ We have our skeleton React.js app set up and running along with Vite and other t
 
 We are creating an SPA with a FastAPI backend and a React.js frontend: the backend spec and database schema are in @Backend-Technical-Spec.md, project file hierarchy for the backend is in @Backend-File-Structure.md, the frontend spec is in @Frontend-Technical-Spec.md, and the file hierarchy for the frontend is still being constructed but will eventually be similar to what is described in @Frontend-File-Structure.md. The full file structure is currently in @Project-File-Structure.md.
 
-I would like to update the @Backend-File-Structure.md file with the current file structure of the _backend_ project, containing only the files that are currently present in the backend project and some extra information similar to how @Frontend-File-Structure.md is written.
+When creating our backend, we accidentally split the code base between two different directories - the intended directory (./backend-fastapi/app) and the accidental outside directory (./app), so we need to fix that.  We want to move all the backend files into the backend-fastapi directory under ./backend-fastapi/app, and we want to update the @Backend-File-Structure.md file.
+
+We also want to make sure that any files in the backend are updated to reflect the new directory structure, if any of them depended on the specific path of the files that were incorrectly placed in the ./app directory.
+
+
+
+
+
+
+
