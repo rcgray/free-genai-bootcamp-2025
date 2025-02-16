@@ -13,7 +13,7 @@ class WordBase(BaseSchema):
     kanji: str = Field(..., description="Word in Japanese kanji")
     romaji: str = Field(..., description="Romanized version of the word")
     english: str = Field(..., description="English translation")
-    parts: List[Dict[str, str | List[str]]] = Field(..., description="Word components with their readings")
+    parts: List[WordPart] = Field(..., description="Word components with their readings")
 
 
 class WordCreate(WordBase):
@@ -26,7 +26,7 @@ class WordUpdate(BaseModel):
     kanji: Optional[str] = Field(None, description="Word in Japanese kanji")
     romaji: Optional[str] = Field(None, description="Romanized version of the word")
     english: Optional[str] = Field(None, description="English translation")
-    parts: Optional[List[Dict[str, str | List[str]]]] = Field(None, description="Word components with their readings")
+    parts: Optional[List[WordPart]] = Field(None, description="Word components with their readings")
 
 
 class Word(WordBase):
