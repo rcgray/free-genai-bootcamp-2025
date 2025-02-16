@@ -23,12 +23,12 @@ const router = createBrowserRouter([
   {
     element: <MainLayout />,
     children: [
-      { path: '/', element: <Home /> },
-      { path: '/words', element: <Words /> },
-      { path: '/groups', element: <Groups /> },
-      { path: '/activities', element: <Activities /> },
-      { path: '/settings', element: <Settings /> },
-      { path: '/404', element: <Error /> },
+      { path: '/', element: <HomePage /> },
+      { path: '/words', element: <WordsPage /> },
+      { path: '/groups', element: <GroupsPage /> },
+      { path: '/activities', element: <StudyActivitiesPage /> },
+      { path: '/settings', element: <SettingsPage /> },
+      { path: '/404', element: <ErrorPage /> },
       { path: '*', element: <Navigate to="/404" replace /> },
     ],
   },

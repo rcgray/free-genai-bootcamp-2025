@@ -118,20 +118,41 @@ Below is our step-by-step plan for implementing the frontend:
   - [x] Ensure navigation works with error states
 
 ## 6. Create the SPA template
+- [x] Create basic layout structure
+  - [x] Left sidebar navigation with fixed width
+  - [x] Main content area with proper spacing
+  - [x] Footer with copyright and GitHub link
+- [x] Implement navigation
+  - [x] Add navigation links for all main pages
+  - [x] Style active/hover states
+  - [x] Add proper routing
+- [x] Create Words page table layout
+  - [x] Add table with columns for kanji, romaji, english, parts, and score
+  - [x] Implement sortable columns with indicators
+  - [x] Add pagination controls
+  - [x] Style table with proper spacing and hover states
+  - [x] Add loading and error states
+  - [x] Connect to API endpoint structure
+  - [x] Add "Add New Word" button
+- [x] Set up API integration
+  - [x] Create axios instance with proper configuration
+  - [x] Add error handling and interceptors
+  - [x] Set up React Query for data fetching
+  - [x] Implement proper TypeScript interfaces
 
 ## 7. Implement core features:
-- [ ] Word management
-  - [ ] Set up API integration
-    - [ ] Create API client with axios
-    - [ ] Implement word-related API endpoints
-    - [ ] Add response type definitions
-  - [ ] Create word-related components
-    - [ ] WordList component with pagination
-    - [ ] WordCard component
+- [x] Word management
+  - [x] Set up API integration
+    - [x] Create API client with axios
+    - [x] Implement word-related API endpoints
+    - [x] Add response type definitions
+  - [x] Create word-related components
+    - [x] WordList component with pagination
+    - [x] WordCard component
     - [ ] WordForm for creating/editing
     - [ ] WordDetails component
   - [ ] Implement word management features
-    - [ ] List words with search and filters
+    - [x] List words with search and filters
     - [ ] Create new words
     - [ ] Edit existing words
     - [ ] Delete words
