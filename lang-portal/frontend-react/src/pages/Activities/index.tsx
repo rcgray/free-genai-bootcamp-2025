@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { Activity, ApiResponse, PaginatedResponse } from '../../types/api';
 
@@ -16,7 +15,6 @@ const ActivitiesPage = () => {
     // Function to get the image URL
     const getImageUrl = (imageUrl: string) => {
         try {
-            // Using the @assets alias we set up in vite.config.ts
             return new URL(`/src/assets/${imageUrl}`, window.location.origin).href;
         } catch (error) {
             console.error('Error loading image:', error);
@@ -53,9 +51,8 @@ const ActivitiesPage = () => {
         }
     };
 
-    const renderSortIcon = (field: SortField) => {
-        if (sortBy !== field) return '↕';
-        return sortOrder === 'asc' ? '↑' : '↓';
+    const handleLaunch = (url: string) => {
+        window.open(url, '_blank', 'noopener,noreferrer');
     };
 
     if (isLoading) {
@@ -75,87 +72,56 @@ const ActivitiesPage = () => {
     }
 
     return (
-        <div className="space-y-4">
-            <div className="flex justify-between items-center mb-6">
+        <div className="space-y-6">
+            <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Activities</h1>
+                <div className="flex items-center space-x-2">
+                    <span className="text-sm text-slate-500 dark:text-slate-400">Sort by:</span>
+                    <button
+                        onClick={() => handleSort('name')}
+                        className="px-3 py-1 text-sm rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                    >
+                        Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                    </button>
+                </div>
             </div>
             
-            {/* Table */}
-            <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
-                <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                    <thead className="bg-slate-50 dark:bg-slate-800">
-                        <tr>
-                            <th 
-                                scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+            {/* Activity Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {data?.data?.items.map((activity) => (
+                    <div 
+                        key={activity.id}
+                        className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                    >
+                        <div className="aspect-square relative overflow-hidden bg-slate-100 dark:bg-slate-700">
+                            <img 
+                                src={getImageUrl(activity.image_url)} 
+                                alt={activity.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="20" x="2" y="2" rx="2"/><path d="M7 2v20M17 2v20M2 12h20M2 7h20M2 17h20"/></svg>';
+                                }}
+                            />
+                        </div>
+                        <div className="p-4 space-y-4">
+                            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                                {activity.name}
+                            </h2>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+                                {activity.description}
+                            </p>
+                            <button
+                                onClick={() => handleLaunch(activity.url)}
+                                className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200 flex items-center justify-center space-x-2"
                             >
-                                ID
-                            </th>
-                            <th 
-                                scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700"
-                                onClick={() => handleSort('name')}
-                            >
-                                Name {renderSortIcon('name')}
-                            </th>
-                            <th 
-                                scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                            >
-                                URL
-                            </th>
-                            <th 
-                                scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                            >
-                                Description
-                            </th>
-                            <th 
-                                scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
-                            >
-                                Actions
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700">
-                        {data?.data?.items.map((activity) => (
-                            <tr key={activity.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                    {activity.id}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                    <div className="flex items-center space-x-3">
-                                        <img 
-                                            src={getImageUrl(activity.image_url)} 
-                                            alt={activity.name}
-                                            className="h-8 w-8 rounded-full object-cover"
-                                            onError={(e) => {
-                                                // If image fails to load, set a default or hide the image
-                                                (e.target as HTMLImageElement).style.display = 'none';
-                                            }}
-                                        />
-                                        <span>{activity.name}</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                    {activity.url}
-                                </td>
-                                <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
-                                    {activity.description}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                    <Link
-                                        to={`/activities/${activity.id}`}
-                                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                                    >
-                                        Launch
-                                    </Link>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                <span>Launch Activity</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                ))}
             </div>
 
             {/* Pagination */}
