@@ -1,0 +1,12 @@
+{
+  "name": "lang-portal",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "games/*"
+  ],
+  "scripts": {
+    "build:shared": "yarn workspace @lang-portal/shared build",
+    "build:games": "yarn workspaces foreach -p run build"
+  }
+} 

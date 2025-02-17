@@ -169,6 +169,11 @@ lang-portal/
 │   │   └── study_activities.json # Study activity definitions
 │   └── tests/              # Backend tests
 ├── frontend/               # Frontend React application
+├── games/                  # Educational games
+│   └── typing-tutor/      # Example game implementation
+├── shared/                 # Shared code for games
+│   ├── api-client/        # API client library
+│   └── types/             # Shared TypeScript types
 ├── scripts/                # Development and utility scripts
 │   └── db/                 # Database management scripts
 │       ├── init_db.py      # Database initialization
@@ -252,13 +257,110 @@ The project includes several development tools and scripts:
    - Linting (mypy, eslint)
    - Type checking (mypy, TypeScript)
 
-## Contributing
 
-1. Create a feature branch
-2. Make your changes
-3. Run tests and ensure code quality
-4. Submit a pull request
+## Game Development
 
-## License
+The platform supports the development of educational games as independent sub-projects within the monorepo. Each game is a standalone React application that can be developed and tested independently.
 
-[Your chosen license]
+### Building Existing Games
+
+1. First, build the shared code library:
+```bash
+# From project root
+yarn build:shared
+```
+
+2. Build a specific game:
+```bash
+# Build a single game
+cd games/typing-tutor
+yarn install
+yarn build
+
+# Or build all games from project root
+yarn build:games
+```
+
+3. Development mode:
+```bash
+# Run a game in development mode
+cd games/typing-tutor
+yarn dev
+```
+
+### Creating a New Game
+
+1. Create a new game directory:
+```bash
+# From project root
+mkdir -p games/your-game-name
+cd games/your-game-name
+```
+
+2. Initialize the game project:
+```bash
+# Copy the base configuration from typing-tutor
+cp ../typing-tutor/package.json .
+cp ../typing-tutor/vite.config.ts .
+cp ../typing-tutor/tsconfig*.json .
+
+# Update package name in package.json
+sed -i 's/typing-tutor/your-game-name/' package.json
+
+# Install dependencies
+yarn install
+```
+
+3. Create the basic game structure:
+```bash
+mkdir src
+```
+
+4. Create the main game component (`src/index.tsx`):
+```typescript
+import React from 'react';
+import { GameProps } from '@lang-portal/shared/types';
+
+export function YourGame({ apiClient, sessionId, onGameComplete }: GameProps) {
+  return (
+    <div>
+      <h1>Your Game Name</h1>
+      {/* Your game implementation */}
+    </div>
+  );
+}
+
+export default YourGame;
+```
+
+### Game Development Guidelines
+
+1. **Project Structure**
+   - Each game is a standalone React project
+   - Uses shared types and API client from `@lang-portal/shared`
+   - Can include any additional dependencies needed (game engines, etc.)
+
+2. **Required Interface**
+```typescript
+interface GameProps {
+  apiClient: ApiClient;      // API client for backend communication
+  sessionId?: string;        // Current session ID
+  onGameComplete?: () => void; // Callback when game completes
+}
+```
+
+3. **API Integration**
+   - Use `apiClient` for backend communication
+   - Create sessions using `apiClient.sessions.create()`
+   - Log word reviews using `apiClient.sessions.review()`
+
+4. **Development Workflow**
+   - Develop and test independently using `yarn dev`
+   - Build using `yarn build`
+   - Test integration with main app
+   - Update activities table in database to enable the game
+
+5. **Adding Game Engines**
+   - Install game engine as dependency in game's package.json
+   - Configure as needed in game's vite.config.ts
+   - Implement game logic within the React component
