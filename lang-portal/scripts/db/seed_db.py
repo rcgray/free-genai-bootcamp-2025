@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+"""Database seeding script for the Language Learning Portal.
+
+This script seeds the database with initial data from JSON files.
+"""
+
 import asyncio
 import json
 import logging
@@ -15,8 +21,10 @@ sys.path.append(str(backend_dir))
 from app.core.database import AsyncSessionLocal
 from app.models.word import Word
 from app.models.group import Group
-from app.models.study_activity import StudyActivity
+from app.models.activity import Activity
+from app.models.session import Session
 from app.models.word_group import WordGroup
+from app.models.word_review_item import WordReviewItem
 
 # Setup logging
 logging.basicConfig(
@@ -40,6 +48,10 @@ async def load_json(file_path: Path) -> List[Dict[str, Any]]:
 async def seed_words(session: AsyncSession, words_data: List[Dict[str, Any]]) -> None:
     """Seed words table with data."""
     for word_data in words_data:
+        # Ensure parts is a JSON string
+        if isinstance(word_data["parts"], dict):
+            word_data["parts"] = json.dumps(word_data["parts"])
+            
         word = Word(
             kanji=word_data["kanji"],
             romaji=word_data["romaji"],
@@ -104,20 +116,22 @@ async def seed_word_groups(session: AsyncSession, word_groups_data: List[Dict[st
     await session.commit()
     logger.info(f"Seeded word-group associations and updated group word counts")
 
-async def seed_study_activities(
+async def seed_activities(
     session: AsyncSession,
     activities_data: List[Dict[str, Any]]
 ) -> None:
-    """Seed study_activities table with data."""
+    """Seed activities table with data."""
     for activity_data in activities_data:
-        activity = StudyActivity(
+        activity = Activity(
             name=activity_data["name"],
-            url=activity_data["url"]
+            url=activity_data["url"],
+            image_url=activity_data.get("image_url", ""),  # Handle missing image_url in seed data
+            description=activity_data.get("description", "")  # Handle missing description in seed data
         )
         session.add(activity)
     
     await session.commit()
-    logger.info(f"Seeded {len(activities_data)} study activities")
+    logger.info(f"Seeded {len(activities_data)} activities")
 
 async def seed_db() -> None:
     """Main function to seed the database."""
@@ -133,15 +147,15 @@ async def seed_db() -> None:
     
     groups_data = await load_json(seed_dir / "groups.json")
     word_groups_data = await load_json(seed_dir / "word_groups.json")
-    activities_data = await load_json(seed_dir / "study_activities.json")
+    activities_data = await load_json(seed_dir / "activities.json")
     
     async with AsyncSessionLocal() as session:
         try:
-            # Seed in order: words -> groups -> word_groups -> study_activities
+            # Seed in order: words -> groups -> word_groups -> activities
             await seed_words(session, words_data)
             await seed_groups(session, groups_data)
             await seed_word_groups(session, word_groups_data)
-            await seed_study_activities(session, activities_data)
+            await seed_activities(session, activities_data)
             
             logger.info("Database seeding completed successfully")
             

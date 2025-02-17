@@ -16,7 +16,7 @@ backend_dir = Path(__file__).parents[2] / "backend-fastapi"
 sys.path.append(str(backend_dir))
 
 import asyncio
-import subprocess
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 from app.core.config import get_settings
 
@@ -28,6 +28,82 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 settings = get_settings()
+
+# SQL statements for table creation
+CREATE_TABLES_SQL = """
+-- Words table
+CREATE TABLE words (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kanji TEXT NOT NULL,
+    romaji TEXT NOT NULL,
+    english TEXT NOT NULL,
+    parts TEXT NOT NULL
+);
+
+-- Groups table
+CREATE TABLE groups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    words_count INTEGER DEFAULT 0
+);
+
+-- Word Groups junction table
+CREATE TABLE word_groups (
+    word_id INTEGER NOT NULL,
+    group_id INTEGER NOT NULL,
+    PRIMARY KEY (word_id, group_id),
+    FOREIGN KEY (word_id) REFERENCES words (id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE CASCADE
+);
+
+-- Activities table
+CREATE TABLE activities (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    url TEXT NOT NULL,
+    image_url TEXT NOT NULL,
+    description TEXT NOT NULL
+);
+
+-- Sessions table
+CREATE TABLE sessions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    group_id INTEGER NOT NULL,
+    activity_id INTEGER NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE RESTRICT,
+    FOREIGN KEY (activity_id) REFERENCES activities (id) ON DELETE RESTRICT
+);
+
+-- Word Review Items table
+CREATE TABLE word_review_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    word_id INTEGER NOT NULL,
+    session_id INTEGER NOT NULL,
+    correct INTEGER NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (word_id) REFERENCES words (id) ON DELETE CASCADE,
+    FOREIGN KEY (session_id) REFERENCES sessions (id) ON DELETE CASCADE
+);
+"""
+
+# SQL statements for index creation
+CREATE_INDEXES_SQL = """
+-- Performance indexes
+CREATE INDEX idx_words_kanji ON words(kanji);
+CREATE INDEX idx_words_romaji ON words(romaji);
+CREATE INDEX idx_groups_name ON groups(name);
+CREATE INDEX idx_sessions_created_at ON sessions(created_at);
+CREATE INDEX idx_word_review_items_created_at ON word_review_items(created_at);
+
+-- Foreign key indexes
+CREATE INDEX idx_word_groups_word_id ON word_groups(word_id);
+CREATE INDEX idx_word_groups_group_id ON word_groups(group_id);
+CREATE INDEX idx_sessions_group_id ON sessions(group_id);
+CREATE INDEX idx_sessions_activity_id ON sessions(activity_id);
+CREATE INDEX idx_word_review_items_word_id ON word_review_items(word_id);
+CREATE INDEX idx_word_review_items_session_id ON word_review_items(session_id);
+"""
 
 async def init_db(force: bool = False) -> None:
     """Initialize the database with schema."""
@@ -51,33 +127,28 @@ async def init_db(force: bool = False) -> None:
     Path(db_file).touch()
     logger.info(f"Created new database file at {db_file}")
     
-    # Create async engine to test connection
+    # Create async engine
     engine = create_async_engine(db_url)
     
     try:
-        # Test connection
         async with engine.begin() as conn:
-            from sqlalchemy import text
-            await conn.execute(text("SELECT 1"))
-            logger.info("Database connection test successful")
-        
-        # Run Alembic migrations
-        alembic_ini = backend_dir / "alembic.ini"
-        logger.info(f"Running migrations using config at: {alembic_ini}")
-        
-        result = subprocess.run(
-            ["alembic", "-c", str(alembic_ini), "upgrade", "head"],
-            check=True,
-            cwd=str(backend_dir),  # Set working directory to backend
-            capture_output=True,
-            text=True
-        )
-        logger.info("Applied database migrations successfully")
-        logger.debug(result.stdout)
-        
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Migration failed: {e.stderr}")
-        raise
+            # Enable foreign key support
+            await conn.execute(text("PRAGMA foreign_keys = ON;"))
+            
+            # Create tables
+            logger.info("Creating database tables...")
+            for statement in CREATE_TABLES_SQL.split(';'):
+                if statement.strip():
+                    await conn.execute(text(statement))
+            
+            # Create indexes
+            logger.info("Creating database indexes...")
+            for statement in CREATE_INDEXES_SQL.split(';'):
+                if statement.strip():
+                    await conn.execute(text(statement))
+            
+            logger.info("Database initialization completed successfully")
+            
     except Exception as e:
         logger.error(f"Database initialization failed: {e}")
         raise

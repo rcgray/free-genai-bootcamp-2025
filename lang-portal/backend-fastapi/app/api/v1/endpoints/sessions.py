@@ -4,18 +4,18 @@ from fastapi.responses import JSONResponse
 from typing import Optional
 
 from app.core.database import get_db
-from app.schemas.study_session import (
-    StudySession,
-    StudySessionCreate,
+from app.schemas.session import (
+    Session,
+    SessionCreate,
     WordReview,
     WordReviewCreate
 )
-from app.services.study_service import StudyService
+from app.services.session_service import SessionService
 
 router = APIRouter()
 
 @router.get("", response_model=dict)
-async def list_study_sessions(
+async def list_sessions(
     db: AsyncSession = Depends(get_db),
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(25, ge=1, le=100, description="Items per page"),
@@ -23,21 +23,21 @@ async def list_study_sessions(
     order: Optional[str] = Query("asc", description="Sort order (asc or desc)"),
 ):
     """
-    List study sessions with pagination and sorting.
+    List sessions with pagination and sorting.
     
     Parameters:
         page: Page number (1-indexed)
         per_page: Number of items per page
-        sort_by: Field to sort by (created_at, group_id, study_activity_id)
+        sort_by: Field to sort by (created_at, group_id, activity_id)
         order: Sort order (asc or desc)
     
     Returns:
-        Paginated list of study sessions with their reviews
+        Paginated list of sessions with their reviews
     """
     skip = (page - 1) * per_page
     
     # Validate sort field if provided
-    valid_sort_fields = {"created_at", "group_id", "study_activity_id"}
+    valid_sort_fields = {"created_at", "group_id", "activity_id"}
     if sort_by and sort_by not in valid_sort_fields:
         return JSONResponse(
             status_code=400,
@@ -58,7 +58,7 @@ async def list_study_sessions(
         )
     
     try:
-        sessions, total = await StudyService.get_sessions(
+        sessions, total = await SessionService.get_sessions(
             db,
             skip=skip,
             limit=per_page,
@@ -70,7 +70,7 @@ async def list_study_sessions(
         total_pages = (total + per_page - 1) // per_page
         
         # Convert SQLAlchemy models to Pydantic models
-        session_list = [StudySession.model_validate(session) for session in sessions]
+        session_list = [Session.model_validate(session) for session in sessions]
         
         return {
             "data": {
@@ -89,38 +89,38 @@ async def list_study_sessions(
         )
 
 @router.post("", response_model=dict)
-async def create_study_session(
+async def create_session(
     *,
-    session_in: StudySessionCreate,
+    session_in: SessionCreate,
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Create a new study session.
+    Create a new session.
     
     Parameters:
-        session_in: Study session data including group_id and study_activity_id
+        session_in: Session data including group_id and activity_id
     
     Returns:
-        The created study session
+        The created session
     
     Raises:
-        HTTPException: If the group or study activity doesn't exist
+        HTTPException: If the group or activity doesn't exist
     """
     try:
-        db_session = await StudyService.create_session(
+        db_session = await SessionService.create_session(
             db,
             group_id=session_in.group_id,
-            study_activity_id=session_in.study_activity_id
+            activity_id=session_in.activity_id
         )
         # Convert SQLAlchemy model to dict first, then validate with Pydantic
         session_dict = {
             "id": db_session.id,
             "group_id": db_session.group_id,
-            "study_activity_id": db_session.study_activity_id,
+            "activity_id": db_session.activity_id,
             "created_at": db_session.created_at,
             "reviews": []  # Initialize with empty reviews for new session
         }
-        session = StudySession.model_validate(session_dict)
+        session = Session.model_validate(session_dict)
         return {
             "data": session.model_dump(),
             "error": None
@@ -142,30 +142,30 @@ async def create_study_session(
         )
 
 @router.get("/{session_id}", response_model=dict)
-async def get_study_session(
+async def get_session(
     session_id: int,
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Get details of a specific study session.
+    Get details of a specific session.
     
     Parameters:
-        session_id: ID of the study session
+        session_id: ID of the session
     
     Returns:
-        The study session with its reviews
+        The session with its reviews
     
     Raises:
         HTTPException: If the session doesn't exist
     """
-    db_session = await StudyService.get_session(db, session_id)
+    db_session = await SessionService.get_session(db, session_id)
     if not db_session:
         return JSONResponse(
             status_code=404,
-            content={"data": None, "error": f"Study session {session_id} not found"}
+            content={"data": None, "error": f"Session {session_id} not found"}
         )
     # Convert SQLAlchemy model to Pydantic model and return with proper format
-    session = StudySession.model_validate(db_session)
+    session = Session.model_validate(db_session)
     return {
         "data": session.model_dump(),
         "error": None
@@ -179,10 +179,10 @@ async def create_word_review(
     db: AsyncSession = Depends(get_db),
 ):
     """
-    Log a review attempt for a word during a study session.
+    Log a review attempt for a word during a session.
     
     Parameters:
-        session_id: ID of the study session
+        session_id: ID of the session
         review_in: Review data including word_id and correct status
     
     Returns:
@@ -192,7 +192,7 @@ async def create_word_review(
         HTTPException: If the session doesn't exist or the word isn't in the session's group
     """
     try:
-        db_review = await StudyService.add_review(
+        db_review = await SessionService.add_review(
             db,
             session_id=session_id,
             word_id=review_in.word_id,

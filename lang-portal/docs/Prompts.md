@@ -149,4 +149,15 @@ Reference the `docs/Project-File-Structure.md` file to locate the files you need
  - Study Activity CRUD: Not Yet Created (do we need one?) - if needed, it should be created in the `backend-fastapi/app/crud/` folder
 
 
+We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md.  We have a database schema defined in `docs/Database-Schema.md`.  Right now, our project uses alembic to manage migrations, but we are early in the development process and have not yet created any migrations.  We can delete the existing migrations, but we do have two files that aid in the creation of the database and initial seeding for a new deployment and also for testing.  These files are:
+
+- `scripts/create_db.py` - this file contains the code for creating the database
+- `scripts/seed_db.py` - this file contains the code for seeding the database
+
+Additionally, we have a `backend-fastapi/seed/` directory that contains the seed data for the database.
+
+What changes do we need to make to these files to create our new database?
+
+
+
 

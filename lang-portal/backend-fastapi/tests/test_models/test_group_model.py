@@ -5,7 +5,8 @@ from sqlalchemy import select
 from app.models.group import Group
 from app.models.word import Word
 from app.models.word_group import WordGroup
-from app.models.study_session import StudySession
+from app.models.session import Session
+from sqlalchemy.exc import IntegrityError
 
 pytestmark = pytest.mark.asyncio
 
@@ -45,38 +46,38 @@ async def test_group_word_relationship(
     word_groups = result.scalars().all()
     assert len(word_groups) == 0
 
-async def test_group_study_session_relationship(
+async def test_group_session_relationship(
     db: AsyncSession,
-    sample_group: Group,
-    sample_study_session: StudySession
+    test_group: Group,
+    test_session: Session
 ):
-    """Test the relationship between Group and StudySession models."""
+    """Test the relationship between Group and Session models."""
     # Refresh the objects with their relationships loaded
-    stmt = select(Group).where(Group.id == sample_group.id).options(
-        selectinload(Group.study_sessions)
+    stmt = select(Group).where(Group.id == test_group.id).options(
+        selectinload(Group.sessions)
     )
     result = await db.execute(stmt)
     group = result.scalar_one()
-    
-    stmt = select(StudySession).where(StudySession.id == sample_study_session.id).options(
-        selectinload(StudySession.group)
+
+    stmt = select(Session).where(Session.id == test_session.id).options(
+        selectinload(Session.group)
     )
     result = await db.execute(stmt)
     session = result.scalar_one()
-    
-    # Test that the session is in the group's study_sessions
-    assert sample_study_session.id in [s.id for s in group.study_sessions]
-    
-    # Test that the group reference in session is correct
-    assert session.group.id == sample_group.id
-    
-    # Test cascade delete - deleting group should remove the study session
-    await db.delete(sample_group)
-    await db.commit()
-    
-    # Verify the study session is deleted
-    result = await db.get(StudySession, sample_study_session.id)
-    assert result is None
+
+    # Test that the session is in the group's sessions
+    assert test_session.id in [s.id for s in group.sessions]
+
+    # Test that the group is in the session's group
+    assert session.group_id == test_group.id
+
+    # Test cascade delete - deleting group should fail due to RESTRICT
+    with pytest.raises(IntegrityError):
+        await db.delete(group)
+        await db.commit()
+
+    # Rollback the failed delete
+    await db.rollback()
 
 async def test_group_attributes(
     sample_group: Group

@@ -21,11 +21,9 @@ class Group(Base):
     words: Mapped[List["Word"]] = relationship(
         "Word",
         secondary="word_groups",
-        back_populates="groups",
-        viewonly=True
+        back_populates="groups"
     )
-    study_sessions: Mapped[List["StudySession"]] = relationship(
-        "StudySession",
-        back_populates="group",
-        cascade="all, delete-orphan"
+    sessions: Mapped[List["Session"]] = relationship(
+        "Session",
+        back_populates="group"
     ) 

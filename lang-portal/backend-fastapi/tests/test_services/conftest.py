@@ -5,8 +5,8 @@ from sqlalchemy import delete, text
 from app.models.word import Word
 from app.models.group import Group
 from app.models.word_group import WordGroup
-from app.models.study_activity import StudyActivity
-from app.models.study_session import StudySession
+from app.models.activity import Activity
+from app.models.session import Session
 from app.schemas.word import WordCreate
 from app.schemas.group import GroupCreate
 from tests.fixtures.test_data import (
@@ -14,8 +14,37 @@ from tests.fixtures.test_data import (
     TEST_WORD_2,
     TEST_GROUP,
     TEST_ACTIVITY,
-    TEST_STUDY_SESSION
+    TEST_ACTIVITY_2,
+    TEST_SESSION
 )
+
+
+@pytest.fixture(autouse=True)
+async def cleanup_sessions(db: AsyncSession) -> None:
+    """Clean up sessions before each test."""
+    try:
+        await db.execute(delete(Session))
+        await db.commit()
+        # Also rollback any pending transactions to ensure clean state
+        await db.rollback()
+    except Exception as e:
+        print(f"\nError during session cleanup: {str(e)}")
+        await db.rollback()
+        raise
+
+
+@pytest.fixture(autouse=True)
+async def cleanup_activities(db: AsyncSession) -> None:
+    """Clean up activities before each test."""
+    try:
+        await db.execute(delete(Activity))
+        await db.commit()
+        # Also rollback any pending transactions to ensure clean state
+        await db.rollback()
+    except Exception as e:
+        print(f"\nError during activity cleanup: {str(e)}")
+        await db.rollback()
+        raise
 
 
 @pytest.fixture(autouse=True)
@@ -89,9 +118,9 @@ async def test_group(db: AsyncSession) -> Group:
 
 
 @pytest.fixture
-async def test_study_activity(db: AsyncSession) -> StudyActivity:
-    """Create a test study activity for testing."""
-    db_activity = StudyActivity(**TEST_ACTIVITY)
+async def test_activity(db: AsyncSession) -> Activity:
+    """Create a test activity for testing."""
+    db_activity = Activity(**TEST_ACTIVITY)
     db.add(db_activity)
     await db.commit()
     await db.refresh(db_activity)
@@ -99,15 +128,22 @@ async def test_study_activity(db: AsyncSession) -> StudyActivity:
 
 
 @pytest.fixture
-async def test_study_session(
-    db: AsyncSession,
-    test_group: Group,
-    test_study_activity: StudyActivity
-) -> StudySession:
-    """Create a test study session for testing."""
-    db_session = StudySession(
+async def test_activity_2(db: AsyncSession) -> Activity:
+    """Create a second test activity for testing duplicates."""
+    db_activity = Activity(**TEST_ACTIVITY_2)
+    db.add(db_activity)
+    await db.commit()
+    await db.refresh(db_activity)
+    return db_activity
+
+
+@pytest.fixture
+async def test_session(db: AsyncSession, test_activity: Activity, test_group: Group) -> Session:
+    """Create a test session for testing."""
+    db_session = Session(
+        activity_id=test_activity.id,
         group_id=test_group.id,
-        study_activity_id=test_study_activity.id
+        **{k: v for k, v in TEST_SESSION.items() if k not in ['activity_id', 'group_id']}
     )
     db.add(db_session)
     await db.commit()

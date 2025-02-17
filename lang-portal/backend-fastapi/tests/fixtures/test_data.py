@@ -32,16 +32,25 @@ TEST_GROUP = {
     "name": "Actions"
 }
 
-# Test study activity data
+# Test activity data
 TEST_ACTIVITY = {
     "name": "Flashcards",
-    "url": "http://localhost:5173/study/flashcards"
+    "url": "http://localhost:5173/study/flashcards",
+    "image_url": "http://localhost:5173/images/flashcards.png",
+    "description": "Practice vocabulary with flashcards"
 }
 
-# Test study session data
-TEST_STUDY_SESSION = {
+TEST_ACTIVITY_2 = {
+    "name": "Matching Game",
+    "url": "http://localhost:5173/study/matching",
+    "image_url": "http://localhost:5173/images/matching.png",
+    "description": "Practice vocabulary by matching words"
+}
+
+# Test session data
+TEST_SESSION = {
     "group_id": 1,
-    "study_activity_id": 1
+    "activity_id": 1
 }
 
 # Test word review data
@@ -74,16 +83,18 @@ async def create_test_group(db, group_data: Dict = TEST_GROUP) -> Dict:
     }
 
 async def create_test_activity(db, activity_data: Dict = TEST_ACTIVITY) -> Dict:
-    """Create a test study activity and return its data."""
-    from app.models.study_activity import StudyActivity
-    activity = StudyActivity(**activity_data)
+    """Create a test activity and return its data."""
+    from app.models.activity import Activity
+    activity = Activity(**activity_data)
     db.add(activity)
     await db.commit()
     await db.refresh(activity)
     return {
         "id": activity.id,
         "name": activity.name,
-        "url": activity.url
+        "url": activity.url,
+        "image_url": activity.image_url,
+        "description": activity.description
     }
 
 async def setup_test_data(db) -> Dict:
@@ -97,7 +108,7 @@ async def setup_test_data(db) -> Dict:
     # Add word to group
     await group.add_words(db, group_id=group_data["id"], word_ids=[word_data["id"]])
     
-    # Create study activity
+    # Create activity
     activity_data = await create_test_activity(db)
     
     return {

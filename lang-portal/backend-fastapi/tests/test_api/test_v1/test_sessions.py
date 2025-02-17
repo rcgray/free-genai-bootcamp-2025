@@ -2,18 +2,18 @@ import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.crud.study_session import study_session
+from app.crud.session import session
 from app.main import app
 from app.core.config import get_settings
 from tests.fixtures.test_data import (
-    TEST_STUDY_SESSION,
+    TEST_SESSION,
     TEST_WORD_REVIEW,
     create_test_word,
     create_test_group,
     create_test_activity,
     setup_test_data
 )
-from app.schemas.study_session import StudySessionCreate
+from app.schemas.session import SessionCreate
 
 settings = get_settings()
 
@@ -23,67 +23,67 @@ async def setup_test_env(db: AsyncSession) -> dict:
     """Set up test environment with necessary data."""
     data = await setup_test_data(db)
     # Update test data with correct IDs
-    TEST_STUDY_SESSION["group_id"] = data["group_id"]
-    TEST_STUDY_SESSION["study_activity_id"] = data["activity_id"]
+    TEST_SESSION["group_id"] = data["group_id"]
+    TEST_SESSION["activity_id"] = data["activity_id"]
     TEST_WORD_REVIEW["word_id"] = data["word_id"]
     return data
 
 
-async def test_create_study_session(client: AsyncClient, db: AsyncSession):
-    response = await client.post(f"{settings.API_V1_PREFIX}/study_sessions", json=TEST_STUDY_SESSION)
+async def test_create_session(client: AsyncClient, db: AsyncSession):
+    response = await client.post(f"{settings.API_V1_PREFIX}/sessions", json=TEST_SESSION)
     print(f"Response status: {response.status_code}")
     print(f"Response content: {response.content}")
     print(f"Response json: {response.json()}")
     assert response.status_code == 200
     data = response.json()["data"]
-    assert data["group_id"] == TEST_STUDY_SESSION["group_id"]
-    assert data["study_activity_id"] == TEST_STUDY_SESSION["study_activity_id"]
+    assert data["group_id"] == TEST_SESSION["group_id"]
+    assert data["activity_id"] == TEST_SESSION["activity_id"]
     assert "created_at" in data
 
 
 async def test_create_session_invalid_group(client: AsyncClient, db: AsyncSession):
-    invalid_session = {**TEST_STUDY_SESSION, "group_id": 999}  # Non-existent group
-    response = await client.post(f"{settings.API_V1_PREFIX}/study_sessions", json=invalid_session)
+    invalid_session = {**TEST_SESSION, "group_id": 999}  # Non-existent group
+    response = await client.post(f"{settings.API_V1_PREFIX}/sessions", json=invalid_session)
     assert response.status_code == 404
     assert "not found" in response.json()["error"].lower()
 
 
 async def test_create_session_invalid_activity(client: AsyncClient, db: AsyncSession):
-    invalid_session = {**TEST_STUDY_SESSION, "study_activity_id": 999}  # Non-existent activity
-    response = await client.post(f"{settings.API_V1_PREFIX}/study_sessions", json=invalid_session)
+    invalid_session = {**TEST_SESSION, "activity_id": 999}  # Non-existent activity
+    response = await client.post(f"{settings.API_V1_PREFIX}/sessions", json=invalid_session)
     assert response.status_code == 404
     assert "not found" in response.json()["error"].lower()
 
 
-async def test_get_study_session(client: AsyncClient, db: AsyncSession):
+async def test_get_session(client: AsyncClient, db: AsyncSession):
     # Create session
-    create_response = await client.post(f"{settings.API_V1_PREFIX}/study_sessions", json=TEST_STUDY_SESSION)
+    create_response = await client.post(f"{settings.API_V1_PREFIX}/sessions", json=TEST_SESSION)
     session_id = create_response.json()["data"]["id"]
 
     # Get session
-    response = await client.get(f"{settings.API_V1_PREFIX}/study_sessions/{session_id}")
+    response = await client.get(f"{settings.API_V1_PREFIX}/sessions/{session_id}")
     assert response.status_code == 200
     data = response.json()["data"]
     assert data["id"] == session_id
-    assert data["group_id"] == TEST_STUDY_SESSION["group_id"]
+    assert data["group_id"] == TEST_SESSION["group_id"]
     assert "reviews" in data
     assert isinstance(data["reviews"], list)
 
 
 async def test_get_nonexistent_session(client: AsyncClient, db: AsyncSession):
-    response = await client.get(f"{settings.API_V1_PREFIX}/study_sessions/999")
+    response = await client.get(f"{settings.API_V1_PREFIX}/sessions/999")
     assert response.status_code == 404
     assert "not found" in response.json()["error"].lower()
 
 
 async def test_create_word_review(client: AsyncClient, db: AsyncSession):
     # Create session
-    create_response = await client.post(f"{settings.API_V1_PREFIX}/study_sessions", json=TEST_STUDY_SESSION)
+    create_response = await client.post(f"{settings.API_V1_PREFIX}/sessions", json=TEST_SESSION)
     session_id = create_response.json()["data"]["id"]
 
     # Create review
     response = await client.post(
-        f"{settings.API_V1_PREFIX}/study_sessions/{session_id}/review",
+        f"{settings.API_V1_PREFIX}/sessions/{session_id}/review",
         json=TEST_WORD_REVIEW
     )
     assert response.status_code == 200
@@ -95,13 +95,13 @@ async def test_create_word_review(client: AsyncClient, db: AsyncSession):
 
 async def test_create_review_invalid_word(client: AsyncClient, db: AsyncSession):
     # Create session
-    create_response = await client.post(f"{settings.API_V1_PREFIX}/study_sessions", json=TEST_STUDY_SESSION)
+    create_response = await client.post(f"{settings.API_V1_PREFIX}/sessions", json=TEST_SESSION)
     session_id = create_response.json()["data"]["id"]
 
     # Try to create review with invalid word
     invalid_review = {**TEST_WORD_REVIEW, "word_id": 999}  # Non-existent word
     response = await client.post(
-        f"{settings.API_V1_PREFIX}/study_sessions/{session_id}/review",
+        f"{settings.API_V1_PREFIX}/sessions/{session_id}/review",
         json=invalid_review
     )
     assert response.status_code == 404
@@ -111,7 +111,7 @@ async def test_create_review_invalid_word(client: AsyncClient, db: AsyncSession)
 async def test_create_review_invalid_session(client: AsyncClient, db: AsyncSession):
     # Try to create review for non-existent session
     response = await client.post(
-        f"{settings.API_V1_PREFIX}/study_sessions/999/review",
+        f"{settings.API_V1_PREFIX}/sessions/999/review",
         json=TEST_WORD_REVIEW
     )
     assert response.status_code == 404
@@ -119,29 +119,29 @@ async def test_create_review_invalid_session(client: AsyncClient, db: AsyncSessi
 
 
 @pytest.mark.asyncio
-async def test_list_study_sessions(
+async def test_list_sessions(
     client: AsyncClient,
     db: AsyncSession
 ):
-    """Test listing study sessions with pagination and sorting."""
+    """Test listing sessions with pagination and sorting."""
     # Create test data
-    session1 = await study_session.create(
+    session1 = await session.create(
         db,
-        obj_in=StudySessionCreate(group_id=1, study_activity_id=1)
+        obj_in=SessionCreate(group_id=1, activity_id=1)
     )
-    session2 = await study_session.create(
+    session2 = await session.create(
         db,
-        obj_in=StudySessionCreate(group_id=1, study_activity_id=1)
+        obj_in=SessionCreate(group_id=1, activity_id=1)
     )
     
     # Add reviews to sessions
-    await study_session.create_word_review(
+    await session.create_word_review(
         db,
         session_id=session1.id,
         word_id=1,
         correct=True
     )
-    await study_session.create_word_review(
+    await session.create_word_review(
         db,
         session_id=session2.id,
         word_id=1,
@@ -149,7 +149,7 @@ async def test_list_study_sessions(
     )
     
     # Test default listing
-    response = await client.get("/api/study_sessions")
+    response = await client.get("/api/sessions")
     assert response.status_code == 200
     
     data = response.json()["data"]
@@ -165,30 +165,30 @@ async def test_list_study_sessions(
     assert len(data["items"]) >= 2
     
     # Test pagination
-    response = await client.get("/api/study_sessions?page=1&per_page=1")
+    response = await client.get("/api/sessions?page=1&per_page=1")
     assert response.status_code == 200
     data = response.json()["data"]
     assert len(data["items"]) == 1
     
     # Test sorting
-    response = await client.get("/api/study_sessions?sort_by=created_at&order=desc")
+    response = await client.get("/api/sessions?sort_by=created_at&order=desc")
     assert response.status_code == 200
     data = response.json()["data"]
     items = data["items"]
     assert items[0]["created_at"] >= items[-1]["created_at"]
     
     # Test invalid sort field
-    response = await client.get("/api/study_sessions?sort_by=invalid")
+    response = await client.get("/api/sessions?sort_by=invalid")
     assert response.status_code == 400
     assert "error" in response.json()
     
     # Test invalid sort order
-    response = await client.get("/api/study_sessions?order=invalid")
+    response = await client.get("/api/sessions?order=invalid")
     assert response.status_code == 400
     assert "error" in response.json()
     
     # Verify reviews are included
-    response = await client.get(f"/api/study_sessions")
+    response = await client.get(f"/api/sessions")
     assert response.status_code == 200
     data = response.json()["data"]
     

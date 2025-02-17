@@ -29,40 +29,42 @@ def sample_group_data() -> Dict[str, Any]:
     }
 
 @pytest.fixture
-def sample_study_session_data() -> Dict[str, Any]:
-    """Sample study session data for testing schemas."""
+def sample_session_data() -> Dict[str, Any]:
+    """Sample session data for testing."""
     return {
         "id": 1,
         "group_id": 1,
-        "study_activity_id": 1,
-        "created_at": datetime.utcnow(),
+        "activity_id": 1,
+        "created_at": "2025-01-01T00:00:00",
         "reviews": [
             {
                 "id": 1,
                 "word_id": 1,
-                "study_session_id": 1,
+                "session_id": 1,
                 "correct": True,
-                "created_at": datetime.utcnow()
+                "created_at": "2025-01-01T00:00:00"
             }
         ]
     }
 
 @pytest.fixture
-def sample_study_activity_data() -> Dict[str, Any]:
-    """Sample study activity data for testing schemas."""
+def sample_activity_data() -> Dict[str, Any]:
+    """Sample activity data for testing."""
     return {
         "id": 1,
         "name": "Flashcards",
-        "url": "http://example.com/flashcards"
+        "url": "http://example.com/flashcards",
+        "image_url": "http://example.com/images/flashcards.png",
+        "description": "Practice vocabulary with flashcards"
     }
 
 @pytest.fixture
 def sample_word_review_data() -> Dict[str, Any]:
-    """Sample word review data for testing schemas."""
+    """Sample word review data for testing."""
     return {
         "id": 1,
         "word_id": 1,
-        "study_session_id": 1,
+        "session_id": 1,
         "correct": True,
-        "created_at": datetime.utcnow()
+        "created_at": "2025-01-01T00:00:00"
     }

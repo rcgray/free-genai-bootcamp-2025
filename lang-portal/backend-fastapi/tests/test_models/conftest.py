@@ -2,8 +2,8 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.word import Word
 from app.models.group import Group
-from app.models.study_activity import StudyActivity
-from app.models.study_session import StudySession
+from app.models.activity import Activity
+from app.models.session import Session
 from app.models.word_review_item import WordReviewItem
 from app.models.word_group import WordGroup
 
@@ -34,11 +34,13 @@ async def sample_group(db: AsyncSession) -> Group:
     return group
 
 @pytest.fixture
-async def sample_study_activity(db: AsyncSession) -> StudyActivity:
-    """Create a sample study activity for testing relationships."""
-    activity = StudyActivity(
+async def sample_activity(db: AsyncSession) -> Activity:
+    """Create a sample activity for testing relationships."""
+    activity = Activity(
         name="Flashcards",
-        url="http://example.com/flashcards"
+        url="http://example.com/flashcards",
+        image_url="http://example.com/images/flashcards.png",
+        description="Practice vocabulary with flashcards"
     )
     db.add(activity)
     await db.commit()
@@ -46,15 +48,15 @@ async def sample_study_activity(db: AsyncSession) -> StudyActivity:
     return activity
 
 @pytest.fixture
-async def sample_study_session(
+async def sample_session(
     db: AsyncSession,
     sample_group: Group,
-    sample_study_activity: StudyActivity
-) -> StudySession:
-    """Create a sample study session for testing relationships."""
-    session = StudySession(
+    sample_activity: Activity
+) -> Session:
+    """Create a sample session for testing relationships."""
+    session = Session(
         group_id=sample_group.id,
-        study_activity_id=sample_study_activity.id
+        activity_id=sample_activity.id
     )
     db.add(session)
     await db.commit()
@@ -65,12 +67,12 @@ async def sample_study_session(
 async def sample_word_review(
     db: AsyncSession,
     sample_word: Word,
-    sample_study_session: StudySession
+    sample_session: Session
 ) -> WordReviewItem:
     """Create a sample word review for testing relationships."""
     review = WordReviewItem(
         word_id=sample_word.id,
-        study_session_id=sample_study_session.id,
+        session_id=sample_session.id,
         correct=True
     )
     db.add(review)

@@ -1,33 +1,25 @@
 from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from app.schemas.base import BaseSchema
+from app.schemas.activity import Activity
 
 
-class StudyActivityBase(BaseSchema):
-    name: str = Field(..., min_length=1)
-    url: HttpUrl
-
-
-class StudyActivity(StudyActivityBase):
-    id: int
-
-
-class StudySessionBase(BaseSchema):
-    """Base schema for study sessions."""
+class SessionBase(BaseSchema):
+    """Base schema for sessions."""
     group_id: int = Field(..., description="ID of the group being studied")
-    study_activity_id: int = Field(..., description="ID of the study activity being used")
+    activity_id: int = Field(..., description="ID of the activity being used")
 
 
-class StudySessionCreate(StudySessionBase):
-    """Schema for creating a new study session."""
+class SessionCreate(SessionBase):
+    """Schema for creating a new session."""
     pass
 
 
-class StudySessionUpdate(BaseSchema):
-    """Schema for updating a study session."""
+class SessionUpdate(BaseSchema):
+    """Schema for updating a session."""
     group_id: Optional[int] = Field(None, description="ID of the group being studied")
-    study_activity_id: Optional[int] = Field(None, description="ID of the study activity being used")
+    activity_id: Optional[int] = Field(None, description="ID of the activity being used")
 
 
 class WordReviewBase(BaseSchema):
@@ -44,7 +36,7 @@ class WordReviewCreate(WordReviewBase):
 class WordReview(WordReviewBase):
     """Schema for word review responses, includes database fields."""
     id: int
-    study_session_id: int
+    session_id: int
     created_at: str
 
     model_config = {
@@ -62,8 +54,8 @@ class WordReview(WordReviewBase):
         return v
 
 
-class StudySession(StudySessionBase):
-    """Schema for study session responses, includes database fields."""
+class Session(SessionBase):
+    """Schema for session responses, includes database fields."""
     id: int
     created_at: str
     reviews: List[WordReview] = Field(default_factory=list)
@@ -83,8 +75,8 @@ class StudySession(StudySessionBase):
         return v
 
 
-class StudySessionStats(BaseModel):
-    """Schema for study session statistics."""
+class SessionStats(BaseModel):
+    """Schema for session statistics."""
     total_reviews: int = Field(0, ge=0, description="Total number of reviews")
     correct_reviews: int = Field(0, ge=0, description="Number of correct reviews")
     accuracy: float = Field(0.0, ge=0.0, le=1.0, description="Percentage of correct reviews")

@@ -8,13 +8,13 @@ from sqlalchemy.exc import IntegrityError
 from app.models.word import Word
 from app.models.group import Group
 from app.models.word_group import WordGroup
-from app.models.study_session import StudySession
+from app.models.session import Session
 from app.models.word_review_item import WordReviewItem
 from app.schemas.word import WordCreate
 from app.schemas.group import GroupCreate
 from app.crud.word import word
 from app.crud.group import group
-from app.crud.study_session import study_session
+from app.crud.session import session
 from app.core.database import engine
 
 pytestmark = pytest.mark.asyncio

@@ -17,8 +17,9 @@
 │   │   ├── api
 │   │   │   └── v1
 │   │   │       ├── endpoints
+│   │   │       │   ├── activities.py
 │   │   │       │   ├── groups.py
-│   │   │       │   ├── study_sessions.py
+│   │   │       │   ├── sessions.py
 │   │   │       │   └── words.py
 │   │   │       └── router.py
 │   │   ├── core
@@ -26,35 +27,36 @@
 │   │   │   ├── database.py
 │   │   │   └── exceptions.py
 │   │   ├── crud
+│   │   │   ├── activity.py
 │   │   │   ├── base.py
 │   │   │   ├── group.py
-│   │   │   ├── study_activity.py
-│   │   │   ├── study_session.py
+│   │   │   ├── session.py
 │   │   │   └── word.py
 │   │   ├── main.py
 │   │   ├── models
-│   │   │   ├── __init__.py
+│   │   │   ├── activity.py
 │   │   │   ├── base.py
 │   │   │   ├── group.py
-│   │   │   ├── study_activity.py
-│   │   │   ├── study_session.py
+│   │   │   ├── session.py
 │   │   │   ├── word.py
 │   │   │   ├── word_group.py
 │   │   │   └── word_review_item.py
 │   │   ├── schemas
+│   │   │   ├── activity.py
 │   │   │   ├── base.py
 │   │   │   ├── group.py
-│   │   │   ├── study_session.py
+│   │   │   ├── session.py
 │   │   │   └── word.py
 │   │   └── services
+│   │       ├── activity_service.py
 │   │       ├── group_service.py
-│   │       ├── study_service.py
+│   │       ├── session_service.py
 │   │       └── word_service.py
 │   ├── htmlcov
 │   ├── pyproject.toml
 │   ├── seed
+│   │   ├── activities.json
 │   │   ├── groups.json
-│   │   ├── study_activities.json
 │   │   ├── word_groups.json
 │   │   ├── words.adjectives.json
 │   │   └── words.verbs.json
@@ -64,33 +66,37 @@
 │   │   │   └── test_data.py
 │   │   ├── test_api
 │   │   │   └── test_v1
+│   │   │       ├── test_activities.py
 │   │   │       ├── test_groups.py
-│   │   │       ├── test_study_sessions.py
+│   │   │       ├── test_sessions.py
 │   │   │       └── test_words.py
 │   │   ├── test_crud
+│   │   │   ├── test_activity_crud.py
 │   │   │   ├── test_group_crud.py
-│   │   │   ├── test_study_session_crud.py
+│   │   │   ├── test_session_crud.py
 │   │   │   └── test_word_crud.py
 │   │   ├── test_db
 │   │   │   ├── conftest.py
 │   │   │   └── test_integration.py
 │   │   ├── test_models
 │   │   │   ├── conftest.py
+│   │   │   ├── test_activity_model.py
 │   │   │   ├── test_group_model.py
-│   │   │   ├── test_study_activity_model.py
-│   │   │   ├── test_study_session_model.py
+│   │   │   ├── test_session_model.py
 │   │   │   ├── test_word_model.py
 │   │   │   └── test_word_review_item_model.py
 │   │   ├── test_schemas
 │   │   │   ├── conftest.py
+│   │   │   ├── test_activity_schema.py
 │   │   │   ├── test_base_schema.py
 │   │   │   ├── test_group_schema.py
-│   │   │   ├── test_study_session_schema.py
+│   │   │   ├── test_session_schema.py
 │   │   │   └── test_word_schema.py
 │   │   └── test_services
 │   │       ├── conftest.py
+│   │       ├── test_activity_service.py
 │   │       ├── test_group_service.py
-│   │       ├── test_study_service.py
+│   │       ├── test_session_service.py
 │   │       └── test_word_service.py
 │   └── uv.lock
 ├── data
@@ -180,4 +186,4 @@
         ├── init_db.py
         └── seed_db.py
 
-55 directories, 126 files
+55 directories, 132 files

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import words, groups, study_sessions
+from app.api.v1.endpoints import words, groups, sessions, activities
 
 api_router = APIRouter()
 
@@ -14,7 +14,12 @@ api_router.include_router(
     tags=["groups"]
 )
 api_router.include_router(
-    study_sessions.router,
-    prefix="/study_sessions",
-    tags=["study_sessions"]
+    sessions.router,
+    prefix="/sessions",
+    tags=["sessions"]
+)
+api_router.include_router(
+    activities.router,
+    prefix="/activities",
+    tags=["activities"]
 ) 

@@ -4,17 +4,17 @@ from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.base import CRUDBase
-from app.models.study_session import StudySession
+from app.models.session import Session
 from app.models.word_review_item import WordReviewItem
-from app.schemas.study_session import (
-    StudySessionCreate,
-    StudySessionUpdate,
+from app.schemas.session import (
+    SessionCreate,
+    SessionUpdate,
     WordReviewCreate,
-    StudySessionStats
+    SessionStats
 )
 
 
-class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUpdate]):
+class CRUDSession(CRUDBase[Session, SessionCreate, SessionUpdate]):
     async def get_multi(
         self,
         db,
@@ -23,8 +23,8 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
         limit: int = 100,
         order_by: Optional[str] = None,
         order: Optional[str] = "asc"
-    ) -> Tuple[List[StudySession], int]:
-        """Get multiple study sessions with pagination and total count."""
+    ) -> Tuple[List[Session], int]:
+        """Get multiple sessions with pagination and total count."""
         # Get total count
         count_query = select(func.count()).select_from(self.model)
         total = await db.scalar(count_query)
@@ -51,8 +51,8 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
         limit: int = 100,
         order_by: Optional[str] = None,
         order: Optional[str] = "asc"
-    ) -> Tuple[List[StudySession], int]:
-        """Get multiple study sessions with their reviews."""
+    ) -> Tuple[List[Session], int]:
+        """Get multiple sessions with their reviews."""
         # Get total count
         count_query = select(func.count()).select_from(self.model)
         total = await db.scalar(count_query)
@@ -80,8 +80,8 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
         self,
         db: AsyncSession,
         session_id: int
-    ) -> Optional[StudySession]:
-        """Get a study session with its reviews."""
+    ) -> Optional[Session]:
+        """Get a session with its reviews."""
         query = (
             select(self.model)
             .options(selectinload(self.model.reviews))
@@ -98,10 +98,10 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
         word_id: int,
         correct: bool
     ) -> WordReviewItem:
-        """Create a new word review for a study session."""
+        """Create a new word review for a session."""
         review = WordReviewCreate(word_id=word_id, correct=correct)
         db_review = WordReviewItem(
-            study_session_id=session_id,
+            session_id=session_id,
             word_id=review.word_id,
             correct=review.correct
         )
@@ -114,8 +114,8 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
         self,
         db: AsyncSession,
         session_id: int
-    ) -> Optional[StudySessionStats]:
-        """Get statistics for a study session."""
+    ) -> Optional[SessionStats]:
+        """Get statistics for a session."""
         # Verify session exists
         session = await self.get(db, session_id)
         if not session:
@@ -127,7 +127,7 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
                 func.count().label("total_reviews"),
                 func.sum(func.cast(WordReviewItem.correct, Integer)).label("correct_reviews")
             )
-            .where(WordReviewItem.study_session_id == session_id)
+            .where(WordReviewItem.session_id == session_id)
         )
         result = await db.execute(stats_query)
         row = result.one()
@@ -136,11 +136,11 @@ class CRUDStudySession(CRUDBase[StudySession, StudySessionCreate, StudySessionUp
         correct = row.correct_reviews or 0
         accuracy = (correct / total) if total > 0 else 0.0
 
-        return StudySessionStats(
+        return SessionStats(
             total_reviews=total,
             correct_reviews=correct,
             accuracy=accuracy
         )
 
 
-study_session = CRUDStudySession(StudySession) 
+session = CRUDSession(Session) 

@@ -39,14 +39,23 @@ TestingSessionLocal = sessionmaker(
 from app.models.word import Word
 from app.models.group import Group
 from app.models.word_group import WordGroup
-from app.models.study_activity import StudyActivity
-from app.models.study_session import StudySession
+from app.models.activity import Activity
+from app.models.session import Session
 from app.models.word_review_item import WordReviewItem
 
 # Register models with TestBase
-for model in [Word, Group, WordGroup, StudyActivity, StudySession, WordReviewItem]:
+for model in [Word, Group, WordGroup, Activity, Session, WordReviewItem]:
     model.__table__.to_metadata(TestBase.metadata)
 
+# Import test data
+from tests.fixtures.test_data import (
+    TEST_WORD,
+    TEST_WORD_2,
+    TEST_GROUP,
+    TEST_ACTIVITY,
+    TEST_ACTIVITY_2,
+    TEST_SESSION
+)
 
 @pytest.fixture(scope="session")
 def event_loop() -> Generator:
@@ -99,3 +108,47 @@ async def client(db: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
         yield ac
         
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+async def test_activity(db: AsyncSession) -> Activity:
+    """Create a test activity for testing."""
+    db_activity = Activity(**TEST_ACTIVITY)
+    db.add(db_activity)
+    await db.commit()
+    await db.refresh(db_activity)
+    return db_activity
+
+@pytest.fixture
+async def test_activity_2(db: AsyncSession) -> Activity:
+    """Create a second test activity for testing duplicates."""
+    db_activity = Activity(**TEST_ACTIVITY_2)
+    db.add(db_activity)
+    await db.commit()
+    await db.refresh(db_activity)
+    return db_activity
+
+@pytest.fixture
+async def test_group(db: AsyncSession) -> Group:
+    """Create a test group for testing."""
+    db_group = Group(name=TEST_GROUP["name"])
+    db.add(db_group)
+    await db.commit()
+    await db.refresh(db_group)
+    return db_group
+
+@pytest.fixture
+async def test_session(
+    db: AsyncSession,
+    test_activity: Activity,
+    test_group: Group
+) -> Session:
+    """Create a test session for testing."""
+    db_session = Session(
+        activity_id=test_activity.id,
+        group_id=test_group.id
+    )
+    db.add(db_session)
+    await db.commit()
+    await db.refresh(db_session)
+    return db_session

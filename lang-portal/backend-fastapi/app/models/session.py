@@ -5,28 +5,28 @@ from app.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
     from app.models.group import Group
-    from app.models.study_activity import StudyActivity
+    from app.models.activity import Activity
     from app.models.word_review_item import WordReviewItem
 
 
-class StudySession(Base, TimestampMixin):
-    __tablename__ = "study_sessions"
+class Session(Base, TimestampMixin):
+    __tablename__ = "sessions"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"), nullable=False)
-    study_activity_id: Mapped[int] = mapped_column(
-        ForeignKey("study_activities.id"),
+    activity_id: Mapped[int] = mapped_column(
+        ForeignKey("activities.id"),
         nullable=False
     )
 
     # Relationships
-    group: Mapped["Group"] = relationship("Group", back_populates="study_sessions")
-    study_activity: Mapped["StudyActivity"] = relationship(
-        "StudyActivity",
-        back_populates="study_sessions"
+    group: Mapped["Group"] = relationship("Group", back_populates="sessions")
+    activity: Mapped["Activity"] = relationship(
+        "Activity",
+        back_populates="sessions"
     )
     reviews: Mapped[List["WordReviewItem"]] = relationship(
         "WordReviewItem",
-        back_populates="study_session",
+        back_populates="session",
         cascade="all, delete-orphan"
     ) 
