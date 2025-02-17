@@ -1,47 +1,23 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import api from '../../api/axios';
+import { Activity, ApiResponse, PaginatedResponse } from '../../types/api';
 
-interface Session {
-    id: number;
-    group_id: number;
-    activity_id: number;
-    created_at: string;
-    reviews: Array<{
-        id: number;
-        word_id: number;
-        correct: boolean;
-        created_at: string;
-    }>;
-}
-
-interface PaginatedResponse<T> {
-    items: T[];
-    total: number;
-    page: number;
-    per_page: number;
-    total_pages: number;
-}
-
-interface ApiResponse<T> {
-    data: T;
-    error: string | null;
-}
-
-type SortField = 'created_at' | 'group_id' | 'activity_id';
+type SortField = 'name';
 type SortOrder = 'asc' | 'desc';
 
-const SessionsPage = () => {
+const ActivitiesPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [sortBy, setSortBy] = useState<SortField>('created_at');
-    const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+    const [sortBy, setSortBy] = useState<SortField>('name');
+    const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
     const pageSize = 25;
 
-    const { data, isLoading, error } = useQuery<ApiResponse<PaginatedResponse<Session>>, Error>({
-        queryKey: ['sessions', currentPage, sortBy, sortOrder],
+    const { data, isLoading, error } = useQuery<ApiResponse<PaginatedResponse<Activity>>, Error>({
+        queryKey: ['activities', currentPage, sortBy, sortOrder],
         queryFn: async () => {
             try {
-                const response = await api.get('/api/sessions', {
+                const response = await api.get('/api/activities', {
                     params: {
                         page: currentPage,
                         per_page: pageSize,
@@ -51,7 +27,7 @@ const SessionsPage = () => {
                 });
                 return response.data;
             } catch (err) {
-                console.error('Error fetching sessions:', err);
+                console.error('Error fetching activities:', err);
                 throw err;
             }
         },
@@ -82,7 +58,7 @@ const SessionsPage = () => {
     if (error) {
         return (
             <div className="text-red-500 dark:text-red-400 text-center p-4">
-                Error loading sessions. Please try again later.
+                Error loading activities. Please try again later.
             </div>
         );
     }
@@ -90,7 +66,7 @@ const SessionsPage = () => {
     return (
         <div className="space-y-4">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Sessions</h1>
+                <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">Activities</h1>
             </div>
             
             {/* Table */}
@@ -100,71 +76,69 @@ const SessionsPage = () => {
                         <tr>
                             <th 
                                 scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700"
-                                onClick={() => handleSort('created_at')}
+                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                             >
-                                Date {renderSortIcon('created_at')}
+                                ID
                             </th>
                             <th 
                                 scope="col" 
                                 className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700"
-                                onClick={() => handleSort('group_id')}
+                                onClick={() => handleSort('name')}
                             >
-                                Group {renderSortIcon('group_id')}
-                            </th>
-                            <th 
-                                scope="col" 
-                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700"
-                                onClick={() => handleSort('activity_id')}
-                            >
-                                Activity {renderSortIcon('activity_id')}
+                                Name {renderSortIcon('name')}
                             </th>
                             <th 
                                 scope="col" 
                                 className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                             >
-                                Reviews
+                                URL
                             </th>
                             <th 
                                 scope="col" 
                                 className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
                             >
-                                Score
+                                Description
+                            </th>
+                            <th 
+                                scope="col" 
+                                className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider"
+                            >
+                                Actions
                             </th>
                         </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700">
-                        {data?.data?.items.map((session) => {
-                            const totalReviews = session.reviews.length;
-                            const correctReviews = session.reviews.filter(r => r.correct).length;
-                            const accuracy = totalReviews > 0 ? (correctReviews / totalReviews) * 100 : 0;
-                            
-                            return (
-                                <tr key={session.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                        {new Date(session.created_at).toLocaleString()}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                        {session.group_id}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                        {session.activity_id}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
-                                        {totalReviews}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-green-600 dark:text-green-400">✓ {correctReviews}</span>
-                                            <span className="text-red-600 dark:text-red-400">✗ {totalReviews - correctReviews}</span>
-                                            <span className="text-slate-500 dark:text-slate-400">
-                                                ({accuracy.toFixed(1)}%)
-                                            </span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            );
-                        })}
+                        {data?.data?.items.map((activity) => (
+                            <tr key={activity.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                                    {activity.id}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                                    <div className="flex items-center space-x-3">
+                                        <img 
+                                            src={activity.image_url} 
+                                            alt={activity.name}
+                                            className="h-8 w-8 rounded-full"
+                                        />
+                                        <span>{activity.name}</span>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                                    {activity.url}
+                                </td>
+                                <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
+                                    {activity.description}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                                    <Link
+                                        to={`/activities/${activity.id}`}
+                                        className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                    >
+                                        Launch
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>
@@ -234,4 +208,4 @@ const SessionsPage = () => {
     );
 };
 
-export default SessionsPage; 
+export default ActivitiesPage; 

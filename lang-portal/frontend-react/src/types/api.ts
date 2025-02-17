@@ -39,26 +39,29 @@ export interface Group {
     words_count: number;
 }
 
-// Study Activity model
-export interface StudyActivity {
+// Activity model
+export interface Activity {
     id: number;
     name: string;
     url: string;
+    image_url: string;
+    description: string;
+    created_at: string;
 }
 
-// Study Session model
-export interface StudySession {
+// Session model
+export interface Session {
     id: number;
     group_id: number;
-    study_activity_id: number;
+    activity_id: number;
     created_at: string;
 }
 
 // Review model
-export interface WordReview {
+export interface WordReviewItem {
     id: number;
     word_id: number;
-    study_session_id: number;
+    session_id: number;
     correct: boolean;
     created_at: string;
 }

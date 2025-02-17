@@ -1,3 +1,8 @@
 [
-  {"name": "Typing Tutor", "url": "http://localhost:8080"}
+  {
+    "name": "Typing Tutor",
+    "url": "http://localhost:8080",
+    "image_url": "https://www.speldome.com/wp-content/uploads/thumbs/gamedistribution/A/amazing-squares.jpeg",
+    "description": "A typing tutor that helps you improve your typing skills."
+  }
 ]

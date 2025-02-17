@@ -5,7 +5,7 @@ const navItems = [
     { path: routes.home, label: 'Home' },
     { path: routes.words, label: 'Words' },
     { path: routes.groups, label: 'Groups' },
-    { path: routes.activities, label: 'Study Activities' },
+    { path: routes.activities, label: 'Activities' },
     { path: routes.sessions, label: 'Sessions' },
     { path: routes.settings, label: 'Settings' },
 ];

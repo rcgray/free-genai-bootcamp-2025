@@ -149,6 +149,9 @@ Reference the `docs/Project-File-Structure.md` file to locate the files you need
  - Study Activity CRUD: Not Yet Created (do we need one?) - if needed, it should be created in the `backend-fastapi/app/crud/` folder
 
 
+
+
+
 We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md.  We have a database schema defined in `docs/Database-Schema.md`.  Right now, our project uses alembic to manage migrations, but we are early in the development process and have not yet created any migrations.  We can delete the existing migrations, but we do have two files that aid in the creation of the database and initial seeding for a new deployment and also for testing.  These files are:
 
 - `scripts/create_db.py` - this file contains the code for creating the database
@@ -159,5 +162,20 @@ Additionally, we have a `backend-fastapi/seed/` directory that contains the seed
 What changes do we need to make to these files to create our new database?
 
 
+
+
+
+We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md .
+
+We are now extending our `activities` table of the database to be supported by our backend, including a new GET api endpoint that fetches all activities.  We need to update our backend codebase to support this new endpoint, including the necessary models, schemas, CRUD, and tests.
+
+We have recently changed what was our study_sessions table in the database (@Database-Schema.md ) to simply `sessions`, and we adjusted the project downstream from that, changing all mentions (including class names, tests, endpoints, etc.) to remove the "study_" prefix.  Now we have just updated our schema to have the `study_activities` to become `activities` and we need to change all the downstream aspects of this throughout the codebase.  Note that in our current implementation, we had previously referred to this table as "study" (e.g. backend-fastapi/app/services/study_service.py), and all of the other things (classes, endpoints, tests, etc.) named "study" will need to be changed to "activity" - can you search the backend codebase and find where these items might be and replace them?
+
+
+--- future prompts ---
+
+We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md .  All backend tests are passing.
+
+We have recently changed what was our study_sessions table in the database (@Database-Schema.md ) to simply `sessions`, and we have changed study_activities to `activities` and we adjusted the project downstream from that, changing all mentions (including class names, tests, endpoints, etc.) to remove the "study_" prefix. We would like to echo this forward into the frontend. Any class, url path, api call, etc. that mentions "study activity" (or some variant) should be changed to "activity".
 
 

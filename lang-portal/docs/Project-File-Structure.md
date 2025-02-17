@@ -139,16 +139,19 @@
 │   │   │       └── index.tsx
 │   │   ├── index.css
 │   │   ├── layouts
-│   │   │   ├── MainLayout
-│   │   │   │   ├── Footer
-│   │   │   │   │   └── index.tsx
-│   │   │   │   ├── Navigation
-│   │   │   │   │   └── index.tsx
+│   │   │   ├── ActivityLayout
 │   │   │   │   └── index.tsx
-│   │   │   └── StudyLayout
+│   │   │   └── MainLayout
+│   │   │       ├── Footer
+│   │   │       │   └── index.tsx
+│   │   │       ├── Navigation
+│   │   │       │   └── index.tsx
 │   │   │       └── index.tsx
 │   │   ├── main.tsx
 │   │   ├── pages
+│   │   │   ├── Activities
+│   │   │   │   ├── [id].tsx
+│   │   │   │   └── index.tsx
 │   │   │   ├── Error
 │   │   │   │   └── index.tsx
 │   │   │   ├── Groups
@@ -159,9 +162,6 @@
 │   │   │   ├── Sessions
 │   │   │   │   └── index.tsx
 │   │   │   ├── Settings
-│   │   │   │   └── index.tsx
-│   │   │   ├── StudyActivities
-│   │   │   │   ├── [id].tsx
 │   │   │   │   └── index.tsx
 │   │   │   └── Words
 │   │   │       └── index.tsx
