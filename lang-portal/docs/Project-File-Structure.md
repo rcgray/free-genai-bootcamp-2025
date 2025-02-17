@@ -103,6 +103,7 @@
 │   └── empty.db
 ├── docs
 │   ├── AI-TODO.md
+│   ├── API-Summary.md
 │   ├── Backend-Technical-Spec.md
 │   ├── Database-Schema.md
 │   ├── Database-Schema.png
@@ -128,6 +129,9 @@
 │   │   ├── api
 │   │   │   └── axios.ts
 │   │   ├── assets
+│   │   │   ├── images
+│   │   │   │   └── activities
+│   │   │   │       └── typingtutor.jpg
 │   │   │   └── styles
 │   │   │       └── index.css
 │   │   ├── config
@@ -169,7 +173,8 @@
 │   │   │   │   └── server.ts
 │   │   │   └── setup.ts
 │   │   ├── types
-│   │   │   └── api.ts
+│   │   │   ├── api.ts
+│   │   │   └── assets.d.ts
 │   │   ├── utils
 │   │   │   └── format.ts
 │   │   └── vite-env.d.ts
@@ -184,4 +189,4 @@
         ├── init_db.py
         └── seed_db.py
 
-55 directories, 130 files
+57 directories, 133 files

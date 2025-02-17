@@ -13,6 +13,17 @@ const ActivitiesPage = () => {
     const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
     const pageSize = 25;
 
+    // Function to get the image URL
+    const getImageUrl = (imageUrl: string) => {
+        try {
+            // Using the @assets alias we set up in vite.config.ts
+            return new URL(`/src/assets/${imageUrl}`, window.location.origin).href;
+        } catch (error) {
+            console.error('Error loading image:', error);
+            return ''; // Return empty string if image fails to load
+        }
+    };
+
     const { data, isLoading, error } = useQuery<ApiResponse<PaginatedResponse<Activity>>, Error>({
         queryKey: ['activities', currentPage, sortBy, sortOrder],
         queryFn: async () => {
@@ -116,9 +127,13 @@ const ActivitiesPage = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
                                     <div className="flex items-center space-x-3">
                                         <img 
-                                            src={activity.image_url} 
+                                            src={getImageUrl(activity.image_url)} 
                                             alt={activity.name}
-                                            className="h-8 w-8 rounded-full"
+                                            className="h-8 w-8 rounded-full object-cover"
+                                            onError={(e) => {
+                                                // If image fails to load, set a default or hide the image
+                                                (e.target as HTMLImageElement).style.display = 'none';
+                                            }}
                                         />
                                         <span>{activity.name}</span>
                                     </div>

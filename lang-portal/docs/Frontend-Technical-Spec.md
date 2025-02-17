@@ -98,8 +98,14 @@ src/
 ├── api/
 │   └── axios.ts              // API client configuration
 ├── assets/
-│   └── styles/
-│       └── index.css         // Global styles
+│   ├── images/              // Image assets (png, jpg, svg, etc.)
+│   │   ├── activities/      // Activity-related images
+│   │   ├── icons/          // Icon assets
+│   │   └── logos/          // Logo variations
+│   ├── fonts/              // Custom font files
+│   └── styles/             // Style-related assets
+│       ├── index.css       // Global styles
+│       └── tailwind.css    // Tailwind utilities
 ├── config/
 │   └── routes.ts             // Route definitions
 ├── contexts/
