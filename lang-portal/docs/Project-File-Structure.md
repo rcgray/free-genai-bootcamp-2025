@@ -103,12 +103,10 @@
 │   └── empty.db
 ├── docs
 │   ├── AI-TODO.md
-│   ├── Backend-File-Structure.md
 │   ├── Backend-Technical-Spec.md
 │   ├── Database-Schema.md
 │   ├── Database-Schema.png
 │   ├── Frontend-Design.md
-│   ├── Frontend-File-Structure.md
 │   ├── Frontend-Technical-Spec.md
 │   ├── Project-File-Structure.md
 │   ├── Prompts.md
@@ -186,4 +184,4 @@
         ├── init_db.py
         └── seed_db.py
 
-55 directories, 132 files
+55 directories, 130 files

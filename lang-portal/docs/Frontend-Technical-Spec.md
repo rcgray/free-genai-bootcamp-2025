@@ -32,8 +32,8 @@ A React-based single-page application (SPA) that provides:
      - Total number of sessions
      - Study streak (e.g., 3 days in a row)
 
-2. **Study Activities** (`/activities`)
-   - Comprehensive list of available study activities
+2. **Activities** (`/activities`)
+   - Comprehensive list of available activities
    - Abbreviated activity descriptions and previews
       - Thumbnail image
       - Name of the activity
@@ -42,8 +42,8 @@ A React-based single-page application (SPA) that provides:
    - Usage statistics per activity
    - Quick launch options
 
-3. **Study Activity Details** (`/activities/:id`)
-   - Detailed view of a specific study activity
+3. **Activity Details** (`/activities/:id`)
+   - Detailed view of a specific activity
    - Thumbnail image
    - Name of the activity
    - Description of the activity
@@ -71,9 +71,9 @@ A React-based single-page application (SPA) that provides:
    - Study activity options
    - Review history
 
-7. **Study Sessions** (`/study/:activityId/:groupId`)
-   - Study interface wrapper
-   - Details regarding the study session
+7. **Sessions** (`/sessions/:activityId/:groupId`)
+   - Session interface wrapper
+   - Details regarding the session
       - Name of the activity
       - Start/end time of the session
       - Number of words studied
@@ -91,34 +91,86 @@ A React-based single-page application (SPA) that provides:
 
 ## Component Architecture
 
-This tree structure represents the React component hierarchy and shows the relationship between components. Components are organized into:
-- Layout components that form the application shell
-- Page components that correspond to each route
-- Shared components that are reused across different pages
-
-Each major page component is broken down into its constituent parts, showing the main functional areas and their sub-components.
+The application follows a modular structure with clear separation of concerns:
 
 ```tsx
-// Layout Components
+src/
+├── api/
+│   └── axios.ts              // API client configuration
+├── assets/
+│   └── styles/
+│       └── index.css         // Global styles
+├── config/
+│   └── routes.ts             // Route definitions
+├── contexts/
+│   └── ThemeContext/
+│       └── index.tsx         // Theme management
+├── layouts/
+│   ├── ActivityLayout/       // Layout for activity pages
+│   │   └── index.tsx
+│   └── MainLayout/          // Main application layout
+│       ├── Navigation/
+│       │   └── index.tsx
+│       ├── Footer/
+│       │   └── index.tsx
+│       └── index.tsx
+├── pages/
+│   ├── Activities/          // Activity listing and details
+│   │   ├── [id].tsx
+│   │   └── index.tsx
+│   ├── Error/              // Error handling pages
+│   │   └── index.tsx
+│   ├── Groups/             // Group management
+│   │   ├── [id].tsx
+│   │   └── index.tsx
+│   ├── Home/               // Dashboard
+│   │   └── index.tsx
+│   ├── Sessions/           // Session management
+│   │   └── index.tsx
+│   ├── Settings/           // User preferences
+│   │   └── index.tsx
+│   └── Words/              // Word management
+│       └── index.tsx
+├── test/                   // Test configurations
+│   ├── mocks/
+│   │   ├── handlers.ts
+│   │   └── server.ts
+│   └── setup.ts
+├── types/                  // TypeScript type definitions
+│   └── api.ts
+├── utils/                  // Utility functions
+│   └── format.ts
+├── App.tsx                 // Root component
+├── Router.tsx             // Route configuration
+└── main.tsx              // Application entry point
+
+```
+
+### Component Hierarchy
+
+```tsx
+// Root Components
 App
 ├── Router
 └── Layout
-    ├── Navigation
-    │   ├── NavLinks
-    │   └── DarkModeToggle
-    ├── Content
-    └── Footer
+    ├── MainLayout
+    │   ├── Navigation
+    │   ├── Content
+    │   └── Footer
+    └── ActivityLayout
+        ├── Header
+        └── Content
 
 // Page Components
 Pages
 ├── HomePage
 │   ├── ProgressOverview
-│   │   ├── StudyStreak
+│   │   ├── Streak
 │   │   └── TotalProgress
 │   ├── RecentActivities
 │   └── QuickAccessGroups
 │
-├── StudyActivitiesPage
+├── ActivitiesPage
 │   ├── ActivityGrid
 │   │   └── ActivityCard
 │   │       ├── ActivityThumbnail
@@ -127,7 +179,7 @@ Pages
 │   ├── SearchActivities
 │   └── ActivityFilters
 │
-├── WordListPage
+├── WordsPage
 │   ├── WordGrid
 │   │   └── WordCard
 │   ├── SearchWords
@@ -146,7 +198,7 @@ Pages
 │   ├── GroupStats
 │   └── ActivityOptions
 │
-├── StudySessionPage
+├── SessionPage
 │   ├── ActivityFrame
 │   ├── ProgressTracker
 │   └── SessionControls
@@ -155,7 +207,7 @@ Pages
     ├── ThemeSettings
     ├── DisplaySettings
     ├── SortingPreferences
-    ├── StudyPreferences
+    ├── ActivityPreferences
     ├── LanguageSettings
     └── NotificationSettings
 
@@ -175,7 +227,7 @@ SharedComponents
 └── Feature
     ├── WordCard
     ├── GroupCard
-    ├── StudyActivityLauncher
+    ├── ActivityLauncher
     ├── StatisticsChart
     ├── SearchBar
     ├── FilterControls
@@ -220,7 +272,7 @@ function useWords(page: number, sortBy: string, order: 'asc' | 'desc') {
 ### Feature Components
 - WordCard
 - GroupCard
-- StudyActivityLauncher
+- ActivityLauncher
 - StatisticsChart
 - SearchBar
 - FilterControls

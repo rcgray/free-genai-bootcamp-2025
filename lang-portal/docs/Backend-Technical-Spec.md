@@ -49,7 +49,7 @@ Response:
     "data": {
         "items": [{
             "id": 0,
->>            "kanji": "新しい",
+            "kanji": "新しい",
             "romaji": "atarashii",
             "english": "new",
             "parts": [
@@ -69,6 +69,29 @@ Response:
 }
 ```
 
+##### GET /api/words/{word_id}
+Get a specific word by ID.
+
+Response:
+```json
+{
+    "data": {
+        "id": 0,
+        "kanji": "新しい",
+        "romaji": "atarashii",
+        "english": "new",
+        "parts": [
+            { "kanji": "新", "romaji": ["a","ta","ra"] },
+            { "kanji": "し", "romaji": ["shi"] },
+            { "kanji": "い", "romaji": ["i"] }
+        ],
+        "correct_count": 0,
+        "wrong_count": 0
+    },
+    "error": null
+}
+```
+
 ##### POST /api/words
 Create a new word
 
@@ -82,7 +105,7 @@ Request Body:
         { "kanji": "新", "romaji": ["a","ta","ra"] },
         { "kanji": "し", "romaji": ["shi"] },
         { "kanji": "い", "romaji": ["i"] }
-    ],
+    ]
 }
 ```
 
@@ -233,15 +256,92 @@ Response:
 ##### DELETE /api/groups/{group_id}
 Delete a group
 
-#### Study Sessions
+#### Activities
 
-##### GET /api/study_sessions
-Get paginated list of study sessions with their reviews
+##### GET /api/activities
+Get paginated list of activities.
+
+Query Parameters:
+- `page`: Integer, Page number (default: 1)
+- `per_page`: Integer, Items per page (default: 20, max: 100)
+- `sort_by`: String, Sort field ('name') (default: 'name')
+- `order`: String, Sort order ('asc' or 'desc') (default: 'asc')
+
+Response:
+```json
+{
+    "data": {
+        "items": [{
+            "id": 1,
+            "name": "Flashcards",
+            "url": "https://example.com/flashcards",
+            "image_url": "https://example.com/images/flashcards.png",
+            "description": "Practice vocabulary with flashcards"
+        }],
+        "total": 1,
+        "page": 1,
+        "per_page": 20,
+        "total_pages": 1
+    },
+    "error": null
+}
+```
+
+##### GET /api/activities/{activity_id}
+Get a specific activity by ID.
+
+Response:
+```json
+{
+    "data": {
+        "id": 1,
+        "name": "Flashcards",
+        "url": "https://example.com/flashcards",
+        "image_url": "https://example.com/images/flashcards.png",
+        "description": "Practice vocabulary with flashcards"
+    },
+    "error": null
+}
+```
+
+##### POST /api/activities
+Create a new activity.
+
+Request Body:
+```json
+{
+    "name": "Flashcards",
+    "url": "https://example.com/flashcards",
+    "image_url": "https://example.com/images/flashcards.png",
+    "description": "Practice vocabulary with flashcards"
+}
+```
+
+##### PUT /api/activities/{activity_id}
+Update an activity.
+
+Request Body:
+```json
+{
+    "name": "Flashcards",
+    "url": "https://example.com/flashcards",
+    "image_url": "https://example.com/images/flashcards.png",
+    "description": "Practice vocabulary with flashcards"
+}
+```
+
+##### DELETE /api/activities/{activity_id}
+Delete an activity.
+
+#### Sessions
+
+##### GET /api/sessions
+Get paginated list of sessions with their reviews
 
 Query Parameters:
 - `page`: Integer, Page number (default: 1)
 - `per_page`: Integer, Items per page (default: 25, max: 100)
-- `sort_by`: String, Sort field ('created_at', 'group_id', 'study_activity_id') (default: 'created_at')
+- `sort_by`: String, Sort field ('created_at', 'group_id', 'activity_id') (default: 'created_at')
 - `order`: String, Sort order ('asc' or 'desc') (default: 'asc')
 
 Response:
@@ -251,7 +351,7 @@ Response:
         "items": [{
             "id": 1,
             "group_id": 1,
-            "study_activity_id": 1,
+            "activity_id": 1,
             "created_at": "2024-03-20T12:00:00Z",
             "reviews": [{
                 "id": 1,
@@ -269,14 +369,14 @@ Response:
 }
 ```
 
-##### POST /api/study_sessions
-Create a new study session
+##### POST /api/sessions
+Create a new session
 
 Request Body:
 ```json
 {
     "group_id": 1,
-    "study_activity_id": 1
+    "activity_id": 1
 }
 ```
 
@@ -286,15 +386,15 @@ Response:
     "data": {
         "id": 1,
         "group_id": 1,
-        "study_activity_id": 1,
+        "activity_id": 1,
         "created_at": "2024-03-20T12:00:00Z"
     },
     "error": null
 }
 ```
 
-##### GET /api/study_sessions/{session_id}
-Get details of a specific study session
+##### GET /api/sessions/{session_id}
+Get details of a specific session
 
 Response:
 ```json
@@ -302,7 +402,7 @@ Response:
     "data": {
         "id": 1,
         "group_id": 1,
-        "study_activity_id": 1,
+        "activity_id": 1,
         "created_at": "2024-03-20T12:00:00Z",
         "reviews": [{
             "id": 1,
@@ -315,7 +415,7 @@ Response:
 }
 ```
 
-##### POST /api/study_sessions/{session_id}/review
+##### POST /api/sessions/{session_id}/review
 Log a review attempt for a word
 
 Request Body:
@@ -332,7 +432,7 @@ Response:
     "data": {
         "id": 1,
         "word_id": 1,
-        "study_session_id": 1,
+        "session_id": 1,
         "correct": true,
         "created_at": "2024-03-20T12:01:00Z"
     },
