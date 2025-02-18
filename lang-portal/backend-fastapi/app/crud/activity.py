@@ -45,7 +45,6 @@ class CRUDActivity(CRUDBase[Activity, ActivityCreate, ActivityUpdate]):
         db_obj = Activity(
             name=obj_in.name,
             url=str(obj_in.url),
-            image_url=str(obj_in.image_url),
             description=obj_in.description
         )
         db.add(db_obj)
@@ -64,8 +63,6 @@ class CRUDActivity(CRUDBase[Activity, ActivityCreate, ActivityUpdate]):
         update_data = obj_in.model_dump(exclude_unset=True)
         if "url" in update_data and update_data["url"] is not None:
             update_data["url"] = str(update_data["url"])
-        if "image_url" in update_data and update_data["image_url"] is not None:
-            update_data["image_url"] = str(update_data["image_url"])
         
         for field in update_data:
             setattr(db_obj, field, update_data[field])

@@ -53,23 +53,24 @@ class SessionService:
     async def create_session(
         db: AsyncSession,
         *,
-        group_id: int,
+        group_id: Optional[int],
         activity_id: int
     ) -> Session:
         """
         Create a new session with validation.
         
         Args:
-            group_id: ID of the group to study
+            group_id: Optional ID of the group to study
             activity_id: ID of the activity to use
             
         Raises:
             ValueError: If group or activity doesn't exist
         """
-        # Verify group exists
-        db_group = await group.get(db, group_id)
-        if not db_group:
-            raise ValueError(f"Group {group_id} not found")
+        # Verify group exists if provided
+        if group_id is not None:
+            db_group = await group.get(db, group_id)
+            if not db_group:
+                raise ValueError(f"Group {group_id} not found")
 
         # Verify activity exists
         query = select(Activity).filter(Activity.id == activity_id)

@@ -71,13 +71,15 @@ async def test_group_session_relationship(
     # Test that the group is in the session's group
     assert session.group_id == test_group.id
 
-    # Test cascade delete - deleting group should fail due to RESTRICT
-    with pytest.raises(IntegrityError):
-        await db.delete(group)
-        await db.commit()
+    # Test that deleting group sets session's group_id to NULL
+    await db.delete(group)
+    await db.commit()
 
-    # Rollback the failed delete
-    await db.rollback()
+    # Verify session still exists but has no group
+    stmt = select(Session).where(Session.id == test_session.id)
+    result = await db.execute(stmt)
+    session = result.scalar_one()
+    assert session.group_id is None
 
 async def test_group_attributes(
     sample_group: Group

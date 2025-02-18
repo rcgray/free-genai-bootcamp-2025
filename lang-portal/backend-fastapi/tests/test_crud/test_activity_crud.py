@@ -13,7 +13,6 @@ async def test_create_activity(db: AsyncSession):
     db_activity = await activity.create(db, obj_in=activity_in)
     assert db_activity.name == TEST_ACTIVITY["name"]
     assert db_activity.url == TEST_ACTIVITY["url"]
-    assert db_activity.image_url == TEST_ACTIVITY["image_url"]
     assert db_activity.description == TEST_ACTIVITY["description"]
 
 
@@ -28,7 +27,6 @@ async def test_get_activity(db: AsyncSession):
     assert stored_activity
     assert stored_activity.name == TEST_ACTIVITY["name"]
     assert stored_activity.url == TEST_ACTIVITY["url"]
-    assert stored_activity.image_url == TEST_ACTIVITY["image_url"]
     assert stored_activity.description == TEST_ACTIVITY["description"]
 
 
@@ -38,13 +36,11 @@ async def test_get_multi_activities(db: AsyncSession):
     activity_1 = ActivityCreate(
         name="Activity 1",
         url="http://example.com/1",
-        image_url="http://example.com/images/1.png",
         description="First activity"
     )
     activity_2 = ActivityCreate(
         name="Activity 2",
         url="http://example.com/2",
-        image_url="http://example.com/images/2.png",
         description="Second activity"
     )
     
@@ -91,7 +87,6 @@ async def test_update_activity(db: AsyncSession):
     update_data = {
         "name": "Updated Activity",
         "url": "http://example.com/updated",
-        "image_url": "http://example.com/images/updated.png",
         "description": "Updated description"
     }
     activity_update = ActivityUpdate(**update_data)
@@ -105,7 +100,6 @@ async def test_update_activity(db: AsyncSession):
     
     assert updated_activity.name == update_data["name"]
     assert updated_activity.url == update_data["url"]
-    assert updated_activity.image_url == update_data["image_url"]
     assert updated_activity.description == update_data["description"]
 
 

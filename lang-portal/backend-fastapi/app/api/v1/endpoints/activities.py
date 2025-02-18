@@ -77,7 +77,7 @@ async def create_activity(
     Create a new activity.
     
     Parameters:
-        activity_in: Activity data including name, url, image_url, and description
+        activity_in: Activity data including name, url, and description
     
     Returns:
         The created activity
@@ -90,7 +90,6 @@ async def create_activity(
             db,
             name=activity_in.name,
             url=str(activity_in.url),
-            image_url=str(activity_in.image_url),
             description=activity_in.description
         )
         return Activity.model_validate(db_activity)

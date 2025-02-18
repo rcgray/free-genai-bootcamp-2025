@@ -20,7 +20,6 @@ async def test_create_activity(client: AsyncClient, db: AsyncSession):
     data = response.json()["data"]
     assert data["name"] == TEST_ACTIVITY["name"]
     assert data["url"] == TEST_ACTIVITY["url"]
-    assert data["image_url"] == TEST_ACTIVITY["image_url"]
     assert data["description"] == TEST_ACTIVITY["description"]
 
 
@@ -40,7 +39,6 @@ async def test_get_activity(client: AsyncClient, db: AsyncSession):
     assert data["id"] == activity_id
     assert data["name"] == TEST_ACTIVITY["name"]
     assert data["url"] == TEST_ACTIVITY["url"]
-    assert data["image_url"] == TEST_ACTIVITY["image_url"]
     assert data["description"] == TEST_ACTIVITY["description"]
 
 
@@ -56,13 +54,11 @@ async def test_get_activities(client: AsyncClient, db: AsyncSession):
     activity_1 = {
         "name": "Activity 1",
         "url": "http://example.com/1",
-        "image_url": "http://example.com/images/1.png",
         "description": "First activity"
     }
     activity_2 = {
         "name": "Activity 2",
         "url": "http://example.com/2",
-        "image_url": "http://example.com/images/2.png",
         "description": "Second activity"
     }
     
@@ -115,7 +111,6 @@ async def test_update_activity(client: AsyncClient, db: AsyncSession):
     update_data = {
         "name": "Updated Activity",
         "url": "http://example.com/updated",
-        "image_url": "http://example.com/images/updated.png",
         "description": "Updated description"
     }
 
@@ -128,7 +123,6 @@ async def test_update_activity(client: AsyncClient, db: AsyncSession):
     data = response.json()["data"]
     assert data["name"] == update_data["name"]
     assert data["url"] == update_data["url"]
-    assert data["image_url"] == update_data["image_url"]
     assert data["description"] == update_data["description"]
 
 
@@ -137,7 +131,6 @@ async def test_update_activity_not_found(client: AsyncClient, db: AsyncSession):
     update_data = {
         "name": "Updated Activity",
         "url": "http://example.com/updated",
-        "image_url": "http://example.com/images/updated.png",
         "description": "Updated description"
     }
     response = await client.put(

@@ -16,7 +16,6 @@ async def test_get_activity(db: AsyncSession, test_activity: Activity) -> None:
     assert activity.id == test_activity.id
     assert activity.name == test_activity.name
     assert str(activity.url) == str(test_activity.url)
-    assert str(activity.image_url) == str(test_activity.image_url)
     assert activity.description == test_activity.description
 
 async def test_get_nonexistent_activity(db: AsyncSession) -> None:
@@ -43,13 +42,11 @@ async def test_create_activity(db: AsyncSession) -> None:
         db,
         name="New Activity",
         url="http://example.com/new",
-        image_url="http://example.com/images/new.png",
         description="A new test activity"
     )
     assert activity.id is not None
     assert activity.name == "New Activity"
     assert str(activity.url) == "http://example.com/new"
-    assert str(activity.image_url) == "http://example.com/images/new.png"
     assert activity.description == "A new test activity"
 
 async def test_create_duplicate_activity(db: AsyncSession, test_activity: Activity) -> None:
@@ -59,7 +56,6 @@ async def test_create_duplicate_activity(db: AsyncSession, test_activity: Activi
             db,
             name=test_activity.name,
             url="http://example.com/different",
-            image_url="http://example.com/images/different.png",
             description="Different description"
         )
     assert "already exists" in str(exc_info.value)
@@ -80,7 +76,6 @@ async def test_update_activity(db: AsyncSession, test_activity: Activity) -> Non
     assert updated_activity.description == "Updated description"
     # Unchanged fields should remain the same
     assert updated_activity.url == test_activity.url
-    assert updated_activity.image_url == test_activity.image_url
 
 async def test_update_nonexistent_activity(db: AsyncSession) -> None:
     """Test updating a nonexistent activity raises error."""

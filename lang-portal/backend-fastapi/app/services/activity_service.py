@@ -51,7 +51,6 @@ class ActivityService:
         *,
         name: str,
         url: str,
-        image_url: str,
         description: str
     ) -> Activity:
         """
@@ -60,7 +59,6 @@ class ActivityService:
         Args:
             name: Name of the activity
             url: URL for the activity
-            image_url: URL for the activity's image
             description: Description of the activity
         
         Raises:
@@ -75,7 +73,6 @@ class ActivityService:
         activity_in = ActivityCreate(
             name=name,
             url=url,
-            image_url=image_url,
             description=description
         )
         return await activity.create(db, obj_in=activity_in)
@@ -92,7 +89,7 @@ class ActivityService:
         
         Args:
             activity_id: ID of the activity to update
-            activity_in: Update data including optional name, url, image_url, and description
+            activity_in: Update data including optional name, url, and description
         
         Raises:
             ValueError: If updating to a name that already exists

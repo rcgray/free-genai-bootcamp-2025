@@ -39,7 +39,6 @@ async def sample_activity(db: AsyncSession) -> Activity:
     activity = Activity(
         name="Flashcards",
         url="http://example.com/flashcards",
-        image_url="http://example.com/images/flashcards.png",
         description="Practice vocabulary with flashcards"
     )
     db.add(activity)
