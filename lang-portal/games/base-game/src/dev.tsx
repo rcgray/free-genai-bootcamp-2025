@@ -8,8 +8,9 @@ import './dev.css';
 // Create a mock API client for development
 const apiClient = createApiClient('http://localhost:8000/api');
 
-// Get the game name from the last part of the directory path
-const GAME_URL = window.location.pathname.split('/').slice(-2)[0] || 'base-game';
+// Get the game name from Vite's define
+declare const __GAME_NAME__: string;
+const GAME_URL = __GAME_NAME__;
 
 // Format URL as a title (e.g., "base-game" -> "Base Game")
 const formatTitle = (url: string) => {

@@ -270,15 +270,13 @@ The platform supports the development of educational games that integrate with t
 cp -r games/base-game games/your-game-name
 cd games/your-game-name
 ```
+The game name that you choose (i.e., the name of the directory) is important because it will be used to identify the game in the database and in the URL.
 
 2. Update the package configuration:
 ```bash
 # Update package.json
 # - Change "name" to "@lang-portal/your-game-name"
 # - Update other metadata as needed
-
-# Update vite.config.ts
-# - Change "name" and "fileName" to "your-game-name"
 ```
 
 3. Install dependencies:
@@ -302,29 +300,19 @@ This will:
 - Hot reload changes
 - Simulate the frontend integration environment
 - Allow testing game mechanics and API integration
+- A form will be provided to allow you to add the game to the database
 
 #### Frontend Integration
 For testing the game within the main application:
 ```bash
 # From project root
-yarn dev:games  # Build all games
-cd frontend-react
-yarn dev        # Start frontend
+yarn dev:games  # Build all games an integrate into frontend
 ```
 This will:
 - Build the game as a library
 - Copy it to the frontend's public directory
 - Make it available through the Activities page
 
-4. Add your game to the activities database:
-```json
-{
-  "name": "Your Game Name",
-  "url": "your-game-name",
-  "image_url": "[no longer used]",
-  "description": "Description of your game."
-}
-```
 
 ### Game Interface
 
