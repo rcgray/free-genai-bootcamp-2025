@@ -197,8 +197,11 @@
 │   │   │   └── thumbnail.jpg
 │   │   ├── dist
 │   │   │   └── base-game.js
+│   │   ├── index.html
 │   │   ├── package.json
 │   │   ├── src
+│   │   │   ├── dev.css
+│   │   │   ├── dev.tsx
 │   │   │   └── index.tsx
 │   │   ├── tsconfig.json
 │   │   ├── tsconfig.node.json
@@ -237,4 +240,4 @@
 │       └── index.ts
 └── yarn.lock
 
-74 directories, 164 files
+74 directories, 167 files

@@ -42,6 +42,7 @@ export interface GameProps {
     apiClient: ApiClient;
     sessionId?: string;
     onGameComplete?: () => void;
+    title?: string;  // Optional to maintain backward compatibility
 }
 
 // API Client interface

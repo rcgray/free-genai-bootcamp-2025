@@ -10,15 +10,15 @@ import { GameProps } from '@lang-portal/shared/types';
  * 3. Handle the sessionId for tracking progress
  * 4. Call onGameComplete when the game ends
  */
-export function BaseGame({ apiClient, sessionId, onGameComplete }: GameProps) {
+export function BaseGame({ apiClient, sessionId, onGameComplete, title = 'Base Game' }: GameProps) {
   return (
     <div className="base-game">
-      <h1>Base Game Template</h1>
+      <h1>{title}</h1>
       <p>Replace this component with your game implementation.</p>
       <p>Current session: {sessionId || 'No session'}</p>
       <button 
         onClick={() => onGameComplete?.()} 
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className="dev-button-primary-red"
       >
         End Game
       </button>

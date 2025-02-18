@@ -260,7 +260,7 @@ The project includes several development tools and scripts:
 
 ## Game Development
 
-The platform supports the development of educational games that integrate with the learning management system. Each game is a standalone React application that can be developed and tested independently.
+The platform supports the development of educational games that integrate with the learning management system. Each game is a standalone React application that can be developed independently and later integrated into the frontend.
 
 ### Creating a New Game
 
@@ -275,7 +275,7 @@ cd games/your-game-name
 ```bash
 # Update package.json
 # - Change "name" to "@lang-portal/your-game-name"
-# - Update description and other metadata
+# - Update other metadata as needed
 
 # Update vite.config.ts
 # - Change "name" and "fileName" to "your-game-name"
@@ -286,17 +286,42 @@ cd games/your-game-name
 yarn install
 ```
 
-4. Start development:
+### Development Workflow
+
+Games can be developed in two modes:
+
+#### Standalone Development
+For active development of the game itself:
 ```bash
+# From game directory (e.g., games/your-game-name)
 yarn dev
 ```
+This will:
+- Start a development server (default: http://localhost:5173)
+- Provide a standalone development environment
+- Hot reload changes
+- Simulate the frontend integration environment
+- Allow testing game mechanics and API integration
 
-5. Add your game to the activities database:
+#### Frontend Integration
+For testing the game within the main application:
+```bash
+# From project root
+yarn dev:games  # Build all games
+cd frontend-react
+yarn dev        # Start frontend
+```
+This will:
+- Build the game as a library
+- Copy it to the frontend's public directory
+- Make it available through the Activities page
+
+4. Add your game to the activities database:
 ```json
 {
   "name": "Your Game Name",
   "url": "your-game-name",
-  "image_url": "images/activities/your-game.jpg",
+  "image_url": "[no longer used]",
   "description": "Description of your game."
 }
 ```
@@ -317,24 +342,7 @@ The base game template provides:
 - TypeScript and build setup
 - Example implementation of the game interface
 - Integration with the shared API client
-
-### Building and Testing
-
-1. Build your game:
-```bash
-# From project root
-yarn dev:games
-```
-
-This will:
-- Build the shared library
-- Build all games
-- Copy built files to the frontend's public directory
-
-2. Test your game:
-- Start the frontend development server
-- Navigate to the Activities page
-- Launch your game
+- Development environment for standalone testing
 
 ### Development Guidelines
 
