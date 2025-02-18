@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import { Activity, ApiResponse, PaginatedResponse } from '../../types/api';
 
@@ -7,6 +8,7 @@ type SortField = 'name';
 type SortOrder = 'asc' | 'desc';
 
 const ActivitiesPage = () => {
+    const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1);
     const [sortBy, setSortBy] = useState<SortField>('name');
     const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
@@ -54,7 +56,7 @@ const ActivitiesPage = () => {
     };
 
     const handleLaunch = (url: string) => {
-        window.open(url, '_blank', 'noopener,noreferrer');
+        navigate(`/activities/${url}`);
     };
 
     if (isLoading) {
@@ -93,7 +95,7 @@ const ActivitiesPage = () => {
                 {data?.data?.items.map((activity) => (
                     <div 
                         key={activity.id}
-                        className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                        className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col"
                     >
                         <div className="aspect-square relative overflow-hidden bg-slate-100 dark:bg-slate-700">
                             <img 
@@ -105,22 +107,26 @@ const ActivitiesPage = () => {
                                 }}
                             />
                         </div>
-                        <div className="p-4 space-y-4">
-                            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
-                                {activity.name}
-                            </h2>
-                            <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-                                {activity.description}
-                            </p>
-                            <button
-                                onClick={() => handleLaunch(activity.url)}
-                                className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200 flex items-center justify-center space-x-2"
-                            >
-                                <span>Launch Activity</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                                </svg>
-                            </button>
+                        <div className="flex flex-col flex-grow p-4">
+                            <div className="space-y-4 flex-grow">
+                                <h2 className="text-xl font-semibold text-slate-900 dark:text-white">
+                                    {activity.name}
+                                </h2>
+                                <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
+                                    {activity.description}
+                                </p>
+                            </div>
+                            <div className="pt-4 mt-auto">
+                                <button
+                                    onClick={() => handleLaunch(activity.url)}
+                                    className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200 flex items-center justify-center space-x-2"
+                                >
+                                    <span>Launch Activity</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 ))}

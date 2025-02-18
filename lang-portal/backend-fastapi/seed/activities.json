@@ -1,11 +1,5 @@
 [
   {
-    "name": "Base Game Template",
-    "url": "base-game",
-    "image_url": "[no longer used]",
-    "description": "A template for creating new educational games."
-  },
-  {
     "name": "Typing Tutor",
     "url": "typing-tutor",
     "image_url": "[no longer used]",
