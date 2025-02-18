@@ -54,7 +54,6 @@ def sample_activity_data() -> Dict[str, Any]:
         "id": 1,
         "name": "Flashcards",
         "url": "http://example.com/flashcards",
-        "image_url": "http://example.com/images/flashcards.png",
         "description": "Practice vocabulary with flashcards"
     }
 

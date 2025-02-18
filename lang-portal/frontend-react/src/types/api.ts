@@ -44,7 +44,6 @@ export interface Activity {
     id: number;
     name: string;
     url: string;
-    image_url: string;
     description: string;
     created_at: string;
 }

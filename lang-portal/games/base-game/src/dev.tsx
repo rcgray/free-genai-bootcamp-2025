@@ -34,6 +34,15 @@ const formatTitle = (url: string) => {
     .join(' ');
 };
 
+// Mock activity data
+const mockActivity = {
+    id: 1,
+    name: 'Base Game',
+    url: 'base-game',
+    description: 'A base game template for development',
+    created_at: new Date().toISOString()
+};
+
 // Create a development wrapper
 const DevWrapper = () => {
   const [sessionId, setSessionId] = React.useState<string | undefined>(undefined);
@@ -159,10 +168,7 @@ const DevWrapper = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          image_url: '[no longer used]',
-        }),
+        body: JSON.stringify(formData),
       });
       
       if (!response.ok) {
