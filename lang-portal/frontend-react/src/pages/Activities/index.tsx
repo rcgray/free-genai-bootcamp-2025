@@ -13,9 +13,11 @@ const ActivitiesPage = () => {
     const pageSize = 25;
 
     // Function to get the image URL
-    const getImageUrl = (imageUrl: string) => {
+    const getImageUrl = (activity: Activity) => {
+        // Construct URL based on the game's URL (name)
+        const dynamicUrl = `/games/images/${activity.url}.jpg`;
         try {
-            return new URL(`/src/assets/${imageUrl}`, window.location.origin).href;
+            return dynamicUrl;
         } catch (error) {
             console.error('Error loading image:', error);
             return ''; // Return empty string if image fails to load
@@ -95,7 +97,7 @@ const ActivitiesPage = () => {
                     >
                         <div className="aspect-square relative overflow-hidden bg-slate-100 dark:bg-slate-700">
                             <img 
-                                src={getImageUrl(activity.image_url)} 
+                                src={getImageUrl(activity)} 
                                 alt={activity.name}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {

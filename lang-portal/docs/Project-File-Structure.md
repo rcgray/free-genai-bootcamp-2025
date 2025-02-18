@@ -124,6 +124,10 @@
 │   ├── postcss.config.js
 │   ├── public
 │   │   ├── games
+│   │   │   ├── base-game.js
+│   │   │   ├── images
+│   │   │   │   ├── base-game.jpg
+│   │   │   │   └── typing-tutor.jpg
 │   │   │   └── typing-tutor.js
 │   │   └── vite.svg
 │   ├── src
@@ -188,7 +192,20 @@
 │   ├── vite.config.ts
 │   └── yarn.lock
 ├── games
+│   ├── base-game
+│   │   ├── assets
+│   │   │   └── thumbnail.jpg
+│   │   ├── dist
+│   │   │   └── base-game.js
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   └── index.tsx
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.node.json
+│   │   └── vite.config.ts
 │   └── typing-tutor
+│       ├── assets
+│       │   └── thumbnail.jpg
 │       ├── dist
 │       │   └── typing-tutor.js
 │       ├── package.json
@@ -220,4 +237,4 @@
 │       └── index.ts
 └── yarn.lock
 
-68 directories, 153 files
+74 directories, 164 files
