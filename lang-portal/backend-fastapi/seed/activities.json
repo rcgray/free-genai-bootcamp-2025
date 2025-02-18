@@ -1,7 +1,7 @@
 [
   {
     "name": "Typing Tutor",
-    "url": "http://localhost:8080",
+    "url": "typing-tutor",
     "image_url": "images/activities/typingtutor.jpg",
     "description": "A typing tutor that helps you improve your typing skills."
   }

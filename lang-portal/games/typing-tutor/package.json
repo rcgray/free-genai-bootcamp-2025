@@ -1,5 +1,5 @@
 {
-  "name": "typing-tutor",
+  "name": "@lang-portal/typing-tutor",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lang-portal/shared": "workspace:*",
+    "@lang-portal/shared": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

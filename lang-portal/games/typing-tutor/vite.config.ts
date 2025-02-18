@@ -8,7 +8,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.tsx'),
-      name: 'TypingTutor',
+      name: 'typing-tutor',
       fileName: 'typing-tutor',
       formats: ['es'],
     },
@@ -19,6 +19,7 @@ export default defineConfig({
           react: 'React',
           'react-dom': 'ReactDOM',
         },
+        format: 'es',
       },
     },
   },

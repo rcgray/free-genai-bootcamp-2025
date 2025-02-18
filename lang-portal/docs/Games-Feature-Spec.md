@@ -30,9 +30,9 @@ This document outlines the architecture and implementation plan for integrating 
 │       ├── src/
 │       ├── public/
 │       └── dist/       # Built game files
-└── shared/             # New shared code directory
-    ├── api-client/     # Shared API client
-    └── types/          # Shared TypeScript types
+└── shared/             # Code shared between frontend and games
+    ├── api-client/     # Common API client library
+    └── types/          # Shared TypeScript interfaces
 ```
 
 ### Database Usage
@@ -57,21 +57,23 @@ interface GameProps {
 ```
 
 ### 2. Integration Method
-- Use dynamic module federation with Vite
-- Runtime loading of game modules
-- Lazy loading through React.lazy()
-- Support for iframe-based isolation if needed
+- Use dynamic imports with React.lazy()
+- Games are built as ES modules
+- Games are served as static files from public directory
+- Support for iframe-based isolation if needed in the future
 
 ### 3. Shared Code
 #### API Client
 - TypeScript client for backend API
-- Error handling
-- Type definitions
+- Used by both games and frontend
+- Provides consistent API interaction patterns
+- Handles error handling and response types
 
 #### Common Types
-- Game props interfaces
+- TypeScript interfaces shared between frontend and games
 - Activity and session types
-- Shared utility types
+- API request/response types
+- Game component interfaces
 
 ## Development Workflow
 
@@ -79,16 +81,18 @@ interface GameProps {
 1. Create new game directory in `games/`
 2. Initialize with standard template
 3. Develop and test independently
-4. Build game assets
+4. Build game assets using `yarn build` or `yarn dev:games`
 
 ### 2. Game Integration
-1. Deploy built game assets to static hosting
-2. Update activities table with module URL in the existing url field
-3. Test integration with main application
+1. Build games using `yarn dev:games` script
+2. Games are automatically copied to frontend's public directory
+3. Update activities table with game URL (e.g., `/games/game-name.js`)
+4. Test integration with main application
 
 ### 3. Build Process
-1. Independent game builds
-2. Asset deployment
+1. Build shared library
+2. Build all games
+3. Copy built files to frontend public directory
 
 ## Testing Strategy
 
@@ -127,16 +131,16 @@ interface GameProps {
 
 ## Implementation Checklist
 
-### Phase 1: Infrastructure Setup
-- [ ] Create games directory structure
-- [ ] Set up shared code directory
-- [ ] Configure build system
+### Phase 1: Infrastructure Setup ✅
+- [x] Create games directory structure
+- [x] Set up shared code directory
+- [x] Configure build system
 
-### Phase 2: Core Integration
-- [ ] Implement dynamic module loading
-- [ ] Create game component template
-- [ ] Set up shared API client
-- [ ] Implement session management
+### Phase 2: Core Integration ✅
+- [x] Implement dynamic module loading
+- [x] Create game component template
+- [x] Set up shared API client
+- [x] Implement session management
 
 ### Phase 3: First Game Implementation
 - [ ] Create example game

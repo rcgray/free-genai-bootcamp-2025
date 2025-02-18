@@ -172,10 +172,64 @@ We are now extending our `activities` table of the database to be supported by o
 We have recently changed what was our study_sessions table in the database (@Database-Schema.md ) to simply `sessions`, and we adjusted the project downstream from that, changing all mentions (including class names, tests, endpoints, etc.) to remove the "study_" prefix.  Now we have just updated our schema to have the `study_activities` to become `activities` and we need to change all the downstream aspects of this throughout the codebase.  Note that in our current implementation, we had previously referred to this table as "study" (e.g. backend-fastapi/app/services/study_service.py), and all of the other things (classes, endpoints, tests, etc.) named "study" will need to be changed to "activity" - can you search the backend codebase and find where these items might be and replace them?
 
 
---- future prompts ---
-
 We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md .  All backend tests are passing.
 
 We have recently changed what was our study_sessions table in the database (@Database-Schema.md ) to simply `sessions`, and we have changed study_activities to `activities` and we adjusted the project downstream from that, changing all mentions (including class names, tests, endpoints, etc.) to remove the "study_" prefix. We would like to echo this forward into the frontend. Any class, url path, api call, etc. that mentions "study activity" (or some variant) should be changed to "activity".
 
+
+
+
+We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md. The backend code is in the subdirectory `backend-fastapi`, and the frontend code is in the subdirectory `frontend-react`. We have a database schema defined in `docs/Database-Schema.md`. All backend tests are passing.
+
+I would like to review some of our documentation files to make sure they are up to date and accurate. We have recently made some significant changes to the code and database, including renaming a field called "study_sessions" to "sessions" and "study_activities" to "activities". Please take a look at the following files and make sure they are up to date:
+
+- `docs/Backend-Technical-Spec.md`
+- `docs/Frontend-Technical-Spec.md`
+- `docs/Frontend-Design.md`
+
+
+
+Importantly, I would like us to examine @Backend-Technical-Spec.md and compare it to our actual code in the backend-fastapi directory.  For instance, the API endpoints in backend-fastapi/app/api/v1/ are not consistent with the API endpoints described in @Backend-Technical-Spec.md.  Can you examine the code and the spec and make sure they match?
+
+Also, here is a file @API-Summary.md . It is currently empty, but let's populate it with a summary of the API endpoints that we have implemented so far.  We can use this file to help us keep track of the API endpoints and their descriptions as we add them.
+
+
+Now let's take a look at the @Frontend-Technical-Spec.md file and perform a similar review. The actual code for the frontend is in the frontend-react directory, and the file hierarchy is currently in @Project-File-Structure.md. Let us look at the actual components and pages that are implemented in the frontend-react directory and make whatever changes to @Frontend-Technical-Spec.md that are needed to match the actual code.
+
+
+
+We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md. The backend code is in the subdirectory `backend-fastapi`, and the frontend code is in the subdirectory `frontend-react`. We have a database schema defined in `docs/Database-Schema.md` with summary of API endpoints in @API-Summary.md . All backend tests are passing and the frontend runs great.
+
+I would like to create a set of activities (most of them "games") that I can develop as separate projects but are launched within this app.  These games will run in the browser and will be launched from the activities page.  Being part of the app, they will have the ability to use the app's backend API, and they will be able to use the app's database through that API, such as POST /api/sessions to create a new session record and subsequently POST /api/sessions/{session_id}/review to log a review attempt for a word while the user plays the game.
+
+Before we begin, I need some help planning how to structure these sub-projects within the monoproject repository.  Here are some of the things I need to consider:
+
+- These games will be written in React.js, and will be launched from the activities page.
+- Other libraries, such as Photon, might be used to develop some of them, but not necessarily all.
+- These games will be developed as separate projects, but will be launched from the activities page.
+- The games should be standalone projects that function even when the frontend app is not running.
+- The projects in which the games are developed should be able to run independently of the frontend app, including dev libraries and tooling,but there should be an easy way to deploy the final code such that the frontend can use it if the game is enabled in the database.
+- The games should be able to be added and removed frequently, where the games list is managed by the activities table in the database. The frontend should be flexible enough to allow for this.
+- The games should still live within this monoproject repository.
+- The games should be played from within a page on this app (perhaps something like /activities/game-name), whether via an iframe or a new tab/window.
+- The games should be able to use the app's database through the backend API.
+- The games should be able to use the app's backend API to create new session records and log review attempts for words.
+
+Questions about the organization of the games:
+
+- Where should the code for the game projects live? (perhaps a new games directory off the project root?)
+- How do games integrate with the frontend when they are enabled? How does the frontend "see" the game code and run it?  Does it have to be manually copied into the frontend-react directory, or can the frontend app reference the game code dynamically?
+- What are the industry best practices for handling this kind of scenario?
+
+
+
+
+
+
+
+
+
+
+
+--- future prompts ---
 

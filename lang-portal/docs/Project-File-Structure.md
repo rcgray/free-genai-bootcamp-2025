@@ -109,6 +109,7 @@
 │   ├── Database-Schema.png
 │   ├── Frontend-Design.md
 │   ├── Frontend-Technical-Spec.md
+│   ├── Games-Feature-Spec.md
 │   ├── Project-File-Structure.md
 │   ├── Prompts.md
 │   └── Tasks-Technical-Spec.md
@@ -122,6 +123,8 @@
 │   ├── package.json
 │   ├── postcss.config.js
 │   ├── public
+│   │   ├── games
+│   │   │   └── typing-tutor.js
 │   │   └── vite.svg
 │   ├── src
 │   │   ├── App.tsx
@@ -184,9 +187,37 @@
 │   ├── tsconfig.node.json
 │   ├── vite.config.ts
 │   └── yarn.lock
-└── scripts
-    └── db
-        ├── init_db.py
-        └── seed_db.py
+├── games
+│   └── typing-tutor
+│       ├── dist
+│       │   └── typing-tutor.js
+│       ├── package.json
+│       ├── src
+│       │   └── index.tsx
+│       ├── tsconfig.json
+│       ├── tsconfig.node.json
+│       └── vite.config.ts
+├── package.json
+├── scripts
+│   ├── build-games.js
+│   └── db
+│       ├── init_db.py
+│       └── seed_db.py
+├── shared
+│   ├── api-client
+│   │   └── index.ts
+│   ├── dist
+│   │   ├── api-client
+│   │   │   ├── index.d.ts
+│   │   │   └── index.js
+│   │   └── types
+│   │       ├── index.d.ts
+│   │       └── index.js
+│   ├── index.ts
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── types
+│       └── index.ts
+└── yarn.lock
 
-57 directories, 133 files
+68 directories, 153 files

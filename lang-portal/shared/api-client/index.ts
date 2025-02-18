@@ -1,4 +1,4 @@
-import { ApiClient, Session, WordReviewData } from '../types';
+import { ApiClient, Session, WordReview, ApiResponse } from '../types';
 
 class ApiClientImpl implements ApiClient {
   private baseUrl: string;
@@ -14,25 +14,28 @@ class ApiClientImpl implements ApiClient {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ group_id: groupId, activity_id: activityId }),
+        body: JSON.stringify({
+          group_id: groupId,
+          activity_id: activityId,
+        }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to create session');
       }
 
-      const data = await response.json();
+      const data: ApiResponse<Session> = await response.json();
       return data.data;
     },
 
-    review: async (sessionId: number, data: WordReviewData): Promise<void> => {
+    review: async (sessionId: number, data: WordReview): Promise<void> => {
       const response = await fetch(`${this.baseUrl}/sessions/${sessionId}/review`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          word_id: data.wordId,
+          word_id: data.word_id,
           correct: data.correct,
         }),
       });

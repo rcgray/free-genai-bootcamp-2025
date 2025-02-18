@@ -264,11 +264,16 @@ The platform supports the development of educational games as independent sub-pr
 
 ### Building Existing Games
 
-1. First, build the shared code library:
+1. First, build the shared code library and all games:
 ```bash
 # From project root
-yarn build:shared
+yarn dev:games
 ```
+
+This will:
+- Build the shared library (@lang-portal/shared)
+- Build all games
+- Copy built game files to the frontend's public directory
 
 2. Build a specific game:
 ```bash
@@ -277,8 +282,8 @@ cd games/typing-tutor
 yarn install
 yarn build
 
-# Or build all games from project root
-yarn build:games
+# The built game will be available at:
+# frontend-react/public/games/typing-tutor.js
 ```
 
 3. Development mode:
@@ -333,12 +338,33 @@ export function YourGame({ apiClient, sessionId, onGameComplete }: GameProps) {
 export default YourGame;
 ```
 
+### Deploying a Game
+
+1. Build the game:
+```bash
+# From project root
+yarn dev:games
+```
+
+2. Add the game to the activities database:
+```json
+{
+  "name": "Your Game Name",
+  "url": "/games/your-game-name.js",
+  "image_url": "images/activities/your-game.jpg",
+  "description": "Description of your game."
+}
+```
+
+3. The game will be automatically loaded by the frontend when users access it through the activities page.
+
 ### Game Development Guidelines
 
 1. **Project Structure**
    - Each game is a standalone React project
    - Uses shared types and API client from `@lang-portal/shared`
    - Can include any additional dependencies needed (game engines, etc.)
+   - Built files are automatically copied to `frontend-react/public/games/`
 
 2. **Required Interface**
 ```typescript
@@ -356,7 +382,7 @@ interface GameProps {
 
 4. **Development Workflow**
    - Develop and test independently using `yarn dev`
-   - Build using `yarn build`
+   - Build using `yarn build` or `yarn dev:games` from root
    - Test integration with main app
    - Update activities table in database to enable the game
 
@@ -364,3 +390,9 @@ interface GameProps {
    - Install game engine as dependency in game's package.json
    - Configure as needed in game's vite.config.ts
    - Implement game logic within the React component
+
+6. **Build Output**
+   - Games are built as ES modules
+   - Built files are automatically copied to the frontend's public directory
+   - Games are served as static files from `/games/{game-name}.js`
+   - No manual file copying or deployment needed

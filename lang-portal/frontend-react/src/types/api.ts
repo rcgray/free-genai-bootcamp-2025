@@ -65,3 +65,9 @@ export interface WordReviewItem {
     correct: boolean;
     created_at: string;
 }
+
+// Word Review model
+export interface WordReview {
+    word_id: number;
+    correct: boolean;
+}
