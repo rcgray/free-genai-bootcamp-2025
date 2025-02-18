@@ -109,6 +109,7 @@
 │   ├── Database-Schema.png
 │   ├── Frontend-Design.md
 │   ├── Frontend-Technical-Spec.md
+│   ├── Game-Kanji-Snake.md
 │   ├── Games-Feature-Spec.md
 │   ├── Project-File-Structure.md
 │   ├── Prompts.md
@@ -206,6 +207,20 @@
 │   │   ├── tsconfig.json
 │   │   ├── tsconfig.node.json
 │   │   └── vite.config.ts
+│   ├── kanji-snake
+│   │   ├── assets
+│   │   │   └── thumbnail.jpg
+│   │   ├── dist
+│   │   │   └── base-game.js
+│   │   ├── index.html
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── dev.css
+│   │   │   ├── dev.tsx
+│   │   │   └── index.tsx
+│   │   ├── tsconfig.json
+│   │   ├── tsconfig.node.json
+│   │   └── vite.config.ts
 │   └── typing-tutor
 │       ├── assets
 │       │   └── thumbnail.jpg
@@ -240,4 +255,4 @@
 │       └── index.ts
 └── yarn.lock
 
-74 directories, 167 files
+78 directories, 178 files
