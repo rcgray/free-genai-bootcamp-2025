@@ -275,7 +275,6 @@ Response:
             "id": 1,
             "name": "Flashcards",
             "url": "https://example.com/flashcards",
-            "image_url": "https://example.com/images/flashcards.png",
             "description": "Practice vocabulary with flashcards"
         }],
         "total": 1,
@@ -297,7 +296,6 @@ Response:
         "id": 1,
         "name": "Flashcards",
         "url": "https://example.com/flashcards",
-        "image_url": "https://example.com/images/flashcards.png",
         "description": "Practice vocabulary with flashcards"
     },
     "error": null
@@ -312,7 +310,6 @@ Request Body:
 {
     "name": "Flashcards",
     "url": "https://example.com/flashcards",
-    "image_url": "https://example.com/images/flashcards.png",
     "description": "Practice vocabulary with flashcards"
 }
 ```
@@ -325,7 +322,6 @@ Request Body:
 {
     "name": "Flashcards",
     "url": "https://example.com/flashcards",
-    "image_url": "https://example.com/images/flashcards.png",
     "description": "Practice vocabulary with flashcards"
 }
 ```
@@ -375,7 +371,7 @@ Create a new session
 Request Body:
 ```json
 {
-    "group_id": 1,
+    "group_id": 1,  // Optional - if omitted or null, session includes all words
     "activity_id": 1
 }
 ```
@@ -385,7 +381,7 @@ Response:
 {
     "data": {
         "id": 1,
-        "group_id": 1,
+        "group_id": 1,  // Can be null if no group was specified
         "activity_id": 1,
         "created_at": "2024-03-20T12:00:00Z"
     },
@@ -401,7 +397,7 @@ Response:
 {
     "data": {
         "id": 1,
-        "group_id": 1,
+        "group_id": 1,  // Can be null if no group was specified
         "activity_id": 1,
         "created_at": "2024-03-20T12:00:00Z",
         "reviews": [{
@@ -416,7 +412,7 @@ Response:
 ```
 
 ##### POST /api/sessions/{session_id}/review
-Log a review attempt for a word
+Log a review attempt for a word. Note: This endpoint will return a 400 error if the session has no associated group.
 
 Request Body:
 ```json

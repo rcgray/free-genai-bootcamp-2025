@@ -36,14 +36,12 @@ TEST_GROUP = {
 TEST_ACTIVITY = {
     "name": "Flashcards",
     "url": "http://localhost:5173/study/flashcards",
-    "image_url": "http://localhost:5173/images/flashcards.png",
     "description": "Practice vocabulary with flashcards"
 }
 
 TEST_ACTIVITY_2 = {
     "name": "Matching Game",
     "url": "http://localhost:5173/study/matching",
-    "image_url": "http://localhost:5173/images/matching.png",
     "description": "Practice vocabulary by matching words"
 }
 
@@ -93,7 +91,6 @@ async def create_test_activity(db, activity_data: Dict = TEST_ACTIVITY) -> Dict:
         "id": activity.id,
         "name": activity.name,
         "url": activity.url,
-        "image_url": activity.image_url,
         "description": activity.description
     }
 

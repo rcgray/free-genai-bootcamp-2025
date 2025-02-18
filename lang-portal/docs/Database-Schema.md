@@ -37,13 +37,12 @@ erDiagram
         integer id PK "PRIMARY KEY AUTOINCREMENT"
         text name "NOT NULL"
         text url "NOT NULL"
-        text image_url "NOT NULL"
         text description "NOT NULL"
     }
 
     sessions {
         integer id PK "PRIMARY KEY AUTOINCREMENT"
-        integer group_id FK "NOT NULL REFERENCES groups(id)"
+        integer group_id FK "REFERENCES groups(id)"
         integer activity_id FK "NOT NULL REFERENCES activities(id)"
         datetime created_at "NOT NULL DEFAULT CURRENT_TIMESTAMP"
     }
@@ -137,7 +136,6 @@ CREATE TABLE activities (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     url TEXT NOT NULL,
-    image_url TEXT NOT NULL,
     description TEXT NOT NULL
 );
 ```
@@ -146,24 +144,25 @@ Fields:
 - `id`: Unique identifier for the activity
 - `name`: Name of the activity
 - `url`: URL where the activity can be launched
-- `image_url`: URL to the activity's thumbnail image
 - `description`: Detailed description of the activity
 
 ### Sessions Table
 ```sql
 CREATE TABLE sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    group_id INTEGER NOT NULL,
-    activity_id INTEGER NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE RESTRICT,
-    FOREIGN KEY (activity_id) REFERENCES activities (id) ON DELETE RESTRICT
+    group_id INTEGER REFERENCES groups(id),
+    activity_id INTEGER NOT NULL REFERENCES activities(id),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_sessions_group_id ON sessions(group_id);
+CREATE INDEX idx_sessions_activity_id ON sessions(activity_id);
+CREATE INDEX idx_sessions_created_at ON sessions(created_at);
 ```
 
 Fields:
 - `id`: Unique identifier for the session
-- `group_id`: Reference to the group being studied
+- `group_id`: Optional reference to the group being studied (NULL means "all words")
 - `activity_id`: Reference to the activity being used
 - `created_at`: Timestamp when the session was created
 - Note: RESTRICT on delete prevents loss of study history

@@ -7,7 +7,7 @@ from app.schemas.activity import Activity
 
 class SessionBase(BaseSchema):
     """Base schema for sessions."""
-    group_id: int = Field(..., description="ID of the group being studied")
+    group_id: Optional[int] = Field(None, description="ID of the group being studied. If not provided, includes all words.")
     activity_id: int = Field(..., description="ID of the activity being used")
 
 
@@ -18,7 +18,7 @@ class SessionCreate(SessionBase):
 
 class SessionUpdate(BaseSchema):
     """Schema for updating a session."""
-    group_id: Optional[int] = Field(None, description="ID of the group being studied")
+    group_id: Optional[int] = Field(None, description="ID of the group being studied. If not provided, includes all words.")
     activity_id: Optional[int] = Field(None, description="ID of the activity being used")
 
 

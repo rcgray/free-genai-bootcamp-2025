@@ -1,13 +1,13 @@
-from pydantic import Field, HttpUrl, AnyUrl
+from datetime import datetime
+from pydantic import Field
 from app.schemas.base import BaseSchema
 
 
 class ActivityBase(BaseSchema):
-    """Base schema for Activity with common attributes."""
-    name: str = Field(..., min_length=1, description="Name of the activity")
-    url: str = Field(..., description="URL for the activity")
-    image_url: str = Field(..., description="URL for the activity's image")
-    description: str = Field("", description="Description of the activity")
+    """Base schema for activities."""
+    name: str = Field(..., description="Name of the activity")
+    url: str = Field(..., description="URL where the activity can be launched")
+    description: str = Field(..., description="Description of the activity")
 
 
 class ActivityCreate(ActivityBase):
@@ -16,10 +16,9 @@ class ActivityCreate(ActivityBase):
 
 
 class ActivityUpdate(BaseSchema):
-    """Schema for updating an existing activity. All fields are optional."""
-    name: str | None = Field(None, min_length=1, description="Name of the activity")
-    url: str | None = Field(None, description="URL for the activity")
-    image_url: str | None = Field(None, description="URL for the activity's image")
+    """Schema for updating an activity."""
+    name: str | None = Field(None, description="Name of the activity")
+    url: str | None = Field(None, description="URL where the activity can be launched")
     description: str | None = Field(None, description="Description of the activity")
 
 
@@ -28,5 +27,8 @@ class Activity(ActivityBase):
     id: int
 
     model_config = {
-        "from_attributes": True
+        "from_attributes": True,
+        "json_encoders": {
+            datetime: lambda dt: dt.isoformat()
+        }
     } 

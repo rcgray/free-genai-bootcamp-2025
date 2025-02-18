@@ -122,13 +122,9 @@ async def seed_activities(
 ) -> None:
     """Seed activities table with data."""
     for activity_data in activities_data:
-        # Handle both hyphenated and underscored field names
-        image_url = activity_data.get("image_url") or activity_data.get("image-url", "")
-        
         activity = Activity(
             name=activity_data["name"],
             url=activity_data["url"],
-            image_url=image_url,
             description=activity_data.get("description", "")
         )
         session.add(activity)

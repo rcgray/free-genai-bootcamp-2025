@@ -36,7 +36,6 @@ async def test_activity_attributes(
     assert isinstance(test_activity.id, int)
     assert isinstance(test_activity.name, str)
     assert isinstance(test_activity.url, str)
-    assert isinstance(test_activity.image_url, str)
     assert isinstance(test_activity.description, str)
     assert test_activity.name == "Flashcards"  # From our fixture
     assert test_activity.url == "http://localhost:5173/study/flashcards"  # From our fixture
@@ -46,7 +45,6 @@ async def test_activity_creation(db: AsyncSession) -> None:
     activity = Activity(
         name="Test Activity",
         url="http://example.com/test",
-        image_url="http://example.com/images/test.png",
         description="Test description"
     )
     db.add(activity)
@@ -56,7 +54,6 @@ async def test_activity_creation(db: AsyncSession) -> None:
     assert activity.id is not None
     assert activity.name == "Test Activity"
     assert activity.url == "http://example.com/test"
-    assert activity.image_url == "http://example.com/images/test.png"
     assert activity.description == "Test description"
 
     # Clean up

@@ -30,13 +30,38 @@ async def setup_test_env(db: AsyncSession) -> dict:
 
 
 async def test_create_session(client: AsyncClient, db: AsyncSession):
+    """Test creating a session with a group."""
     response = await client.post(f"{settings.API_V1_PREFIX}/sessions", json=TEST_SESSION)
-    print(f"Response status: {response.status_code}")
-    print(f"Response content: {response.content}")
-    print(f"Response json: {response.json()}")
     assert response.status_code == 200
     data = response.json()["data"]
     assert data["group_id"] == TEST_SESSION["group_id"]
+    assert data["activity_id"] == TEST_SESSION["activity_id"]
+    assert "created_at" in data
+
+
+async def test_create_session_without_group(client: AsyncClient, db: AsyncSession):
+    """Test creating a session without a group."""
+    session_data = {
+        "activity_id": TEST_SESSION["activity_id"],
+        "group_id": None
+    }
+    response = await client.post(f"{settings.API_V1_PREFIX}/sessions", json=session_data)
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["group_id"] is None
+    assert data["activity_id"] == TEST_SESSION["activity_id"]
+    assert "created_at" in data
+
+
+async def test_create_session_omitted_group(client: AsyncClient, db: AsyncSession):
+    """Test creating a session with group_id field omitted."""
+    session_data = {
+        "activity_id": TEST_SESSION["activity_id"]
+    }
+    response = await client.post(f"{settings.API_V1_PREFIX}/sessions", json=session_data)
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["group_id"] is None
     assert data["activity_id"] == TEST_SESSION["activity_id"]
     assert "created_at" in data
 
@@ -118,6 +143,26 @@ async def test_create_review_invalid_session(client: AsyncClient, db: AsyncSessi
     assert "not found" in response.json()["error"].lower()
 
 
+async def test_create_word_review_session_without_group(client: AsyncClient, db: AsyncSession):
+    """Test creating a word review for a session without a group."""
+    # Create session without group
+    session_data = {**TEST_SESSION, "group_id": None}
+    create_response = await client.post(f"{settings.API_V1_PREFIX}/sessions", json=session_data)
+    assert create_response.status_code == 200
+    session_id = create_response.json()["data"]["id"]
+
+    # Create review
+    response = await client.post(
+        f"{settings.API_V1_PREFIX}/sessions/{session_id}/review",
+        json=TEST_WORD_REVIEW
+    )
+    assert response.status_code == 200
+    data = response.json()["data"]
+    assert data["word_id"] == TEST_WORD_REVIEW["word_id"]
+    assert data["correct"] == TEST_WORD_REVIEW["correct"]
+    assert "created_at" in data
+
+
 @pytest.mark.asyncio
 async def test_list_sessions(
     client: AsyncClient,
@@ -131,21 +176,15 @@ async def test_list_sessions(
     )
     session2 = await session.create(
         db,
-        obj_in=SessionCreate(group_id=1, activity_id=1)
+        obj_in=SessionCreate(group_id=None, activity_id=1)  # Session without group
     )
     
-    # Add reviews to sessions
+    # Add reviews to session with group
     await session.create_word_review(
         db,
         session_id=session1.id,
         word_id=1,
         correct=True
-    )
-    await session.create_word_review(
-        db,
-        session_id=session2.id,
-        word_id=1,
-        correct=False
     )
     
     # Test default listing
@@ -187,7 +226,7 @@ async def test_list_sessions(
     assert response.status_code == 400
     assert "error" in response.json()
     
-    # Verify reviews are included
+    # Verify reviews are included and group_id can be null
     response = await client.get(f"/api/sessions")
     assert response.status_code == 200
     data = response.json()["data"]
@@ -199,7 +238,8 @@ async def test_list_sessions(
     session1_found = next(s for s in test_sessions if s["id"] == session1.id)
     session2_found = next(s for s in test_sessions if s["id"] == session2.id)
     
+    assert session1_found["group_id"] is not None
+    assert session2_found["group_id"] is None
     assert len(session1_found["reviews"]) == 1
-    assert len(session2_found["reviews"]) == 1
-    assert session1_found["reviews"][0]["correct"] is True
-    assert session2_found["reviews"][0]["correct"] is False 
+    assert len(session2_found["reviews"]) == 0
+    assert session1_found["reviews"][0]["correct"] is True 

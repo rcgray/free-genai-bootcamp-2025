@@ -34,7 +34,7 @@ async def test_create_session(
     test_group: Group,
     test_activity: Activity
 ) -> None:
-    """Test creating a new session."""
+    """Test creating a new session with a group."""
     session = await SessionService.create_session(
         db,
         group_id=test_group.id,
@@ -42,6 +42,20 @@ async def test_create_session(
     )
     assert session.id is not None
     assert session.group_id == test_group.id
+    assert session.activity_id == test_activity.id
+
+async def test_create_session_without_group(
+    db: AsyncSession,
+    test_activity: Activity
+) -> None:
+    """Test creating a new session without a group."""
+    session = await SessionService.create_session(
+        db,
+        group_id=None,
+        activity_id=test_activity.id
+    )
+    assert session.id is not None
+    assert session.group_id is None
     assert session.activity_id == test_activity.id
 
 async def test_create_session_invalid_group(
@@ -135,6 +149,32 @@ async def test_add_review_word_not_in_group(
         )
     assert "does not belong to the session's group" in str(exc_info.value)
 
+async def test_add_review_session_without_group(
+    db: AsyncSession,
+    test_activity: Activity,
+    test_word: Word
+) -> None:
+    """Test adding a review to a session without a group."""
+    # Create a session without a group
+    session = await SessionService.create_session(
+        db,
+        group_id=None,
+        activity_id=test_activity.id
+    )
+
+    # Add a review to the session without a group (should succeed)
+    review = await SessionService.add_review(
+        db,
+        session_id=session.id,
+        word_id=test_word.id,
+        correct=True
+    )
+    
+    assert review["id"] is not None
+    assert review["word_id"] == test_word.id
+    assert review["session_id"] == session.id
+    assert review["correct"] is True
+
 async def test_get_session_stats(
     db: AsyncSession,
     test_session: Session,
@@ -183,21 +223,15 @@ async def test_get_sessions(db: AsyncSession):
     )
     session2 = await session.create(
         db,
-        obj_in=SessionCreate(group_id=1, activity_id=1)
+        obj_in=SessionCreate(group_id=None, activity_id=1)  # Session without group
     )
     
-    # Add reviews to sessions
+    # Add reviews to session with group
     await session.create_word_review(
         db,
         session_id=session1.id,
         word_id=1,
         correct=True
-    )
-    await session.create_word_review(
-        db,
-        session_id=session2.id,
-        word_id=1,
-        correct=False
     )
     
     # Test default listing
@@ -209,14 +243,14 @@ async def test_get_sessions(db: AsyncSession):
     test_sessions = [s for s in sessions if s.id in {session1.id, session2.id}]
     assert len(test_sessions) == 2
     
-    # Verify reviews are loaded
+    # Verify session properties
     session1_found = next(s for s in test_sessions if s.id == session1.id)
     session2_found = next(s for s in test_sessions if s.id == session2.id)
     
+    assert session1_found.group_id is not None
+    assert session2_found.group_id is None
     assert len(session1_found.reviews) == 1
-    assert len(session2_found.reviews) == 1
-    assert session1_found.reviews[0].correct is True
-    assert session2_found.reviews[0].correct is False
+    assert len(session2_found.reviews) == 0
     
     # Test pagination
     sessions_page1, total = await SessionService.get_sessions(

@@ -212,7 +212,7 @@ The game folder is: games/kanji-snake
    - [x] Edge wrapping
    - [x] Direction queuing
    - [x] Pause functionality
-   - [ ] Simple kanji display
+   - [x] Simple kanji display
 
 2. **Phase 2: Game Systems** `[ ]`
    - [ ] Word fetching and caching

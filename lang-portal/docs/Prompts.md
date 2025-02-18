@@ -205,7 +205,7 @@ I would like to create a set of activities (most of them "games") that I can dev
 Before we begin, I need some help planning how to structure these sub-projects within the monoproject repository.  Here are some of the things I need to consider:
 
 - These games will be written in React.js, and will be launched from the activities page.
-- Other libraries, such as Photon, might be used to develop some of them, but not necessarily all.
+- Other libraries, such as Phaser, might be used to develop some of them, but not necessarily all.
 - These games will be developed as separate projects, but will be launched from the activities page.
 - The games should be standalone projects that function even when the frontend app is not running.
 - The projects in which the games are developed should be able to run independently of the frontend app, including dev libraries and tooling,but there should be an easy way to deploy the final code such that the frontend can use it if the game is enabled in the database.
@@ -223,8 +223,47 @@ Questions about the organization of the games:
 
 
 
+alright, we are ready to rock on kanji-snake.  moving away from base-game, we have our games/kanji-snake directory.  everything is running great and i'm working in development mode (`yarn dev`) with live refresh.  i would like to make the game specified in @Game-Kanji-Snake.md
 
 
+
+
+so now let's start adding kanji to the field.  i know that integration with the backend API is a later step, so for now you can work with the following words as we develop, along with their (romaji) readings:
+ - 開ける (akeru)
+ - 呼ぶ (yobu)
+ - 働く (hataraku)
+ - 終わる (owaru)
+ - 休む (yasumu)
+ - 送る (okuru)
+ - 食べる (taberu)
+ - 見る (miru)
+
+
+
+
+We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md. The backend code is in the subdirectory `backend-fastapi`, and the frontend code is in the subdirectory `frontend-react`. We have a database schema defined in `docs/Database-Schema.md` with summary of API endpoints in @API-Summary.md . All backend tests are passing and the frontend runs great.
+
+Our current subtask is to create a game to be played in the frontend.We are creating a "snake" game in Phaser, called Kanji Snake, with our design laid out in @Game-Kanji-Snake.md.  We have a basic snake game working with kanji appering in the field, and we are ready to move to Phase 2.
+
+
+
+
+
+
+let's look at our capture code - when we capture or "eat" a word (by hitting any character that word), we want a few things to happen:
+- the entire word (all characters for the word that was hit) will flash a color and fade out completely.
+- if the captured word was the target word
+  - flash the word in green and fade out completely. the word is no longer interactable.
+  - log a review attempt for the target word with correct=true.
+  - increase the player's score (and also update the score display on the screen, we can use plain text for now)
+  - start a new target word:
+    - choose a new target word and display its romaji
+    - clear the field of all existing words
+    - populate the field with new words randomly from the words list, with only one word being the new target word. there should be no duplicates
+- if the captured word was NOT the target word
+  - flash the word in red and fade out completely. the word is no longer interactable.
+  - log a review attempt for the target word with correct=false.
+  - add a strike to the player's count (and also display the strike count on the screen in the upper right corner, we can use the character ❌ for the strike icon). three strikes and the game is over.
 
 
 

@@ -61,14 +61,13 @@ CREATE TABLE activities (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     url TEXT NOT NULL,
-    image_url TEXT NOT NULL,
     description TEXT NOT NULL
 );
 
 -- Sessions table
 CREATE TABLE sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    group_id INTEGER NOT NULL,
+    group_id INTEGER,
     activity_id INTEGER NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE RESTRICT,

@@ -108,7 +108,7 @@ class SessionService:
         if not db_session:
             raise ValueError(f"Session {session_id} not found")
 
-        # Verify word exists and belongs to the session's group
+        # Verify word exists
         db_word = await word.get_with_groups(db=db, word_id=word_id)
         if not db_word:
             raise AppHTTPException(
@@ -116,9 +116,11 @@ class SessionService:
                 detail=f"Word {word_id} not found"
             )
 
-        group_ids = {g.id for g in db_word.groups}
-        if db_session.group_id not in group_ids:
-            raise ValueError(f"Word {word_id} does not belong to the session's group")
+        # If session has a group, verify word belongs to it
+        if db_session.group_id is not None:
+            group_ids = {g.id for g in db_word.groups}
+            if db_session.group_id not in group_ids:
+                raise ValueError(f"Word {word_id} does not belong to the session's group")
 
         # Create review
         review_in = WordReviewCreate(

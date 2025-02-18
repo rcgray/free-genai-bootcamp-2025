@@ -92,6 +92,44 @@ async def test_session_attributes(
 ):
     """Test the Session model attributes."""
     assert isinstance(sample_session.id, int)
-    assert isinstance(sample_session.group_id, int)
+    assert isinstance(sample_session.group_id, (int, type(None)))  # group_id can be None
     assert isinstance(sample_session.activity_id, int)
-    assert isinstance(sample_session.created_at, datetime)  # SQLAlchemy maintains this as a datetime object 
+    assert isinstance(sample_session.created_at, datetime)  # SQLAlchemy maintains this as a datetime object
+
+async def test_session_without_group(
+    db: AsyncSession,
+    sample_activity: Activity
+):
+    """Test creating and using a session without a group."""
+    # Create a session without a group
+    session = Session(
+        activity_id=sample_activity.id
+    )
+    db.add(session)
+    await db.commit()
+    await db.refresh(session)
+
+    # Verify the session was created correctly
+    assert session.id is not None
+    assert session.group_id is None
+    assert session.activity_id == sample_activity.id
+    assert isinstance(session.created_at, datetime)
+
+    # Load the session with its activity relationship
+    stmt = select(Session).where(Session.id == session.id).options(
+        selectinload(Session.activity)
+    )
+    result = await db.execute(stmt)
+    loaded_session = result.scalar_one()
+
+    # Verify relationships
+    assert loaded_session.group is None
+    assert loaded_session.activity.id == sample_activity.id
+
+    # Clean up
+    await db.delete(session)
+    await db.commit()
+
+    # Verify deletion
+    result = await db.get(Session, session.id)
+    assert result is None 
