@@ -5,6 +5,20 @@ import { Activity } from '@lang-portal/shared/types';
 import BaseGame from './index';
 import './dev.css';
 
+// Intercept fetch calls for logging
+type ApiLogEntry = {
+  timestamp: Date;
+  method: string;
+  url: string;
+  requestBody?: any;
+  responseStatus?: number;
+  responseBody?: any;
+  error?: string;
+};
+
+// Store the original fetch function
+const originalFetch = window.fetch;
+
 // Create a mock API client for development
 const apiClient = createApiClient('http://localhost:8000/api');
 
@@ -27,11 +41,58 @@ const DevWrapper = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [showAddForm, setShowAddForm] = React.useState(false);
   const [addSuccess, setAddSuccess] = React.useState(false);
+  const [apiLogs, setApiLogs] = React.useState<ApiLogEntry[]>([]);
+  const logsEndRef = React.useRef<HTMLDivElement>(null);
   const [formData, setFormData] = React.useState({
     url: GAME_URL,
     name: formatTitle(GAME_URL),
     description: '',
   });
+
+  // Set up fetch interceptor
+  React.useEffect(() => {
+    window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+      const method = init?.method || 'GET';
+      const url = typeof input === 'string' ? input : input.toString();
+      const requestBody = init?.body ? JSON.parse(init.body as string) : undefined;
+      
+      const logEntry: ApiLogEntry = {
+        timestamp: new Date(),
+        method,
+        url,
+        requestBody,
+      };
+
+      try {
+        const response = await originalFetch(input, init);
+        const clonedResponse = response.clone();
+        
+        try {
+          logEntry.responseStatus = response.status;
+          logEntry.responseBody = await clonedResponse.json();
+        } catch (e) {
+          logEntry.responseBody = '[Not JSON]';
+        }
+
+        setApiLogs(logs => [...logs, logEntry]);
+        return response;
+      } catch (error) {
+        logEntry.error = error instanceof Error ? error.message : 'Unknown error';
+        setApiLogs(logs => [...logs, logEntry]);
+        throw error;
+      }
+    };
+
+    // Cleanup
+    return () => {
+      window.fetch = originalFetch;
+    };
+  }, []);
+
+  // Auto-scroll logs to bottom
+  React.useEffect(() => {
+    logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [apiLogs]);
 
   const findGameId = async () => {
     try {
@@ -126,6 +187,62 @@ const DevWrapper = () => {
     // 2. Mark the session as complete
     // 3. Navigate back to the activities page
     setSessionId(undefined);
+  };
+
+  const handleSaveLogs = () => {
+    // Convert logs to markdown
+    const markdown = apiLogs.map(log => {
+      const timestamp = log.timestamp.toLocaleTimeString();
+      const parts = [
+        `### ${log.method} ${log.url}`,
+        `**Time:** ${timestamp}`,
+        '',
+      ];
+
+      if (log.requestBody) {
+        parts.push('**Request Body:**');
+        parts.push('```json');
+        parts.push(JSON.stringify(log.requestBody, null, 2));
+        parts.push('```');
+        parts.push('');
+      }
+
+      if (log.responseStatus) {
+        parts.push(`**Status:** ${log.responseStatus}`);
+        parts.push('');
+      }
+
+      if (log.responseBody) {
+        parts.push('**Response Body:**');
+        parts.push('```json');
+        parts.push(JSON.stringify(log.responseBody, null, 2));
+        parts.push('```');
+        parts.push('');
+      }
+
+      if (log.error) {
+        parts.push('**Error:**');
+        parts.push('```');
+        parts.push(log.error);
+        parts.push('```');
+        parts.push('');
+      }
+
+      parts.push('---');
+      parts.push('');
+      return parts.join('\n');
+    }).join('\n');
+
+    // Create and download the file
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `api-logs-${GAME_URL}-${new Date().toISOString().split('T')[0]}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -225,6 +342,53 @@ const DevWrapper = () => {
             onGameComplete={handleGameComplete}
             title={formatTitle(GAME_URL)}
           />
+        </div>
+
+        {/* API Logs */}
+        <div className="dev-api-logs">
+          <h2 className="dev-section-header">
+            API Logs
+            <button onClick={handleSaveLogs} className="dev-save-logs">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10.75 2.75a.75.75 0 00-1.5 0v8.614L6.295 8.235a.75.75 0 10-1.09 1.03l4.25 4.5a.75.75 0 001.09 0l4.25-4.5a.75.75 0 00-1.09-1.03l-2.955 3.129V2.75z" />
+                <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+              </svg>
+              Save Logs
+            </button>
+          </h2>
+          <div className="dev-logs-container">
+            {apiLogs.map((log, index) => (
+              <div key={index} className="dev-log-entry">
+                <div className="dev-log-timestamp">
+                  {log.timestamp.toLocaleTimeString()}
+                </div>
+                <div className="dev-log-method">
+                  {log.method} {log.url}
+                </div>
+                {log.requestBody && (
+                  <pre className="dev-log-request">
+                    Request: {JSON.stringify(log.requestBody, null, 2)}
+                  </pre>
+                )}
+                {log.responseStatus && (
+                  <div className="dev-log-status">
+                    Status: {log.responseStatus}
+                  </div>
+                )}
+                {log.responseBody && (
+                  <pre className="dev-log-response">
+                    Response: {JSON.stringify(log.responseBody, null, 2)}
+                  </pre>
+                )}
+                {log.error && (
+                  <div className="dev-log-error">
+                    Error: {log.error}
+                  </div>
+                )}
+              </div>
+            ))}
+            <div ref={logsEndRef} />
+          </div>
         </div>
       </div>
     </div>
