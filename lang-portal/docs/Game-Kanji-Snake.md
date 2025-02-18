@@ -17,38 +17,57 @@ The game folder is: games/kanji-snake
 - Four-directional movement (Up, Down, Left, Right)
 - Continuous snake movement
 - No diagonal movement
-- Collision detection with snake body and walls
+- Arrow keys or WASD for movement
+- ESC key for pause/unpause
+
+### Movement Rules
+1. **Direction Changes**
+   - Snake moves continuously in the current direction
+   - Direction changes are queued and applied at movement "beats"
+   - Cannot move directly opposite to current direction
+   - Rapid keypresses only queue the last direction before next movement
+   - Snake moves at 150ms per move at start
+
+2. **Field Boundaries**
+   - Snake wraps around field edges (no collision with walls)
+   - Moving off top edge appears at bottom
+   - Moving off bottom edge appears at top
+   - Moving off left edge appears at right
+   - Moving off right edge appears at left
+
+3. **Collision Rules**
+   - Game over on collision with snake's own body
+   - Collision check excludes tail position during movement
+   - No wall collisions (wrap-around movement)
+
+### Game Field
+- 48x36 grid (1200x900 pixels)
+- 25x25 pixel grid cells
+- Dark background with subtle grid lines
+- Snake rendered in contrasting bright green
+- Head slightly darker than body segments
 
 ### Gameplay Elements
-1. **Snake Movement**
-   - Snake moves continuously in the current direction
-   - Player controls direction using arrow keys or WASD
-   - Snake grows longer when eating correct kanji
-   - Collision with snake's body ends the game
-
-2. **Target System**
+1. **Target System**
    - Target reading displayed in romaji at the top center
    - Multiple kanji words appear on the playing field
    - Only one kanji matches the target reading
    - New target and kanji set generated after each successful/unsuccessful attempt
 
-3. **Scoring System**
+2. **Scoring System**
    - Points awarded for eating correct kanji
    - Strikes given for eating incorrect kanji
    - Three strikes end the game
    - Correct answers remove one strike (if any)
    - Score increases with snake length and game speed
 
-4. **Difficulty Progression**
-   - Snake speed increases gradually with each correct answer
-   - Field may become more crowded with options
-
 ### Visual Elements
 1. **Game Field**
-   - Clean, minimalist design
-   - Clear contrast between snake and background
-   - Grid-based movement system
-   - Visible boundaries
+   - Dark theme (#1a1a1a background)
+   - Subtle grid lines (#333333)
+   - Snake head (#22c55e)
+   - Snake body (#4ade80)
+   - Light container background (#f1f5f9)
 
 2. **UI Components**
    - Target reading display (top center)
@@ -56,6 +75,7 @@ The game folder is: games/kanji-snake
    - Strike indicator (top right)
    - Game over screen with final score
    - Restart button
+   - Pause menu overlay
 
 ### Audio Elements
 1. **Sound Effects**
@@ -67,7 +87,7 @@ The game folder is: games/kanji-snake
 ## Technical Implementation
 
 ### Framework and Libraries
-- Built with TypeScript and Photon game engine
+- Built with TypeScript and Phaser game engine
 - React integration for UI elements
 - Shared API client for backend communication
 
@@ -186,10 +206,13 @@ The game folder is: games/kanji-snake
 
 ## Development Milestones
 1. **Phase 1: Core Mechanics** `[x]`
-   - [ ] Basic snake movement
-   - [ ] Collision detection
+   - [x] Basic snake movement
+   - [x] Grid system implementation
+   - [x] Collision detection
+   - [x] Edge wrapping
+   - [x] Direction queuing
+   - [x] Pause functionality
    - [ ] Simple kanji display
-   - [ ] Grid system implementation
 
 2. **Phase 2: Game Systems** `[ ]`
    - [ ] Word fetching and caching
