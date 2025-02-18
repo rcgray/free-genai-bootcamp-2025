@@ -260,113 +260,50 @@ The project includes several development tools and scripts:
 
 ## Game Development
 
-The platform supports the development of educational games as independent sub-projects within the monorepo. Each game is a standalone React application that can be developed and tested independently.
-
-### Building Existing Games
-
-1. First, build the shared code library and all games:
-```bash
-# From project root
-yarn dev:games
-```
-
-This will:
-- Build the shared library (@lang-portal/shared)
-- Build all games
-- Copy built game files to the frontend's public directory
-
-2. Build a specific game:
-```bash
-# Build a single game
-cd games/typing-tutor
-yarn install
-yarn build
-
-# The built game will be available at:
-# frontend-react/public/games/typing-tutor.js
-```
-
-3. Development mode:
-```bash
-# Run a game in development mode
-cd games/typing-tutor
-yarn dev
-```
+The platform supports the development of educational games that integrate with the learning management system. Each game is a standalone React application that can be developed and tested independently.
 
 ### Creating a New Game
 
-1. Create a new game directory:
+1. Copy the base game template:
 ```bash
 # From project root
-mkdir -p games/your-game-name
+cp -r games/base-game games/your-game-name
 cd games/your-game-name
 ```
 
-2. Initialize the game project:
+2. Update the package configuration:
 ```bash
-# Copy the base configuration from typing-tutor
-cp ../typing-tutor/package.json .
-cp ../typing-tutor/vite.config.ts .
-cp ../typing-tutor/tsconfig*.json .
+# Update package.json
+# - Change "name" to "@lang-portal/your-game-name"
+# - Update description and other metadata
 
-# Update package name in package.json
-sed -i 's/typing-tutor/your-game-name/' package.json
+# Update vite.config.ts
+# - Change "name" and "fileName" to "your-game-name"
+```
 
-# Install dependencies
+3. Install dependencies:
+```bash
 yarn install
 ```
 
-3. Create the basic game structure:
+4. Start development:
 ```bash
-mkdir src
+yarn dev
 ```
 
-4. Create the main game component (`src/index.tsx`):
-```typescript
-import React from 'react';
-import { GameProps } from '@lang-portal/shared/types';
-
-export function YourGame({ apiClient, sessionId, onGameComplete }: GameProps) {
-  return (
-    <div>
-      <h1>Your Game Name</h1>
-      {/* Your game implementation */}
-    </div>
-  );
-}
-
-export default YourGame;
-```
-
-### Deploying a Game
-
-1. Build the game:
-```bash
-# From project root
-yarn dev:games
-```
-
-2. Add the game to the activities database:
+5. Add your game to the activities database:
 ```json
 {
   "name": "Your Game Name",
-  "url": "/games/your-game-name.js",
+  "url": "your-game-name",
   "image_url": "images/activities/your-game.jpg",
   "description": "Description of your game."
 }
 ```
 
-3. The game will be automatically loaded by the frontend when users access it through the activities page.
+### Game Interface
 
-### Game Development Guidelines
-
-1. **Project Structure**
-   - Each game is a standalone React project
-   - Uses shared types and API client from `@lang-portal/shared`
-   - Can include any additional dependencies needed (game engines, etc.)
-   - Built files are automatically copied to `frontend-react/public/games/`
-
-2. **Required Interface**
+Your game must implement the following interface:
 ```typescript
 interface GameProps {
   apiClient: ApiClient;      // API client for backend communication
@@ -375,24 +312,36 @@ interface GameProps {
 }
 ```
 
-3. **API Integration**
-   - Use `apiClient` for backend communication
-   - Create sessions using `apiClient.sessions.create()`
-   - Log word reviews using `apiClient.sessions.review()`
+The base game template provides:
+- Basic project structure and configuration
+- TypeScript and build setup
+- Example implementation of the game interface
+- Integration with the shared API client
 
-4. **Development Workflow**
-   - Develop and test independently using `yarn dev`
-   - Build using `yarn build` or `yarn dev:games` from root
-   - Test integration with main app
-   - Update activities table in database to enable the game
+### Building and Testing
 
-5. **Adding Game Engines**
-   - Install game engine as dependency in game's package.json
-   - Configure as needed in game's vite.config.ts
-   - Implement game logic within the React component
+1. Build your game:
+```bash
+# From project root
+yarn dev:games
+```
 
-6. **Build Output**
-   - Games are built as ES modules
-   - Built files are automatically copied to the frontend's public directory
-   - Games are served as static files from `/games/{game-name}.js`
-   - No manual file copying or deployment needed
+This will:
+- Build the shared library
+- Build all games
+- Copy built files to the frontend's public directory
+
+2. Test your game:
+- Start the frontend development server
+- Navigate to the Activities page
+- Launch your game
+
+### Development Guidelines
+
+1. Use the shared API client for backend communication
+2. Implement proper session management
+3. Call `onGameComplete` when the game ends
+4. Follow React and TypeScript best practices
+5. Add appropriate error handling
+6. Include loading states
+7. Make your game responsive
