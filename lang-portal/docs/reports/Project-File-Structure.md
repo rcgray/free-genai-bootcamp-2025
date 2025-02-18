@@ -11,7 +11,8 @@
 │   │   ├── env.py
 │   │   ├── script.py.mako
 │   │   └── versions
-│   │       └── 20250213_2020_be4ef40d2c7f_initial_migration_create_all_tables.py
+│   │       ├── 20250217_0400_update_sessions_and_activities.py
+│   │       └── be4ef40d2c7f_initial_migration_create_all_tables.py
 │   ├── alembic.ini
 │   ├── app
 │   │   ├── api
@@ -111,9 +112,11 @@
 │   ├── Frontend-Technical-Spec.md
 │   ├── Game-Kanji-Snake.md
 │   ├── Games-Feature-Spec.md
-│   ├── Project-File-Structure.md
 │   ├── Prompts.md
-│   └── Tasks-Technical-Spec.md
+│   ├── Tasks-Technical-Spec.md
+│   └── reports
+│       ├── Backend-Tests.md
+│       └── Project-File-Structure.md
 ├── frontend-react
 │   ├── .eslintrc.js
 │   ├── .gitignore
@@ -215,9 +218,18 @@
 │   │   ├── index.html
 │   │   ├── package.json
 │   │   ├── src
+│   │   │   ├── components
 │   │   │   ├── dev.css
 │   │   │   ├── dev.tsx
-│   │   │   └── index.tsx
+│   │   │   ├── env.d.ts
+│   │   │   ├── index.tsx
+│   │   │   ├── scenes
+│   │   │   │   ├── GameScene.ts
+│   │   │   │   └── GroupSelectScene.ts
+│   │   │   └── services
+│   │   │       ├── GameState.ts
+│   │   │       ├── SessionService.ts
+│   │   │       └── WordService.ts
 │   │   ├── tsconfig.json
 │   │   ├── tsconfig.node.json
 │   │   └── vite.config.ts
@@ -235,9 +247,11 @@
 ├── package.json
 ├── scripts
 │   ├── build-games.js
-│   └── db
-│       ├── init_db.py
-│       └── seed_db.py
+│   ├── db
+│   │   ├── init_db.py
+│   │   └── seed_db.py
+│   ├── reset_db.py
+│   └── update_docs.py
 ├── shared
 │   ├── api-client
 │   │   └── index.ts
@@ -255,4 +269,4 @@
 │       └── index.ts
 └── yarn.lock
 
-78 directories, 178 files
+82 directories, 188 files

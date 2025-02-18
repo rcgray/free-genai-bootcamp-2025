@@ -241,12 +241,14 @@ so now let's start adding kanji to the field.  i know that integration with the 
 
 
 
+similar to our great @update_docs.py dev script success, let's create another right alongside it called reset_db.py.  in this script, delete the databases "lang_portal.db" and "empty.db" in the `data/` folder and report that these two files no longer exist in the `data/` folder, run `scripts/db/init_db.py` and report its success. if it failed, stop the script.  then, run `scripts/db/seed_db.py` and report its success.  if it failed, stop the script.  then copy the newly created `data/lang_portal.db` file to `data/empty.db` and confirm that both the newly created and seeded database as well as the new empty copy of that database exist.
+
+
+
+
 We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md. The backend code is in the subdirectory `backend-fastapi`, and the frontend code is in the subdirectory `frontend-react`. We have a database schema defined in `docs/Database-Schema.md` with summary of API endpoints in @API-Summary.md . All backend tests are passing and the frontend runs great.
 
 Our current subtask is to create a game to be played in the frontend.We are creating a "snake" game in Phaser, called Kanji Snake, with our design laid out in @Game-Kanji-Snake.md.  We have a basic snake game working with kanji appering in the field, and we are ready to move to Phase 2.
-
-
-
 
 
 
