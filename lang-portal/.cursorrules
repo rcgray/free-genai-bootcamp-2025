@@ -9,6 +9,10 @@
 - Use `black` for formatting
 - Use `isort` for sorting imports
 
+# Interaction with the user
+- Do not offer to run tests, simply provide the CLI command and await results from user
+- Do not offer to run database scripts, simply provide the CLI command and await results from user
+
 # General Recommendations
 - Use type hints in all Python code
 - Follow PEP 8 style guidelines

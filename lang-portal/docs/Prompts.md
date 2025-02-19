@@ -246,11 +246,16 @@ similar to our great @update_docs.py dev script success, let's create another ri
 
 
 
-We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md. The backend code is in the subdirectory `backend-fastapi`, and the frontend code is in the subdirectory `frontend-react`. We have a database schema defined in `docs/Database-Schema.md` with summary of API endpoints in @API-Summary.md . All backend tests are passing and the frontend runs great.
+We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md. The backend code is in the subdirectory `backend-fastapi`, and the frontend code is in the subdirectory `frontend-react`. We have a database schema defined in `docs/Database-Schema.md` with summary of API endpoints in `docs/API-Summary.md`. All backend tests are passing and the frontend runs great.
 
-Our current subtask is to create a game to be played in the frontend.We are creating a "snake" game in Phaser, called Kanji Snake, with our design laid out in @Game-Kanji-Snake.md.  We have a basic snake game working with kanji appering in the field, and we are ready to move to Phase 2.
+Our current subtask is to create a game to be played in the frontend.We are creating a "snake" game in Phaser, called Kanji Snake, with our design laid out in `docs/Game-Kanji-Snake.md`.  We have a basic snake game working with kanji appering in the field, and we started moving to Phase 2. We got interrupted due to sessions requiring a group_id, which is not what we intended to design. Specifically, players are allowed to select "all groups" and then play the game with all words in the database (not necessarily part of a group).
+
+Let's take a look at our code in the games/kanji-snake directory and figure out where we are with respect to the Phase 2 design, update our design document `docs/Game-Kanji-Snake.md` to reflect our current design, and then proceed with the next step in our design document.
 
 
+clicking on the 'Start Game' (regardless of which word group is selected, including the meta-group "All Words") hits a 404 not found on the backend.  the backend also reports this error: ``INFO:     127.0.0.1:34706 - "POST /api/sessions HTTP/1.1" 404 Not Found`
+
+## --- Scrap/Clippings ---
 
 let's look at our capture code - when we capture or "eat" a word (by hitting any character that word), we want a few things to happen:
 - the entire word (all characters for the word that was hit) will flash a color and fade out completely.
@@ -272,5 +277,5 @@ let's look at our capture code - when we capture or "eat" a word (by hitting any
 
 
 
---- future prompts ---
+## --- Future Prompts ---
 

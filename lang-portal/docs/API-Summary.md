@@ -76,7 +76,7 @@ Get a specific activity by ID.
 
 ### POST /api/activities
 Create a new activity.
-- **Request Body**: ActivityCreate schema with name, url, image_url, and description
+- **Request Body**: ActivityCreate schema with name, url, and description
 
 ### PUT /api/activities/{activity_id}
 Update an activity.
