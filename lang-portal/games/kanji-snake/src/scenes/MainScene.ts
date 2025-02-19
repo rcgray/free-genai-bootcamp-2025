@@ -17,7 +17,9 @@ interface Position {
 }
 
 // Extend the API Word type with position information for the game
-interface GameWord extends ApiWord, Position {}
+interface GameWord extends ApiWord, Position {
+  textObjects: Phaser.GameObjects.Text[];  // Store text objects with each word
+}
 
 type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 
@@ -41,6 +43,12 @@ export default class MainScene extends Phaser.Scene {
   private wordTexts: Phaser.GameObjects.Text[] = [];  // Text objects for words
   private targetDisplay?: Phaser.GameObjects.Text;  // Text object for target word
   private sessionId?: string;
+  private score: number = 0;
+  private strikes: number = 0;
+  private readonly MAX_STRIKES = 3;
+  private scoreText?: Phaser.GameObjects.Text;
+  private strikesText?: Phaser.GameObjects.Text;
+  private isGrowing: boolean = false;
 
   constructor() {
     super({ key: 'MainScene' });
@@ -48,6 +56,8 @@ export default class MainScene extends Phaser.Scene {
 
   init(data: { sessionId?: string }) {
     this.sessionId = data.sessionId;
+    this.score = 0;
+    this.strikes = 0;
   }
 
   create() {
@@ -61,6 +71,9 @@ export default class MainScene extends Phaser.Scene {
     this.add.container(0, 0).setDepth(0);
     // Set the graphics to be rendered above the grid but below text
     this.graphics.setDepth(1);
+
+    // Initialize UI
+    this.createUI();
 
     // Initialize snake
     this.snake = Array.from({ length: INITIAL_SNAKE_LENGTH }, (_, i) => ({
@@ -86,11 +99,44 @@ export default class MainScene extends Phaser.Scene {
     this.initializeWords();
   }
 
+  private createUI() {
+    // Create score text in top left
+    this.scoreText = this.add.text(20, 20, `Score: ${this.score}`, {
+      fontSize: '24px',
+      color: '#ffffff'
+    }).setDepth(3);
+
+    // Create strikes text in top right
+    this.strikesText = this.add.text(
+      this.cameras.main.width - 20, 
+      20, 
+      `Strikes: ${this.strikes}/${this.MAX_STRIKES}`,
+      {
+        fontSize: '24px',
+        color: '#ffffff'
+      }
+    ).setDepth(3).setOrigin(1, 0);
+  }
+
+  private updateScore() {
+    if (this.scoreText) {
+      this.scoreText.setText(`Score: ${this.score}`);
+    }
+  }
+
+  private updateStrikes() {
+    if (this.strikesText) {
+      this.strikesText.setText(`Strikes: ${this.strikes}/${this.MAX_STRIKES}`);
+    }
+  }
+
   private async initializeWords() {
     // Clear existing words
-    this.wordTexts.forEach(text => text.destroy());
-    this.wordTexts = [];
+    this.words.forEach(word => {
+      word.textObjects.forEach(text => text.destroy());
+    });
     this.words = [];
+    this.wordTexts = [];
 
     try {
       // Get random words from the current group
@@ -104,7 +150,8 @@ export default class MainScene extends Phaser.Scene {
       this.targetWord = {
         ...apiWords[Math.floor(Math.random() * apiWords.length)],
         x: 0,  // Position will be set later
-        y: 0
+        y: 0,
+        textObjects: []
       };
 
       // Track used positions
@@ -114,7 +161,30 @@ export default class MainScene extends Phaser.Scene {
       for (const apiWord of apiWords) {
         const pos = this.getRandomEmptyPositionForWord(usedPositions, apiWord.kanji.length);
         if (pos) {
-          const gameWord: GameWord = { ...apiWord, ...pos };
+          const gameWord: GameWord = { 
+            ...apiWord, 
+            ...pos,
+            textObjects: []
+          };
+          
+          // Create text objects for each character
+          const characters = gameWord.kanji.split('');
+          characters.forEach((char: string, index: number) => {
+            const text = this.add.text(
+              (gameWord.x + index) * GRID_SIZE + GRID_SIZE / 2,
+              gameWord.y * GRID_SIZE + GRID_SIZE / 2 + 1,
+              char,
+              {
+                fontSize: '20px',
+                color: '#ffffff',
+                fontFamily: '"Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif'
+              }
+            ).setOrigin(0.5).setDepth(2);
+            
+            gameWord.textObjects.push(text);
+            this.wordTexts.push(text);
+          });
+
           this.words.push(gameWord);
           // Reserve positions for all characters
           for (let i = 0; i < apiWord.kanji.length; i++) {
@@ -122,24 +192,6 @@ export default class MainScene extends Phaser.Scene {
           }
         }
       }
-
-      // Create text objects for all words
-      this.words.forEach(word => {
-        const characters = word.kanji.split('');
-        characters.forEach((char: string, index: number) => {
-          const text = this.add.text(
-            (word.x + index) * GRID_SIZE + GRID_SIZE / 2,
-            word.y * GRID_SIZE + GRID_SIZE / 2 + 1,
-            char,
-            {
-              fontSize: '20px',
-              color: '#ffffff',
-              fontFamily: '"Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif'
-            }
-          ).setOrigin(0.5).setDepth(2);
-          this.wordTexts.push(text);
-        });
-      });
 
       // Display target word's romaji at the top
       if (this.targetDisplay) {
@@ -277,40 +329,60 @@ export default class MainScene extends Phaser.Scene {
     // Check for word collisions
     this.checkWordCollisions(newHead);
 
-    // Move snake
+    // Move snake by adding new head
     this.snake.unshift(newHead);
-    this.snake.pop();
+    
+    // Only remove tail if we're not growing
+    if (!this.isGrowing) {
+      this.snake.pop();
+    } else {
+      this.isGrowing = false;  // Reset growth flag after growing
+    }
   }
 
   private checkWordCollisions(head: Position) {
     // Check each word
     for (let i = this.words.length - 1; i >= 0; i--) {
       const word = this.words[i];
+      
       // Check if the head collides with any character of the word
-      for (let charIndex = 0; charIndex < word.kanji.length; charIndex++) {
-        if (head.x === word.x + charIndex && head.y === word.y) {
-          // Word was captured - handle it
-          this.handleWordCollision(word);
-          // Remove the word and its text objects
-          this.words.splice(i, 1);
-          // Remove corresponding text objects
-          for (let j = 0; j < word.kanji.length; j++) {
-            const textIndex = i * word.kanji.length + j;
-            this.wordTexts[textIndex].destroy();
-            this.wordTexts.splice(textIndex, 1);
-          }
-          // If all words are gone, generate new ones
-          if (this.words.length === 0) {
-            this.initializeWords();
-          }
-          return;
+      const isCollision = Array.from({ length: word.kanji.length }).some((_, charIndex) => 
+        head.x === word.x + charIndex && head.y === word.y
+      );
+
+      if (isCollision) {
+        // Remove the word and its text objects immediately
+        this.removeWord(i);
+        
+        // Handle the capture after the word is removed
+        this.handleWordCapture(word);
+        
+        // Only generate new words if this was the correct word
+        // (incorrect captures just remove the word)
+        if (word.id === this.targetWord?.id && this.words.length === 0) {
+          this.initializeWords();
         }
+        return;
       }
     }
   }
 
-  private handleWordCollision(word: GameWord) {
+  private removeWord(wordIndex: number) {
+    const word = this.words[wordIndex];
+    
+    // Remove all text objects for this word
+    word.textObjects.forEach(text => text.destroy());
+    
+    // Remove the word from the array
+    this.words.splice(wordIndex, 1);
+    
+    // Update wordTexts array to remove the destroyed text objects
+    this.wordTexts = this.wordTexts.filter(text => text.active);
+  }
+
+  private handleWordCapture(word: GameWord) {
     const isCorrect = word.id === this.targetWord?.id;
+    console.log(`Word captured: ${word.kanji} (${isCorrect ? 'correct' : 'incorrect'})`);
     
     // Submit the review to track progress
     if (this.sessionId) {
@@ -318,12 +390,37 @@ export default class MainScene extends Phaser.Scene {
     }
 
     if (isCorrect) {
-      // Handle correct word collection
-      this.initializeWords();  // Get new words
+      this.handleCorrectCapture();
     } else {
-      // Handle incorrect word collection
-      // TODO: Add strike, show feedback, etc.
+      this.handleIncorrectCapture();
     }
+  }
+
+  private handleCorrectCapture() {
+    // Increment score
+    this.score++;
+    this.updateScore();
+    
+    // Set flag to grow snake on next move
+    this.isGrowing = true;
+    
+    // TODO: Add visual feedback
+    // TODO: Play success sound
+  }
+
+  private handleIncorrectCapture() {
+    // Increment strikes
+    this.strikes++;
+    this.updateStrikes();
+    
+    // Check for game over
+    if (this.strikes >= this.MAX_STRIKES) {
+      this.gameOver();
+      return;
+    }
+
+    // TODO: Add visual feedback
+    // TODO: Play error sound
   }
 
   private drawGame() {
@@ -389,28 +486,63 @@ export default class MainScene extends Phaser.Scene {
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
 
+    // Create semi-transparent overlay
     const overlay = this.add.rectangle(
       0, 0,
       this.cameras.main.width,
       this.cameras.main.height,
-      0x000000, 0.5
+      0x000000, 0.7  // Made slightly darker for better contrast
     );
     overlay.setOrigin(0);
+    overlay.setDepth(10);  // Set high depth to appear above everything
 
-    const text = this.add.text(centerX, centerY - 50, 'GAME OVER', {
+    // Show final score with higher depth
+    this.add.text(centerX, centerY - 50, 'GAME OVER', {
       fontSize: '32px',
       color: '#ffffff'
-    });
-    text.setOrigin(0.5);
+    })
+    .setOrigin(0.5)
+    .setDepth(11);  // Above overlay
 
-    const restartButton = this.add.text(centerX, centerY + 50, 'Restart', {
+    this.add.text(centerX, centerY, `Final Score: ${this.score}`, {
+      fontSize: '24px',
+      color: '#ffffff'
+    })
+    .setOrigin(0.5)
+    .setDepth(11);  // Above overlay
+
+    // Create container for buttons
+    const buttonSpacing = 15;  // Reduced spacing for vertical layout
+    const firstButtonY = centerY + 50;
+    const secondButtonY = firstButtonY + buttonSpacing + 40;  // 40 is the approximate height of the button
+
+    // Restart button (on top)
+    const restartButton = this.add.text(centerX, firstButtonY, 'Restart', {
       fontSize: '24px',
       color: '#4ade80',
-      backgroundColor: '#1a1a1a',
+      backgroundColor: '#064e3b',  // Darker green background for better visibility
       padding: { x: 20, y: 10 }
-    });
-    restartButton.setOrigin(0.5);
+    })
+    .setOrigin(0.5)  // Center align
+    .setDepth(11);  // Above overlay
+
     restartButton.setInteractive({ useHandCursor: true });
     restartButton.on('pointerdown', () => this.scene.restart());
+
+    // Return to Title button (below)
+    const titleButton = this.add.text(centerX, secondButtonY, 'Return to Title', {
+      fontSize: '24px',
+      color: '#4ade80',
+      backgroundColor: '#064e3b',  // Darker green background for better visibility
+      padding: { x: 20, y: 10 }
+    })
+    .setOrigin(0.5)  // Center align
+    .setDepth(11);  // Above overlay
+
+    titleButton.setInteractive({ useHandCursor: true });
+    titleButton.on('pointerdown', () => {
+      sessionService.endSession();  // End the current session
+      this.scene.start('TitleScene');  // Return to title screen
+    });
   }
 } 

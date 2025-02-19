@@ -61,7 +61,7 @@ Features include:
 
 ## Scene Management
 
-Games should use Phaser's scene system for organization. Common scenes include:
+If developing a game that uses Phaser, games can make use of Phaser's scene system for organization. Common scenes include:
 
 ### TitleScene
 
@@ -165,6 +165,8 @@ export class SessionService {
 
 1. **Initial Setup**
    ```bash
+   # Copy the game template to a new directory
+   cp -r games/base-game games/your-game-name
    cd games/your-game-name
    yarn install
    ```
@@ -176,7 +178,7 @@ export class SessionService {
    This runs the development harness with:
    - Hot reloading
    - API logging
-   - Development tools
+   - Development tools (creating new game in db, etc.)
 
 3. **Testing**
    - Use the development harness to test different scenarios
@@ -185,9 +187,15 @@ export class SessionService {
    - Verify word fetching and review submission
 
 4. **Production**
-   - The game will be served from `index.tsx`
-   - Development tools will be stripped out
-   - The game will receive real session and API data
+    ```bash
+    # From project root
+    yarn dev:games  # Build all games an integrate into frontend
+    ```
+    This will:
+        - Build the game as a library (with `index.tsx` as the entry point)
+        - Strip out development tools
+        - Copy it to the frontend's public directory
+        - Make it available through the Activities page
 
 ## Best Practices
 

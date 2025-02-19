@@ -98,19 +98,13 @@ This will install additional packages needed for development:
 ### Development
 
 Start both backend and frontend development servers:
-```bash
-python scripts/dev.py
-```
-
-Or run them separately:
-
-Backend only:
+Backend:
 ```bash
 cd backend-fastapi
 uvicorn app.main:app --reload
 ```
 
-Frontend only:
+Frontend:
 ```bash
 cd frontend
 yarn dev

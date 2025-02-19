@@ -253,7 +253,204 @@ Our current subtask is to create a game to be played in the frontend.We are crea
 Let's take a look at our code in the games/kanji-snake directory and figure out where we are with respect to the Phase 2 design, update our design document `docs/Game-Kanji-Snake.md` to reflect our current design, and then proceed with the next step in our design document.
 
 
-clicking on the 'Start Game' (regardless of which word group is selected, including the meta-group "All Words") hits a 404 not found on the backend.  the backend also reports this error: ``INFO:     127.0.0.1:34706 - "POST /api/sessions HTTP/1.1" 404 Not Found`
+Our current issue: clicking on the 'Start Game' (regardless of which word group is selected, including the meta-group "All Words") hits a 404 not found on the backend.  the backend also reports this error: ``INFO:     127.0.0.1:34706 - "POST /api/sessions HTTP/1.1" 404 Not Found`.  Keep in mind that our frontend has no problem accessing the backend server and all our backend tests (including those for API endpoints and sessions) are passing.  We don't want to change the backend code, so let's update the kanji-snake game code to fix this issue.
+
+
+
+
+
+Investigate the game as written in the games/kanji-snake directory. Somewhere along the way our method for establishing a new session has gone wrong.  We need to figure out where and fix it.
+
+Here is the output of the backend server when clicking on the 'Start New Session' button in the dev console:
+```
+(🐍freegenai) @:~/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi (🧪main)$ uvicorn app.main:app --reload
+INFO:     Will watch for changes in these directories: ['/home/gray/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [136550] using WatchFiles
+INFO:     Started server process [136552]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+2025-02-18 16:18:24,616 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2025-02-18 16:18:24,618 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
+FROM activities
+2025-02-18 16:18:24,618 INFO sqlalchemy.engine.Engine [generated in 0.00014s] ()
+sys:1: SAWarning: relationship 'Group.words' will copy column groups.id to column word_groups.group_id, which conflicts with relationship(s): 'Group.word_groups' (copies groups.id to word_groups.group_id), 'WordGroup.group' (copies groups.id to word_groups.group_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="group,word_groups"' to the 'Group.words' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+sys:1: SAWarning: relationship 'Group.words' will copy column words.id to column word_groups.word_id, which conflicts with relationship(s): 'Word.word_groups' (copies words.id to word_groups.word_id), 'WordGroup.word' (copies words.id to word_groups.word_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="word,word_groups"' to the 'Group.words' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
+2025-02-18 16:18:24,631 INFO sqlalchemy.engine.Engine SELECT activities.id, activities.name, activities.url, activities.description 
+FROM activities ORDER BY activities.name
+ LIMIT ? OFFSET ?
+2025-02-18 16:18:24,631 INFO sqlalchemy.engine.Engine [generated in 0.00019s] (20, 0)
+2025-02-18 16:18:24,632 INFO sqlalchemy.engine.Engine ROLLBACK
+INFO:     127.0.0.1:34342 - "GET /api/activities?url=kanji-snake HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+  + Exception Group Traceback (most recent call last):
+  |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_utils.py", line 76, in collapse_excgroups
+  |     yield
+  |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 178, in __call__
+  |     async with anyio.create_task_group() as task_group:
+  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 767, in __aexit__
+  |     raise BaseExceptionGroup(
+  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    |     result = await app(  # type: ignore[func-returns-value]
+    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    |     return await self.app(scope, receive, send)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    |     await super().__call__(scope, receive, send)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    |     raise exc
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    |     await self.app(scope, receive, _send)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 177, in __call__
+    |     with recv_stream, send_stream, collapse_excgroups():
+    |                                    ^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/contextlib.py", line 158, in __exit__
+    |     self.gen.throw(value)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    |     raise exc
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 179, in __call__
+    |     response = await self.dispatch_func(request, call_next)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/gray/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi/app/main.py", line 43, in wrap_response
+    |     response = await call_next(request)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 154, in call_next
+    |     raise app_exc
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    |     await self.app(scope, receive_or_disconnect, send_no_error)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    |     await self.simple_response(scope, receive, send, request_headers=headers)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    |     await self.app(scope, receive, send)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 715, in __call__
+    |     await self.middleware_stack(scope, receive, send)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 735, in app
+    |     await route.handle(scope, receive, send)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    |     await self.app(scope, receive, send)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    |     raise exc
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    |     await app(scope, receive, sender)
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    |     response = await f(request)
+    |                ^^^^^^^^^^^^^^^^
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    |     raw_response = await run_endpoint_function(
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    |     return await dependant.call(**values)
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/gray/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi/app/api/v1/endpoints/activities.py", line 41, in get_activities
+    |     "items": [Activity.model_validate(a) for a in activities],
+    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/pydantic/main.py", line 627, in model_validate
+    |     return cls.__pydantic_validator__.validate_python(
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    | pydantic_core._pydantic_core.ValidationError: 1 validation error for Activity
+    | url
+    |   Input should be a valid URL, relative URL without a base [type=url_parsing, input_value='typing-tutor', input_type=str]
+    |     For further information visit https://errors.pydantic.dev/2.10/v/url_parsing
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 177, in __call__
+    with recv_stream, send_stream, collapse_excgroups():
+                                   ^^^^^^^^^^^^^^^^^^^^
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
+    raise exc
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 179, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gray/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi/app/main.py", line 43, in wrap_response
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 154, in call_next
+    raise app_exc
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gray/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi/app/api/v1/endpoints/activities.py", line 41, in get_activities
+    "items": [Activity.model_validate(a) for a in activities],
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/pydantic/main.py", line 627, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+pydantic_core._pydantic_core.ValidationError: 1 validation error for Activity
+url
+  Input should be a valid URL, relative URL without a base [type=url_parsing, input_value='typing-tutor', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.10/v/url_parsing
+```
+
+I'm further concerned by the fact that this error contains mention of 'typing-tutor' in the error message.  This is not the name of our current game ('kanji-snake').  Let's investigate.
+
+
+
+
+
 
 ## --- Scrap/Clippings ---
 
@@ -271,8 +468,6 @@ let's look at our capture code - when we capture or "eat" a word (by hitting any
   - flash the word in red and fade out completely. the word is no longer interactable.
   - log a review attempt for the target word with correct=false.
   - add a strike to the player's count (and also display the strike count on the screen in the upper right corner, we can use the character ❌ for the strike icon). three strikes and the game is over.
-
-
 
 
 
