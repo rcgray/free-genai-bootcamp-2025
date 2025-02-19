@@ -48,6 +48,9 @@ export default class MainScene extends Phaser.Scene {
   private isGrowing: boolean = false;
   private cueType: 'romaji' | 'english' = 'romaji';  // Default to romaji
   private pauseElements: Phaser.GameObjects.GameObject[] = [];  // Track pause menu elements
+  private scoreGraphics?: Phaser.GameObjects.Graphics;
+  private strikesGraphics?: Phaser.GameObjects.Graphics;
+  private cueGraphics?: Phaser.GameObjects.Graphics;
 
   constructor() {
     super({ key: 'MainScene' });
@@ -86,6 +89,9 @@ export default class MainScene extends Phaser.Scene {
     if (this.targetDisplay) this.targetDisplay.destroy();
     if (this.scoreText) this.scoreText.destroy();
     if (this.strikesText) this.strikesText.destroy();
+    if (this.scoreGraphics) this.scoreGraphics.destroy();
+    if (this.strikesGraphics) this.strikesGraphics.destroy();
+    if (this.cueGraphics) this.cueGraphics.destroy();
   }
 
   create() {
@@ -130,48 +136,236 @@ export default class MainScene extends Phaser.Scene {
   private createUI() {
     const score = gameState.getScore();
     
-    // Create score text in top left
-    this.scoreText = this.add.text(20, 20, `Score: ${score.points}`, {
+    // Create backgrounds and text for score and strikes
+    const padding = { x: 20, y: 10 };
+    const textStyle = {
       fontSize: '24px',
-      color: '#ffffff'
-    }).setDepth(3);
+      color: '#ffffff',
+      fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    };
 
-    // Create strikes text in top right
+    // Create score background and text
+    const scoreText = `Score: ${score.points}`;
+    const tempScoreText = this.add.text(0, 0, scoreText, textStyle);
+    const scoreWidth = tempScoreText.width + padding.x * 2;
+    const scoreHeight = tempScoreText.height + padding.y * 2;
+    tempScoreText.destroy();
+
+    this.scoreGraphics = this.add.graphics();
+    this.scoreGraphics.fillStyle(0x000000, 0.8);
+    this.scoreGraphics.lineStyle(2, 0x4b5563);
+    this.scoreGraphics.fillRoundedRect(
+      28 - padding.x,
+      15 - padding.y,
+      scoreWidth,
+      scoreHeight,
+      10
+    );
+    this.scoreGraphics.strokeRoundedRect(
+      28 - padding.x,
+      15 - padding.y,
+      scoreWidth,
+      scoreHeight,
+      10
+    );
+    this.scoreGraphics.setDepth(2);
+
+    // Create score text
+    this.scoreText = this.add.text(28, 15, scoreText, textStyle).setDepth(3);
+
+    // Create strikes background and text
+    const getStrikesText = (strikes: number, maxStrikes: number) => {
+      const greyX = '✖️';  // Grey X for remaining strikes
+      const redX = '❌';   // Red X for earned strikes
+      const remaining = Array(maxStrikes - strikes).fill(greyX).join(' ');
+      const earned = Array(strikes).fill(redX).join(' ');
+      return `Strikes: ${remaining}${earned ? ' ' + earned : ''}`;
+    };
+
+    const strikesText = getStrikesText(score.strikes, score.maxStrikes);
+    const tempStrikesText = this.add.text(0, 0, strikesText, textStyle);
+    const strikesWidth = tempStrikesText.width + padding.x * 2;
+    const strikesHeight = tempStrikesText.height + padding.y * 2;
+    tempStrikesText.destroy();
+
+    this.strikesGraphics = this.add.graphics();
+    this.strikesGraphics.fillStyle(0x000000, 0.8);
+    this.strikesGraphics.lineStyle(2, 0x4b5563);
+    this.strikesGraphics.fillRoundedRect(
+      this.cameras.main.width - 28 - strikesWidth + padding.x,
+      15 - padding.y,
+      strikesWidth,
+      strikesHeight,
+      10
+    );
+    this.strikesGraphics.strokeRoundedRect(
+      this.cameras.main.width - 28 - strikesWidth + padding.x,
+      15 - padding.y,
+      strikesWidth,
+      strikesHeight,
+      10
+    );
+    this.strikesGraphics.setDepth(2);
+
+    // Create strikes text
     this.strikesText = this.add.text(
-      this.cameras.main.width - 20, 
-      20, 
-      `Strikes: ${score.strikes}/${score.maxStrikes}`,
-      {
-        fontSize: '24px',
-        color: '#ffffff'
-      }
-    ).setDepth(3).setOrigin(1, 0);
+      this.cameras.main.width - 28,
+      15,
+      strikesText,
+      textStyle
+    ).setOrigin(1, 0).setDepth(3);
   }
 
   private updateScore() {
     if (this.scoreText) {
       const score = gameState.getScore();
-      this.scoreText.setText(`Score: ${score.points}`);
+      const newText = `Score: ${score.points}`;
+      this.scoreText.setText(newText);
+
+      // Update background size
+      if (this.scoreGraphics) {
+        const padding = { x: 20, y: 10 };
+        const tempText = this.add.text(0, 0, newText, this.scoreText.style);
+        const width = tempText.width + padding.x * 2;
+        const height = tempText.height + padding.y * 2;
+        tempText.destroy();
+
+        this.scoreGraphics.clear();
+        this.scoreGraphics.fillStyle(0x000000, 0.8);
+        this.scoreGraphics.lineStyle(2, 0x4b5563);
+        this.scoreGraphics.fillRoundedRect(
+          28 - padding.x,
+          15 - padding.y,
+          width,
+          height,
+          10
+        );
+        this.scoreGraphics.strokeRoundedRect(
+          28 - padding.x,
+          15 - padding.y,
+          width,
+          height,
+          10
+        );
+      }
     }
   }
 
   private updateStrikes() {
     if (this.strikesText) {
       const score = gameState.getScore();
-      this.strikesText.setText(`Strikes: ${score.strikes}/${score.maxStrikes}`);
+      const prevStrikes = parseInt(this.strikesText.text.match(/❌/g)?.length.toString() || '0');
+      
+      // Get the new strikes text
+      const greyX = '✖️';  // Grey X for remaining strikes
+      const redX = '❌';   // Red X for earned strikes
+      const remaining = Array(score.maxStrikes - score.strikes).fill(greyX).join(' ');
+      const earned = Array(score.strikes).fill(redX).join(' ');
+      const newText = `Strikes: ${remaining}${earned ? ' ' + earned : ''}`;
+      
+      // Update the UI text
+      this.strikesText.setText(newText);
+
+      // Animate strike changes
+      if (score.strikes > prevStrikes) {
+        // Strike added
+        this.animateStrikeAdded(score.strikes);
+      } else if (score.strikes < prevStrikes) {
+        // Strike removed
+        this.animateStrikeRemoved(score.strikes + 1);
+      }
     }
   }
 
+  private animateStrikeAdded(strikeNumber: number) {
+    // Calculate position for the new strike
+    const padding = { x: 20, y: 10 };
+    const textStyle = {
+      fontSize: '24px',
+      color: '#ffffff',
+      fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    };
+
+    // Calculate X position for the new strike (from right to left)
+    const strikeWidth = 30; // Approximate width of one strike emoji
+    const baseX = this.cameras.main.width - 28; // Right alignment point
+    const xPos = baseX - (strikeNumber * strikeWidth);
+
+    // Apply x-offset based on strike number (right to left)
+    let xOffset = 0;
+    if (strikeNumber === 1) xOffset = -10;      // First strike (rightmost)
+    else if (strikeNumber === 2) xOffset = -20; // Second strike
+    // Third strike doesn't need an offset
+    
+    // Create the bouncing strike animation
+    const bounceStrike = this.add.text(xPos + xOffset, 34, '❌', textStyle)
+      .setOrigin(0, 0)
+      .setDepth(10)
+      .setAlpha(0.8);
+
+    // Create the bounce and fade animation
+    this.tweens.add({
+      targets: bounceStrike,
+      y: { from: 5, to: 15 },
+      scaleX: { from: 1.5, to: 1 },
+      scaleY: { from: 1.5, to: 1 },
+      alpha: { from: 1, to: 0 },
+      duration: 1000,
+      ease: 'Bounce.easeOut',
+      onComplete: () => {
+        bounceStrike.destroy();
+      }
+    });
+  }
+
+  private animateStrikeRemoved(strikeNumber: number) {
+    // Calculate position for the strike being removed
+    const padding = { x: 20, y: 10 };
+    const textStyle = {
+      fontSize: '24px',
+      color: '#ffffff',
+      fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    };
+
+    // Calculate X position for the strike being removed
+    const strikeWidth = 30; // Approximate width of one strike emoji
+    const baseX = this.cameras.main.width - 28; // Right alignment point
+    const xPos = baseX - (strikeNumber * strikeWidth);
+
+    // Apply x-offset based on strike number (right to left)
+    let xOffset = 0;
+    if (strikeNumber === 1) xOffset = -2;      // First strike (rightmost)
+    else if (strikeNumber === 2) xOffset = -13; // Second strike
+    // Third strike doesn't need an offset
+    
+    // Create the falling strike animation
+    const fallingStrike = this.add.text(xPos + xOffset, 15, '❌', textStyle)
+      .setOrigin(0, 0)
+      .setDepth(10)
+      .setAlpha(0.8);
+
+    // Create the falling and fade animation
+    this.tweens.add({
+      targets: fallingStrike,
+      y: '+=60', // Increased from 40 to 60 pixels
+      alpha: 0,
+      duration: 2000,
+      ease: 'Cubic.easeOut',
+      onComplete: () => {
+        fallingStrike.destroy();
+      }
+    });
+  }
+
   private async initializeWords() {
-    // Clear existing words
+    // Clear existing words and UI elements
     this.words.forEach(word => {
       word.textObjects.forEach(text => text.destroy());
     });
     this.words = [];
     this.wordTexts = [];
-    if (this.targetDisplay) {
-      this.targetDisplay.destroy();
-    }
+    if (this.targetDisplay) this.targetDisplay.destroy();
+    if (this.cueGraphics) this.cueGraphics.destroy();
 
     try {
       // Get random words from the current group
@@ -211,7 +405,7 @@ export default class MainScene extends Phaser.Scene {
               char,
               {
                 fontSize: '20px',
-                color: gameWord.id === this.targetWord?.id ? '#4ade80' : '#ffffff',  // Green for target word
+                color: '#ffffff',  // Always white, removed target word coloring
                 fontFamily: '"Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif'
               }
             ).setOrigin(0.5).setDepth(2);
@@ -230,16 +424,47 @@ export default class MainScene extends Phaser.Scene {
 
       // Display target word's cue at the top
       const cueText = this.cueType === 'romaji' ? this.targetWord.romaji : this.targetWord.english;
+      
+      // Create a rounded rectangle background for the cue word
+      const padding = { x: 20, y: 10 };
+      const cueTextStyle = {
+        fontSize: '32px',
+        color: '#ffffff',
+        fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      };
+      
+      // Create temporary text to measure its width
+      const tempText = this.add.text(0, 0, cueText, cueTextStyle);
+      const textWidth = tempText.width + padding.x * 2;
+      const textHeight = tempText.height + padding.y * 2;
+      tempText.destroy();
+      
+      // Create the rounded rectangle background
+      this.cueGraphics = this.add.graphics();
+      this.cueGraphics.fillStyle(0x000000, 0.8);
+      this.cueGraphics.lineStyle(2, 0x4b5563);
+      this.cueGraphics.fillRoundedRect(
+        this.cameras.main.centerX - textWidth / 2,
+        15 - padding.y,
+        textWidth,
+        textHeight,
+        10
+      );
+      this.cueGraphics.strokeRoundedRect(
+        this.cameras.main.centerX - textWidth / 2,
+        15 - padding.y,
+        textWidth,
+        textHeight,
+        10
+      );
+      this.cueGraphics.setDepth(2);
+      
+      // Create the cue text on top of the background, but moved down by ~half grid height
       this.targetDisplay = this.add.text(
         this.cameras.main.centerX,
-        30,
+        33, // 15 (background y)
         cueText,
-        {
-          fontSize: '32px',
-          color: '#ffffff',
-          backgroundColor: '#000000',
-          padding: { x: 10, y: 5 }
-        }
+        cueTextStyle
       ).setOrigin(0.5).setDepth(3);
     } catch (error) {
       console.error('Error initializing words:', error);
@@ -276,6 +501,22 @@ export default class MainScene extends Phaser.Scene {
     const cueArea = {
       left: Math.floor((GRID_WIDTH - 10) / 2),  // Center a width of 10
       right: Math.floor((GRID_WIDTH + 10) / 2),
+      top: 0,
+      bottom: 2  // Height of 3 (0 to 2)
+    };
+
+    // Define score area at top left
+    const scoreArea = {
+      left: 0,  // Start from left edge
+      right: 10,  // 10 grid squares wide
+      top: 0,
+      bottom: 1  // Height of 2 (0 and 1)
+    };
+
+    // Define strikes area at top right
+    const strikesArea = {
+      left: GRID_WIDTH - 10,  // 10 grid squares from right edge
+      right: GRID_WIDTH,
       top: 0,
       bottom: 1  // Height of 2 (0 and 1)
     };
@@ -330,8 +571,25 @@ export default class MainScene extends Phaser.Scene {
         // Check if y position is within cue area y range
         (y >= cueArea.top && y <= cueArea.bottom)
       );
+
+      // Check if any part of the word would intersect with the score area
+      const wouldIntersectScoreArea = (
+        // Check if word's start or end x position is within score area x range
+        (x <= scoreArea.right && x + wordLength - 1 >= scoreArea.left) &&
+        // Check if y position is within score area y range
+        (y >= scoreArea.top && y <= scoreArea.bottom)
+      );
+
+      // Check if any part of the word would intersect with the strikes area
+      const wouldIntersectStrikesArea = (
+        // Check if word's start or end x position is within strikes area x range
+        (x <= strikesArea.right && x + wordLength - 1 >= strikesArea.left) &&
+        // Check if y position is within strikes area y range
+        (y >= strikesArea.top && y <= strikesArea.bottom)
+      );
       
-      if (wouldIntersectSnakeHeadLines || wouldIntersectSafeZone || wouldIntersectCueArea) {
+      if (wouldIntersectSnakeHeadLines || wouldIntersectSafeZone || 
+          wouldIntersectCueArea || wouldIntersectScoreArea || wouldIntersectStrikesArea) {
         continue; // Try another position
       }
       
@@ -453,14 +711,78 @@ export default class MainScene extends Phaser.Scene {
       );
 
       if (isCollision) {
-        // Remove the word and its text objects immediately
+        const isCorrect = word.id === this.targetWord?.id;
+        
+        console.log('Word collision detected:', {
+          word: word.kanji,
+          isCorrect,
+          gridPosition: { x: word.x, y: word.y },
+          targetWord: this.targetWord?.kanji
+        });
+        
+        // Calculate exact pixel positions for both the captured word and target word
+        const capturedWordPixelPos = {
+          x: word.x * GRID_SIZE + (word.kanji.length * GRID_SIZE) / 2,
+          y: word.y * GRID_SIZE + GRID_SIZE / 2
+        };
+        
+        // Find the actual target word in the words array to get its correct position
+        const actualTargetWord = this.words.find(w => w.id === this.targetWord?.id);
+        const targetWordPixelPos = actualTargetWord ? {
+          x: actualTargetWord.x * GRID_SIZE + (actualTargetWord.kanji.length * GRID_SIZE) / 2,
+          y: actualTargetWord.y * GRID_SIZE + GRID_SIZE / 2
+        } : null;
+        
+        console.log('Calculated pixel positions:', {
+          capturedWord: {
+            text: word.kanji,
+            pixelPos: capturedWordPixelPos,
+            gridPos: { x: word.x, y: word.y }
+          },
+          targetWord: actualTargetWord ? {
+            text: actualTargetWord.kanji,
+            pixelPos: targetWordPixelPos,
+            gridPos: { x: actualTargetWord.x, y: actualTargetWord.y }
+          } : null
+        });
+
+        // Store the words and their positions before any state changes
+        const capturedWordInfo = {
+          kanji: word.kanji,
+          ...capturedWordPixelPos
+        };
+        
+        const targetWordInfo = actualTargetWord ? {
+          kanji: actualTargetWord.kanji,
+          ...targetWordPixelPos!
+        } : null;
+
+        // Remove the word and update game state
         this.removeWord(i);
+        this.handleWordCapture(word, isCorrect);
         
-        // Handle the capture after the word is removed
-        this.handleWordCapture(word);
+        // Trigger celebrations with the stored positions
+        if (isCorrect) {
+          console.log('Triggering correct word celebration at:', {
+            text: capturedWordInfo.kanji,
+            x: capturedWordInfo.x,
+            y: capturedWordInfo.y
+          });
+          this.celebrateWord(capturedWordInfo.kanji, capturedWordInfo.x, capturedWordInfo.y);
+        } else if (targetWordInfo) {
+          console.log('Triggering target word celebration at:', {
+            text: targetWordInfo.kanji,
+            x: targetWordInfo.x,
+            y: targetWordInfo.y
+          });
+          this.celebrateWord(targetWordInfo.kanji, targetWordInfo.x, targetWordInfo.y);
+        }
         
-        // Start a new round after any word capture
-        this.initializeWords();
+        // Schedule board reset after celebrations
+        this.time.delayedCall(100, () => {
+          this.initializeWords();
+        });
+        
         return;
       }
     }
@@ -479,8 +801,7 @@ export default class MainScene extends Phaser.Scene {
     this.wordTexts = this.wordTexts.filter(text => text.active);
   }
 
-  private handleWordCapture(word: GameWord) {
-    const isCorrect = word.id === this.targetWord?.id;
+  private handleWordCapture(word: GameWord, isCorrect: boolean) {
     console.log(`Word captured: ${word.kanji} (${isCorrect ? 'correct' : 'incorrect'})`);
     
     // Submit the review to track progress
@@ -492,9 +813,11 @@ export default class MainScene extends Phaser.Scene {
     gameState.addPoints(isCorrect);
     
     if (isCorrect) {
-      this.handleCorrectCapture();
+      this.updateScore();
+      this.updateStrikes();
+      this.isGrowing = true;  // Snake will grow on next move
     } else {
-      this.handleIncorrectCapture();
+      this.updateStrikes();
     }
 
     // Check for game over after updating strikes
@@ -503,20 +826,57 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  private handleCorrectCapture() {
-    this.updateScore();
-    this.updateStrikes();  // Update strikes as they might decrease on correct capture
-    this.isGrowing = true;  // Snake will grow on next move
+  private celebrateWord(text: string, x: number, y: number) {
+    console.log('Creating celebration at:', { text, x, y });
     
-    // TODO: Add visual feedback
-    // TODO: Play success sound
-  }
+    // Create a new text object for the animation
+    const celebratoryText = this.add.text(
+      x,
+      y,
+      text,
+      {
+        fontSize: '20px',
+        color: '#4ade80', // Green color
+        fontFamily: '"Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif'
+      }
+    ).setOrigin(0.5).setDepth(20);  // Highest depth to be on top of everything
 
-  private handleIncorrectCapture() {
-    this.updateStrikes();
-    
-    // TODO: Add visual feedback
-    // TODO: Play error sound
+    console.log('Created celebratory text at:', {
+      text: celebratoryText.text,
+      position: { x: celebratoryText.x, y: celebratoryText.y },
+      scale: { x: celebratoryText.scaleX, y: celebratoryText.scaleY }
+    });
+
+    // Create the scale up and fade out animation
+    this.tweens.add({
+      targets: celebratoryText,
+      scaleX: 3,
+      scaleY: 3,
+      alpha: 0,
+      duration: 4000,  // 4 seconds
+      ease: 'Expo.out',  // Expo.out for longer visibility
+      onComplete: () => {
+        celebratoryText.destroy();
+      }
+    });
+
+    // Add a particle burst effect
+    const particles = this.add.particles(0, 0, 'particle', {
+      x: x,
+      y: y,
+      quantity: 5,  // 5 particles
+      speed: { min: 50, max: 150 },
+      scale: { start: 0.4, end: 0 },
+      alpha: { start: 0.5, end: 0 },  // Start at 50% opacity
+      lifespan: 400,  // 400ms
+      blendMode: 'ADD',
+      tint: 0xffd700  // Yellow color
+    }).setDepth(15);  // Above game elements but below celebratory text
+
+    // Stop and destroy the particle emitter after half a second
+    this.time.delayedCall(500, () => {  // 500ms
+      particles.destroy();
+    });
   }
 
   private drawGame() {
@@ -567,7 +927,8 @@ export default class MainScene extends Phaser.Scene {
 
     const text = this.add.text(centerX, centerY, 'PAUSED', {
       fontSize: '32px',
-      color: '#ffffff'
+      color: '#ffffff',
+      fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     });
     text.setOrigin(0.5);
     text.setDepth(11);  // Set even higher depth to appear above overlay
@@ -598,9 +959,10 @@ export default class MainScene extends Phaser.Scene {
     overlay.setDepth(10);
 
     // Show final score with higher depth
-    this.add.text(centerX, centerY - 50, 'GAME OVER', {
+    this.add.text(centerX, centerY - 75, 'GAME OVER', {
       fontSize: '32px',
-      color: '#ffffff'
+      color: '#ffffff',
+      fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     })
     .setOrigin(0.5)
     .setDepth(11);
@@ -608,45 +970,114 @@ export default class MainScene extends Phaser.Scene {
     // Show final score
     this.add.text(centerX, centerY, `Final Score: ${score.points}`, {
       fontSize: '24px',
-      color: '#ffffff'
+      color: '#ffffff',
+      fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     })
     .setOrigin(0.5)
     .setDepth(11);
 
     // Create container for buttons
-    const buttonSpacing = 15;  // Reduced spacing for vertical layout
-    const firstButtonY = centerY + 50;
-    const secondButtonY = firstButtonY + buttonSpacing + 40;  // 40 is the approximate height of the button
+    const buttonSpacing = 25;
+    const firstButtonY = centerY + 75;
+    const secondButtonY = firstButtonY + buttonSpacing + 40;
 
     // Restart button (on top)
     const restartButton = this.add.text(centerX, firstButtonY, 'Restart', {
       fontSize: '24px',
       color: '#4ade80',
-      backgroundColor: '#064e3b',  // Darker green background for better visibility
-      padding: { x: 20, y: 10 }
+      backgroundColor: '#064e3b',
+      padding: { x: 32, y: 16 },  // Increased padding
+      fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     })
-    .setOrigin(0.5)  // Center align
-    .setDepth(11);  // Above overlay
+    .setOrigin(0.5)
+    .setDepth(11);
 
-    restartButton.setInteractive({ useHandCursor: true });
-    restartButton.on('pointerdown', () => this.scene.restart());
+    // Add a border/background for the Restart button
+    const restartBg = this.add.graphics();
+    restartBg.lineStyle(2, 0x4ade80);  // Green border
+    const restartBounds = restartButton.getBounds();
+    restartBg.strokeRoundedRect(
+      restartBounds.x,
+      restartBounds.y,
+      restartBounds.width,
+      restartBounds.height,
+      8  // Rounded corners
+    );
+    restartBg.setDepth(11);
+
+    restartButton.setInteractive({ useHandCursor: true })
+      .on('pointerover', () => {
+        restartButton.setStyle({ backgroundColor: '#065f46' });  // Lighter green on hover
+        restartBg.clear().lineStyle(2, 0x6ee7b7).strokeRoundedRect(  // Lighter border on hover
+          restartBounds.x,
+          restartBounds.y,
+          restartBounds.width,
+          restartBounds.height,
+          8
+        );
+      })
+      .on('pointerout', () => {
+        restartButton.setStyle({ backgroundColor: '#064e3b' });  // Reset color
+        restartBg.clear().lineStyle(2, 0x4ade80).strokeRoundedRect(  // Reset border
+          restartBounds.x,
+          restartBounds.y,
+          restartBounds.width,
+          restartBounds.height,
+          8
+        );
+      })
+      .on('pointerdown', () => this.scene.restart());
 
     // Return to Title button (below)
     const titleButton = this.add.text(centerX, secondButtonY, 'Return to Title', {
       fontSize: '24px',
       color: '#4ade80',
-      backgroundColor: '#064e3b',  // Darker green background for better visibility
-      padding: { x: 20, y: 10 }
+      backgroundColor: '#064e3b',
+      padding: { x: 32, y: 16 },  // Increased padding
+      fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     })
-    .setOrigin(0.5)  // Center align
-    .setDepth(11);  // Above overlay
+    .setOrigin(0.5)
+    .setDepth(11);
 
-    titleButton.setInteractive({ useHandCursor: true });
-    titleButton.on('pointerdown', () => {
-      sessionService.endSession();  // End the current session
-      this.scene.stop();  // Stop this scene properly
-      this.scene.start('TitleScene');  // Return to title screen
-    });
+    // Add a border/background for the Return to Title button
+    const titleBg = this.add.graphics();
+    titleBg.lineStyle(2, 0x4ade80);  // Green border
+    const titleBounds = titleButton.getBounds();
+    titleBg.strokeRoundedRect(
+      titleBounds.x,
+      titleBounds.y,
+      titleBounds.width,
+      titleBounds.height,
+      8  // Rounded corners
+    );
+    titleBg.setDepth(11);
+
+    titleButton.setInteractive({ useHandCursor: true })
+      .on('pointerover', () => {
+        titleButton.setStyle({ backgroundColor: '#065f46' });  // Lighter green on hover
+        titleBg.clear().lineStyle(2, 0x6ee7b7).strokeRoundedRect(  // Lighter border on hover
+          titleBounds.x,
+          titleBounds.y,
+          titleBounds.width,
+          titleBounds.height,
+          8
+        );
+      })
+      .on('pointerout', () => {
+        titleButton.setStyle({ backgroundColor: '#064e3b' });  // Reset color
+        titleBg.clear().lineStyle(2, 0x4ade80).strokeRoundedRect(  // Reset border
+          titleBounds.x,
+          titleBounds.y,
+          titleBounds.width,
+          titleBounds.height,
+          8
+        );
+      })
+      .on('pointerdown', () => {
+        sessionService.endSession();
+        this.scene.stop();
+        this.scene.start('TitleScene');
+      });
   }
 
   shutdown() {
@@ -665,7 +1096,19 @@ export default class MainScene extends Phaser.Scene {
     if (this.strikesText) {
       this.strikesText.destroy();
     }
+    if (this.scoreGraphics) this.scoreGraphics.destroy();
+    if (this.strikesGraphics) this.strikesGraphics.destroy();
+    if (this.cueGraphics) this.cueGraphics.destroy();
     this.graphics.clear();
     this.graphics.destroy();
+  }
+
+  preload() {
+    // Create a small particle texture
+    const graphics = this.add.graphics();
+    graphics.fillStyle(0xffffff);
+    graphics.fillCircle(4, 4, 4);
+    graphics.generateTexture('particle', 8, 8);
+    graphics.destroy();
   }
 } 
