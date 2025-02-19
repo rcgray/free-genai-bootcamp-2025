@@ -20,6 +20,15 @@ interface WordsResponse {
   error: string | null;
 }
 
+interface GroupWordsResponse {
+  data: {
+    id: number;
+    name: string;
+    words: Word[];
+  };
+  error: string | null;
+}
+
 interface Group {
   id: number;
   name: string;
@@ -43,10 +52,52 @@ export class WordService {
   private currentGroupId: number | null = null;
   private readonly API_BASE = 'http://localhost:8000/api';
 
+  private async fetchAllPaginatedWords<T extends WordsResponse | GroupWordsResponse>(
+    url: string,
+    params: Record<string, any> = {},
+    extractWords: (response: T) => Word[]
+  ): Promise<Word[]> {
+    const allWords: Word[] = [];
+    let currentPage = 1;
+    let totalPages = 1;
+
+    do {
+      console.log(`Fetching page ${currentPage}...`);
+      const response = await axios.get<T>(url, {
+        params: {
+          ...params,
+          page: currentPage,
+          per_page: 100  // Maximum allowed value
+        }
+      });
+
+      const words = extractWords(response.data);
+      allWords.push(...words);
+
+      // For GroupWordsResponse, we get all words in one request
+      if ('words' in response.data.data) {
+        break;
+      }
+
+      // For WordsResponse, we need to handle pagination
+      totalPages = response.data.data.total_pages;
+      currentPage++;
+    } while (currentPage <= totalPages);
+
+    console.log(`Fetched total of ${allWords.length} words`);
+    return allWords;
+  }
+
   async fetchGroups(): Promise<Group[]> {
     try {
       console.log('WordService: Starting to fetch groups...');
-      const response = await axios.get<GroupsResponse>(`${this.API_BASE}/groups`);
+      const response = await axios.get<GroupsResponse>(`${this.API_BASE}/groups`, {
+        params: {
+          per_page: 100,  // Maximum allowed value
+          sort_by: 'name',
+          order: 'asc'
+        }
+      });
       console.log('WordService: Raw API response:', {
         status: response.status,
         statusText: response.statusText,
@@ -93,24 +144,34 @@ export class WordService {
 
     try {
       console.log('Making API request to fetch words...');
-      const params: any = {
-        per_page: 100,
-        sort_by: 'romaji',
-        order: 'asc'
-      };
-
-      // Only add group_id parameter if not fetching all words
-      if (groupId !== -1) {
-        params.group_id = groupId;
+      let words: Word[];
+      
+      // For "All Words" case, use the words endpoint with no group filter
+      if (groupId === -1) {
+        words = await this.fetchAllPaginatedWords<WordsResponse>(
+          `${this.API_BASE}/words`,
+          {
+            sort_by: 'romaji',
+            order: 'asc'
+          },
+          (response) => response.data.items
+        );
+      } else {
+        // For specific groups, use the groups/:id endpoint to get words
+        words = await this.fetchAllPaginatedWords<GroupWordsResponse>(
+          `${this.API_BASE}/groups/${groupId}`,
+          {
+            sort_by: 'romaji',
+            order: 'asc'
+          },
+          (response) => response.data.words
+        );
       }
 
-      const response = await axios.get<WordsResponse>(`${this.API_BASE}/words`, { params });
-
-      console.log('Words API raw response:', response);
-      console.log('Words API response data:', response.data);
-      const words = response.data.data.items;
+      console.log(`Fetched ${words.length} words for group ${groupId}:`, 
+        words.map(w => ({ id: w.id, kanji: w.kanji, romaji: w.romaji, english: w.english }))
+      );
       this.wordCache.set(groupId, words);
-      this.currentGroupId = groupId;
       return words;
     } catch (error) {
       console.error('Error fetching words:', error);
@@ -130,6 +191,7 @@ export class WordService {
       return [];
     }
 
+    console.log(`Fetching words for group ${groupId}...`);
     const words = await this.fetchWordsByGroup(groupId);
     console.log(`Got ${words.length} words from group ${groupId}`);
     
@@ -152,17 +214,30 @@ export class WordService {
       selectedWords.push(words[wordIndex]);
     }
 
-    console.log('Selected words:', selectedWords.map(w => ({ id: w.id, kanji: w.kanji, romaji: w.romaji })));
+    console.log('Selected words:', selectedWords.map(w => ({
+      id: w.id,
+      kanji: w.kanji,
+      romaji: w.romaji,
+      english: w.english,
+      group_id: groupId
+    })));
     return selectedWords;
   }
 
   getCurrentGroupId(): number {
-    return this.currentGroupId ?? -1;
+    if (this.currentGroupId === null) {
+      console.warn('No group ID set, defaulting to all words (-1)');
+      return -1;
+    }
+    console.log('Current group ID:', this.currentGroupId);
+    return this.currentGroupId;
   }
 
   setCurrentGroupId(groupId: number): void {
     console.log('Setting current group ID:', groupId);
     this.currentGroupId = groupId;
+    // Clear the word cache when changing groups
+    this.wordCache.clear();
   }
 
   clearCache(): void {

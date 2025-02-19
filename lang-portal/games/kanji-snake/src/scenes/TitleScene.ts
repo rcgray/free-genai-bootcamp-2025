@@ -18,9 +18,20 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   init() {
+    // Reset all state
     this.sceneReady = false;
     this.groupsLoaded = false;
     this.groups = [];
+    this.selectedGroupId = -1;
+    this.loading = false;
+    this.groupButtons = [];
+    
+    // Clear any existing UI elements
+    if (this.title) this.title.destroy();
+    if (this.startButton) this.startButton.destroy();
+    if (this.loadingText) this.loadingText.destroy();
+    this.groupButtons.forEach(button => button.destroy());
+    this.groupButtons = [];
   }
 
   preload() {
@@ -47,6 +58,15 @@ export default class TitleScene extends Phaser.Scene {
 
     // Start loading groups
     this.loadGroups();
+  }
+
+  shutdown() {
+    // Clean up resources when scene is shut down
+    if (this.title) this.title.destroy();
+    if (this.startButton) this.startButton.destroy();
+    if (this.loadingText) this.loadingText.destroy();
+    this.groupButtons.forEach(button => button.destroy());
+    this.groupButtons = [];
   }
 
   private async loadGroups() {

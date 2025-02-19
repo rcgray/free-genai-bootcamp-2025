@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
 import { wordService, Word as ApiWord } from '../services/WordService';
 import { sessionService } from '../services/SessionService';
+import { gameState } from '../services/GameState';
 
 // Constants
 const GRID_SIZE = 25; // Size of each cell in pixels
 const GRID_WIDTH = 48; // Increased from 32 to 48 cells (50% larger)
 const GRID_HEIGHT = 36; // Increased from 24 to 36 cells (50% larger)
 const INITIAL_SNAKE_LENGTH = 3;
-const GAME_SPEED = 150; // Milliseconds between moves
-const WORDS_PER_ROUND = 6; // Number of words to show on the field at once
+const WORDS_PER_ROUND = 12; // Number of words to show on the field at once
 
 // Types
 interface Position {
@@ -43,9 +43,6 @@ export default class MainScene extends Phaser.Scene {
   private wordTexts: Phaser.GameObjects.Text[] = [];  // Text objects for words
   private targetDisplay?: Phaser.GameObjects.Text;  // Text object for target word
   private sessionId?: string;
-  private score: number = 0;
-  private strikes: number = 0;
-  private readonly MAX_STRIKES = 3;
   private scoreText?: Phaser.GameObjects.Text;
   private strikesText?: Phaser.GameObjects.Text;
   private isGrowing: boolean = false;
@@ -55,9 +52,35 @@ export default class MainScene extends Phaser.Scene {
   }
 
   init(data: { sessionId?: string }) {
+    // Reset session ID
     this.sessionId = data.sessionId;
-    this.score = 0;
-    this.strikes = 0;
+    
+    // Reset game state
+    gameState.resetScore();
+    
+    // Reset snake state
+    this.snake = Array.from({ length: INITIAL_SNAKE_LENGTH }, (_, i) => ({
+      x: Math.floor(GRID_WIDTH / 2),
+      y: Math.floor(GRID_HEIGHT / 2) + i
+    }));
+    this.direction = 'UP';
+    this.nextDirection = 'UP';
+    this.moveTimer = 0;
+    this.isGrowing = false;
+    
+    // Reset game flags
+    this.isPaused = false;
+    this.isGameOver = false;
+    
+    // Reset word-related state
+    this.words = [];
+    this.wordTexts = [];
+    this.targetWord = undefined;
+    
+    // Clear any existing UI elements
+    if (this.targetDisplay) this.targetDisplay.destroy();
+    if (this.scoreText) this.scoreText.destroy();
+    if (this.strikesText) this.strikesText.destroy();
   }
 
   create() {
@@ -100,8 +123,10 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private createUI() {
+    const score = gameState.getScore();
+    
     // Create score text in top left
-    this.scoreText = this.add.text(20, 20, `Score: ${this.score}`, {
+    this.scoreText = this.add.text(20, 20, `Score: ${score.points}`, {
       fontSize: '24px',
       color: '#ffffff'
     }).setDepth(3);
@@ -110,7 +135,7 @@ export default class MainScene extends Phaser.Scene {
     this.strikesText = this.add.text(
       this.cameras.main.width - 20, 
       20, 
-      `Strikes: ${this.strikes}/${this.MAX_STRIKES}`,
+      `Strikes: ${score.strikes}/${score.maxStrikes}`,
       {
         fontSize: '24px',
         color: '#ffffff'
@@ -120,13 +145,15 @@ export default class MainScene extends Phaser.Scene {
 
   private updateScore() {
     if (this.scoreText) {
-      this.scoreText.setText(`Score: ${this.score}`);
+      const score = gameState.getScore();
+      this.scoreText.setText(`Score: ${score.points}`);
     }
   }
 
   private updateStrikes() {
     if (this.strikesText) {
-      this.strikesText.setText(`Strikes: ${this.strikes}/${this.MAX_STRIKES}`);
+      const score = gameState.getScore();
+      this.strikesText.setText(`Strikes: ${score.strikes}/${score.maxStrikes}`);
     }
   }
 
@@ -272,7 +299,8 @@ export default class MainScene extends Phaser.Scene {
       if (this.direction !== 'LEFT') this.nextDirection = 'RIGHT';
     }
 
-    // Move snake on interval
+    // Move snake on interval using dynamic speed from GameState
+    const { speed } = gameState.getScore();
     if (time > this.moveTimer) {
       // Apply the queued direction only when we're actually going to move
       const opposites = {
@@ -288,7 +316,7 @@ export default class MainScene extends Phaser.Scene {
       }
       
       this.moveSnake();
-      this.moveTimer = time + GAME_SPEED;
+      this.moveTimer = time + speed;  // Use dynamic speed
     }
 
     // Draw game
@@ -389,36 +417,33 @@ export default class MainScene extends Phaser.Scene {
       sessionService.submitWordReview(word.id, isCorrect);
     }
 
+    // Update game state and handle capture
+    gameState.addPoints(isCorrect);
+    
     if (isCorrect) {
       this.handleCorrectCapture();
     } else {
       this.handleIncorrectCapture();
     }
+
+    // Check for game over after updating strikes
+    if (gameState.isGameOver()) {
+      this.gameOver();
+    }
   }
 
   private handleCorrectCapture() {
-    // Increment score
-    this.score++;
     this.updateScore();
-    
-    // Set flag to grow snake on next move
-    this.isGrowing = true;
+    this.updateStrikes();  // Update strikes as they might decrease on correct capture
+    this.isGrowing = true;  // Snake will grow on next move
     
     // TODO: Add visual feedback
     // TODO: Play success sound
   }
 
   private handleIncorrectCapture() {
-    // Increment strikes
-    this.strikes++;
     this.updateStrikes();
     
-    // Check for game over
-    if (this.strikes >= this.MAX_STRIKES) {
-      this.gameOver();
-      return;
-    }
-
     // TODO: Add visual feedback
     // TODO: Play error sound
   }
@@ -485,16 +510,17 @@ export default class MainScene extends Phaser.Scene {
   private showGameOverMenu() {
     const centerX = this.cameras.main.centerX;
     const centerY = this.cameras.main.centerY;
+    const score = gameState.getScore();
 
     // Create semi-transparent overlay
     const overlay = this.add.rectangle(
       0, 0,
       this.cameras.main.width,
       this.cameras.main.height,
-      0x000000, 0.7  // Made slightly darker for better contrast
+      0x000000, 0.7
     );
     overlay.setOrigin(0);
-    overlay.setDepth(10);  // Set high depth to appear above everything
+    overlay.setDepth(10);
 
     // Show final score with higher depth
     this.add.text(centerX, centerY - 50, 'GAME OVER', {
@@ -502,14 +528,15 @@ export default class MainScene extends Phaser.Scene {
       color: '#ffffff'
     })
     .setOrigin(0.5)
-    .setDepth(11);  // Above overlay
+    .setDepth(11);
 
-    this.add.text(centerX, centerY, `Final Score: ${this.score}`, {
+    // Show final score
+    this.add.text(centerX, centerY, `Final Score: ${score.points}`, {
       fontSize: '24px',
       color: '#ffffff'
     })
     .setOrigin(0.5)
-    .setDepth(11);  // Above overlay
+    .setDepth(11);
 
     // Create container for buttons
     const buttonSpacing = 15;  // Reduced spacing for vertical layout
@@ -542,7 +569,28 @@ export default class MainScene extends Phaser.Scene {
     titleButton.setInteractive({ useHandCursor: true });
     titleButton.on('pointerdown', () => {
       sessionService.endSession();  // End the current session
+      this.scene.stop();  // Stop this scene properly
       this.scene.start('TitleScene');  // Return to title screen
     });
+  }
+
+  shutdown() {
+    // Clean up resources when scene is shut down
+    this.words.forEach(word => {
+      word.textObjects.forEach(text => text.destroy());
+    });
+    this.words = [];
+    this.wordTexts = [];
+    if (this.targetDisplay) {
+      this.targetDisplay.destroy();
+    }
+    if (this.scoreText) {
+      this.scoreText.destroy();
+    }
+    if (this.strikesText) {
+      this.strikesText.destroy();
+    }
+    this.graphics.clear();
+    this.graphics.destroy();
   }
 } 

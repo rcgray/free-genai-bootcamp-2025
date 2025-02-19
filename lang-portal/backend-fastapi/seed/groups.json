@@ -1,12 +1,12 @@
 [
   {
     "id": 1,
-    "name": "Adjectives",
+    "name": "Verbs",
     "words_count": 0
   },
   {
     "id": 2,
-    "name": "Verbs",
+    "name": "Adjectives",
     "words_count": 0
   }
 ] 
