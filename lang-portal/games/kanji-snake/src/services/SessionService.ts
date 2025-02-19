@@ -25,16 +25,19 @@ interface Activity {
 }
 
 interface ActivitiesResponse {
-  items: Activity[];
-  total: number;
-  page: number;
-  per_page: number;
-  total_pages: number;
+  data: {
+    items: Activity[];
+    total: number;
+    page: number;
+    per_page: number;
+    total_pages: number;
+  };
+  error: string | null;
 }
 
 export class SessionService {
   private currentSession: Session | null = null;
-  private readonly API_BASE = '/api';
+  private readonly API_BASE = 'http://localhost:8000/api';
   private activityId: number | null = null;
 
   private async getActivityId(): Promise<number> {
@@ -44,7 +47,7 @@ export class SessionService {
 
     try {
       const response = await axios.get<ActivitiesResponse>(`${this.API_BASE}/activities`);
-      const activity = response.data.items.find(a => a.url === GAME_URL);
+      const activity = response.data.data.items.find(a => a.url === GAME_URL);
       if (!activity) {
         throw new Error(`Game "${GAME_URL}" not found in the database`);
       }

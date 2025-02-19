@@ -15,6 +15,7 @@ interface WordsResponse {
     total: number;
     page: number;
     per_page: number;
+    total_pages: number;
   };
   error: string | null;
 }
@@ -31,6 +32,7 @@ interface GroupsResponse {
     total: number;
     page: number;
     per_page: number;
+    total_pages: number;
   };
   error: string | null;
 }
@@ -39,35 +41,46 @@ export class WordService {
   private wordCache: Map<number, Word[]> = new Map();
   private groupCache: Group[] = [];
   private currentGroupId: number | null = null;
-  private readonly API_BASE = '/api';
+  private readonly API_BASE = 'http://localhost:8000/api';
 
   async fetchGroups(): Promise<Group[]> {
-    console.log('Fetching groups...');
-    if (this.groupCache.length > 0) {
-      console.log('Returning cached groups:', this.groupCache);
-      return this.groupCache;
-    }
-
     try {
-      console.log('Making API request to fetch groups...');
-      const response = await axios.get<GroupsResponse>(`${this.API_BASE}/groups`, {
-        params: {
-          per_page: 100,
-          sort_by: 'name',
-          order: 'asc'
-        }
+      console.log('WordService: Starting to fetch groups...');
+      const response = await axios.get<GroupsResponse>(`${this.API_BASE}/groups`);
+      console.log('WordService: Raw API response:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+        data: response.data
       });
-
-      console.log('Groups API response:', response.data);
-      this.groupCache = response.data.data.items;
-      return this.groupCache;
-    } catch (error) {
-      console.error('Error fetching groups:', error);
-      if (axios.isAxiosError(error)) {
-        console.error('Response:', error.response?.data);
-        console.error('Status:', error.response?.status);
+      
+      if (!response.data) {
+        console.error('WordService: No data received from API');
+        throw new Error('No data received from API');
       }
-      return [];
+
+      if (!response.data.data) {
+        console.error('WordService: Unexpected response structure:', response.data);
+        throw new Error('Unexpected response structure');
+      }
+      
+      const groups = response.data.data.items;
+      console.log('WordService: Processed groups:', groups);
+      
+      if (!groups || groups.length === 0) {
+        console.warn('WordService: No groups found in response');
+      }
+      
+      this.groupCache = groups;
+      return groups;
+    } catch (error) {
+      console.error('WordService: Error fetching groups:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('WordService: Response data:', error.response?.data);
+        console.error('WordService: Response status:', error.response?.status);
+        console.error('WordService: Response headers:', error.response?.headers);
+      }
+      throw error;
     }
   }
 
@@ -93,7 +106,8 @@ export class WordService {
 
       const response = await axios.get<WordsResponse>(`${this.API_BASE}/words`, { params });
 
-      console.log('Words API response:', response.data);
+      console.log('Words API raw response:', response);
+      console.log('Words API response data:', response.data);
       const words = response.data.data.items;
       this.wordCache.set(groupId, words);
       this.currentGroupId = groupId;
@@ -104,7 +118,7 @@ export class WordService {
         console.error('Response:', error.response?.data);
         console.error('Status:', error.response?.status);
       }
-      return [];
+      throw error;
     }
   }
 
@@ -159,4 +173,4 @@ export class WordService {
   }
 }
 
-export const wordService = new WordService(); 
+export const wordService = new WordService();
