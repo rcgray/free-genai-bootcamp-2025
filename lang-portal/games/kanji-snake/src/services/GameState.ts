@@ -70,9 +70,9 @@ export class GameState {
   }
 
   private updateSpeed(): void {
-    // Decrease interval (increase speed) by 2ms for each correct answer
+    // Decrease interval (increase speed) by 1ms for each correct answer
     // but don't go faster than 50ms
-    this.score.speed = Math.max(50, this.score.speed - 2);
+    this.score.speed = Math.max(50, this.score.speed - 1);
   }
 
   getScore(): GameScore {

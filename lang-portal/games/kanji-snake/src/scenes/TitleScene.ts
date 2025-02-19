@@ -12,6 +12,8 @@ export default class TitleScene extends Phaser.Scene {
   private loadingText?: Phaser.GameObjects.Text;
   private sceneReady: boolean = false;
   private groupsLoaded: boolean = false;
+  private cueType: 'romaji' | 'english' = 'romaji';  // Default to romaji
+  private cueTypeButton?: Phaser.GameObjects.Text;
 
   constructor() {
     super({ key: 'TitleScene' });
@@ -162,7 +164,7 @@ export default class TitleScene extends Phaser.Scene {
     ).setOrigin(0.5);
 
     // Calculate layout
-    const startY = 180;
+    const startY = 180;  // Starting Y position for group buttons
     const buttonHeight = 40;
     const buttonSpacing = 10;
     const buttonWidth = 300;
@@ -187,11 +189,13 @@ export default class TitleScene extends Phaser.Scene {
       );
     });
 
-    // Add start button at the bottom
-    const lastY = startY + (this.groups.length + 1) * (buttonHeight + buttonSpacing) + 30;
+    // Calculate position for start button (after all groups)
+    const startButtonY = startY + (this.groups.length + 1) * (buttonHeight + buttonSpacing) + 60;  // Doubled from 30 to 60
+
+    // Add start button
     this.startButton = this.add.text(
       this.cameras.main.centerX,
-      lastY,
+      startButtonY,
       'Start Game',
       {
         fontSize: '32px',
@@ -205,6 +209,31 @@ export default class TitleScene extends Phaser.Scene {
     .on('pointerover', () => this.startButton?.setStyle({ color: '#4ade80' }))
     .on('pointerout', () => this.startButton?.setStyle({ color: '#22c55e' }))
     .on('pointerdown', () => this.startGame());
+
+    // Add cue type selector below the start button with similar spacing
+    const cueTypeY = startButtonY + 60 + 40;  // Doubled spacing from 30 to 60, plus button height
+    this.cueTypeButton = this.add.text(
+      this.cameras.main.centerX,
+      cueTypeY,
+      `Cue Type: ${this.cueType.toUpperCase()}`,
+      {
+        fontSize: '20px',
+        color: '#ffffff',
+        backgroundColor: '#374151',
+        padding: { x: 15, y: 8 }
+      }
+    )
+    .setOrigin(0.5)
+    .setInteractive({ useHandCursor: true })
+    .on('pointerover', () => {
+      this.cueTypeButton?.setStyle({ backgroundColor: '#4b5563' });
+    })
+    .on('pointerout', () => {
+      this.cueTypeButton?.setStyle({ backgroundColor: '#374151' });
+    })
+    .on('pointerdown', () => {
+      this.toggleCueType();
+    });
 
     // Select "All Words" by default
     this.selectGroup(-1);
@@ -257,6 +286,13 @@ export default class TitleScene extends Phaser.Scene {
     });
   }
 
+  private toggleCueType() {
+    this.cueType = this.cueType === 'romaji' ? 'english' : 'romaji';
+    if (this.cueTypeButton) {
+      this.cueTypeButton.setText(`Cue Type: ${this.cueType.toUpperCase()}`);
+    }
+  }
+
   private async startGame() {
     if (this.loading) return;
     this.loading = true;
@@ -268,9 +304,10 @@ export default class TitleScene extends Phaser.Scene {
         throw new Error('Failed to create session');
       }
 
-      // Transition to the game scene
+      // Transition to the game scene with cue type preference
       this.scene.start('MainScene', {
-        sessionId: sessionService.getCurrentSession()?.id
+        sessionId: sessionService.getCurrentSession()?.id,
+        cueType: this.cueType
       });
     } catch (error) {
       console.error('Error starting game:', error);

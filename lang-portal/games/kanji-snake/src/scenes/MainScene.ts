@@ -46,12 +46,17 @@ export default class MainScene extends Phaser.Scene {
   private scoreText?: Phaser.GameObjects.Text;
   private strikesText?: Phaser.GameObjects.Text;
   private isGrowing: boolean = false;
+  private cueType: 'romaji' | 'english' = 'romaji';  // Default to romaji
+  private pauseElements: Phaser.GameObjects.GameObject[] = [];  // Track pause menu elements
 
   constructor() {
     super({ key: 'MainScene' });
   }
 
-  init(data: { sessionId?: string }) {
+  init(data: { sessionId?: string; cueType?: 'romaji' | 'english' }) {
+    // Set cue type from scene data
+    this.cueType = data.cueType || 'romaji';
+    
     // Reset session ID
     this.sessionId = data.sessionId;
     
@@ -164,6 +169,9 @@ export default class MainScene extends Phaser.Scene {
     });
     this.words = [];
     this.wordTexts = [];
+    if (this.targetDisplay) {
+      this.targetDisplay.destroy();
+    }
 
     try {
       // Get random words from the current group
@@ -203,7 +211,7 @@ export default class MainScene extends Phaser.Scene {
               char,
               {
                 fontSize: '20px',
-                color: '#ffffff',
+                color: gameWord.id === this.targetWord?.id ? '#4ade80' : '#ffffff',  // Green for target word
                 fontFamily: '"Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif'
               }
             ).setOrigin(0.5).setDepth(2);
@@ -220,23 +228,19 @@ export default class MainScene extends Phaser.Scene {
         }
       }
 
-      // Display target word's romaji at the top
-      if (this.targetDisplay) {
-        this.targetDisplay.destroy();
-      }
-      if (this.targetWord) {
-        this.targetDisplay = this.add.text(
-          this.cameras.main.centerX,
-          30,
-          this.targetWord.romaji,
-          {
-            fontSize: '32px',
-            color: '#ffffff',
-            backgroundColor: '#000000',
-            padding: { x: 10, y: 5 }
-          }
-        ).setOrigin(0.5).setDepth(3);
-      }
+      // Display target word's cue at the top
+      const cueText = this.cueType === 'romaji' ? this.targetWord.romaji : this.targetWord.english;
+      this.targetDisplay = this.add.text(
+        this.cameras.main.centerX,
+        30,
+        cueText,
+        {
+          fontSize: '32px',
+          color: '#ffffff',
+          backgroundColor: '#000000',
+          padding: { x: 10, y: 5 }
+        }
+      ).setOrigin(0.5).setDepth(3);
     } catch (error) {
       console.error('Error initializing words:', error);
     }
@@ -257,10 +261,79 @@ export default class MainScene extends Phaser.Scene {
   }
 
   private getRandomEmptyPositionForWord(usedPositions: Set<string>, wordLength: number): Position | null {
+    // Get snake head position
+    const head = this.snake[0];
+
+    // Define safe zone boundaries around snake head
+    const safeZone = {
+      left: Math.max(0, head.x - 5),
+      right: Math.min(GRID_WIDTH - 1, head.x + 5),
+      top: Math.max(0, head.y - 5),
+      bottom: Math.min(GRID_HEIGHT - 1, head.y + 5)
+    };
+
+    // Define cue area at top center
+    const cueArea = {
+      left: Math.floor((GRID_WIDTH - 10) / 2),  // Center a width of 10
+      right: Math.floor((GRID_WIDTH + 10) / 2),
+      top: 0,
+      bottom: 1  // Height of 2 (0 and 1)
+    };
+
+    // Helper function to check if any part of a word would be adjacent to used positions
+    const hasAdjacentWords = (startX: number, startY: number): boolean => {
+      // Check a rectangle around the word (including diagonals)
+      for (let y = startY - 1; y <= startY + 1; y++) {
+        for (let x = startX - 1; x <= startX + wordLength; x++) {
+          // Skip if checking outside the grid
+          if (x < 0 || x >= GRID_WIDTH || y < 0 || y >= GRID_HEIGHT) {
+            continue;
+          }
+          
+          // Skip positions that would be part of our word
+          if (y === startY && x >= startX && x < startX + wordLength) {
+            continue;
+          }
+          
+          // If any adjacent position is used, the word can't go here
+          if (usedPositions.has(`${x},${y}`)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
     // Try 100 times to find a valid position
     for (let attempts = 0; attempts < 100; attempts++) {
       const x = Math.floor(Math.random() * (GRID_WIDTH - wordLength));
       const y = Math.floor(Math.random() * GRID_HEIGHT);
+      
+      // Check if any part of the word would be in the same row or column as the snake's head
+      const wouldIntersectSnakeHeadLines = (
+        y === head.y || // Same row as head
+        (x <= head.x && x + wordLength > head.x) // Any part of word in head's column
+      );
+
+      // Check if any part of the word would intersect with the safe zone square
+      const wouldIntersectSafeZone = (
+        // Check if word's start or end x position is within safe zone x range
+        (x <= safeZone.right && x + wordLength - 1 >= safeZone.left) &&
+        // Check if y position is within safe zone y range
+        (y >= safeZone.top && y <= safeZone.bottom)
+      );
+
+      // Check if any part of the word would intersect with the romaji cue area
+      const wouldIntersectCueArea = (
+        // Check if word's start or end x position is within cue area x range
+        (x <= cueArea.right && x + wordLength - 1 >= cueArea.left) &&
+        // Check if y position is within cue area y range
+        (y >= cueArea.top && y <= cueArea.bottom)
+      );
+      
+      if (wouldIntersectSnakeHeadLines || wouldIntersectSafeZone || wouldIntersectCueArea) {
+        continue; // Try another position
+      }
       
       // Check if all positions needed for the word are available
       let isValid = true;
@@ -271,8 +344,9 @@ export default class MainScene extends Phaser.Scene {
           break;
         }
       }
-      
-      if (isValid) {
+
+      // If the word positions are free, check if it would be adjacent to any other words
+      if (isValid && !hasAdjacentWords(x, y)) {
         return { x, y };
       }
     }
@@ -385,11 +459,8 @@ export default class MainScene extends Phaser.Scene {
         // Handle the capture after the word is removed
         this.handleWordCapture(word);
         
-        // Only generate new words if this was the correct word
-        // (incorrect captures just remove the word)
-        if (word.id === this.targetWord?.id && this.words.length === 0) {
-          this.initializeWords();
-        }
+        // Start a new round after any word capture
+        this.initializeWords();
         return;
       }
     }
@@ -492,19 +563,23 @@ export default class MainScene extends Phaser.Scene {
       0x000000, 0.5
     );
     overlay.setOrigin(0);
+    overlay.setDepth(10);  // Set high depth to appear above game elements
 
     const text = this.add.text(centerX, centerY, 'PAUSED', {
       fontSize: '32px',
       color: '#ffffff'
     });
     text.setOrigin(0.5);
+    text.setDepth(11);  // Set even higher depth to appear above overlay
+
+    // Track pause menu elements
+    this.pauseElements = [overlay, text];
   }
 
   private hidePauseMenu() {
-    // Clear all UI elements
-    this.children.list
-      .filter(child => child instanceof Phaser.GameObjects.Text || child instanceof Phaser.GameObjects.Rectangle)
-      .forEach(child => child.destroy());
+    // Only destroy pause menu elements
+    this.pauseElements.forEach(element => element.destroy());
+    this.pauseElements = [];
   }
 
   private showGameOverMenu() {
