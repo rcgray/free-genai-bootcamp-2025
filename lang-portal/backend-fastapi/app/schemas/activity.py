@@ -1,12 +1,16 @@
 from datetime import datetime
-from pydantic import Field, HttpUrl
+from pydantic import Field, constr
 from app.schemas.base import BaseSchema
 
 
 class ActivityBase(BaseSchema):
     """Base schema for activities."""
     name: str = Field(..., min_length=1, description="Name of the activity")
-    url: HttpUrl = Field(..., description="URL where the activity can be launched")
+    url: str = Field(
+        ...,
+        pattern=r'^[a-z0-9-]+$',
+        description="Internal identifier for the activity (lowercase letters, numbers, and hyphens only)"
+    )
     description: str = Field(..., description="Description of the activity")
 
 
@@ -18,7 +22,11 @@ class ActivityCreate(ActivityBase):
 class ActivityUpdate(BaseSchema):
     """Schema for updating an activity."""
     name: str | None = Field(None, min_length=1, description="Name of the activity")
-    url: HttpUrl | None = Field(None, description="URL where the activity can be launched")
+    url: str | None = Field(
+        None,
+        pattern=r'^[a-z0-9-]+$',
+        description="Internal identifier for the activity (lowercase letters, numbers, and hyphens only)"
+    )
     description: str | None = Field(None, description="Description of the activity")
 
 

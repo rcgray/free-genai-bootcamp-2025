@@ -96,8 +96,8 @@ const DevWrapper = () => {
 
   const findGameId = async () => {
     try {
-      // Query activities to find our game
-      const response = await fetch(`http://localhost:8000/api/activities?url=${GAME_URL}`);
+      // Query all activities
+      const response = await fetch(`http://localhost:8000/api/activities`);
       const data = await response.json();
       
       // Check if we got a valid response with items
@@ -105,7 +105,7 @@ const DevWrapper = () => {
         throw new Error('Invalid response from activities endpoint');
       }
       
-      // Filter for exact URL match (in case the endpoint returns partial matches)
+      // Find our activity by URL identifier
       const activity = data.data.items.find((item: Activity) => item.url === GAME_URL);
       if (!activity) {
         throw new Error(`Game "${GAME_URL}" not found in the database. Did you add it to activities.json and run seed_db.py?`);
@@ -159,10 +159,7 @@ const DevWrapper = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          image_url: '[no longer used]',
-        }),
+        body: JSON.stringify(formData),
       });
       
       if (!response.ok) {
@@ -300,6 +297,7 @@ const DevWrapper = () => {
                     type="text"
                     value={formData.name}
                     onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onKeyDown={e => e.stopPropagation()}
                     className="dev-input"
                   />
                 </label>
@@ -308,6 +306,7 @@ const DevWrapper = () => {
                   <textarea
                     value={formData.description}
                     onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    onKeyDown={e => e.stopPropagation()}
                     placeholder="A brief description..."
                     rows={3}
                     className="dev-textarea"

@@ -102,6 +102,8 @@
 │   └── uv.lock
 ├── data
 │   └── empty.db
+├── dev
+│   └── kanji-snake.zip
 ├── docs
 │   ├── AI-TODO.md
 │   ├── API-Summary.md
@@ -172,6 +174,7 @@
 │   │   │   │   └── index.tsx
 │   │   │   ├── Home
 │   │   │   │   └── index.tsx
+│   │   │   ├── KanjiSnake
 │   │   │   ├── Sessions
 │   │   │   │   └── index.tsx
 │   │   │   ├── Settings
@@ -269,4 +272,4 @@
 │       └── index.ts
 └── yarn.lock
 
-82 directories, 188 files
+84 directories, 189 files
