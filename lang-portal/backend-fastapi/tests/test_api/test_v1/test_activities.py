@@ -19,7 +19,7 @@ async def test_create_activity(client: AsyncClient, db: AsyncSession):
     assert response.status_code == 200
     data = response.json()["data"]
     assert data["name"] == TEST_ACTIVITY["name"]
-    assert data["url"] == TEST_ACTIVITY["url"]
+    assert data["url"] == str(TEST_ACTIVITY["url"])
     assert data["description"] == TEST_ACTIVITY["description"]
 
 
@@ -38,7 +38,7 @@ async def test_get_activity(client: AsyncClient, db: AsyncSession):
     data = response.json()["data"]
     assert data["id"] == activity_id
     assert data["name"] == TEST_ACTIVITY["name"]
-    assert data["url"] == TEST_ACTIVITY["url"]
+    assert data["url"] == str(TEST_ACTIVITY["url"])
     assert data["description"] == TEST_ACTIVITY["description"]
 
 
@@ -53,12 +53,12 @@ async def test_get_activities(client: AsyncClient, db: AsyncSession):
     # Create test activities
     activity_1 = {
         "name": "Activity 1",
-        "url": "http://example.com/1",
+        "url": "activity-1",
         "description": "First activity"
     }
     activity_2 = {
         "name": "Activity 2",
-        "url": "http://example.com/2",
+        "url": "activity-2",
         "description": "Second activity"
     }
     
@@ -110,7 +110,7 @@ async def test_update_activity(client: AsyncClient, db: AsyncSession):
     # Update data
     update_data = {
         "name": "Updated Activity",
-        "url": "http://example.com/updated",
+        "url": "updated-activity",
         "description": "Updated description"
     }
 
@@ -130,7 +130,7 @@ async def test_update_activity_not_found(client: AsyncClient, db: AsyncSession):
     """Test updating a non-existent activity."""
     update_data = {
         "name": "Updated Activity",
-        "url": "http://example.com/updated",
+        "url": "updated-activity",
         "description": "Updated description"
     }
     response = await client.put(
@@ -168,4 +168,4 @@ async def test_delete_activity_not_found(client: AsyncClient, db: AsyncSession):
     response = await client.delete(
         f"{settings.API_V1_PREFIX}/activities/999999"
     )
-    assert response.status_code == 404 
+    assert response.status_code == 404

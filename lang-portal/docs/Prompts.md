@@ -198,7 +198,7 @@ Now let's take a look at the @Frontend-Technical-Spec.md file and perform a simi
 
 
 
-We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md. The backend code is in the subdirectory `backend-fastapi`, and the frontend code is in the subdirectory `frontend-react`. We have a database schema defined in `docs/Database-Schema.md` with summary of API endpoints in @API-Summary.md . All backend tests are passing and the frontend runs great.
+We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md. The backend code is in the subdirectory `backend-fastapi`, and the frontend code is in the subdirectory `frontend-react`. We have a database schema defined in `docs/Database-Schema.md` with summary of API endpoints in `docs/API-Summary.md`. All backend tests are passing and the frontend runs great.
 
 I would like to create a set of activities (most of them "games") that I can develop as separate projects but are launched within this app.  These games will run in the browser and will be launched from the activities page.  Being part of the app, they will have the ability to use the app's backend API, and they will be able to use the app's database through that API, such as POST /api/sessions to create a new session record and subsequently POST /api/sessions/{session_id}/review to log a review attempt for a word while the user plays the game.
 
@@ -263,194 +263,92 @@ Investigate the game as written in the games/kanji-snake directory. Somewhere al
 
 Here is the output of the backend server when clicking on the 'Start New Session' button in the dev console:
 ```
-(🐍freegenai) @:~/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi (🧪main)$ uvicorn app.main:app --reload
-INFO:     Will watch for changes in these directories: ['/home/gray/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi']
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [136550] using WatchFiles
-INFO:     Started server process [136552]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-2025-02-18 16:18:24,616 INFO sqlalchemy.engine.Engine BEGIN (implicit)
-2025-02-18 16:18:24,618 INFO sqlalchemy.engine.Engine SELECT count(*) AS count_1 
-FROM activities
-2025-02-18 16:18:24,618 INFO sqlalchemy.engine.Engine [generated in 0.00014s] ()
-sys:1: SAWarning: relationship 'Group.words' will copy column groups.id to column word_groups.group_id, which conflicts with relationship(s): 'Group.word_groups' (copies groups.id to word_groups.group_id), 'WordGroup.group' (copies groups.id to word_groups.group_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="group,word_groups"' to the 'Group.words' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
-sys:1: SAWarning: relationship 'Group.words' will copy column words.id to column word_groups.word_id, which conflicts with relationship(s): 'Word.word_groups' (copies words.id to word_groups.word_id), 'WordGroup.word' (copies words.id to word_groups.word_id). If this is not the intention, consider if these relationships should be linked with back_populates, or if viewonly=True should be applied to one or more if they are read-only. For the less common case that foreign key constraints are partially overlapping, the orm.foreign() annotation can be used to isolate the columns that should be written towards.   To silence this warning, add the parameter 'overlaps="word,word_groups"' to the 'Group.words' relationship. (Background on this warning at: https://sqlalche.me/e/20/qzyx) (This warning originated from the `configure_mappers()` process, which was invoked automatically in response to a user-initiated operation.)
-2025-02-18 16:18:24,631 INFO sqlalchemy.engine.Engine SELECT activities.id, activities.name, activities.url, activities.description 
-FROM activities ORDER BY activities.name
- LIMIT ? OFFSET ?
-2025-02-18 16:18:24,631 INFO sqlalchemy.engine.Engine [generated in 0.00019s] (20, 0)
-2025-02-18 16:18:24,632 INFO sqlalchemy.engine.Engine ROLLBACK
-INFO:     127.0.0.1:34342 - "GET /api/activities?url=kanji-snake HTTP/1.1" 500 Internal Server Error
-ERROR:    Exception in ASGI application
-  + Exception Group Traceback (most recent call last):
-  |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_utils.py", line 76, in collapse_excgroups
-  |     yield
-  |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 178, in __call__
-  |     async with anyio.create_task_group() as task_group:
-  |                ^^^^^^^^^^^^^^^^^^^^^^^^^
-  |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/anyio/_backends/_asyncio.py", line 767, in __aexit__
-  |     raise BaseExceptionGroup(
-  | ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
-  +-+---------------- 1 ----------------
-    | Traceback (most recent call last):
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
-    |     result = await app(  # type: ignore[func-returns-value]
-    |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
-    |     return await self.app(scope, receive, send)
-    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
-    |     await super().__call__(scope, receive, send)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
-    |     await self.middleware_stack(scope, receive, send)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
-    |     raise exc
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
-    |     await self.app(scope, receive, _send)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 177, in __call__
-    |     with recv_stream, send_stream, collapse_excgroups():
-    |                                    ^^^^^^^^^^^^^^^^^^^^
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/contextlib.py", line 158, in __exit__
-    |     self.gen.throw(value)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
-    |     raise exc
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 179, in __call__
-    |     response = await self.dispatch_func(request, call_next)
-    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |   File "/home/gray/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi/app/main.py", line 43, in wrap_response
-    |     response = await call_next(request)
-    |                ^^^^^^^^^^^^^^^^^^^^^^^^
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 154, in call_next
-    |     raise app_exc
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
-    |     await self.app(scope, receive_or_disconnect, send_no_error)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
-    |     await self.simple_response(scope, receive, send, request_headers=headers)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
-    |     await self.app(scope, receive, send)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
-    |     await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
-    |     raise exc
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
-    |     await app(scope, receive, sender)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 715, in __call__
-    |     await self.middleware_stack(scope, receive, send)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 735, in app
-    |     await route.handle(scope, receive, send)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
-    |     await self.app(scope, receive, send)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
-    |     await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
-    |     raise exc
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
-    |     await app(scope, receive, sender)
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
-    |     response = await f(request)
-    |                ^^^^^^^^^^^^^^^^
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
-    |     raw_response = await run_endpoint_function(
-    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
-    |     return await dependant.call(**values)
-    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |   File "/home/gray/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi/app/api/v1/endpoints/activities.py", line 41, in get_activities
-    |     "items": [Activity.model_validate(a) for a in activities],
-    |               ^^^^^^^^^^^^^^^^^^^^^^^^^^
-    |   File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/pydantic/main.py", line 627, in model_validate
-    |     return cls.__pydantic_validator__.validate_python(
-    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    | pydantic_core._pydantic_core.ValidationError: 1 validation error for Activity
-    | url
-    |   Input should be a valid URL, relative URL without a base [type=url_parsing, input_value='typing-tutor', input_type=str]
-    |     For further information visit https://errors.pydantic.dev/2.10/v/url_parsing
-    +------------------------------------
 
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/uvicorn/protocols/http/httptools_impl.py", line 409, in run_asgi
-    result = await app(  # type: ignore[func-returns-value]
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/uvicorn/middleware/proxy_headers.py", line 60, in __call__
-    return await self.app(scope, receive, send)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/applications.py", line 1054, in __call__
-    await super().__call__(scope, receive, send)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/applications.py", line 112, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/errors.py", line 187, in __call__
-    raise exc
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/errors.py", line 165, in __call__
-    await self.app(scope, receive, _send)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 177, in __call__
-    with recv_stream, send_stream, collapse_excgroups():
-                                   ^^^^^^^^^^^^^^^^^^^^
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/contextlib.py", line 158, in __exit__
-    self.gen.throw(value)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_utils.py", line 82, in collapse_excgroups
-    raise exc
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 179, in __call__
-    response = await self.dispatch_func(request, call_next)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/gray/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi/app/main.py", line 43, in wrap_response
-    response = await call_next(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 154, in call_next
-    raise app_exc
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/base.py", line 141, in coro
-    await self.app(scope, receive_or_disconnect, send_no_error)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/cors.py", line 93, in __call__
-    await self.simple_response(scope, receive, send, request_headers=headers)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/cors.py", line 144, in simple_response
-    await self.app(scope, receive, send)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
-    raise exc
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
-    await app(scope, receive, sender)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 715, in __call__
-    await self.middleware_stack(scope, receive, send)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 735, in app
-    await route.handle(scope, receive, send)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 288, in handle
-    await self.app(scope, receive, send)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 76, in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
-    raise exc
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
-    await app(scope, receive, sender)
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/starlette/routing.py", line 73, in app
-    response = await f(request)
-               ^^^^^^^^^^^^^^^^
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/routing.py", line 301, in app
-    raw_response = await run_endpoint_function(
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
-    return await dependant.call(**values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/gray/Projects/free-genai-bootcamp-2025/lang-portal/backend-fastapi/app/api/v1/endpoints/activities.py", line 41, in get_activities
-    "items": [Activity.model_validate(a) for a in activities],
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/gray/miniconda3/envs/freegenai/lib/python3.12/site-packages/pydantic/main.py", line 627, in model_validate
-    return cls.__pydantic_validator__.validate_python(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-pydantic_core._pydantic_core.ValidationError: 1 validation error for Activity
-url
-  Input should be a valid URL, relative URL without a base [type=url_parsing, input_value='typing-tutor', input_type=str]
-    For further information visit https://errors.pydantic.dev/2.10/v/url_parsing
 ```
 
 I'm further concerned by the fact that this error contains mention of 'typing-tutor' in the error message.  This is not the name of our current game ('kanji-snake').  Let's investigate.
 
 
 
+We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md. The backend code is in the subdirectory `backend-fastapi`, and the frontend code is in the subdirectory `frontend-react`. We have a database schema defined in `docs/Database-Schema.md` with summary of API endpoints in `docs/API-Summary.md`.
+
+Right now our frontend is having an issue, where any page we go to throws an axios error:
+```
+Access to XMLHttpRequest at 'http://localhost:8000/api/activities?page=1&per_page=25&sort_by=name&order=asc' from origin 'http://127.0.0.1:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+```
+The backend simply reports:
+```
+INFO:     127.0.0.1:60698 - "GET /api/activities?page=1&per_page=25&sort_by=name&order=asc HTTP/1.1" 200 OK
+```
 
 
+
+
+Our project files are currently listed in@Project-File-Structure.md . Following the instructions in the @README.md and the @Game-Harness-Spec.md and the @Games-Feature-Spec.md files, we have a new game that we've created in the games directory (`games/kanji-snake`). We now want to deploy this game to the frontend, and we have instructions to run `yarn dev:games` to build the game. This ultimately calls `scripts/build-games.js` to build the game and then copies the built game to the frontend's public directory (`frontend-react/public/games`), for example, our game in `games/kanji-snake` will be built and copied to `frontend-react/public/games/kanji-snake.js`.
+
+When the user visits the activities page, they are greeted with a list of activities. When they click on the "Launch Activity" button for our game, the user neviates to the frontend route at /activities/game-name (e.g., /activities/kanji-snake) and the game is loaded and displayed on that page.
+
+There have been some challenges with getting the game to load properly, however, and this is due to the complexity of wanting the game project (`/games/kanji-snake`) to be a standalone project that can be developed independently of the frontend app.  We want to be able to run the game project independently of the frontend app, including dev libraries and tooling, but there should be an easy way to deploy the final code (via the `yarn dev:games` command calling the `scripts/build-games.js` file) such that the frontend can present the game to the user.
+
+Early issues were around the React library not being available to the project, and changes were made to allow this.  However, we are now seeing an error when the game is loaded. So we need to investigate several things:
+
+- The nature of the separation between the frontend and the game project, including the shared code library (in /shared) that is used by both projects.
+- The nature of the build process and the deployment of the built game to the frontend's public directory.
+- The method by which the game is loaded and displayed on the activities page.
+
+
+
+
+
+In our old system, a game would have a single image ("thumbnail.jpg") in the games/game-name/assets directory.  This image was copied to the frontend's public directory (frontend-react/public/games/images) and then referenced in the frontend-react/src/types/assets.d.ts file.
+
+
+
+There is now an error in the browser window for the hosting page: "Failed to load game module: kanji-snake - Failed to resolve module specifier '@assets/games/kanji-snake.js?url'" and we see the following in the hosted page console:
+```
+Starting to load game: kanji-snake
+[id].tsx:67 Attempting to load game module from: @assets/games/kanji-snake.js?url
+[id].tsx:82 Detailed game loading error: TypeError: Failed to resolve module specifier '@assets/games/kanji-snake.js?url'
+    at loadGame ([id].tsx:68:41)
+    at [id].tsx:87:5
+```
+The call for @assets/games/kanji-snake.js?url' seems odd to me, both because the js file alone should be sufficient and because it ends in a single quote.
+
+
+
+
+
+We are creating an SPA with a FastAPI backend and a React.js frontend, and our file hierarchy (`$ tree -e --gitignore > docs/Project-File-Structure.md`) is currently in @Project-File-Structure.md. The backend code is in the subdirectory `backend-fastapi`, and the frontend code is in the subdirectory `frontend-react`. We have a database schema defined in `docs/Database-Schema.md` with summary of API endpoints in `docs/API-Summary.md`.
+
+We have made some changes to our backend to accommodate a new frontend feature, and we need to ensure that all of our backend tests are passing.  Running `uv run pytest backend-fastapi/tests/` reports the following (summary):
+
+```
+============================================================================== short test summary info ===============================================================================
+FAILED backend-fastapi/tests/test_api/test_v1/test_activities.py::test_create_activity - assert 422 == 200
+FAILED backend-fastapi/tests/test_api/test_v1/test_activities.py::test_get_activity - KeyError: 'id'
+FAILED backend-fastapi/tests/test_api/test_v1/test_activities.py::test_get_activities - assert 0 >= 2
+FAILED backend-fastapi/tests/test_api/test_v1/test_activities.py::test_update_activity - KeyError: 'id'
+FAILED backend-fastapi/tests/test_api/test_v1/test_activities.py::test_update_activity_not_found - assert 422 == 404
+FAILED backend-fastapi/tests/test_api/test_v1/test_activities.py::test_delete_activity - KeyError: 'id'
+FAILED backend-fastapi/tests/test_crud/test_activity_crud.py::test_create_activity - pydantic_core._pydantic_core.ValidationError: 1 validation error for ActivityCreate
+FAILED backend-fastapi/tests/test_crud/test_activity_crud.py::test_get_activity - pydantic_core._pydantic_core.ValidationError: 1 validation error for ActivityCreate
+FAILED backend-fastapi/tests/test_crud/test_activity_crud.py::test_get_multi_activities - pydantic_core._pydantic_core.ValidationError: 1 validation error for ActivityCreate
+FAILED backend-fastapi/tests/test_crud/test_activity_crud.py::test_update_activity - pydantic_core._pydantic_core.ValidationError: 1 validation error for ActivityCreate
+FAILED backend-fastapi/tests/test_crud/test_activity_crud.py::test_delete_activity - pydantic_core._pydantic_core.ValidationError: 1 validation error for ActivityCreate
+FAILED backend-fastapi/tests/test_schemas/test_activity_schema.py::test_activity_create_validation - pydantic_core._pydantic_core.ValidationError: 1 validation error for ActivityCreate
+FAILED backend-fastapi/tests/test_schemas/test_activity_schema.py::test_activity_update_validation - pydantic_core._pydantic_core.ValidationError: 1 validation error for ActivityUpdate
+FAILED backend-fastapi/tests/test_schemas/test_activity_schema.py::test_activity_response_schema - pydantic_core._pydantic_core.ValidationError: 1 validation error for Activity
+FAILED backend-fastapi/tests/test_services/test_activity_service.py::test_create_activity - pydantic_core._pydantic_core.ValidationError: 1 validation error for ActivityCreate
+```
+
+- python scripts/update_docs.py
+- python scripts/reset_db.py
+- uv run pytest -v backend-fastapi/tests/
+- # cd backend-fastapi
+  - uvicorn app.main:app --reload
+- # cd frontend-react
+  - yarn dev
+- yarn dev:games
 
 ## --- Scrap/Clippings ---
 

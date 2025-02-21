@@ -294,8 +294,8 @@ Response:
 {
     "data": {
         "id": 1,
-        "name": "Flashcards",
-        "url": "https://example.com/flashcards",
+        "name": "Flashcard Master",
+        "url": "flashcard-master",
         "description": "Practice vocabulary with flashcards"
     },
     "error": null
@@ -308,8 +308,8 @@ Create a new activity.
 Request Body:
 ```json
 {
-    "name": "Flashcards",
-    "url": "https://example.com/flashcards",
+    "name": "Flashcard Master",
+    "url": "flashcard-master",
     "description": "Practice vocabulary with flashcards"
 }
 ```
@@ -320,8 +320,8 @@ Update an activity.
 Request Body:
 ```json
 {
-    "name": "Flashcards",
-    "url": "https://example.com/flashcards",
+    "name": "Flashcard Master",
+    "url": "flashcard-master",
     "description": "Practice vocabulary with flashcards"
 }
 ```

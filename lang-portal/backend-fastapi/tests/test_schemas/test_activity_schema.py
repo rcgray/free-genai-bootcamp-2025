@@ -10,7 +10,7 @@ def sample_activity_data() -> Dict[str, Any]:
     return {
         "id": 1,
         "name": "Flashcards",
-        "url": "http://example.com/flashcards",
+        "url": "flashcards",
         "description": "Practice vocabulary with flashcards"
     }
 
@@ -20,26 +20,26 @@ def test_activity_create_validation():
     # Test valid data
     valid_data = {
         "name": "Flashcards",
-        "url": "http://example.com/flashcards",
+        "url": "flashcards",
         "description": "Practice vocabulary with flashcards"
     }
     activity_create = ActivityCreate(**valid_data)
     assert activity_create.name == valid_data["name"]
-    assert str(activity_create.url) == valid_data["url"]
+    assert activity_create.url == valid_data["url"]
     assert activity_create.description == valid_data["description"]
 
     # Test invalid data
     with pytest.raises(ValidationError):
         ActivityCreate(
             name="",  # Empty name
-            url="http://example.com",
+            url="flashcards",
             description="Description"
         )
     
     with pytest.raises(ValidationError):
         ActivityCreate(
             name="Activity",
-            url="not-a-url",  # Invalid URL
+            url="Invalid URL!",  # Invalid identifier format
             description="Description"
         )
 
@@ -49,12 +49,12 @@ def test_activity_update_validation():
     # Test with all fields
     valid_data = {
         "name": "Updated Flashcards",
-        "url": "http://example.com/updated",
+        "url": "updated-flashcards",
         "description": "Updated description"
     }
     activity_update = ActivityUpdate(**valid_data)
     assert activity_update.name == valid_data["name"]
-    assert str(activity_update.url) == valid_data["url"]
+    assert activity_update.url == valid_data["url"]
     assert activity_update.description == valid_data["description"]
 
     # Test with partial data
@@ -70,13 +70,13 @@ def test_activity_update_validation():
     with pytest.raises(ValidationError):
         ActivityUpdate(
             name="",  # Empty name
-            url="http://example.com"
+            url="flashcards"
         )
     
     with pytest.raises(ValidationError):
         ActivityUpdate(
             name="Activity",
-            url="not-a-url"  # Invalid URL
+            url="Invalid URL!"  # Invalid identifier format
         )
 
 
@@ -85,7 +85,7 @@ def test_activity_response_schema(sample_activity_data: Dict[str, Any]):
     activity = Activity(**sample_activity_data)
     assert activity.id == sample_activity_data["id"]
     assert activity.name == sample_activity_data["name"]
-    assert str(activity.url) == sample_activity_data["url"]
+    assert activity.url == sample_activity_data["url"]
     assert activity.description == sample_activity_data["description"]
 
     # Test invalid data
@@ -93,6 +93,6 @@ def test_activity_response_schema(sample_activity_data: Dict[str, Any]):
         Activity(
             id="invalid",  # Invalid ID type
             name="Activity",
-            url="http://example.com",
+            url="flashcards",
             description="Description"
         ) 

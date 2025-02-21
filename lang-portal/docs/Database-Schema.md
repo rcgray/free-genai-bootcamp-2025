@@ -160,6 +160,10 @@ CREATE INDEX idx_sessions_activity_id ON sessions(activity_id);
 CREATE INDEX idx_sessions_created_at ON sessions(created_at);
 ```
 
+### Notes
+- Though the field is called `url`, it is not a URL. It is an internal identifier for the activity (lowercase letters, numbers, and hyphens only). For example, "flashcard-master" is the internal identifier for the "Flashcard Master" activity.
+- The `name` field functions more like the "title" of the activity, where it is the name that will be displayed to the user.
+
 Fields:
 - `id`: Unique identifier for the session
 - `group_id`: Optional reference to the group being studied (NULL means "all words")

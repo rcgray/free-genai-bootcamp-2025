@@ -9,7 +9,7 @@ from app.core.exceptions import AppHTTPException
 
 router = APIRouter()
 
-@router.get("", response_model=PaginatedResponse[Activity])
+@router.get("")
 async def get_activities(
     page: int = Query(1, ge=1, description="Page number"),
     per_page: int = Query(20, ge=1, le=100, description="Items per page"),
@@ -38,14 +38,17 @@ async def get_activities(
     total_pages = (total + per_page - 1) // per_page
     
     return {
-        "items": [Activity.model_validate(a) for a in activities],
-        "total": total,
-        "page": page,
-        "per_page": per_page,
-        "total_pages": total_pages
+        "data": {
+            "items": [Activity.model_validate(a).model_dump() for a in activities],
+            "total": total,
+            "page": page,
+            "per_page": per_page,
+            "total_pages": total_pages
+        },
+        "error": None
     }
 
-@router.get("/{activity_id}", response_model=Activity)
+@router.get("/{activity_id}")
 async def get_activity(
     activity_id: int,
     db: AsyncSession = Depends(get_db),
@@ -65,9 +68,12 @@ async def get_activity(
     db_activity = await ActivityService.get_activity(db, activity_id)
     if not db_activity:
         raise AppHTTPException(status_code=404, detail=f"Activity {activity_id} not found")
-    return Activity.model_validate(db_activity)
+    return {
+        "data": Activity.model_validate(db_activity).model_dump(),
+        "error": None
+    }
 
-@router.post("", response_model=Activity)
+@router.post("")
 async def create_activity(
     *,
     activity_in: ActivityCreate,
@@ -89,14 +95,17 @@ async def create_activity(
         db_activity = await ActivityService.create_activity(
             db,
             name=activity_in.name,
-            url=str(activity_in.url),
+            url=activity_in.url,
             description=activity_in.description
         )
-        return Activity.model_validate(db_activity)
+        return {
+            "data": Activity.model_validate(db_activity).model_dump(),
+            "error": None
+        }
     except ValueError as e:
         raise AppHTTPException(status_code=400, detail=str(e))
 
-@router.put("/{activity_id}", response_model=Activity)
+@router.put("/{activity_id}")
 async def update_activity(
     *,
     activity_id: int,
@@ -122,7 +131,10 @@ async def update_activity(
             activity_id=activity_id,
             activity_in=activity_in
         )
-        return Activity.model_validate(updated_activity)
+        return {
+            "data": Activity.model_validate(updated_activity).model_dump(),
+            "error": None
+        }
     except ValueError as e:
         if "not found" in str(e).lower():
             raise AppHTTPException(status_code=404, detail=str(e))

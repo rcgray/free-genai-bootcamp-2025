@@ -35,13 +35,13 @@ TEST_GROUP = {
 # Test activity data
 TEST_ACTIVITY = {
     "name": "Flashcards",
-    "url": "http://localhost:5173/study/flashcards",
+    "url": "flashcards",
     "description": "Practice vocabulary with flashcards"
 }
 
 TEST_ACTIVITY_2 = {
     "name": "Matching Game",
-    "url": "http://localhost:5173/study/matching",
+    "url": "matching-game",
     "description": "Practice vocabulary by matching words"
 }
 

@@ -112,6 +112,7 @@
 │   ├── Database-Schema.png
 │   ├── Frontend-Design.md
 │   ├── Frontend-Technical-Spec.md
+│   ├── Game-Harness-Spec.md
 │   ├── Game-Kanji-Snake.md
 │   ├── Games-Feature-Spec.md
 │   ├── Prompts.md
@@ -142,6 +143,7 @@
 │   │   ├── api
 │   │   │   └── axios.ts
 │   │   ├── assets
+│   │   │   ├── games
 │   │   │   ├── images
 │   │   │   │   └── activities
 │   │   │   │       └── typingtutor.jpg
@@ -209,41 +211,35 @@
 │   │   ├── src
 │   │   │   ├── dev.css
 │   │   │   ├── dev.tsx
+│   │   │   ├── env.d.ts
 │   │   │   └── index.tsx
 │   │   ├── tsconfig.json
 │   │   ├── tsconfig.node.json
 │   │   └── vite.config.ts
-│   ├── kanji-snake
-│   │   ├── assets
-│   │   │   └── thumbnail.jpg
-│   │   ├── dist
-│   │   │   └── base-game.js
-│   │   ├── index.html
-│   │   ├── package.json
-│   │   ├── src
-│   │   │   ├── components
-│   │   │   ├── dev.css
-│   │   │   ├── dev.tsx
-│   │   │   ├── env.d.ts
-│   │   │   ├── index.tsx
-│   │   │   ├── scenes
-│   │   │   │   ├── GameScene.ts
-│   │   │   │   └── GroupSelectScene.ts
-│   │   │   └── services
-│   │   │       ├── GameState.ts
-│   │   │       ├── SessionService.ts
-│   │   │       └── WordService.ts
-│   │   ├── tsconfig.json
-│   │   ├── tsconfig.node.json
-│   │   └── vite.config.ts
-│   └── typing-tutor
+│   └── kanji-snake
 │       ├── assets
-│       │   └── thumbnail.jpg
+│       │   ├── thumbnail.jpg
+│       │   ├── title.png
+│       │   └── titlebanner.png
 │       ├── dist
-│       │   └── typing-tutor.js
+│       │   └── kanji-snake.js
+│       ├── index.html
 │       ├── package.json
 │       ├── src
-│       │   └── index.tsx
+│       │   ├── components
+│       │   ├── dev.css
+│       │   ├── dev.tsx
+│       │   ├── env.d.ts
+│       │   ├── index.tsx
+│       │   ├── scenes
+│       │   │   ├── GameScene.ts
+│       │   │   ├── GroupSelectScene.ts
+│       │   │   ├── MainScene.ts
+│       │   │   └── TitleScene.ts
+│       │   └── services
+│       │       ├── GameState.ts
+│       │       ├── SessionService.ts
+│       │       └── WordService.ts
 │       ├── tsconfig.json
 │       ├── tsconfig.node.json
 │       └── vite.config.ts
@@ -272,4 +268,4 @@
 │       └── index.ts
 └── yarn.lock
 
-84 directories, 189 files
+81 directories, 188 files
