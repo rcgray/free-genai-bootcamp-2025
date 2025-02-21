@@ -134,7 +134,9 @@
 │   │   │   ├── base-game.js
 │   │   │   ├── images
 │   │   │   │   ├── base-game.jpg
+│   │   │   │   ├── kanji-snake.jpg
 │   │   │   │   └── typing-tutor.jpg
+│   │   │   ├── kanji-snake.js
 │   │   │   └── typing-tutor.js
 │   │   └── vite.svg
 │   ├── src
@@ -268,4 +270,4 @@
 │       └── index.ts
 └── yarn.lock
 
-81 directories, 188 files
+81 directories, 190 files

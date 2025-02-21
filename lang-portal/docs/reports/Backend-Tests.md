@@ -278,7 +278,7 @@ tests/test_services/test_session_service.py::test_get_session_stats
 ---------- coverage: platform linux, python 3.12.9-final-0 -----------
 Name                                                 Stmts   Miss  Cover   Missing
 ----------------------------------------------------------------------------------
-backend-fastapi/app/api/v1/endpoints/activities.py      43     17    60%   38-40, 66-68, 95-97, 125-129, 147-151
+backend-fastapi/app/api/v1/endpoints/activities.py      43     17    60%   38-40, 69-71, 101-106, 134-141, 159-163
 backend-fastapi/app/api/v1/endpoints/groups.py          50     23    54%   40-42, 70-85, 111-113, 136-147, 165-169
 backend-fastapi/app/api/v1/endpoints/sessions.py        57     28    51%   70-86, 116-139, 162-169, 202-218
 backend-fastapi/app/api/v1/endpoints/words.py           43     17    60%   39-41, 75-76, 96-98, 121-131, 149-153
@@ -312,4 +312,4 @@ backend-fastapi/app/services/word_service.py            36      0   100%
 TOTAL                                                  983    138    86%
 Coverage HTML written to dir htmlcov
 
-======================= 160 passed, 82 warnings in 7.59s =======================
+======================= 160 passed, 82 warnings in 7.86s =======================
