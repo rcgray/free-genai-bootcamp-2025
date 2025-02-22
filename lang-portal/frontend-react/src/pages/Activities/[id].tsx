@@ -1,13 +1,12 @@
-import React, { Suspense, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import api from '../../api/axios';
 import { Activity, ApiResponse } from '../../types/api';
-import { createApiClient } from '@lang-portal/shared/api-client';
 
 export default function ActivityDetailsPage() {
   const { id: gameName } = useParams();
-  const [sessionId, setSessionId] = React.useState<number | null>(null);
+  const [sessionId, setSessionId] = useState<number | null>(null);
 
   // Fetch activity details
   const { data: activityData, isLoading, error } = useQuery<ApiResponse<Activity>>({
@@ -36,8 +35,18 @@ export default function ActivityDetailsPage() {
     setSessionId(null);
   }, []);
 
-  // Create API client instance for the game
-  const apiClient = React.useMemo(() => createApiClient(), []);
+  // Handle messages from the game iframe
+  const handleMessage = useCallback((event: MessageEvent) => {
+    if (event.data.type === 'gameComplete') {
+      handleGameComplete();
+    }
+  }, [handleGameComplete]);
+
+  // Add message listener
+  React.useEffect(() => {
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [handleMessage]);
 
   if (isLoading) {
     return (
@@ -55,27 +64,14 @@ export default function ActivityDetailsPage() {
     );
   }
 
-  const activity = activityData.data;
-  
-  // Construct game module path from the URL (game name)
-  const gameModulePath = `/games/${activity.url}.js`;
-
-  // Dynamic import of the game module
-  const GameComponent = React.lazy(() => import(/* @vite-ignore */ gameModulePath));
-
   return (
     <div className="h-full w-full">
-      <Suspense fallback={
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        </div>
-      }>
-        <GameComponent
-          apiClient={apiClient}
-          sessionId={sessionId}
-          onGameComplete={handleGameComplete}
-        />
-      </Suspense>
+      <iframe
+        src={`/games/${gameName}/index.html${sessionId ? `?sessionId=${sessionId}` : ''}`}
+        className="w-full h-full border-0"
+        title={activityData.data.name}
+        allow="fullscreen"
+      />
     </div>
   );
 } 

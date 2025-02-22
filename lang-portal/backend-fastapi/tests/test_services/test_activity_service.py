@@ -41,12 +41,12 @@ async def test_create_activity(db: AsyncSession) -> None:
     activity = await ActivityService.create_activity(
         db,
         name="New Activity",
-        url="new-activity",
+        url="http://example.com/new",
         description="A new test activity"
     )
     assert activity.id is not None
     assert activity.name == "New Activity"
-    assert activity.url == "new-activity"
+    assert str(activity.url) == "http://example.com/new"
     assert activity.description == "A new test activity"
 
 async def test_create_duplicate_activity(db: AsyncSession, test_activity: Activity) -> None:
@@ -55,7 +55,7 @@ async def test_create_duplicate_activity(db: AsyncSession, test_activity: Activi
         await ActivityService.create_activity(
             db,
             name=test_activity.name,
-            url="different-activity",
+            url="http://example.com/different",
             description="Different description"
         )
     assert "already exists" in str(exc_info.value)

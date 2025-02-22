@@ -35,12 +35,12 @@ async def test_get_multi_activities(db: AsyncSession):
     # Create test activities
     activity_1 = ActivityCreate(
         name="Activity 1",
-        url="activity-1",
+        url="http://example.com/1",
         description="First activity"
     )
     activity_2 = ActivityCreate(
         name="Activity 2",
-        url="activity-2",
+        url="http://example.com/2",
         description="Second activity"
     )
     
@@ -86,7 +86,7 @@ async def test_update_activity(db: AsyncSession):
     # Update data
     update_data = {
         "name": "Updated Activity",
-        "url": "updated-activity",
+        "url": "http://example.com/updated",
         "description": "Updated description"
     }
     activity_update = ActivityUpdate(**update_data)

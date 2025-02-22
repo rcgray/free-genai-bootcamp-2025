@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createApiClient } from '@lang-portal/shared/api-client';
 import { Activity } from '@lang-portal/shared/types';
-import BaseGame from './index';
+import { BaseGame } from './index';
 import './dev.css';
 
 // Intercept fetch calls for logging

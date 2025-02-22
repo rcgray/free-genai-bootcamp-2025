@@ -38,21 +38,13 @@ def run_command(command: str, output_file: str | None = None) -> bool:
             output_path.parent.mkdir(parents=True, exist_ok=True)
             
             print(f"Saving output to: {output_file}")
-            output = ""
-            # Write stdout first if we have it
-            if result.stdout:
-                output += result.stdout
-            # Write stderr if we have it
-            if result.stderr:
-                output += result.stderr
-                
             with open(output_file, 'w') as f:
-                f.write(output)
-            
-            # If this is the pytest output, print the last line (test summary)
-            if output_file.endswith("Backend-Tests.md"):
-                last_line = output.strip().split('\n')[-1]
-                print(f"\nTest Results: {last_line}")
+                # Write stdout first if we have it
+                if result.stdout:
+                    f.write(result.stdout)
+                # Write stderr if we have it
+                if result.stderr:
+                    f.write(result.stderr)
         
         # Return True only if exit code was 0
         return result.returncode == 0

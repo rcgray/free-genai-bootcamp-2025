@@ -1,8 +1,11 @@
 import React, { useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom/client';
 import { GameProps } from '@lang-portal/shared/types';
 import Phaser from 'phaser';
 import MainScene from './scenes/MainScene';
 import TitleScene from './scenes/TitleScene';
+import { createApiClient } from '@lang-portal/shared/api-client';
+import './dev.css';
 
 /**
  * Base Game Component
@@ -47,4 +50,26 @@ export function BaseGame({ apiClient, sessionId, onGameComplete, title = 'Kanji 
   );
 }
 
-export default BaseGame; 
+// Only mount the game if we're in the browser
+if (typeof document !== 'undefined') {
+  // Get session ID from URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('sessionId') || undefined;
+
+  // Create API client
+  const apiClient = createApiClient('http://localhost:8000/api');
+
+  // Mount the game
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      <BaseGame
+        apiClient={apiClient}
+        sessionId={sessionId}
+        onGameComplete={() => {
+          // Send message to parent frame
+          window.parent.postMessage({ type: 'gameComplete' }, '*');
+        }}
+      />
+    </React.StrictMode>
+  );
+} 

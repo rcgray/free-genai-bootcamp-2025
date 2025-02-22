@@ -21,27 +21,24 @@ export default defineConfig(({ command }) => {
     define: {
       __GAME_NAME__: JSON.stringify(gameName),
     },
+    css: {
+      modules: {
+        localsConvention: 'camelCaseOnly' as const,
+      },
+    },
+    base: './',  // Use relative paths
   };
 
   if (command === 'build') {
-    // Library build configuration
+    // Build configuration for production
     return {
       ...config,
       build: {
-        lib: {
-          entry: resolve(__dirname, 'src/index.tsx'),
-          name: gameName,
-          fileName: gameName,
-          formats: ['es'],
-        },
+        outDir: 'dist',
+        assetsDir: 'assets',
         rollupOptions: {
-          external: ['react', 'react-dom'],
-          output: {
-            globals: {
-              react: 'React',
-              'react-dom': 'ReactDOM',
-            },
-            format: 'es',
+          input: {
+            main: resolve(__dirname, 'index.html'),
           },
         },
       },
@@ -51,7 +48,6 @@ export default defineConfig(({ command }) => {
   // Development configuration
   return {
     ...config,
-    // Add development-specific settings
     server: {
       port: 5173,
       open: true,

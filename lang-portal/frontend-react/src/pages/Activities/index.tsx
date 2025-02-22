@@ -16,14 +16,8 @@ const ActivitiesPage = () => {
 
     // Function to get the image URL
     const getImageUrl = (activity: Activity) => {
-        // Construct URL based on the game's URL (name)
-        const dynamicUrl = `/games/images/${activity.url}.jpg`;
-        try {
-            return dynamicUrl;
-        } catch (error) {
-            console.error('Error loading image:', error);
-            return ''; // Return empty string if image fails to load
-        }
+        // Use the thumbnail from the game's assets directory
+        return `/games/${activity.url}/assets/thumbnail.jpg`;
     };
 
     const { data, isLoading, error } = useQuery<ApiResponse<PaginatedResponse<Activity>>, Error>({
