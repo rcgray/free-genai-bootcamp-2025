@@ -2,21 +2,28 @@ import React, { useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import api from '../../api/axios';
-import { Activity, ApiResponse } from '../../types/api';
+import { Activity, ApiResponse, PaginatedResponse } from '../../types/api';
 
 export default function ActivityDetailsPage() {
   const { id: gameName } = useParams();
   const [sessionId, setSessionId] = useState<number | null>(null);
 
   // Fetch activity details
-  const { data: activityData, isLoading, error } = useQuery<ApiResponse<Activity>>({
+  const { data: activityResponse, isLoading, error } = useQuery<ApiResponse<PaginatedResponse<Activity>>>({
     queryKey: ['activity', gameName],
     queryFn: async () => {
-      // Find activity by URL (which is just the game name)
-      const response = await api.get(`/api/activities?url=${gameName}`);
+      const response = await api.get<ApiResponse<PaginatedResponse<Activity>>>('/api/activities', {
+        params: {
+          url: gameName,
+          per_page: 1
+        }
+      });
       return response.data;
     },
   });
+
+  // Get the activity from the paginated response
+  const activity = activityResponse?.data?.items?.[0];
 
   // Create session mutation
   const createSession = useMutation({
@@ -56,7 +63,7 @@ export default function ActivityDetailsPage() {
     );
   }
 
-  if (error || !activityData?.data) {
+  if (error || !activity) {
     return (
       <div className="text-red-500 text-center p-4">
         Error loading activity. Please try again later.
@@ -65,13 +72,20 @@ export default function ActivityDetailsPage() {
   }
 
   return (
-    <div className="h-full w-full">
-      <iframe
-        src={`/games/${gameName}/index.html${sessionId ? `?sessionId=${sessionId}` : ''}`}
-        className="w-full h-full border-0"
-        title={activityData.data.name}
-        allow="fullscreen"
-      />
+    <div className="space-y-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-white">
+          Activities - {activity.name}
+        </h1>
+      </div>
+      <div className="h-[calc(100vh-theme(spacing.48))] w-full overflow-hidden">
+        <iframe
+          src={`/games/${gameName}/index.html${sessionId ? `?sessionId=${sessionId}` : ''}`}
+          className="w-full h-full border-0"
+          title={activity.name}
+          allow="fullscreen"
+        />
+      </div>
     </div>
   );
 } 

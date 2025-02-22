@@ -5,7 +5,7 @@ import Phaser from 'phaser';
 import MainScene from './scenes/MainScene';
 import TitleScene from './scenes/TitleScene';
 import { createApiClient } from '@lang-portal/shared/api-client';
-import './dev.css';
+import './index.css';
 
 /**
  * Base Game Component
@@ -16,7 +16,7 @@ import './dev.css';
  * 3. Handle the sessionId for tracking progress
  * 4. Call onGameComplete when the game ends
  */
-export function BaseGame({ apiClient, sessionId, onGameComplete, title = 'Kanji Snake' }: GameProps) {
+export function BaseGame({ apiClient, sessionId, onGameComplete }: GameProps) {
   const gameRef = useRef<Phaser.Game | null>(null);
 
   useEffect(() => {
@@ -44,7 +44,6 @@ export function BaseGame({ apiClient, sessionId, onGameComplete, title = 'Kanji 
 
   return (
     <div className="base-game">
-      <h1>{title}</h1>
       <div id="game-container" />
     </div>
   );
