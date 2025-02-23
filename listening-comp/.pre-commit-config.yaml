@@ -4,9 +4,9 @@ repos:
     hooks:
     -   id: ruff
         args: [--fix]
-        exclude: (data|docs|dev|tests/data)/
+        exclude: (data|docs|dev|media|tests/data)/
     -   id: ruff-format
-        exclude: (data|docs|dev|tests/data)/
+        exclude: (data|docs|dev|media|tests/data)/
 
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.8.0
@@ -14,17 +14,17 @@ repos:
     -   id: mypy
         additional_dependencies:
             - types-setuptools>=69.1.0
-        exclude: (data|docs|dev|tests/data)/
+        exclude: (data|docs|dev|media|tests/data)/
         files: (backend|frontend|scripts|tests)/
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
     -   id: trailing-whitespace
-        exclude: (data|docs|dev|tests/data)/
+        exclude: (data|docs|dev|media|tests/data)/
     -   id: end-of-file-fixer
-        exclude: (data|docs|dev|tests/data)/
+        exclude: (data|docs|dev|media|tests/data)/
     -   id: check-yaml
-        exclude: (data|docs|dev|tests/data)/
+        exclude: (data|docs|dev|media|tests/data)/
     -   id: check-added-large-files
-        exclude: (data|docs|dev|tests/data)/
+        exclude: (data|docs|dev|media|tests/data)/
