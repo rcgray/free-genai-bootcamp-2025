@@ -9,7 +9,6 @@
 │   ├── __init__.py
 │   └── db.py
 ├── data
-│   └── app.json
 ├── dev
 │   ├── .gitkeep
 │   └── Audio Content Samples.md
@@ -35,9 +34,8 @@
 ├── scripts
 │   ├── manage_db.py
 │   └── update_docs.py
-├── test_data
 ├── tests
 │   └── test_db.py
 └── uv.lock
 
-15 directories, 26 files
+14 directories, 25 files

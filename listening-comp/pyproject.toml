@@ -23,6 +23,8 @@ packages = ["backend"]
 [tool.ruff]
 line-length = 88
 target-version = "py38"
+
+[tool.ruff.lint]
 select = [
     "E",    # pycodestyle errors
     "W",    # pycodestyle warnings
@@ -39,10 +41,10 @@ ignore = [
     "E501",  # Line too long
 ]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["backend"]
 
 [tool.mypy]

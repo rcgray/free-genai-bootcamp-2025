@@ -1,36 +1,24 @@
 # Python
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-venv/
-env/
+
+# Virtual Environment
 .env
 .venv
+**/.venv/
+venv/
 ENV/
+
+# Development Tools
 .pytest_cache/
 .coverage
 htmlcov/
 .mypy_cache/
-
-# Node/React
-node_modules/
-dist/
-build/
-.next/
-coverage/
-.npm
-.yarn
-.pnp.*
-*.tsbuildinfo
-
-# Database
-*.db
-*.db-journal
-data/*.db
-data/*.sqlite
-data/*.sqlite3
+.ruff_cache/
 
 # IDE/Editor
 .idea/
@@ -40,44 +28,37 @@ data/*.sqlite3
 .DS_Store
 Thumbs.db
 
-# Build/Deploy
-*.log
-logs/
-tmp/
-temp/
+# Database and Media
+data/*.json
+!data/example.json
+media/sources/*
+!media/sources/.gitkeep
+media/transcripts/*
+!media/transcripts/.gitkeep
+media/translations/*
+!media/translations/.gitkeep
 
-# Documentation Build
+# Documentation
+docs/reports/
 docs/_build/
 site/
 
-# Generated Files
-frontend/dist/
-frontend/build/
-app/static/
-*.min.js
-*.min.css
-
 # Test Data
-tests/fixtures/
 tests/data/
-mock_data/
+tests/fixtures/
 
 # Local Development
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
-docker-compose.override.yml
+.env.*.local
+*.override.yml
+*.override.yaml
 
-# Cache
+# Cache and Temporary
 .cache/
-.parcel-cache/
-.eslintcache
-.stylelintcache
-
-# Misc
+__pycache__/
+*.py[cod]
+*$py.class
 *.bak
-*.backup
 *.tmp
 *.temp
 .history/

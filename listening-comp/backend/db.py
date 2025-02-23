@@ -1,6 +1,6 @@
 """Database module for managing audio sources using TinyDB."""
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, TypedDict, cast
 
@@ -57,7 +57,7 @@ class Database:
         Returns:
             Document ID of the inserted record
         """
-        now = datetime.now(UTC).isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         source: AudioSource = {
             "url": url,
             "title": title,
@@ -99,7 +99,10 @@ class Database:
             transcript_path: Path to transcript file if available
             translation_path: Path to translation file if available
         """
-        update_data = {"status": status, "updated_at": datetime.now(UTC).isoformat()}
+        update_data = {
+            "status": status,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
         if transcript_path is not None:
             update_data["transcript_path"] = transcript_path
         if translation_path is not None:

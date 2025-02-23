@@ -15,7 +15,7 @@ def test_db() -> Generator[Database, None, None]:
     Returns:
         Database instance for testing
     """
-    db_path = "test_data/test.json"
+    db_path = "tests/data/test.json"
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
     db = Database(db_path)
     yield db
