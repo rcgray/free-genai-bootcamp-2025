@@ -36,6 +36,7 @@ select = [
 ignore = [
     "D100",  # Missing docstring in public module
     "D104",  # Missing docstring in public package
+    "E501",  # Line too long
 ]
 
 [tool.ruff.pydocstyle]
@@ -71,4 +72,4 @@ dev = [
     "mypy>=1.8.0",
     "pytest>=8.0.0",
     "black>=24.1.1",
-] 
+]

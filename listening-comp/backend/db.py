@@ -1,7 +1,8 @@
 """Database module for managing audio sources using TinyDB."""
-from datetime import datetime
+
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Optional, TypedDict
+from typing import Optional, TypedDict, cast
 
 from tinydb import Query, TinyDB
 
@@ -26,7 +27,7 @@ class Database:
 
     def __init__(self, db_path: str = "data/app.json") -> None:
         """Initialize database connection.
-        
+
         Args:
             db_path: Path to the TinyDB JSON file
         """
@@ -37,21 +38,26 @@ class Database:
         self.Query = Query
 
     def add_source(
-        self, url: str, title: str, source_type: str, duration_seconds: float, download_path: str
+        self,
+        url: str,
+        title: str,
+        source_type: str,
+        duration_seconds: float,
+        download_path: str,
     ) -> int:
         """Add a new audio source to the database.
-        
+
         Args:
             url: Source URL
             title: Content title
             source_type: Type of source (youtube, spotify, etc.)
             duration_seconds: Duration of audio in seconds
             download_path: Path where the audio file is stored
-            
+
         Returns:
             Document ID of the inserted record
         """
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(UTC).isoformat()
         source: AudioSource = {
             "url": url,
             "title": title,
@@ -68,14 +74,15 @@ class Database:
 
     def get_source(self, doc_id: int) -> Optional[AudioSource]:
         """Retrieve an audio source by its document ID.
-        
+
         Args:
             doc_id: Document ID
-            
+
         Returns:
             AudioSource if found, None otherwise
         """
-        return self.sources.get(doc_id=doc_id)
+        doc = self.sources.get(doc_id=doc_id)
+        return cast(Optional[AudioSource], doc)
 
     def update_source_status(
         self,
@@ -85,14 +92,14 @@ class Database:
         translation_path: Optional[str] = None,
     ) -> None:
         """Update the status and paths of an audio source.
-        
+
         Args:
             doc_id: Document ID
             status: New status
             transcript_path: Path to transcript file if available
             translation_path: Path to translation file if available
         """
-        update_data = {"status": status, "updated_at": datetime.utcnow().isoformat()}
+        update_data = {"status": status, "updated_at": datetime.now(UTC).isoformat()}
         if transcript_path is not None:
             update_data["transcript_path"] = transcript_path
         if translation_path is not None:
@@ -101,12 +108,13 @@ class Database:
 
     def get_source_by_url(self, url: str) -> Optional[AudioSource]:
         """Find an audio source by its URL.
-        
+
         Args:
             url: Source URL
-            
+
         Returns:
             AudioSource if found, None otherwise
         """
         Source = Query()
-        return self.sources.get(Source.url == url) 
+        doc = self.sources.get(Source.url == url)
+        return cast(Optional[AudioSource], doc)

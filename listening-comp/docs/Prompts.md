@@ -12,8 +12,19 @@ Can you assist me in creating a new PRD for this project in the @PRD.md file?
 
 Let's create a simple Streamlit application, just the shell for now, in the "frontend" folder. It should reference the python package we write in the "backend" folder. Feel free to add the `__init__.py` file to the "backend" folder and have the streamlit app import the functions from the package to implement something along the lines of a "Hello World" application.
 
+---
 
-We have a Streamlit application with a file structure documented in @Project-File-Structure.md and a PRD defined in `docs/PRD.md`. I would like to introduce a TinyDB database to the project to manage the audio sources that the user downloads and transcribes/translates. The db file should live at `data/app.json`.  I've never worked with TinyDB before, but we will want to set up a schema and seeding data, as well as some scripts for resetting the database (i.e., for testing). Can you assist me in adding this to the project? We don't have to do all this in one shot, we can start with introducing the dependency and then go step by step.
+We have a Streamlit application with a file structure documented in @Project-File-Structure.md and a PRD defined in `docs/PRD.md`.
+
+I would like to introduce a TinyDB database to the project to manage the audio sources that the user downloads and transcribes/translates. The db file should live at `data/app.json`.  I've never worked with TinyDB before, but we will want to set up a schema and seeding data, as well as some scripts for resetting the database (i.e., for testing). Can you assist me in adding this to the project? We don't have to do all this in one shot, we can start with introducing the dependency and then go step by step.
+
+
+
+---
+
+We have a Streamlit application with a file structure documented in @Project-File-Structure.md and a PRD defined in `docs/PRD.md`. We have integrated a database using TinyDB with the schema defined in `docs/Database-Schema.md`. Our technical spec is in `docs/Technical-Spec.md` and our frontend design is in `docs/Frontend-Design.md`. We have an action plan in `docs/Action-Plan.md`, which is what we are following (currently Phase 1).
+
+Let's start working on the frontend code necessary to implement the Phase 1 action plan. We don't have to do everything in one shot, we can go step by step.
 
 
 

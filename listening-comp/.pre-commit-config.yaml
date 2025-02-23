@@ -1,0 +1,30 @@
+repos:
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.2.1
+    hooks:
+    -   id: ruff
+        args: [--fix]
+        exclude: (data|docs|dev|tests/data)/
+    -   id: ruff-format
+        exclude: (data|docs|dev|tests/data)/
+
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+    -   id: mypy
+        additional_dependencies:
+            - types-setuptools>=69.1.0
+        exclude: (data|docs|dev|tests/data)/
+        files: (backend|frontend|scripts|tests)/
+
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+    -   id: trailing-whitespace
+        exclude: (data|docs|dev|tests/data)/
+    -   id: end-of-file-fixer
+        exclude: (data|docs|dev|tests/data)/
+    -   id: check-yaml
+        exclude: (data|docs|dev|tests/data)/
+    -   id: check-added-large-files
+        exclude: (data|docs|dev|tests/data)/

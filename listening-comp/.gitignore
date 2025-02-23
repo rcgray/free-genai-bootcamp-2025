@@ -40,6 +40,10 @@ ENV/
 *.sqlite3
 *.sqlite
 
+# Database
+data/*.json
+!data/example.json
+
 # Logs
 *.log
 
