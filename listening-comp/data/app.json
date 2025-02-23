@@ -1,0 +1,28 @@
+{
+    "sources": {
+        "1": {
+            "url": "https://example.com/sample-podcast-1",
+            "title": "Sample Japanese Podcast 1",
+            "source_type": "youtube",
+            "duration_seconds": 300.0,
+            "download_path": "media/sources/sample1.mp3",
+            "transcript_path": null,
+            "translation_path": null,
+            "created_at": "2025-02-23T19:00:43.275591",
+            "updated_at": "2025-02-23T19:00:43.275591",
+            "status": "pending"
+        },
+        "2": {
+            "url": "https://example.com/sample-podcast-2",
+            "title": "Sample Japanese Podcast 2",
+            "source_type": "spotify",
+            "duration_seconds": 450.0,
+            "download_path": "media/sources/sample2.mp3",
+            "transcript_path": null,
+            "translation_path": null,
+            "created_at": "2025-02-23T19:00:43.278790",
+            "updated_at": "2025-02-23T19:00:43.278790",
+            "status": "pending"
+        }
+    }
+}

@@ -2,17 +2,20 @@
 ├── .cursorignore
 ├── .cursorrules
 ├── .gitignore
+├── README.md
 ├── backend
-│   ├── .gitkeep
-│   └── __init__.py
+│   ├── __init__.py
+│   └── db.py
+├── data
+│   └── app.json
 ├── dev
 │   └── .gitkeep
 ├── docs
 │   ├── PRD.md
 │   ├── Prompts.md
 │   └── reports
+│       └── Project-File-Structure.md
 ├── frontend
-│   ├── .gitkeep
 │   └── app.py
 ├── media
 │   ├── sources
@@ -22,7 +25,9 @@
 │   └── translations
 │       └── .gitkeep
 ├── pyproject.toml
-└── scripts
-    └── update_docs.py
+├── scripts
+│   ├── manage_db.py
+│   └── update_docs.py
+└── uv.lock
 
-11 directories, 15 files
+12 directories, 19 files
