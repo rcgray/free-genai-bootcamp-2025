@@ -1,7 +1,7 @@
 """Main Streamlit application for Japanese Listening Learning Tool."""
 
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Tuple
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 
@@ -11,7 +11,7 @@ from backend.db import add_source, get_source_by_title, get_sources
 from backend.utils import download_file, sanitize_filename
 
 # Define view types
-ViewType = Literal["add_content", "library", "study"]
+ViewType = Literal["add_content", "library", "process", "study"]
 
 # Define constants
 SOURCE_TYPES = {
@@ -30,8 +30,11 @@ def initialize_session_state() -> None:
     """Initialize session state variables."""
     if "current_view" not in st.session_state:
         st.session_state.current_view = "library"
-    if "selected_source_id" not in st.session_state:
-        st.session_state.selected_source_id = None
+    # Separate process and study targets
+    if "process_target_id" not in st.session_state:
+        st.session_state.process_target_id = None
+    if "study_target_id" not in st.session_state:
+        st.session_state.study_target_id = None
     # Initialize filter states
     if "filter_all" not in st.session_state:
         st.session_state.filter_all = True
@@ -58,7 +61,7 @@ def format_source_type_option(source_type: str) -> str:
     return source_type
 
 
-def validate_url(url: str) -> tuple[bool, str]:
+def validate_url(url: str) -> Tuple[bool, str]:
     """Validate URL format and accessibility.
 
     Args:
@@ -79,7 +82,7 @@ def validate_url(url: str) -> tuple[bool, str]:
         return False, "Invalid URL format"
 
 
-def validate_title(title: str) -> tuple[bool, str]:
+def validate_title(title: str) -> Tuple[bool, str]:
     """Validate title format and uniqueness.
 
     Args:
@@ -121,7 +124,7 @@ def process_new_content(
     url: str,
     title: str,
     source_type: str,
-) -> tuple[bool, str]:
+) -> Tuple[bool, str]:
     """Process and download new content.
 
     Args:
@@ -234,8 +237,7 @@ def render_add_content_view() -> None:
 
     if not is_enabled:
         st.warning(
-            "This source type is not yet implemented. "
-            "Please select a different option."
+            "This source type is not yet implemented. Please select a different option."
         )
         st.button("Process URL", disabled=True)
     else:
@@ -269,23 +271,14 @@ def render_library_view() -> None:
     """Render the Library view."""
     st.header("My Library")
 
-    # Add filters
-    col1, col2, col3 = st.columns(3)
+    # Add filter dropdown in a narrower container
+    col1, col2, col3 = st.columns([2, 4, 2])
     with col1:
-        # Store filter states in session state for future use
-        _show_all = st.checkbox(  # noqa: F841
-            "All",
-            key="filter_all",
-        )
-    with col2:
-        _show_ready = st.checkbox(  # noqa: F841
-            "Ready",
-            key="filter_ready",
-        )
-    with col3:
-        _show_pending = st.checkbox(  # noqa: F841
-            "Pending",
-            key="filter_pending",
+        filter_status = st.selectbox(
+            "Filter by Status:",
+            options=["All", "Ready", "Pending"],
+            key="filter_status",
+            help="Select which items to display",
         )
 
     # Display sources
@@ -296,35 +289,69 @@ def render_library_view() -> None:
         sorted(sources.items(), key=lambda x: x[1]["created_at"], reverse=True)
     )
 
-    # TODO: Implement filtering based on checkbox states
+    # Filter sources based on selection
+    filtered_sources = {}
     for source_id, source in sorted_sources.items():
+        if filter_status == "All" or source["status"].lower() == filter_status.lower():
+            filtered_sources[source_id] = source
+
+    if not filtered_sources:
+        st.info(f"No {filter_status.lower()} items found.")
+        return
+
+    # Display filtered sources
+    for source_id, source in filtered_sources.items():
         with st.container():
-            col1, col2 = st.columns([3, 1])
+            col1, col2 = st.columns([4, 1])
             with col1:
                 st.subheader(source["title"])
                 st.text(f"Duration: {source['duration_seconds'] / 60:.1f} minutes")
                 st.text(f"Status: {source['status']}")
             with col2:
-                if st.button("Study", key=f"study_{source_id}"):
-                    st.session_state.selected_source_id = source_id
-                    st.session_state.current_view = "study"
+                # Use empty space to push button to the right
+                st.write("")
+                st.write("")
+                # Show different buttons based on content status
+                if source["status"] == "ready":
+                    if st.button(
+                        "Study", key=f"study_{source_id}", use_container_width=True
+                    ):
+                        st.session_state.study_target_id = source_id
+                        st.session_state.current_view = "study"
+                else:
+                    if st.button(
+                        "Process", key=f"process_{source_id}", use_container_width=True
+                    ):
+                        st.session_state.process_target_id = source_id
+                        st.session_state.current_view = "process"
 
 
 def render_study_view() -> None:
     """Render the Study view."""
-    if not st.session_state.selected_source_id:
+    if not st.session_state.study_target_id:
         st.error("No content selected for study.")
         if st.button("Return to Library"):
             st.session_state.current_view = "library"
         return
 
     sources = get_sources()
-    source = sources.get(st.session_state.selected_source_id)
+    source = sources.get(st.session_state.study_target_id)
 
     if not source:
         st.error("Selected content not found.")
         if st.button("Return to Library"):
             st.session_state.current_view = "library"
+        return
+
+    # Check if content is ready for study
+    if source["status"] != "ready":
+        st.error(
+            "This content needs to be processed before it can be studied. "
+            "Please process it first."
+        )
+        if st.button("Go to Process View"):
+            st.session_state.process_target_id = st.session_state.study_target_id
+            st.session_state.current_view = "process"
         return
 
     st.header(source["title"])
@@ -342,6 +369,38 @@ def render_study_view() -> None:
     st.info("Translation will be implemented in future versions.")
 
 
+def render_process_view() -> None:
+    """Render the Process Content view."""
+    st.header("Process Content")
+
+    if not st.session_state.process_target_id:
+        st.warning("No content selected for processing.")
+        st.info("Please select content to process from the Library view.")
+        return
+
+    sources = get_sources()
+    source = sources.get(st.session_state.process_target_id)
+
+    if not source:
+        st.error("Selected content not found.")
+        return
+
+    st.subheader(source["title"])
+    st.text(f"Status: {source['status']}")
+
+    # Placeholder for processing steps
+    st.info("Content processing features will be implemented in future versions.")
+    st.markdown(
+        """
+    Future processing steps will include:
+    - Audio transcription
+    - Text translation
+    - Audio recreation
+    - Quality checks
+    """
+    )
+
+
 def main() -> None:
     """Run the main Streamlit application."""
     # Initialize session state first
@@ -357,8 +416,8 @@ def main() -> None:
     st.title("Japanese Listening Learning Tool")
 
     # Navigation tabs
-    tab_library, tab_add, tab_study = st.tabs(
-        ["Library", "Add Content", "Study Session"]
+    tab_library, tab_add, tab_process, tab_study = st.tabs(
+        ["Library", "Add Content", "Process Content", "Study Session"]
     )
 
     # Render content based on selected tab
@@ -366,6 +425,8 @@ def main() -> None:
         render_library_view()
     with tab_add:
         render_add_content_view()
+    with tab_process:
+        render_process_view()
     with tab_study:
         render_study_view()
 

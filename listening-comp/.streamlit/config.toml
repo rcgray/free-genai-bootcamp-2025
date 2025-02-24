@@ -10,14 +10,14 @@ gatherUsageStats = false
 # Whether to enable the toolbar
 toolbarMode = "auto"
 
-[runner]
-# Automatically rerun script when files change
-fastReshapeDataFrame = true
-
 [server]
-# Enable session state persistence between runs
-enableStaticServing = true
+# Since we don't have a static folder yet, disable static serving
+enableStaticServing = false
 enableXsrfProtection = true
+# Enable auto-reloading
+runOnSave = true
+# Set file watcher type
+fileWatcherType = "poll"
 
 [logger]
 level = "info"

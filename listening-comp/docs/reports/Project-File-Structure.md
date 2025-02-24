@@ -1,16 +1,16 @@
 .
-├── .cursorignore
-├── .cursorrules
-├── .gitignore
-├── .pre-commit-config.yaml
-├── .ruff_cache
 ├── README.md
 ├── backend
 │   ├── __init__.py
-│   └── db.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── db.cpython-312.pyc
+│   │   └── utils.cpython-312.pyc
+│   ├── db.py
+│   └── utils.py
 ├── data
+│   └── app.json
 ├── dev
-│   ├── .gitkeep
 │   └── Audio Content Samples.md
 ├── docs
 │   ├── Action-Plan.md
@@ -20,22 +20,27 @@
 │   ├── Prompts.md
 │   ├── Technical-Spec.md
 │   └── reports
-│       └── Project-File-Structure.md
+│       ├── Project-File-Structure.md
+│       └── Test-Results.md
 ├── frontend
 │   └── app.py
 ├── media
 │   ├── sources
-│   │   └── .gitkeep
+│   │   ├── MRJ_Podcast_173.mp3
+│   │   └── MRJ_Podcast_179.mp3
 │   ├── transcripts
-│   │   └── .gitkeep
 │   └── translations
-│       └── .gitkeep
 ├── pyproject.toml
 ├── scripts
 │   ├── manage_db.py
-│   └── update_docs.py
+│   ├── prep_checkin.py
+│   ├── update_docs.py
+│   └── updateexample.py
 ├── tests
+│   ├── __pycache__
+│   │   └── test_db.cpython-312-pytest-8.3.4.pyc
+│   ├── data
 │   └── test_db.py
 └── uv.lock
 
-14 directories, 25 files
+16 directories, 28 files
