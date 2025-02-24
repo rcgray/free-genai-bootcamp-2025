@@ -41,7 +41,7 @@ ENV/
 *.sqlite
 
 # Database
-data/*.json
+#data/*.json
 !data/example.json
 
 # Logs

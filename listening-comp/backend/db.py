@@ -37,6 +37,19 @@ class Database:
         self.sources = self.db.table("sources")
         self.Query = Query
 
+    def get_source_by_title(self, title: str) -> Optional[AudioSource]:
+        """Find an audio source by its title.
+
+        Args:
+            title: Source title
+
+        Returns:
+            AudioSource if found, None otherwise
+        """
+        Source = Query()
+        doc = self.sources.get(Source.title == title)
+        return cast(Optional[AudioSource], doc)
+
     def add_source(
         self,
         url: str,
@@ -210,3 +223,15 @@ def get_source_by_url(url: str) -> Optional[AudioSource]:
         AudioSource if found, None otherwise
     """
     return _db.get_source_by_url(url)
+
+
+def get_source_by_title(title: str) -> Optional[AudioSource]:
+    """Find an audio source by its title.
+
+    Args:
+        title: Source title
+
+    Returns:
+        AudioSource if found, None otherwise
+    """
+    return _db.get_source_by_title(title)

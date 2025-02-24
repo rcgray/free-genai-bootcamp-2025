@@ -21,21 +21,21 @@ class SampleSource(TypedDict):
     download_path: str
 
 
-# Sample data for testing
+# Real data from current database
 SAMPLE_SOURCES: List[SampleSource] = [
     {
-        "url": "https://example.com/sample-podcast-1",
-        "title": "Sample Japanese Podcast 1",
+        "url": "https://www.buzzsprout.com/1739827/episodes/16530544-no-179-life-what-is-humanness.mp3",
+        "title": "MRJ_Podcast_179",
         "source_type": "Podcast URL (.mp3)",
-        "duration_seconds": 300.0,
-        "download_path": "media/sources/sample1.mp3",
+        "duration_seconds": 0.0,
+        "download_path": "media/sources/MRJ_Podcast_179.mp3",
     },
     {
-        "url": "https://example.com/sample-podcast-2",
-        "title": "Sample Japanese Podcast 2",
+        "url": "https://www.buzzsprout.com/1739827/episodes/16347396-no-173-ask-yourself-these-questions-to-make-your-2025-a-great-year.mp3",
+        "title": "MRJ_Podcast_173",
         "source_type": "Podcast URL (.mp3)",
-        "duration_seconds": 450.0,
-        "download_path": "media/sources/sample2.mp3",
+        "duration_seconds": 0.0,
+        "download_path": "media/sources/MRJ_Podcast_173.mp3",
     },
 ]
 
@@ -67,10 +67,8 @@ def seed_db(db_path: str = "data/app.json") -> None:
             duration_seconds=source["duration_seconds"],
             download_path=source["download_path"],
         )
-        print(f"Added sample source with ID: {doc_id}")
-    print(
-        f"Database at {db_path} has been seeded with {len(SAMPLE_SOURCES)} sample sources."
-    )
+        print(f"Added source with ID: {doc_id}")
+    print(f"Database at {db_path} has been seeded with {len(SAMPLE_SOURCES)} sources.")
 
 
 def main() -> None:
