@@ -57,6 +57,41 @@ Features:
 - Error feedback
 - Processing status updates
 
+### 2a. Process Content Page
+```
+┌─────────────────────────────────┐
+│ Process Content                 │
+├─────────────────────────────────┤
+│ Title: Example Audio           │
+│                                 │
+│ Processing Steps:               │
+│ ┌─────────────────────────────┐ │
+│ │ 1. Transcribe Audio ✓       │ │
+│ │ Status: Complete            │ │
+│ └─────────────────────────────┘ │
+│ ┌─────────────────────────────┐ │
+│ │ 2. Translate Text ▶         │ │
+│ │ [Start Translation]         │ │
+│ └─────────────────────────────┘ │
+│ ┌─────────────────────────────┐ │
+│ │ 3. Generate Audio          │ │
+│ │ Status: Waiting...          │ │
+│ └─────────────────────────────┘ │
+└─────────────────────────────────┘
+```
+
+Features:
+- Sequential processing steps with clear status indicators
+- Step-by-step progression with disabled future steps
+- Progress tracking through database state
+- File path tracking for generated assets:
+  - Transcripts (media/transcripts/*.txt)
+  - Translations (media/translations/*.txt)
+  - Generated Audio (media/audio/*.mp3)
+- WebVTT/TTML format for timestamped transcripts
+- Error handling and retry options
+- Clear completion indicators
+
 ### 3. Library View
 ```
 ┌─────────────────────────────────┐

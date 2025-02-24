@@ -30,7 +30,7 @@ def test_add_source(test_db: Database) -> None:
         url="https://example.com/test",
         title="Test Audio",
         source_type="Podcast URL (.mp3)",
-        duration_seconds=300.0,
+        duration_seconds=300,
         download_path="media/sources/test.mp3",
     )
 
@@ -49,7 +49,7 @@ def test_get_source_by_url(test_db: Database) -> None:
         url=url,
         title="Test Audio 2",
         source_type="Podcast URL (.mp3)",
-        duration_seconds=240.0,
+        duration_seconds=240,
         download_path="media/sources/test2.mp3",
     )
 
@@ -65,7 +65,7 @@ def test_update_source_status(test_db: Database) -> None:
         url="https://example.com/test3",
         title="Test Audio 3",
         source_type="Podcast URL (.mp3)",
-        duration_seconds=180.0,
+        duration_seconds=180,
         download_path="media/sources/test3.mp3",
     )
 

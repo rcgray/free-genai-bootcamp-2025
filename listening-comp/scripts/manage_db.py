@@ -17,7 +17,7 @@ class SampleSource(TypedDict):
     url: str
     title: str
     source_type: str
-    duration_seconds: float
+    duration_seconds: int
     download_path: str
 
 
@@ -27,15 +27,22 @@ SAMPLE_SOURCES: List[SampleSource] = [
         "url": "https://www.buzzsprout.com/1739827/episodes/16530544-no-179-life-what-is-humanness.mp3",
         "title": "MRJ_Podcast_179",
         "source_type": "Podcast URL (.mp3)",
-        "duration_seconds": 0.0,
+        "duration_seconds": 1689,
         "download_path": "media/sources/MRJ_Podcast_179.mp3",
     },
     {
         "url": "https://www.buzzsprout.com/1739827/episodes/16347396-no-173-ask-yourself-these-questions-to-make-your-2025-a-great-year.mp3",
         "title": "MRJ_Podcast_173",
         "source_type": "Podcast URL (.mp3)",
-        "duration_seconds": 0.0,
+        "duration_seconds": 1087,
         "download_path": "media/sources/MRJ_Podcast_173.mp3",
+    },
+    {
+        "url": "Local File",
+        "title": "Reira_Warning_Audio",
+        "source_type": "Local File (.mp3)",
+        "duration_seconds": 15,
+        "download_path": "media/sources/Reira_Warning_Audio.mp3",
     },
 ]
 

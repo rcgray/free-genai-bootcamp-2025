@@ -17,7 +17,7 @@ erDiagram
         string url "Source URL"
         string title "Content title"
         string source_type "Platform type"
-        float duration_seconds "Audio duration"
+        int duration_seconds "Audio duration"
         string download_path "Path to audio file"
         string transcript_path "Optional path to transcript"
         string translation_path "Optional path to translation"
@@ -41,7 +41,7 @@ AudioSource = {
     "url": str,              # Source URL (unique)
     "title": str,           # Content title
     "source_type": str,     # e.g., "youtube", "spotify"
-    "duration_seconds": float,
+    "duration_seconds": int,
     "download_path": str,    # Relative path from workspace root
     "transcript_path": Optional[str],
     "translation_path": Optional[str],
@@ -99,7 +99,7 @@ While not stored in the database, the application manages several types of files
     "url": "https://example.com/podcast-1",
     "title": "Sample Podcast",
     "source_type": "Podcast URL (.mp3)",
-    "duration_seconds": 300.0,
+    "duration_seconds": 300,
     "download_path": "",
     "transcript_path": None,
     "translation_path": None,

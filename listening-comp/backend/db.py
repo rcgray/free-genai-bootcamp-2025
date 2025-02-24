@@ -13,7 +13,7 @@ class AudioSource(TypedDict):
     url: str
     title: str
     source_type: str  # e.g., 'youtube', 'spotify', etc.
-    duration_seconds: float
+    duration_seconds: int
     download_path: str
     transcript_path: Optional[str]
     translation_path: Optional[str]
@@ -55,7 +55,7 @@ class Database:
         url: str,
         title: str,
         source_type: str,
-        duration_seconds: float,
+        duration_seconds: int,
         download_path: str,
     ) -> int:
         """Add a new audio source to the database.
@@ -148,6 +148,24 @@ class Database:
         doc = self.sources.get(Source.url == url)
         return cast(Optional[AudioSource], doc)
 
+    def update_source_duration(
+        self,
+        doc_id: int,
+        duration_seconds: int,
+    ) -> None:
+        """Update the duration of an audio source.
+
+        Args:
+            doc_id: Document ID
+            duration_seconds: Duration of audio in seconds
+        """
+        update_data = {
+            "duration_seconds": duration_seconds,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "status": "downloaded",  # Update status to downloaded when duration is set
+        }
+        self.sources.update(update_data, doc_ids=[doc_id])
+
 
 # Create a global database instance
 _db = Database()
@@ -166,7 +184,7 @@ def add_source(
     url: str,
     title: str,
     source_type: str,
-    duration_seconds: float,
+    duration_seconds: int,
     download_path: str,
 ) -> int:
     """Add a new audio source.
@@ -235,3 +253,13 @@ def get_source_by_title(title: str) -> Optional[AudioSource]:
         AudioSource if found, None otherwise
     """
     return _db.get_source_by_title(title)
+
+
+def update_source_duration(doc_id: int, duration_seconds: int) -> None:
+    """Update the duration of an audio source.
+
+    Args:
+        doc_id: Document ID
+        duration_seconds: Duration of audio in seconds
+    """
+    _db.update_source_duration(doc_id, duration_seconds)

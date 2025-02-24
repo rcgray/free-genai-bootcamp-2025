@@ -26,4 +26,34 @@ We have a Streamlit application with a file structure documented in @Project-Fil
 
 I presume most of our work will be done in the `frontend` folder. Let's continue with our Basic Frontend Shell.  What kind of views do we need, and what kind of state management and routing do we need to implement?
 
+ ---
+
+We have a Streamlit application with a file structure documented in `docs/reports/Project-File-Structure.md` and a PRD defined in `docs/PRD.md`. We have integrated a database using TinyDB with the schema defined in `docs/Database-Schema.md`. Our technical spec is in `docs/Technical-Spec.md` and our frontend design is in `docs/Frontend-Design.md`. We have an action plan in `docs/Action-Plan.md`, which is what we are following (currently Phase 2.4 and skipping optional features in previous phases). We don't have to do everything in one shot, we can go step by step.
+
+Let's start working on our Process Content page. For every new source that we download, we will need to perform three steps, currently outlined in the page. These should be presented as separate steps with either a button or a "complete" message. Only the next step should have an active button. We'll be able to tell what step any item is on by the database
+
+- Step 1 is to transcribe the audio content into a transcript file, which will create a transcription txt file in `media/transcripts` for that title and will also have its "transcript_path" field in the database non-null (i.e., it will be set to the proper path). We will want this to be in some form of timestamped text file that we can use to create an interactive audio experience. This may be in something like WebVTT or TTML format, which we'll figure out as we implement this step.
+- Step 2 is to translate the transcript from Japanese to English. Whatever timestamp format we use for the transcript, we'll want to use the same format for the translated transcript. This will create a translation txt file in `media/translations` for that title, and the database entry for this item will also have its "translation_path" field in the database non-null and set to the proper path.
+- Step 3 is to create a new audio file from the translated transcript. This will create an mp3 file in `media/audio` for that title and will also have its "audio_path" field in the database non-null (i.e., set to the proper path).
+
+This is our plan for developing the Process Content and also provides the cues for how the app should be able to tell what stage of processing any item is on. Let's add this information to the `docs/Frontend-Design.md` file and our plan for implementing this in steps to the `docs/Action-Plan.md` file.
+
+---
+
+Let's add a new source type, which will exist between "Podcast URL (.mp3)" and "Youtube" (which is still NYI) called "Local File (.mp3)".  When the user selects to add content for a local file, we will want to change the form element that says "Enter audio source URL" to say "Select a file from your computer" and add a button below the text field that opens the system's file selection dialog. Returning from the dialog should populate the text field with the path to the selected file.
+
+The validation for this form should also be updated to include the new source type. For instance, it should check that the file exists and is an mp3 file.
+
+The file should be copied to the `media/sources` folder using the Title as the filename (just as with the podcast URL case), and a new database entry should be made just like in the case of a podcast URL, except the "url" field will be populated with simply the string "Local File".
+
+---
+
+Let's create a new file in the `backend` package called `audio_processor.py`. This file will contain the code to process the audio file and create the transcript, translation, and audio files.  We should start first with a function that will take a path to an audio file and return the duration of the file in seconds (to the nearest second).
+
+Let's write a test for this function. In general, we will use audio item #3 in our database (Reira_Warning_Audio.mp3) as our test audio file for this and other tasks unless otherwise specified. Let's find the length of this audio using our new function, which should be 15 seconds.
+
+---
+
+Let's add a new function to our `audio_processor.py` file that will take a path to an audio file and return the duration of the file in seconds.
+
 

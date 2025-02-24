@@ -3,8 +3,9 @@ platform linux -- Python 3.12.9, pytest-8.3.4, pluggy-1.5.0
 rootdir: /home/gray/Projects/free-genai-bootcamp-2025/listening-comp
 configfile: pyproject.toml
 testpaths: tests
-collected 3 items
+collected 8 items
 
+tests/test_audio_processor.py .....                                      [ 62%]
 tests/test_db.py ...                                                     [100%]
 
-============================== 3 passed in 0.03s ===============================
+============================== 8 passed in 0.04s ===============================

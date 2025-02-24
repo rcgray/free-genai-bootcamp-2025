@@ -6,8 +6,15 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
 
 import streamlit as st
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
-from backend.db import add_source, get_source_by_title, get_sources
+from backend import get_audio_duration
+from backend.db import (
+    add_source,
+    get_source_by_title,
+    get_sources,
+    update_source_duration,
+)
 from backend.utils import download_file, sanitize_filename
 
 # Define view types
@@ -16,6 +23,7 @@ ViewType = Literal["add_content", "library", "process", "study"]
 # Define constants
 SOURCE_TYPES = {
     "Podcast URL (.mp3)": {"enabled": True},
+    "Local File (.mp3)": {"enabled": True},
     "YouTube (NYI)": {"enabled": False},
 }
 DEFAULT_SOURCE_TYPE = next(
@@ -45,6 +53,13 @@ def initialize_session_state() -> None:
     # Initialize content input states
     if "source_type" not in st.session_state:
         st.session_state.source_type = DEFAULT_SOURCE_TYPE
+    # Initialize processing step states
+    if "transcription_started" not in st.session_state:
+        st.session_state.transcription_started = False
+    if "translation_started" not in st.session_state:
+        st.session_state.translation_started = False
+    if "audio_gen_started" not in st.session_state:
+        st.session_state.audio_gen_started = False
 
 
 def format_source_type_option(source_type: str) -> str:
@@ -155,6 +170,15 @@ def process_new_content(
             output_path.unlink()  # Clean up empty file
             return False, "Download failed: File is empty"
 
+        # Get audio duration
+        try:
+            with st.spinner("Analyzing audio file..."):
+                duration = get_audio_duration(str(output_path))
+        except Exception as e:
+            # If duration detection fails, log the error but continue with duration=0
+            st.warning(f"Could not determine audio duration: {e}")
+            duration = 0
+
         # Add to database as final step
         try:
             with st.spinner("Adding to library..."):
@@ -162,7 +186,7 @@ def process_new_content(
                     url=url,
                     title=title,
                     source_type=source_type,
-                    duration_seconds=0.0,  # Will be updated later
+                    duration_seconds=duration,  # Use the detected duration
                     download_path=str(output_path),
                 )
 
@@ -171,6 +195,10 @@ def process_new_content(
                     if output_path.exists():
                         output_path.unlink()
                     return False, "Failed to add to library: No document ID returned"
+
+                # Update the status to downloaded if we have a valid duration
+                if duration > 0:
+                    update_source_duration(doc_id, duration)
 
             return True, f'Content "{title}" added successfully!'
 
@@ -202,23 +230,101 @@ def process_new_content(
         return False, f"Unexpected error: {e}"
 
 
+def process_local_file(
+    uploaded_file: UploadedFile,
+    title: str,
+    source_type: str,
+) -> Tuple[bool, str]:
+    """Process and save a local audio file.
+
+    Args:
+        uploaded_file: Streamlit UploadedFile object
+        title: Content title
+        source_type: Type of source
+
+    Returns:
+        Tuple of (success, message)
+    """
+    # Create safe filename
+    safe_title = sanitize_filename(title)
+    output_path = MEDIA_DIR / f"{safe_title}.mp3"
+
+    try:
+        # Ensure media directory exists
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Save the uploaded file
+        with st.spinner("Saving audio file..."):
+            # Read the file content
+            file_content = uploaded_file.read()
+
+            # Write to the destination path
+            with open(output_path, "wb") as f:
+                f.write(file_content)
+
+        # Verify file was saved successfully
+        if not output_path.exists():
+            return False, "Save failed: File was not created"
+
+        if output_path.stat().st_size == 0:
+            output_path.unlink()  # Clean up empty file
+            return False, "Save failed: File is empty"
+
+        # Get audio duration
+        try:
+            with st.spinner("Analyzing audio file..."):
+                duration = get_audio_duration(str(output_path))
+        except Exception as e:
+            # If duration detection fails, log the error but continue with duration=0
+            st.warning(f"Could not determine audio duration: {e}")
+            duration = 0
+
+        # Add to database as final step
+        try:
+            with st.spinner("Adding to library..."):
+                doc_id = add_source(
+                    url="Local File",  # Use "Local File" as the URL for local files
+                    title=title,
+                    source_type=source_type,
+                    duration_seconds=duration,  # Use the detected duration
+                    download_path=str(output_path),
+                )
+
+                if not doc_id:
+                    # If database operation returns no doc_id
+                    if output_path.exists():
+                        output_path.unlink()
+                    return False, "Failed to add to library: No document ID returned"
+
+                # Update the status to downloaded if we have a valid duration
+                if duration > 0:
+                    update_source_duration(doc_id, duration)
+
+            return True, f'Content "{title}" added successfully!'
+
+        except Exception as e:
+            # If database operation fails, clean up the saved file
+            if output_path.exists():
+                output_path.unlink()
+            return False, f"Failed to add to library: {e}"
+
+    except ValueError as e:
+        if output_path.exists():
+            output_path.unlink()
+        return False, str(e)
+    except OSError as e:
+        if output_path.exists():
+            output_path.unlink()
+        return False, f"File error: {e}"
+    except Exception as e:
+        if output_path.exists():
+            output_path.unlink()
+        return False, f"Unexpected error: {e}"
+
+
 def render_add_content_view() -> None:
     """Render the Add Content view."""
     st.header("Add New Content")
-
-    # Title input with validation
-    title = st.text_input(
-        "Title:",
-        key="title_input",
-        help="Enter a unique title for this content",
-    )
-
-    # URL input with validation
-    url = st.text_input(
-        "Enter audio source URL:",
-        key="url_input",
-        help="Enter the URL of the podcast episode",
-    )
 
     # Format options for display
     source_type_options = [format_source_type_option(st) for st in SOURCE_TYPES.keys()]
@@ -240,31 +346,87 @@ def render_add_content_view() -> None:
             "This source type is not yet implemented. Please select a different option."
         )
         st.button("Process URL", disabled=True)
-    else:
-        if st.button("Process URL", key="process_url"):
-            # Validate title
-            title_valid, title_error = validate_title(title)
-            if not title_valid:
-                st.error(title_error)
-                return
+        return
 
+    # Title input with validation
+    title = st.text_input(
+        "Title:",
+        key="title_input",
+        help="Enter a unique title for this content",
+    )
+
+    # URL input or file upload based on source type
+    uploaded_file = None
+    url = ""  # Initialize with empty string instead of None
+
+    if selected_base_type == "Podcast URL (.mp3)":
+        url = st.text_input(
+            "Enter audio source URL:",
+            key="url_input",
+            help="Enter the URL of the podcast episode",
+        )
+    elif selected_base_type == "Local File (.mp3)":
+        # For local files, we use a file uploader
+        uploaded_file = st.file_uploader(
+            "Select a file from your computer",
+            type=["mp3"],
+            key="file_uploader",
+            help="Select an MP3 file from your computer",
+        )
+
+        # Display the selected file path
+        if uploaded_file is not None:
+            file_path = uploaded_file.name
+            url = "Local File"  # Set URL to "Local File" for local files
+            st.success(f"Selected file: {file_path}")
+
+    # Process button
+    button_label = (
+        "Process URL" if selected_base_type == "Podcast URL (.mp3)" else "Process File"
+    )
+    if st.button(button_label, key="process_content"):
+        # Validate title
+        title_valid, title_error = validate_title(title)
+        if not title_valid:
+            st.error(title_error)
+            return
+
+        # Validate URL or file
+        if selected_base_type == "Podcast URL (.mp3)":
             # Validate URL
-            url_valid, url_error = validate_url(url)
+            url_valid, url_error = validate_url(
+                url
+            )  # url is now a string, not Optional[str]
             if not url_valid:
                 st.error(url_error)
                 return
 
-            # Process the content
+            # Process the content from URL
             success, message = process_new_content(
-                url=url,
+                url=url,  # url is now a string, not Optional[str]
                 title=title,
                 source_type=selected_base_type,
             )
+        elif selected_base_type == "Local File (.mp3)":
+            # Validate file
+            if uploaded_file is None:
+                st.error("Please select a file")
+                return
 
-            if success:
-                st.success(message)
-            else:
-                st.error(message)
+            # Process the content from local file
+            success, message = process_local_file(
+                uploaded_file=uploaded_file,
+                title=title,
+                source_type=selected_base_type,
+            )
+        else:
+            st.error("Unsupported source type")
+            return
+
+        if success:
+            st.success(message)
+        else:
+            st.error(message)
 
 
 def render_library_view() -> None:
@@ -305,7 +467,17 @@ def render_library_view() -> None:
             col1, col2 = st.columns([4, 1])
             with col1:
                 st.subheader(source["title"])
-                st.text(f"Duration: {source['duration_seconds'] / 60:.1f} minutes")
+
+                # Format duration as minutes:seconds
+                duration_seconds = source["duration_seconds"]
+                if duration_seconds > 0:
+                    minutes = duration_seconds // 60
+                    seconds = duration_seconds % 60
+                    duration_str = f"{minutes}:{seconds:02d}"
+                else:
+                    duration_str = "Unknown"
+
+                st.text(f"Duration: {duration_str}")
                 st.text(f"Status: {source['status']}")
             with col2:
                 # Use empty space to push button to the right
@@ -388,19 +560,109 @@ def render_process_view() -> None:
         return
 
     st.subheader(source["title"])
-    st.text(f"Status: {source['status']}")
 
-    # Placeholder for processing steps
-    st.info("Content processing features will be implemented in future versions.")
-    st.markdown(
-        """
-    Future processing steps will include:
-    - Audio transcription
-    - Text translation
-    - Audio recreation
-    - Quality checks
-    """
-    )
+    # Show current status and progress at the top
+    status_col, progress_col = st.columns([2, 1])
+    with status_col:
+        st.text(f"Current Status: {source['status'].title()}")
+    with progress_col:
+        # Calculate progress (25% per completed step)
+        progress = 0.25  # Start with 25% for download
+        if source["transcript_path"]:
+            progress += 0.25
+        if source["translation_path"]:
+            progress += 0.25
+        if source["status"] == "completed":
+            progress += 0.25
+        st.progress(progress, text=f"{int(progress * 100)}% Complete")
+
+    st.divider()
+
+    # Display steps vertically with cards
+    with st.container():
+        # Step 0: Download (always complete)
+        st.markdown("### Step 0: Download")
+        st.success("✓ Download Complete")
+        st.caption(f"File: {source['download_path']}")
+
+        st.divider()
+
+        # Step 1: Transcription
+        st.markdown("### Step 1: Transcribe Audio")
+        if source["status"] == "downloaded":
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.info("Ready to start transcription")
+            with col2:
+                if st.button(
+                    "Start Transcription",
+                    key="start_transcription",
+                    use_container_width=True,
+                ):
+                    st.session_state.transcription_started = True
+                    # Transcription logic will be implemented later
+        elif source["transcript_path"]:
+            st.success("✓ Transcription Complete")
+            st.caption(f"Transcript: {source['transcript_path']}")
+        else:
+            st.info("Waiting for transcription...")
+
+        st.divider()
+
+        # Step 2: Translation
+        st.markdown("### Step 2: Translate Text")
+        if source["transcript_path"] and source["status"] == "transcribed":
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.info("Ready to start translation")
+            with col2:
+                if st.button(
+                    "Start Translation",
+                    key="start_translation",
+                    use_container_width=True,
+                ):
+                    st.session_state.translation_started = True
+                    # Translation logic will be implemented later
+        elif source["translation_path"]:
+            st.success("✓ Translation Complete")
+            st.caption(f"Translation: {source['translation_path']}")
+        else:
+            st.info("Waiting for translation...")
+            if not source["transcript_path"]:
+                st.caption("⚠️ Complete transcription first")
+
+        st.divider()
+
+        # Step 3: Audio Generation
+        st.markdown("### Step 3: Generate Audio")
+        if source["translation_path"] and source["status"] == "translated":
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.info("Ready to generate audio")
+            with col2:
+                if st.button(
+                    "Generate Audio", key="start_audio_gen", use_container_width=True
+                ):
+                    st.session_state.audio_gen_started = True
+                    # Audio generation logic will be implemented later
+        elif source["status"] == "completed":
+            st.success("✓ Audio Generation Complete")
+            st.caption("Generated audio is ready for study")
+        else:
+            st.info("Waiting for audio generation...")
+            if not source["translation_path"]:
+                st.caption("⚠️ Complete translation first")
+
+    # Error handling and retry options
+    if "error" in source["status"].lower():
+        st.divider()
+        st.error(
+            "An error occurred during processing. "
+            "Please try again or contact support if the problem persists."
+        )
+        if st.button("Retry Processing"):
+            # Reset error state and retry from last successful step
+            pass  # Will be implemented later
 
 
 def main() -> None:
