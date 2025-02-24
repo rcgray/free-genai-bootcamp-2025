@@ -1,0 +1,3 @@
+python:
+  conda_env: streamlit
+  conda_path: /home/gray/miniconda3/envs/streamlit

@@ -34,8 +34,7 @@
 ├── scripts
 │   ├── manage_db.py
 │   ├── prep_checkin.py
-│   ├── update_docs.py
-│   └── updateexample.py
+│   └── update_docs.py
 ├── tests
 │   ├── __pycache__
 │   │   └── test_db.cpython-312-pytest-8.3.4.pyc
@@ -43,4 +42,4 @@
 │   └── test_db.py
 └── uv.lock
 
-16 directories, 28 files
+16 directories, 27 files

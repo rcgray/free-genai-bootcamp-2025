@@ -318,12 +318,14 @@ def render_library_view() -> None:
                     ):
                         st.session_state.study_target_id = source_id
                         st.session_state.current_view = "study"
+                        st.rerun()
                 else:
                     if st.button(
                         "Process", key=f"process_{source_id}", use_container_width=True
                     ):
                         st.session_state.process_target_id = source_id
                         st.session_state.current_view = "process"
+                        st.rerun()
 
 
 def render_study_view() -> None:
@@ -402,8 +404,7 @@ def render_process_view() -> None:
 
 
 def main() -> None:
-    """Run the main Streamlit application."""
-    # Initialize session state first
+    """Main entry point for the Streamlit application."""
     initialize_session_state()
 
     st.set_page_config(
@@ -415,19 +416,61 @@ def main() -> None:
     # Main navigation
     st.title("Japanese Listening Learning Tool")
 
-    # Navigation tabs
-    tab_library, tab_add, tab_process, tab_study = st.tabs(
-        ["Library", "Add Content", "Process Content", "Study Session"]
-    )
+    # Create tab-like navigation with buttons
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        if st.button(
+            "Library",
+            key="nav_library",
+            type="secondary"
+            if st.session_state.current_view != "library"
+            else "primary",
+            use_container_width=True,
+        ):
+            st.session_state.current_view = "library"
+            st.rerun()
+    with col2:
+        if st.button(
+            "Add Content",
+            key="nav_add",
+            type="secondary"
+            if st.session_state.current_view != "add_content"
+            else "primary",
+            use_container_width=True,
+        ):
+            st.session_state.current_view = "add_content"
+            st.rerun()
+    with col3:
+        if st.button(
+            "Process Content",
+            key="nav_process",
+            type="secondary"
+            if st.session_state.current_view != "process"
+            else "primary",
+            use_container_width=True,
+        ):
+            st.session_state.current_view = "process"
+            st.rerun()
+    with col4:
+        if st.button(
+            "Study Session",
+            key="nav_study",
+            type="secondary" if st.session_state.current_view != "study" else "primary",
+            use_container_width=True,
+        ):
+            st.session_state.current_view = "study"
+            st.rerun()
 
-    # Render content based on selected tab
-    with tab_library:
+    st.divider()
+
+    # Render content based on current view
+    if st.session_state.current_view == "library":
         render_library_view()
-    with tab_add:
+    elif st.session_state.current_view == "add_content":
         render_add_content_view()
-    with tab_process:
+    elif st.session_state.current_view == "process":
         render_process_view()
-    with tab_study:
+    elif st.session_state.current_view == "study":
         render_study_view()
 
 
