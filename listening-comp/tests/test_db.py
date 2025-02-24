@@ -29,7 +29,7 @@ def test_add_source(test_db: Database) -> None:
     doc_id = test_db.add_source(
         url="https://example.com/test",
         title="Test Audio",
-        source_type="youtube",
+        source_type="Podcast URL (.mp3)",
         duration_seconds=300.0,
         download_path="media/sources/test.mp3",
     )
@@ -48,7 +48,7 @@ def test_get_source_by_url(test_db: Database) -> None:
     test_db.add_source(
         url=url,
         title="Test Audio 2",
-        source_type="spotify",
+        source_type="Podcast URL (.mp3)",
         duration_seconds=240.0,
         download_path="media/sources/test2.mp3",
     )
@@ -56,7 +56,7 @@ def test_get_source_by_url(test_db: Database) -> None:
     source = test_db.get_source_by_url(url)
     assert source is not None
     assert source["title"] == "Test Audio 2"
-    assert source["source_type"] == "spotify"
+    assert source["source_type"] == "Podcast URL (.mp3)"
 
 
 def test_update_source_status(test_db: Database) -> None:
@@ -64,7 +64,7 @@ def test_update_source_status(test_db: Database) -> None:
     doc_id = test_db.add_source(
         url="https://example.com/test3",
         title="Test Audio 3",
-        source_type="youtube",
+        source_type="Podcast URL (.mp3)",
         duration_seconds=180.0,
         download_path="media/sources/test3.mp3",
     )

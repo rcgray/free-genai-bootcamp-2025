@@ -1,0 +1,23 @@
+[theme]
+# Light/dark mode can be "light", "dark", or "auto"
+base = "light"
+
+[browser]
+# Whether to show the address bar
+gatherUsageStats = false
+
+[client]
+# Whether to enable the toolbar
+toolbarMode = "auto"
+
+[runner]
+# Automatically rerun script when files change
+fastReshapeDataFrame = true
+
+[server]
+# Enable session state persistence between runs
+enableStaticServing = true
+enableXsrfProtection = true
+
+[logger]
+level = "info"

@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional, TypedDict, cast
+from typing import Dict, Optional, TypedDict, cast
 
 from tinydb import Query, TinyDB
 
@@ -84,6 +84,19 @@ class Database:
         doc = self.sources.get(doc_id=doc_id)
         return cast(Optional[AudioSource], doc)
 
+    def get_all_sources(self) -> Dict[str, AudioSource]:
+        """Retrieve all audio sources.
+
+        Returns:
+            Dictionary of audio sources with document IDs as keys
+        """
+        sources = {}
+        all_docs = self.sources.all()
+        for doc in all_docs:
+            doc_id = str(doc.doc_id)
+            sources[doc_id] = cast(AudioSource, doc)
+        return sources
+
     def update_source_status(
         self,
         doc_id: int,
@@ -121,3 +134,79 @@ class Database:
         Source = Query()
         doc = self.sources.get(Source.url == url)
         return cast(Optional[AudioSource], doc)
+
+
+# Create a global database instance
+_db = Database()
+
+
+def get_sources() -> Dict[str, AudioSource]:
+    """Get all audio sources.
+
+    Returns:
+        Dictionary of audio sources with document IDs as keys
+    """
+    return _db.get_all_sources()
+
+
+def add_source(
+    url: str,
+    title: str,
+    source_type: str,
+    duration_seconds: float,
+    download_path: str,
+) -> int:
+    """Add a new audio source.
+
+    Args:
+        url: Source URL
+        title: Content title
+        source_type: Type of source (youtube, spotify, etc.)
+        duration_seconds: Duration of audio in seconds
+        download_path: Path where the audio file is stored
+
+    Returns:
+        Document ID of the inserted record
+    """
+    return _db.add_source(url, title, source_type, duration_seconds, download_path)
+
+
+def get_source(doc_id: int) -> Optional[AudioSource]:
+    """Get an audio source by its document ID.
+
+    Args:
+        doc_id: Document ID
+
+    Returns:
+        AudioSource if found, None otherwise
+    """
+    return _db.get_source(doc_id)
+
+
+def update_source_status(
+    doc_id: int,
+    status: str,
+    transcript_path: Optional[str] = None,
+    translation_path: Optional[str] = None,
+) -> None:
+    """Update the status and paths of an audio source.
+
+    Args:
+        doc_id: Document ID
+        status: New status
+        transcript_path: Path to transcript file if available
+        translation_path: Path to translation file if available
+    """
+    _db.update_source_status(doc_id, status, transcript_path, translation_path)
+
+
+def get_source_by_url(url: str) -> Optional[AudioSource]:
+    """Find an audio source by its URL.
+
+    Args:
+        url: Source URL
+
+    Returns:
+        AudioSource if found, None otherwise
+    """
+    return _db.get_source_by_url(url)

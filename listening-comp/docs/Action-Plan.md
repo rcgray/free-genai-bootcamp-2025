@@ -19,16 +19,17 @@
 - [x] Create database management scripts
 - [x] Add data validation utilities
 
-### 1.3 Basic Frontend Shell 🟡
+### 1.3 Basic Frontend Shell ✅
 - [x] Create main navigation structure
-- [ ] Implement basic routing between views
-- [ ] Set up state management
-- [ ] Add basic error handling
+- [x] Implement basic routing between views
+- [x] Set up state management
+- [x] Add basic error handling
 
 ## Phase 2: Core Features 🎯
 
 ### 2.1 Content Input 🟡
 - [x] Implement URL input form
+- [x] Add source type selection
 - [ ] Add URL validation
 - [ ] Create progress indicator component
 - [ ] Implement source type detection
@@ -40,11 +41,12 @@
 - [ ] Create audio storage management
 - [ ] Add basic audio metadata extraction
 
-### 2.3 Library View
-- [ ] Create source list component
-- [ ] Implement basic filtering
+### 2.3 Library View 🟡
+- [x] Create source list component
+- [x] Implement basic filtering UI
+- [ ] Implement filter logic
+- [x] Create source card component
 - [ ] Add sorting functionality
-- [ ] Create source card component
 - [ ] Implement search functionality
 
 ## Phase 3: Audio Player Integration 🎵

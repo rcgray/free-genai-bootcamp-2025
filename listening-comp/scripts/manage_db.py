@@ -26,14 +26,14 @@ SAMPLE_SOURCES: List[SampleSource] = [
     {
         "url": "https://example.com/sample-podcast-1",
         "title": "Sample Japanese Podcast 1",
-        "source_type": "youtube",
+        "source_type": "Podcast URL (.mp3)",
         "duration_seconds": 300.0,
         "download_path": "media/sources/sample1.mp3",
     },
     {
         "url": "https://example.com/sample-podcast-2",
         "title": "Sample Japanese Podcast 2",
-        "source_type": "spotify",
+        "source_type": "Podcast URL (.mp3)",
         "duration_seconds": 450.0,
         "download_path": "media/sources/sample2.mp3",
     },

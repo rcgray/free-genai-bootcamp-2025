@@ -22,9 +22,8 @@ I would like to introduce a TinyDB database to the project to manage the audio s
 
 ---
 
-We have a Streamlit application with a file structure documented in @Project-File-Structure.md and a PRD defined in `docs/PRD.md`. We have integrated a database using TinyDB with the schema defined in `docs/Database-Schema.md`. Our technical spec is in `docs/Technical-Spec.md` and our frontend design is in `docs/Frontend-Design.md`. We have an action plan in `docs/Action-Plan.md`, which is what we are following (currently Phase 1).
+We have a Streamlit application with a file structure documented in @Project-File-Structure.md and a PRD defined in `docs/PRD.md`. We have integrated a database using TinyDB with the schema defined in `docs/Database-Schema.md`. Our technical spec is in `docs/Technical-Spec.md` and our frontend design is in `docs/Frontend-Design.md`. We have an action plan in `docs/Action-Plan.md`, which is what we are following (currently Phase 1.3). We don't have to do everything in one shot, we can go step by step.
 
-Let's start working on the frontend code necessary to implement the Phase 1 action plan. We don't have to do everything in one shot, we can go step by step.
-
+I presume most of our work will be done in the `frontend` folder. Let's continue with our Basic Frontend Shell.  What kind of views do we need, and what kind of state management and routing do we need to implement?
 
 

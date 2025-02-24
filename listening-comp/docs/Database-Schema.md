@@ -98,7 +98,7 @@ While not stored in the database, the application manages several types of files
 {
     "url": "https://example.com/podcast-1",
     "title": "Sample Podcast",
-    "source_type": "youtube",
+    "source_type": "Podcast URL (.mp3)",
     "duration_seconds": 300.0,
     "download_path": "",
     "transcript_path": None,
@@ -154,7 +154,7 @@ db.sources.search(Source.status == "pending")
 db.sources.search(Source.transcript_path.exists())
 
 # Get sources by type
-db.sources.search(Source.source_type == "youtube")
+db.sources.search(Source.source_type == "Podcast URL (.mp3)")
 ```
 
 ### Update Patterns
