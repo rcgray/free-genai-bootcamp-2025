@@ -1,1 +1,28 @@
-{"sources": {"1": {"url": "https://www.buzzsprout.com/1739827/episodes/16530544-no-179-life-what-is-humanness.mp3", "title": "MRJ_Podcast_179", "source_type": "Podcast URL (.mp3)", "duration_seconds": 1689, "download_path": "media/sources/MRJ_Podcast_179.mp3", "transcript_path": null, "translation_path": null, "created_at": "2025-02-25T04:32:02.161170+00:00", "updated_at": "2025-02-25T04:32:02.161170+00:00", "status": "pending"}, "2": {"url": "https://www.buzzsprout.com/1739827/episodes/16347396-no-173-ask-yourself-these-questions-to-make-your-2025-a-great-year.mp3", "title": "MRJ_Podcast_173", "source_type": "Podcast URL (.mp3)", "duration_seconds": 1087, "download_path": "media/sources/MRJ_Podcast_173.mp3", "transcript_path": "media/transcripts/MRJ_Podcast_173.vtt", "translation_path": "media/translations/MRJ_Podcast_173.vtt", "created_at": "2025-02-25T04:32:02.164110+00:00", "updated_at": "2025-02-25T06:19:08.255701+00:00", "status": "pending"}, "3": {"url": "Local File", "title": "Reira_Warning_Audio", "source_type": "Local File (.mp3)", "duration_seconds": 15, "download_path": "media/sources/Reira_Warning_Audio.mp3", "transcript_path": "media/transcripts/Reira_Warning_Audio.verbose.json", "translation_path": "media/translations/Reira_Warning_Audio.vtt", "created_at": "2025-02-25T04:32:02.166600+00:00", "updated_at": "2025-02-25T06:10:22.813223+00:00", "status": "pending"}}}
+{
+    "sources": {
+        "1": {
+            "url": "https://www.buzzsprout.com/1739827/episodes/16530544-no-179-life-what-is-humanness.mp3",
+            "title": "MRJ_Podcast_179",
+            "source_type": "Podcast URL (.mp3)",
+            "duration_seconds": 1689,
+            "download_path": "media/sources/MRJ_Podcast_179.mp3",
+            "transcript_path": null,
+            "translation_path": null,
+            "created_at": "2025-02-25T04:32:02.161170+00:00",
+            "updated_at": "2025-02-25T04:32:02.161170+00:00",
+            "status": "pending"
+        },
+        "2": {
+            "url": "https://www.buzzsprout.com/1739827/episodes/16347396-no-173-ask-yourself-these-questions-to-make-your-2025-a-great-year.mp3",
+            "title": "MRJ_Podcast_173",
+            "source_type": "Podcast URL (.mp3)",
+            "duration_seconds": 1087,
+            "download_path": "media/sources/MRJ_Podcast_173.mp3",
+            "transcript_path": "media/transcripts/MRJ_Podcast_173.vtt",
+            "translation_path": "media/translations/MRJ_Podcast_173.vtt",
+            "created_at": "2025-02-25T04:32:02.164110+00:00",
+            "updated_at": "2025-02-25T06:19:08.255701+00:00",
+            "status": "completed"
+        }
+    }
+}

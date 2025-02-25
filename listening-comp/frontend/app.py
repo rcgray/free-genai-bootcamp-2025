@@ -615,17 +615,72 @@ def render_study_view() -> None:
 
     st.subheader(source["title"])
 
-    # Placeholder for audio player
+    # Audio player
     st.subheader("Audio Player")
-    st.info("Audio player will be implemented in future versions.")
+    
+    # Get the audio file path
+    audio_path = source["download_path"]
+    
+    if Path(audio_path).exists():
+        # Read the audio file
+        try:
+            with open(audio_path, "rb") as audio_file:
+                audio_bytes = audio_file.read()
+            
+            # Display the audio player
+            st.audio(audio_bytes, format="audio/mp3")
+            
+            # Display audio file information
+            file_size_mb = Path(audio_path).stat().st_size / (1024 * 1024)
+            st.caption(f"Audio file: {Path(audio_path).name} ({file_size_mb:.2f}MB)")
+            
+            # Format duration as minutes:seconds
+            duration_seconds = source["duration_seconds"]
+            if duration_seconds > 0:
+                minutes = duration_seconds // 60
+                seconds = duration_seconds % 60
+                duration_str = f"{minutes}:{seconds:02d}"
+                st.caption(f"Duration: {duration_str}")
+        except Exception as e:
+            st.error(f"Error loading audio file: {e}")
+    else:
+        st.error(f"Audio file not found: {audio_path}")
 
     # Placeholder for transcript
     st.subheader("Transcript")
-    st.info("Transcript will be implemented in future versions.")
+    if source["transcript_path"] and Path(source["transcript_path"]).exists():
+        try:
+            with open(source["transcript_path"], encoding="utf-8") as f:
+                transcript_content = f.read()
+
+            # Display the transcript in an expandable section
+            with st.expander("Transcript Content", expanded=True):
+                # Check if it's a JSON transcript
+                if source["transcript_path"].endswith('.json'):
+                    from backend.audio_processor import format_json_transcript_for_display
+                    formatted_transcript = format_json_transcript_for_display(transcript_content)
+                    st.text(formatted_transcript)
+                else:
+                    st.text(transcript_content)
+        except Exception as e:
+            st.error(f"Error reading transcript: {e}")
+    else:
+        st.info("Transcript not available.")
 
     # Placeholder for translation
     st.subheader("Translation")
-    st.info("Translation will be implemented in future versions.")
+    if source["translation_path"] and Path(source["translation_path"]).exists():
+        try:
+            with open(source["translation_path"], encoding="utf-8") as f:
+                translation_content = f.read()
+
+            # Display the translation in an expandable section
+            with st.expander("Translation Content", expanded=True):
+                st.text(translation_content)
+        except Exception as e:
+            st.error(f"Error reading translation: {e}")
+    else:
+        st.info("Translation not available.")
 
 
 def render_process_view() -> None:
@@ -654,8 +709,6 @@ def render_process_view() -> None:
             status_text = "Error"
         elif is_ready_for_study(source):
             status_text = "Completed"
-        elif is_ready_for_audio_generation(source):
-            status_text = "Ready for Audio Generation"
         elif is_ready_for_translation(source):
             status_text = "Ready for Translation"
         elif is_ready_for_transcription(source):
@@ -892,11 +945,10 @@ def render_process_view() -> None:
                                 file_path=audio_path, output_path=translation_path
                             )
 
-                            # Update the database with translation path only
-                            # Status remains "pending" in the simplified model
+                            # Update the database with translation path and set status to "completed"
                             update_source_status(
                                 doc_id=int(st.session_state.process_target_id),
-                                status="pending",  # Keep as pending
+                                status="completed",  # Mark as completed after translation
                                 translation_path=output_path,
                             )
 
@@ -952,11 +1004,10 @@ def render_process_view() -> None:
                                 file_path=audio_path, output_path=translation_path
                             )
 
-                            # Update the database with translation path only
-                            # Status remains "pending" in the simplified model
+                            # Update the database with translation path and set status to "completed"
                             update_source_status(
                                 doc_id=int(st.session_state.process_target_id),
-                                status="pending",  # Keep as pending
+                                status="completed",  # Mark as completed after translation
                                 translation_path=output_path,
                             )
 
@@ -977,34 +1028,6 @@ def render_process_view() -> None:
                 st.caption("⚠️ Complete transcription first")
 
         st.divider()
-
-        # Step 3: Audio Generation
-        st.markdown("### Step 3: Generate Audio")
-        if is_ready_for_audio_generation(source):
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                st.info("Ready to generate audio")
-            with col2:
-                if st.button(
-                    "Generate Audio", key="start_audio_gen", use_container_width=True
-                ):
-                    st.session_state.audio_gen_started = True
-                    # Audio generation logic will be implemented later
-
-                    # Update the status to "completed" when all processing is done
-                    update_source_status(
-                        doc_id=int(st.session_state.process_target_id),
-                        status="completed",
-                    )
-                    st.success("Audio generation completed!")
-                    st.rerun()
-        elif is_ready_for_study(source):
-            st.success("✓ Audio Generation Complete")
-            st.caption("Generated audio is ready for study")
-        else:
-            st.info("Waiting for audio generation...")
-            if not source["translation_path"]:
-                st.caption("⚠️ Complete translation first")
 
     # Error handling and retry options
     if is_in_error_state(source):
