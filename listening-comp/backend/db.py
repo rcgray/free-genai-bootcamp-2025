@@ -19,7 +19,7 @@ class AudioSource(TypedDict):
     translation_path: Optional[str]
     created_at: str
     updated_at: str
-    status: str  # e.g., 'pending', 'downloaded', 'transcribed', 'translated'
+    status: str  # ['pending', 'completed', 'error'] - simplified status model
 
 
 class Database:
@@ -162,7 +162,6 @@ class Database:
         update_data = {
             "duration_seconds": duration_seconds,
             "updated_at": datetime.now(timezone.utc).isoformat(),
-            "status": "downloaded",  # Update status to downloaded when duration is set
         }
         self.sources.update(update_data, doc_ids=[doc_id])
 
@@ -263,3 +262,117 @@ def update_source_duration(doc_id: int, duration_seconds: int) -> None:
         duration_seconds: Duration of audio in seconds
     """
     _db.update_source_duration(doc_id, duration_seconds)
+
+
+# Helper functions for determining processing state
+
+
+def is_ready_for_transcription(source: AudioSource) -> bool:
+    """Check if a source is ready for transcription.
+
+    Args:
+        source: Audio source
+
+    Returns:
+        True if the source is ready for transcription, False otherwise
+    """
+    # Source is ready for transcription if it has a download path but no transcript path
+    # and is not in an error state
+    return (
+        bool(source["download_path"])
+        and not source["transcript_path"]
+        and source["status"] != "error"
+    )
+
+
+def is_ready_for_translation(source: AudioSource) -> bool:
+    """Check if a source is ready for translation.
+
+    Args:
+        source: Audio source
+
+    Returns:
+        True if the source is ready for translation, False otherwise
+    """
+    # Source is ready for translation if it has a transcript path but no translation path
+    # and is not in an error state
+    return (
+        bool(source["transcript_path"])
+        and not source["translation_path"]
+        and source["status"] != "error"
+    )
+
+
+def is_ready_for_audio_generation(source: AudioSource) -> bool:
+    """Check if a source is ready for audio generation.
+
+    Args:
+        source: Audio source
+
+    Returns:
+        True if the source is ready for audio generation, False otherwise
+    """
+    # Source is ready for audio generation if it has a translation path
+    # and is not in an error state or already completed
+    return (
+        bool(source["translation_path"])
+        and source["status"] != "error"
+        and source["status"] != "completed"
+    )
+
+
+def is_ready_for_study(source: AudioSource) -> bool:
+    """Check if a source is ready for study.
+
+    Args:
+        source: Audio source
+
+    Returns:
+        True if the source is ready for study, False otherwise
+    """
+    # Source is ready for study if it has a transcript path and translation path
+    # and is marked as completed
+    return (
+        bool(source["transcript_path"])
+        and bool(source["translation_path"])
+        and source["status"] == "completed"
+    )
+
+
+def is_in_error_state(source: AudioSource) -> bool:
+    """Check if a source is in an error state.
+
+    Args:
+        source: Audio source
+
+    Returns:
+        True if the source is in an error state, False otherwise
+    """
+    return source["status"] == "error"
+
+
+def get_processing_progress(source: AudioSource) -> float:
+    """Calculate the processing progress of a source.
+
+    Args:
+        source: Audio source
+
+    Returns:
+        Progress as a float between 0 and 1
+    """
+    # Start with 25% for download
+    progress = 0.25
+
+    # Add 25% for transcript
+    if source["transcript_path"]:
+        progress += 0.25
+
+    # Add 25% for translation
+    if source["translation_path"]:
+        progress += 0.25
+
+    # Add 25% for completion
+    if source["status"] == "completed":
+        progress += 0.25
+
+    return progress

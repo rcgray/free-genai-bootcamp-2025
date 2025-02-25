@@ -57,8 +57,13 @@ Let's write a test for this function. In general, we will use audio item #3 in o
 we're working.  ok, now let's create a function in our audio_processor.py that will take the path to an mp3 file and return translated text for it.  in this function, we will be calling out to OpenAI's translation service API.  This is a big step and may involve many smaller steps.  For instance, there are probably new libraries we need to install (be sure we update our pyproject.toml file).  We will also need to set up the OpenAI API key as an environment variable. Creating a `.env` file means we also need to create a `.env.example` file and update our instructions in the README.md file.  We can do this in steps or all at once, up to you.
 
 
+---
 
+it's ok, that simply existed in the database before we came up with these named states for the workflow.  originally it was just supposed to be "pending" (missing transcription or translation) or "complete" (ready to study).  a database entry would not exist at all unless the file had been successfully imported.  the sub-state of pending would depend on whether "transcript_path" or "translation_path" was null, since they would only be updated once the file was successfully created.  It seems we've gone a different direction in implementing this, so the question is which one should we go with?
 
+---
+
+I am leaning toward the original design.  not creating a database entry until we have the file successfully prevents issues where a download failed but now the user can't try again because "an entry with that title already exists".  as far as the UI goes, we can still use the transcript_path/translation_path is null method easily by encapsulation (e.g., a function) to keep decisions around frontend button display clean. it also is better bound to ground truth, where the status of an audio item is determined by the presence of the performed work and not an accidental database change.  however, i see the advantages about being future-proof and robust.  i'm not making a decision yet, i'm just curious if this changes your recommendation
 
 
 

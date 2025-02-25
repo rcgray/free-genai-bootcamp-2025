@@ -41,11 +41,13 @@
 │   └── update_docs.py
 ├── tests
 │   ├── __pycache__
+│   │   ├── conftest.cpython-312-pytest-8.3.4.pyc
 │   │   ├── test_audio_processor.cpython-312-pytest-8.3.4.pyc
 │   │   └── test_db.cpython-312-pytest-8.3.4.pyc
+│   ├── conftest.py
 │   ├── data
 │   ├── test_audio_processor.py
 │   └── test_db.py
 └── uv.lock
 
-17 directories, 32 files
+17 directories, 34 files

@@ -122,11 +122,11 @@ This is another line."""
     assert extract_text_from_vtt(empty_vtt) == ""
 
 
-@pytest.mark.skip(reason="Requires OpenAI API key and credits")
+@pytest.mark.api
 def test_transcribe_audio() -> None:
     """Test audio transcription functionality.
 
-    This test is skipped by default as it requires:
+    This test requires:
     1. A valid OpenAI API key in .env
     2. API credits for the transcription
     """
@@ -201,11 +201,11 @@ def test_transcribe_audio() -> None:
             os.unlink(default_path)
 
 
-@pytest.mark.skip(reason="Requires OpenAI API key and credits")
+@pytest.mark.api
 def test_translate_audio() -> None:
     """Test audio translation functionality.
 
-    This test is skipped by default as it requires:
+    This test requires:
     1. A valid OpenAI API key in .env
     2. API credits for translation
     """
@@ -268,20 +268,22 @@ def test_file_size_limit() -> None:
 
     # Create a mock file that reports a size larger than the limit
     class MockPath:
-        def __init__(self, exists=True, is_file=True, size=0):
+        def __init__(
+            self, exists: bool = True, is_file: bool = True, size: int = 0
+        ) -> None:
             self._exists = exists
             self._is_file = is_file
             self._size = size
 
-        def exists(self):
+        def exists(self) -> bool:
             return self._exists
 
-        def is_file(self):
+        def is_file(self) -> bool:
             return self._is_file
 
-        def stat(self):
+        def stat(self) -> object:
             class Stat:
-                def __init__(self, size):
+                def __init__(self, size: int) -> None:
                     self.st_size = size
 
             return Stat(self._size)
@@ -291,7 +293,7 @@ def test_file_size_limit() -> None:
     from backend.audio_processor import transcribe_audio
 
     # Create a mock for Path that returns our MockPath
-    def mock_path_constructor(path_str):
+    def mock_path_constructor(path_str: str) -> MockPath:
         # Size in bytes: 51MB
         return MockPath(size=(MAX_FILE_SIZE_MB + 1) * 1024 * 1024)
 

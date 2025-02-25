@@ -118,9 +118,7 @@ pending → downloaded → transcribed → translated
 
 #### Document Lifecycle
 1. Initial creation with `status: "pending"`
-2. Update to `downloaded` when audio is saved
-3. Update to `transcribed` with transcript path
-4. Final update to `translated` with translation path
+2. Update to `completed` when audio is processed (transcription and translation)
 
 ## Development Environment
 

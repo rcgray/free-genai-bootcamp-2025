@@ -6,6 +6,14 @@ from backend.audio_processor import (
     transcribe_audio,
     translate_audio,
 )
+from backend.db import (
+    get_processing_progress,
+    is_in_error_state,
+    is_ready_for_audio_generation,
+    is_ready_for_study,
+    is_ready_for_transcription,
+    is_ready_for_translation,
+)
 
 # Make these functions available at the package level
 __all__ = [
@@ -14,6 +22,12 @@ __all__ = [
     "get_mp3_metadata",
     "transcribe_audio",
     "translate_audio",
+    "is_ready_for_transcription",
+    "is_ready_for_translation",
+    "is_ready_for_audio_generation",
+    "is_ready_for_study",
+    "is_in_error_state",
+    "get_processing_progress",
 ]
 
 

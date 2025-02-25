@@ -65,11 +65,9 @@ Fields:
 
 ### Status Values
 The `status` field can have the following values:
-- `"pending"`: Initial state, URL validated but not processed
-- `"downloaded"`: Audio file has been downloaded
-- `"transcribed"`: Transcript has been generated
-- `"translated"`: Translation has been completed
-- `"error"`: Processing failed (additional error info in future)
+- `"pending"`: Initial state or in-progress state. The actual processing stage is determined by checking the presence of transcript_path and translation_path fields.
+- `"completed"`: All processing steps are complete and the content is ready for study.
+- `"error"`: Processing failed (additional error info in future).
 
 ## File Organization
 
@@ -100,7 +98,7 @@ While not stored in the database, the application manages several types of files
     "title": "Sample Podcast",
     "source_type": "Podcast URL (.mp3)",
     "duration_seconds": 300,
-    "download_path": "",
+    "download_path": "media/sources/sample-podcast.mp3",
     "transcript_path": None,
     "translation_path": None,
     "created_at": "2024-02-23T12:00:00Z",
@@ -109,23 +107,13 @@ While not stored in the database, the application manages several types of files
 }
 ```
 
-### After Download
-```python
-{
-    # ... previous fields ...
-    "download_path": "media/sources/sample-podcast.mp3",
-    "updated_at": "2024-02-23T12:01:00Z",
-    "status": "downloaded"
-}
-```
-
 ### After Transcription
 ```python
 {
     # ... previous fields ...
-    "transcript_path": "media/transcripts/sample-podcast.json",
+    "transcript_path": "media/transcripts/sample-podcast.vtt",
     "updated_at": "2024-02-23T12:02:00Z",
-    "status": "transcribed"
+    "status": "pending"  # Status remains pending until all processing is complete
 }
 ```
 
@@ -133,9 +121,30 @@ While not stored in the database, the application manages several types of files
 ```python
 {
     # ... previous fields ...
-    "translation_path": "media/translations/sample-podcast.json",
+    "transcript_path": "media/transcripts/sample-podcast.vtt",
+    "translation_path": "media/translations/sample-podcast.txt",
     "updated_at": "2024-02-23T12:03:00Z",
-    "status": "translated"
+    "status": "pending"  # Status remains pending until all processing is complete
+}
+```
+
+### After Completion
+```python
+{
+    # ... previous fields ...
+    "transcript_path": "media/transcripts/sample-podcast.vtt",
+    "translation_path": "media/translations/sample-podcast.txt",
+    "updated_at": "2024-02-23T12:04:00Z",
+    "status": "completed"  # Status changes to completed when all processing is done
+}
+```
+
+### Error State
+```python
+{
+    # ... previous fields ...
+    "updated_at": "2024-02-23T12:05:00Z",
+    "status": "error"  # Status changes to error if processing fails
 }
 ```
 

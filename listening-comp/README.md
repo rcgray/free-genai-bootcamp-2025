@@ -108,6 +108,9 @@ uv run mypy .
 # Run tests
 uv run pytest
 
+# Run tests including API-dependent tests (requires OpenAI API key)
+uv run pytest --api-tests
+
 # Install pre-commit hooks
 uv pip install pre-commit
 pre-commit install
@@ -132,6 +135,24 @@ To use these features, install the following VS Code extensions:
 3. Write tests for new functionality
 4. Keep functions focused and small
 5. Document API endpoints and significant changes
+
+### API-Dependent Tests
+
+Some tests in the project require access to external APIs (primarily OpenAI's API for transcription and translation). These tests are marked with `@pytest.mark.api` and are skipped by default to avoid:
+
+1. Requiring all developers to have API keys configured
+2. Incurring API usage costs during routine testing
+3. Slowing down the test suite with external API calls
+
+To run these tests:
+
+1. Ensure you have configured your `.env` file with the necessary API keys
+2. Run the tests with the `--api-tests` flag:
+   ```bash
+   uv run pytest --api-tests
+   ```
+
+This approach allows for comprehensive testing when needed while keeping routine test runs fast and free of external dependencies.
 
 ## Future Enhancements
 

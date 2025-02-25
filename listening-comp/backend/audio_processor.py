@@ -74,13 +74,9 @@ def _get_mp3_duration(file_path: str) -> int:
     """
     try:
         audio = MP3(file_path)
-
-        # Explicitly check for None to satisfy mypy
-        if audio.info is None:
-            raise ValueError(f"Could not extract audio info from MP3: {file_path}")
-
-        duration = audio.info.length
-        return round(duration)
+        # audio.info is guaranteed to exist and have a length attribute
+        # when the MP3 file is successfully loaded
+        return round(audio.info.length)
     except Exception as e:
         raise ValueError(f"Error processing MP3 file: {e}") from e
 
@@ -106,11 +102,8 @@ def get_mp3_metadata(file_path: str) -> Dict[str, Any]:
 
     try:
         audio = MP3(file_path)
-
-        # Explicitly check for None to satisfy mypy
-        if audio.info is None:
-            raise ValueError(f"Could not extract audio info from MP3: {file_path}")
-
+        # audio.info is guaranteed to exist with these attributes
+        # when the MP3 file is successfully loaded
         metadata: Dict[str, Any] = {
             "duration": round(audio.info.length),
             "bitrate": audio.info.bitrate,
@@ -239,15 +232,16 @@ def transcribe_audio(
     try:
         # Open the audio file
         with open(path, "rb") as audio_file:
-            # Call the OpenAI API
+            # Call the OpenAI API with the correct parameter types
             response = client.audio.transcriptions.create(
                 model=whisper_model,
                 file=audio_file,
                 language=language,
-                response_format=api_response_format,
+                response_format=api_response_format,  # type: ignore
             )
 
-        transcript = response.text
+        # The response is already a string
+        transcript = response
 
         # Save transcript if output path is provided or generate default path
         if output_path is None:
@@ -324,14 +318,15 @@ def translate_audio(
     try:
         # Open the audio file
         with open(path, "rb") as audio_file:
-            # Call the OpenAI translations API
+            # Call the OpenAI translations API with the correct parameter types
             response = client.audio.translations.create(
                 model=whisper_model,
                 file=audio_file,
-                response_format="text",  # Always use text for translations
+                response_format="text",  # type: ignore
             )
 
-        translation = response.text
+        # The response is already a string
+        translation = response
 
         # Save translation if output path is provided or generate default path
         if output_path is None:

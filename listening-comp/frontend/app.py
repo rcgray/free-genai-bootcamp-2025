@@ -12,8 +12,14 @@ from backend import get_audio_duration
 from backend.audio_processor import MAX_FILE_SIZE_MB
 from backend.db import (
     add_source,
+    get_processing_progress,
     get_source_by_title,
     get_sources,
+    is_in_error_state,
+    is_ready_for_audio_generation,
+    is_ready_for_study,
+    is_ready_for_transcription,
+    is_ready_for_translation,
     update_source_duration,
     update_source_status,
 )
@@ -497,7 +503,7 @@ def render_library_view() -> None:
     with col1:
         filter_status = st.selectbox(
             "Filter by Status:",
-            options=["All", "Ready", "Pending"],
+            options=["All", "Ready for Study", "In Progress", "Error"],
             key="filter_status",
             help="Select which items to display",
         )
@@ -513,7 +519,17 @@ def render_library_view() -> None:
     # Filter sources based on selection
     filtered_sources = {}
     for source_id, source in sorted_sources.items():
-        if filter_status == "All" or source["status"].lower() == filter_status.lower():
+        if filter_status == "All":
+            filtered_sources[source_id] = source
+        elif filter_status == "Ready for Study" and is_ready_for_study(source):
+            filtered_sources[source_id] = source
+        elif (
+            filter_status == "In Progress"
+            and not is_ready_for_study(source)
+            and not is_in_error_state(source)
+        ):
+            filtered_sources[source_id] = source
+        elif filter_status == "Error" and is_in_error_state(source):
             filtered_sources[source_id] = source
 
     if not filtered_sources:
@@ -537,13 +553,26 @@ def render_library_view() -> None:
                     duration_str = "Unknown"
 
                 st.text(f"Duration: {duration_str}")
-                st.text(f"Status: {source['status']}")
+
+                # Display status based on path fields and status
+                if is_in_error_state(source):
+                    status_text = "Error"
+                elif is_ready_for_study(source):
+                    status_text = "Ready for Study"
+                elif source["translation_path"]:
+                    status_text = "Translation Complete"
+                elif source["transcript_path"]:
+                    status_text = "Transcription Complete"
+                else:
+                    status_text = "Pending"
+
+                st.text(f"Status: {status_text}")
             with col2:
                 # Use empty space to push button to the right
                 st.write("")
                 st.write("")
                 # Show different buttons based on content status
-                if source["status"] == "ready":
+                if is_ready_for_study(source):
                     if st.button(
                         "Study", key=f"study_{source_id}", use_container_width=True
                     ):
@@ -561,10 +590,11 @@ def render_library_view() -> None:
 
 def render_study_view() -> None:
     """Render the Study view."""
+    st.header("Study Session")
+
     if not st.session_state.study_target_id:
-        st.error("No content selected for study.")
-        if st.button("Return to Library"):
-            st.session_state.current_view = "library"
+        st.warning("No content selected for study.")
+        st.info("Please select content to study from the Library view.")
         return
 
     sources = get_sources()
@@ -577,7 +607,7 @@ def render_study_view() -> None:
         return
 
     # Check if content is ready for study
-    if source["status"] != "ready":
+    if not is_ready_for_study(source):
         st.error(
             "This content needs to be processed before it can be studied. "
             "Please process it first."
@@ -587,7 +617,7 @@ def render_study_view() -> None:
             st.session_state.current_view = "process"
         return
 
-    st.header(source["title"])
+    st.subheader(source["title"])
 
     # Placeholder for audio player
     st.subheader("Audio Player")
@@ -623,16 +653,24 @@ def render_process_view() -> None:
     # Show current status and progress at the top
     status_col, progress_col = st.columns([2, 1])
     with status_col:
-        st.text(f"Current Status: {source['status'].title()}")
+        # Determine current status based on path fields
+        if is_in_error_state(source):
+            status_text = "Error"
+        elif is_ready_for_study(source):
+            status_text = "Completed"
+        elif is_ready_for_audio_generation(source):
+            status_text = "Ready for Audio Generation"
+        elif is_ready_for_translation(source):
+            status_text = "Ready for Translation"
+        elif is_ready_for_transcription(source):
+            status_text = "Ready for Transcription"
+        else:
+            status_text = "Pending"
+
+        st.text(f"Current Status: {status_text}")
     with progress_col:
-        # Calculate progress (25% per completed step)
-        progress = 0.25  # Start with 25% for download
-        if source["transcript_path"]:
-            progress += 0.25
-        if source["translation_path"]:
-            progress += 0.25
-        if source["status"] == "completed":
-            progress += 0.25
+        # Calculate progress using helper function
+        progress = get_processing_progress(source)
         st.progress(progress, text=f"{int(progress * 100)}% Complete")
 
     st.divider()
@@ -648,7 +686,7 @@ def render_process_view() -> None:
 
         # Step 1: Transcription
         st.markdown("### Step 1: Transcribe Audio")
-        if source["status"] == "downloaded":
+        if is_ready_for_transcription(source):
             col1, col2 = st.columns([3, 1])
             with col1:
                 st.info("Ready to start transcription")
@@ -682,10 +720,11 @@ def render_process_view() -> None:
                                 format="webvtt",  # Use WebVTT format
                             )
 
-                            # Update the database
+                            # Update the database with transcript path only
+                            # Status remains "pending" in the simplified model
                             update_source_status(
                                 doc_id=int(st.session_state.process_target_id),
-                                status="transcribed",
+                                status="pending",  # Keep as pending
                                 transcript_path=output_path,
                             )
 
@@ -695,7 +734,11 @@ def render_process_view() -> None:
 
                     except Exception as e:
                         st.error(f"Error during transcription: {e}")
-                        # You could update the database with an error status here
+                        # Update with error status
+                        update_source_status(
+                            doc_id=int(st.session_state.process_target_id),
+                            status="error",
+                        )
         elif source["transcript_path"]:
             st.success("✓ Transcription Complete")
             st.caption(f"Transcript: {source['transcript_path']}")
@@ -719,7 +762,7 @@ def render_process_view() -> None:
 
         # Step 2: Translation
         st.markdown("### Step 2: Translate Text")
-        if source["transcript_path"] and source["status"] == "transcribed":
+        if is_ready_for_translation(source):
             col1, col2 = st.columns([3, 1])
             with col1:
                 st.info("Ready to start translation")
@@ -753,10 +796,11 @@ def render_process_view() -> None:
                                 file_path=audio_path, output_path=translation_path
                             )
 
-                            # Update the database
+                            # Update the database with translation path only
+                            # Status remains "pending" in the simplified model
                             update_source_status(
                                 doc_id=int(st.session_state.process_target_id),
-                                status="translated",
+                                status="pending",  # Keep as pending
                                 translation_path=output_path,
                             )
 
@@ -766,7 +810,11 @@ def render_process_view() -> None:
 
                     except Exception as e:
                         st.error(f"Error during translation: {e}")
-                        # You could update the database with an error status here
+                        # Update with error status
+                        update_source_status(
+                            doc_id=int(st.session_state.process_target_id),
+                            status="error",
+                        )
         elif source["translation_path"]:
             st.success("✓ Translation Complete")
             st.caption(f"Translation: {source['translation_path']}")
@@ -792,7 +840,7 @@ def render_process_view() -> None:
 
         # Step 3: Audio Generation
         st.markdown("### Step 3: Generate Audio")
-        if source["translation_path"] and source["status"] == "translated":
+        if is_ready_for_audio_generation(source):
             col1, col2 = st.columns([3, 1])
             with col1:
                 st.info("Ready to generate audio")
@@ -803,14 +851,14 @@ def render_process_view() -> None:
                     st.session_state.audio_gen_started = True
                     # Audio generation logic will be implemented later
 
-                    # For now, just update the status to "completed"
+                    # Update the status to "completed" when all processing is done
                     update_source_status(
                         doc_id=int(st.session_state.process_target_id),
                         status="completed",
                     )
                     st.success("Audio generation completed!")
                     st.rerun()
-        elif source["status"] == "completed":
+        elif is_ready_for_study(source):
             st.success("✓ Audio Generation Complete")
             st.caption("Generated audio is ready for study")
         else:
@@ -819,7 +867,7 @@ def render_process_view() -> None:
                 st.caption("⚠️ Complete translation first")
 
     # Error handling and retry options
-    if "error" in source["status"].lower():
+    if is_in_error_state(source):
         st.divider()
         st.error(
             "An error occurred during processing. "
@@ -827,7 +875,11 @@ def render_process_view() -> None:
         )
         if st.button("Retry Processing"):
             # Reset error state and retry from last successful step
-            pass  # Will be implemented later
+            update_source_status(
+                doc_id=int(st.session_state.process_target_id),
+                status="pending",  # Reset to pending
+            )
+            st.rerun()
 
 
 def main() -> None:
