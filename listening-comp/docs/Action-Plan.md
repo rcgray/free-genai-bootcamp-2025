@@ -49,6 +49,8 @@
 - [x] Create audio storage management
 - [x] Add basic audio metadata extraction
 - [x] Implement audio duration detection
+- [x] Implement audio transcription with OpenAI
+- [x] Implement audio translation with OpenAI
 - [ ] Add audio format conversion if needed
 - [ ] Implement audio quality checks
 
@@ -74,11 +76,13 @@
   - [x] Add step completion tracking
   - [x] Create step action buttons
 - [ ] Implement transcription step (Step 1)
+  - [x] Set up OpenAI API integration
   - [ ] Set up WebVTT/TTML file format handling
   - [ ] Create transcript file generation
   - [ ] Implement database transcript_path updates
   - [ ] Add transcription error handling
 - [ ] Implement translation step (Step 2)
+  - [x] Set up OpenAI API integration
   - [ ] Create translation file generation
   - [ ] Maintain timestamp format consistency
   - [ ] Implement database translation_path updates
@@ -263,3 +267,6 @@
 - Implemented audio duration detection and metadata extraction (2024-02-25)
 - Updated database schema to use integer for duration_seconds (2024-02-25)
 - Improved library view to display duration in minutes:seconds format (2024-02-25)
+- Added OpenAI integration for audio transcription and translation (2024-02-25)
+- Implemented environment variable support with python-dotenv (2024-02-25)
+- Added comprehensive error handling for API interactions (2024-02-25)

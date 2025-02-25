@@ -54,6 +54,12 @@ Let's write a test for this function. In general, we will use audio item #3 in o
 
 ---
 
-Let's add a new function to our `audio_processor.py` file that will take a path to an audio file and return the duration of the file in seconds.
+we're working.  ok, now let's create a function in our audio_processor.py that will take the path to an mp3 file and return translated text for it.  in this function, we will be calling out to OpenAI's translation service API.  This is a big step and may involve many smaller steps.  For instance, there are probably new libraries we need to install (be sure we update our pyproject.toml file).  We will also need to set up the OpenAI API key as an environment variable. Creating a `.env` file means we also need to create a `.env.example` file and update our instructions in the README.md file.  We can do this in steps or all at once, up to you.
+
+
+
+
+
+
 
 

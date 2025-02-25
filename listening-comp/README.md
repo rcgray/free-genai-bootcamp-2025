@@ -50,6 +50,15 @@ A Streamlit-based application designed to help users learn Japanese through audi
    uv sync --extra dev
    ```
 
+4. Set up environment variables:
+   ```bash
+   # Copy the example environment file
+   cp .env.example .env
+
+   # Edit .env with your API keys
+   # You'll need an OpenAI API key for audio transcription and translation
+   ```
+
 ### Running the Application
 
 Start the Streamlit application:

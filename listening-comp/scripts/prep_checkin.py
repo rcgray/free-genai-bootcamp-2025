@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List
 
 # ANSI escape codes for colors
-BLUE = "\033[94m"
+HIGHLIGHT = "\033[92m"
 RESET = "\033[0m"
 
 
@@ -54,7 +54,7 @@ def main() -> int:
 
     if success:
         print("\n✨ All checks passed! Ready to commit.")
-        print(f"\n{BLUE}Be sure to update the Action Plan doc{RESET}")
+        print(f"\n{HIGHLIGHT}Be sure to update the Action Plan doc{RESET}")
         return 0
     else:
         print("\n❌ Some checks failed. Please fix the issues and try again.")

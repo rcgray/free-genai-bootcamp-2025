@@ -1,9 +1,20 @@
 """Backend package for Japanese Listening Learning Tool."""
 
-from backend.audio_processor import get_audio_duration, get_mp3_metadata
+from backend.audio_processor import (
+    get_audio_duration,
+    get_mp3_metadata,
+    transcribe_audio,
+    translate_audio,
+)
 
 # Make these functions available at the package level
-__all__ = ["get_greeting", "get_audio_duration", "get_mp3_metadata"]
+__all__ = [
+    "get_greeting",
+    "get_audio_duration",
+    "get_mp3_metadata",
+    "transcribe_audio",
+    "translate_audio",
+]
 
 
 def get_greeting(name: str = "World") -> str:

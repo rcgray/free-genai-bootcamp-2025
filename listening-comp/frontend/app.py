@@ -9,11 +9,13 @@ import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 from backend import get_audio_duration
+from backend.audio_processor import MAX_FILE_SIZE_MB
 from backend.db import (
     add_source,
     get_source_by_title,
     get_sources,
     update_source_duration,
+    update_source_status,
 )
 from backend.utils import download_file, sanitize_filename
 
@@ -135,6 +137,24 @@ def validate_title(title: str) -> Tuple[bool, str]:
     return True, ""
 
 
+def check_file_size(file_path: Path) -> Tuple[bool, float]:
+    """Check if a file exceeds the size limit.
+
+    Args:
+        file_path: Path to the file
+
+    Returns:
+        Tuple of (is_valid, file_size_mb)
+    """
+    if not file_path.exists():
+        return False, 0
+
+    file_size_bytes = file_path.stat().st_size
+    file_size_mb = file_size_bytes / (1024 * 1024)
+
+    return file_size_mb <= MAX_FILE_SIZE_MB, file_size_mb
+
+
 def process_new_content(
     url: str,
     title: str,
@@ -169,6 +189,15 @@ def process_new_content(
         if output_path.stat().st_size == 0:
             output_path.unlink()  # Clean up empty file
             return False, "Download failed: File is empty"
+
+        # Check file size
+        is_size_valid, file_size_mb = check_file_size(output_path)
+        if not is_size_valid:
+            output_path.unlink()  # Clean up oversized file
+            return (
+                False,
+                f"File size ({file_size_mb:.2f}MB) exceeds the limit of {MAX_FILE_SIZE_MB}MB",
+            )
 
         # Get audio duration
         try:
@@ -250,6 +279,16 @@ def process_local_file(
     output_path = MEDIA_DIR / f"{safe_title}.mp3"
 
     try:
+        # Check file size before saving
+        file_size_bytes = uploaded_file.size
+        file_size_mb = file_size_bytes / (1024 * 1024)
+
+        if file_size_mb > MAX_FILE_SIZE_MB:
+            return (
+                False,
+                f"File size ({file_size_mb:.2f}MB) exceeds the limit of {MAX_FILE_SIZE_MB}MB",
+            )
+
         # Ensure media directory exists
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -348,6 +387,11 @@ def render_add_content_view() -> None:
         st.button("Process URL", disabled=True)
         return
 
+    # Display file size limit notice
+    st.info(
+        f"⚠️ Note: Audio files must be less than {MAX_FILE_SIZE_MB}MB due to API limitations."
+    )
+
     # Title input with validation
     title = st.text_input(
         "Title:",
@@ -368,17 +412,24 @@ def render_add_content_view() -> None:
     elif selected_base_type == "Local File (.mp3)":
         # For local files, we use a file uploader
         uploaded_file = st.file_uploader(
-            "Select a file from your computer",
+            f"Select a file from your computer (max {MAX_FILE_SIZE_MB}MB)",
             type=["mp3"],
             key="file_uploader",
-            help="Select an MP3 file from your computer",
+            help=f"Select an MP3 file from your computer (must be less than {MAX_FILE_SIZE_MB}MB)",
         )
 
-        # Display the selected file path
+        # Display the selected file path and size
         if uploaded_file is not None:
             file_path = uploaded_file.name
+            file_size_mb = uploaded_file.size / (1024 * 1024)
             url = "Local File"  # Set URL to "Local File" for local files
-            st.success(f"Selected file: {file_path}")
+
+            if file_size_mb > MAX_FILE_SIZE_MB:
+                st.error(
+                    f"⚠️ Selected file is {file_size_mb:.2f}MB, which exceeds the {MAX_FILE_SIZE_MB}MB limit."
+                )
+            else:
+                st.success(f"Selected file: {file_path} ({file_size_mb:.2f}MB)")
 
     # Process button
     button_label = (
@@ -411,6 +462,14 @@ def render_add_content_view() -> None:
             # Validate file
             if uploaded_file is None:
                 st.error("Please select a file")
+                return
+
+            # Check file size
+            file_size_mb = uploaded_file.size / (1024 * 1024)
+            if file_size_mb > MAX_FILE_SIZE_MB:
+                st.error(
+                    f"File size ({file_size_mb:.2f}MB) exceeds the {MAX_FILE_SIZE_MB}MB limit."
+                )
                 return
 
             # Process the content from local file
@@ -593,6 +652,9 @@ def render_process_view() -> None:
             col1, col2 = st.columns([3, 1])
             with col1:
                 st.info("Ready to start transcription")
+                st.caption(
+                    f"Note: Audio files must be less than {MAX_FILE_SIZE_MB}MB for transcription"
+                )
             with col2:
                 if st.button(
                     "Start Transcription",
@@ -600,10 +662,56 @@ def render_process_view() -> None:
                     use_container_width=True,
                 ):
                     st.session_state.transcription_started = True
-                    # Transcription logic will be implemented later
+
+                    # Implement transcription logic
+                    try:
+                        with st.spinner("Transcribing audio... This may take a while."):
+                            from backend import transcribe_audio
+
+                            # Get the audio file path
+                            audio_path = source["download_path"]
+
+                            # Generate the output path (WebVTT format)
+                            title = Path(audio_path).stem
+                            transcript_path = f"media/transcripts/{title}.vtt"
+
+                            # Transcribe the audio
+                            transcript, output_path = transcribe_audio(
+                                file_path=audio_path,
+                                output_path=transcript_path,
+                                format="webvtt",  # Use WebVTT format
+                            )
+
+                            # Update the database
+                            update_source_status(
+                                doc_id=int(st.session_state.process_target_id),
+                                status="transcribed",
+                                transcript_path=output_path,
+                            )
+
+                            # Show success message
+                            st.success("Transcription completed successfully!")
+                            st.rerun()  # Refresh the page to show updated status
+
+                    except Exception as e:
+                        st.error(f"Error during transcription: {e}")
+                        # You could update the database with an error status here
         elif source["transcript_path"]:
             st.success("✓ Transcription Complete")
             st.caption(f"Transcript: {source['transcript_path']}")
+
+            # Add a button to view the transcript
+            if st.button("View Transcript", key="view_transcript"):
+                transcript_path = source["transcript_path"]
+                try:
+                    with open(transcript_path, encoding="utf-8") as f:
+                        transcript_content = f.read()
+
+                    # Display the transcript in an expandable section
+                    with st.expander("Transcript Content", expanded=True):
+                        st.text(transcript_content)
+                except Exception as e:
+                    st.error(f"Error reading transcript: {e}")
         else:
             st.info("Waiting for transcription...")
 
@@ -615,6 +723,9 @@ def render_process_view() -> None:
             col1, col2 = st.columns([3, 1])
             with col1:
                 st.info("Ready to start translation")
+                st.caption(
+                    f"Note: Audio files must be less than {MAX_FILE_SIZE_MB}MB for translation"
+                )
             with col2:
                 if st.button(
                     "Start Translation",
@@ -622,10 +733,56 @@ def render_process_view() -> None:
                     use_container_width=True,
                 ):
                     st.session_state.translation_started = True
-                    # Translation logic will be implemented later
+
+                    # Implement translation logic
+                    try:
+                        with st.spinner(
+                            "Translating audio to English... This may take a while."
+                        ):
+                            from backend import translate_audio
+
+                            # Get the audio file path
+                            audio_path = source["download_path"]
+
+                            # Generate the output path
+                            title = Path(audio_path).stem
+                            translation_path = f"media/translations/{title}.txt"
+
+                            # Translate the audio directly to English
+                            translation, output_path = translate_audio(
+                                file_path=audio_path, output_path=translation_path
+                            )
+
+                            # Update the database
+                            update_source_status(
+                                doc_id=int(st.session_state.process_target_id),
+                                status="translated",
+                                translation_path=output_path,
+                            )
+
+                            # Show success message
+                            st.success("Translation completed successfully!")
+                            st.rerun()  # Refresh the page to show updated status
+
+                    except Exception as e:
+                        st.error(f"Error during translation: {e}")
+                        # You could update the database with an error status here
         elif source["translation_path"]:
             st.success("✓ Translation Complete")
             st.caption(f"Translation: {source['translation_path']}")
+
+            # Add a button to view the translation
+            if st.button("View Translation", key="view_translation"):
+                translation_path = source["translation_path"]
+                try:
+                    with open(translation_path, encoding="utf-8") as f:
+                        translation_content = f.read()
+
+                    # Display the translation in an expandable section
+                    with st.expander("Translation Content", expanded=True):
+                        st.text(translation_content)
+                except Exception as e:
+                    st.error(f"Error reading translation: {e}")
         else:
             st.info("Waiting for translation...")
             if not source["transcript_path"]:
@@ -645,6 +802,14 @@ def render_process_view() -> None:
                 ):
                     st.session_state.audio_gen_started = True
                     # Audio generation logic will be implemented later
+
+                    # For now, just update the status to "completed"
+                    update_source_status(
+                        doc_id=int(st.session_state.process_target_id),
+                        status="completed",
+                    )
+                    st.success("Audio generation completed!")
+                    st.rerun()
         elif source["status"] == "completed":
             st.success("✓ Audio Generation Complete")
             st.caption("Generated audio is ready for study")
