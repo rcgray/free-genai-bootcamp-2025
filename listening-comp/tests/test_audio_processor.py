@@ -216,7 +216,7 @@ def test_translate_audio() -> None:
     from backend import translate_audio
 
     # Create temporary output files
-    output_path = "tests/data/temp_translation.txt"
+    output_path = "tests/data/temp_translation.vtt"
 
     try:
         # Translate the audio with explicit output path
@@ -228,6 +228,9 @@ def test_translate_audio() -> None:
         assert translation, "Translation should not be empty"
         assert os.path.exists(output_path), "Output file should exist"
         assert path == output_path, "Returned path should match provided output path"
+        
+        # Check that the translation is in WebVTT format
+        assert translation.startswith("WEBVTT"), "Translation should be in WebVTT format"
 
         # Check that the file contains the translation
         with open(output_path, encoding="utf-8") as f:
@@ -241,11 +244,12 @@ def test_translate_audio() -> None:
         translation2, default_path = translate_audio(file_path=TEST_AUDIO_FILE)
 
         # Check that the default path follows the expected pattern
-        expected_default_path = "media/translations/Reira_Warning_Audio.txt"
+        expected_default_path = "media/translations/Reira_Warning_Audio.vtt"
         assert (
             default_path == expected_default_path
         ), f"Expected default path {expected_default_path}, got {default_path}"
         assert os.path.exists(default_path), "Default output file should exist"
+        assert translation2.startswith("WEBVTT"), "Default format should be WebVTT"
 
     except ImportError:
         pytest.skip("OpenAI library not installed")
@@ -258,7 +262,7 @@ def test_translate_audio() -> None:
         # Clean up
         if os.path.exists(output_path):
             os.unlink(output_path)
-        default_path = "media/translations/Reira_Warning_Audio.txt"
+        default_path = "media/translations/Reira_Warning_Audio.vtt"
         if os.path.exists(default_path):
             os.unlink(default_path)
 

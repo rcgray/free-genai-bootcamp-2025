@@ -65,6 +65,27 @@ it's ok, that simply existed in the database before we came up with these named 
 
 I am leaning toward the original design.  not creating a database entry until we have the file successfully prevents issues where a download failed but now the user can't try again because "an entry with that title already exists".  as far as the UI goes, we can still use the transcript_path/translation_path is null method easily by encapsulation (e.g., a function) to keep decisions around frontend button display clean. it also is better bound to ground truth, where the status of an audio item is determined by the presence of the performed work and not an accidental database change.  however, i see the advantages about being future-proof and robust.  i'm not making a decision yet, i'm just curious if this changes your recommendation
 
+---
 
+I've decided to make sure our core code works before worrying about end-to-end scenarios. we have some tests set up for this, but they are currently skipped.  I like keeping them skipped so that they don't run every time we run tests (e.g., multiple pre-commit hooks, etc.), so can we look into marking them for conditional running.
+
+Right now we disable them with @pytest.mark.skip(reason="Requires OpenAI API key and credits"). Let's get a little more sophisticated.  First, we will define a custom marker for API-dependent tests, say defining pytest.mark.api in our pytest_configure() function. Second, we mark our API-dependent tests with this marker (e.g., @pytest.mark.api). Third, we add code to automatically skip these tests by default in conftest.py, something like:
+```
+def pytest_runtest_setup(item):
+    # Skip API tests by default unless --run-api option is provided
+    if "api" in item.keywords and not item.config.getoption("--run-api"):
+        pytest.skip("API test skipped. Use --run-api to run")
+```
+and fourth, in conftest.py we add a command line option to our pytest invocation to enable running the API-dependent tests, something like:
+```
+def pytest_addoption(parser):
+    parser.addoption(
+        "--run-api", 
+        action="store_true",
+        default=False,
+        help="Run tests that require API calls and may incur costs"
+    )
+```
+This way running `pytest` will skip the API-dependent tests by default, but we can run them explicitly with `pytest --run-api`.
 
 

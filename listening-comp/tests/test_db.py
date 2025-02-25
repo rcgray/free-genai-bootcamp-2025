@@ -85,13 +85,13 @@ def test_update_source_status(test_db: Database) -> None:
     test_db.update_source_status(
         doc_id,
         status="completed",
-        translation_path="media/translations/test3.txt",
+        translation_path="media/translations/test3.vtt",
     )
 
     source = test_db.get_source(doc_id)
     assert source is not None
     assert source["status"] == "completed"
-    assert source["translation_path"] == "media/translations/test3.txt"
+    assert source["translation_path"] == "media/translations/test3.vtt"
 
     # Test updating to error status
     test_db.update_source_status(
@@ -157,7 +157,7 @@ def test_helper_functions(test_db: Database) -> None:
     test_db.update_source_status(
         doc_id,
         status="pending",
-        translation_path="media/translations/test4.txt",
+        translation_path="media/translations/test4.vtt",
     )
 
     source = test_db.get_source(doc_id)

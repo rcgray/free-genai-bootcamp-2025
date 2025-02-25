@@ -81,12 +81,12 @@ While not stored in the database, the application manages several types of files
 
 2. **Transcript Files** (`media/transcripts/`)
    - Generated Japanese transcripts
-   - JSON format with timestamps
+   - WebVTT format with timestamps
    - Named to match source audio file
 
 3. **Translation Files** (`media/translations/`)
    - Generated English translations
-   - JSON format with alignments
+   - WebVTT format with timestamps
    - Named to match source audio file
 
 ## Document Lifecycle
@@ -122,7 +122,7 @@ While not stored in the database, the application manages several types of files
 {
     # ... previous fields ...
     "transcript_path": "media/transcripts/sample-podcast.vtt",
-    "translation_path": "media/translations/sample-podcast.txt",
+    "translation_path": "media/translations/sample-podcast.vtt",
     "updated_at": "2024-02-23T12:03:00Z",
     "status": "pending"  # Status remains pending until all processing is complete
 }
@@ -133,7 +133,7 @@ While not stored in the database, the application manages several types of files
 {
     # ... previous fields ...
     "transcript_path": "media/transcripts/sample-podcast.vtt",
-    "translation_path": "media/translations/sample-podcast.txt",
+    "translation_path": "media/translations/sample-podcast.vtt",
     "updated_at": "2024-02-23T12:04:00Z",
     "status": "completed"  # Status changes to completed when all processing is done
 }

@@ -12,16 +12,16 @@ from backend import get_audio_duration
 from backend.audio_processor import MAX_FILE_SIZE_MB
 from backend.db import (
     add_source,
-    get_processing_progress,
     get_source_by_title,
     get_sources,
-    is_in_error_state,
-    is_ready_for_audio_generation,
-    is_ready_for_study,
-    is_ready_for_transcription,
-    is_ready_for_translation,
     update_source_duration,
     update_source_status,
+    is_ready_for_transcription,
+    is_ready_for_translation,
+    is_ready_for_audio_generation,
+    is_ready_for_study,
+    is_in_error_state,
+    get_processing_progress,
 )
 from backend.utils import download_file, sanitize_filename
 
@@ -434,7 +434,7 @@ def render_add_content_view() -> None:
                 st.error(
                     f"⚠️ Selected file is {file_size_mb:.2f}MB, which exceeds the {MAX_FILE_SIZE_MB}MB limit."
                 )
-            else:
+    else:
                 st.success(f"Selected file: {file_path} ({file_size_mb:.2f}MB)")
 
     # Process button
@@ -523,11 +523,7 @@ def render_library_view() -> None:
             filtered_sources[source_id] = source
         elif filter_status == "Ready for Study" and is_ready_for_study(source):
             filtered_sources[source_id] = source
-        elif (
-            filter_status == "In Progress"
-            and not is_ready_for_study(source)
-            and not is_in_error_state(source)
-        ):
+        elif filter_status == "In Progress" and not is_ready_for_study(source) and not is_in_error_state(source):
             filtered_sources[source_id] = source
         elif filter_status == "Error" and is_in_error_state(source):
             filtered_sources[source_id] = source
@@ -553,7 +549,7 @@ def render_library_view() -> None:
                     duration_str = "Unknown"
 
                 st.text(f"Duration: {duration_str}")
-
+                
                 # Display status based on path fields and status
                 if is_in_error_state(source):
                     status_text = "Error"
@@ -565,7 +561,7 @@ def render_library_view() -> None:
                     status_text = "Transcription Complete"
                 else:
                     status_text = "Pending"
-
+                
                 st.text(f"Status: {status_text}")
             with col2:
                 # Use empty space to push button to the right
@@ -666,7 +662,7 @@ def render_process_view() -> None:
             status_text = "Ready for Transcription"
         else:
             status_text = "Pending"
-
+        
         st.text(f"Current Status: {status_text}")
     with progress_col:
         # Calculate progress using helper function
@@ -693,6 +689,22 @@ def render_process_view() -> None:
                 st.caption(
                     f"Note: Audio files must be less than {MAX_FILE_SIZE_MB}MB for transcription"
                 )
+                
+                # Add format selection
+                format_option = st.selectbox(
+                    "Transcription Format:",
+                    options=["json", "verbose_json", "webvtt", "srt", "text"],
+                    index=2,  # Set WebVTT as default (index 2)
+                    help="Select the output format for transcription",
+                    key="start_format",
+                    format_func=lambda x: {
+                        "json": "JSON",
+                        "verbose_json": "Verbose JSON",
+                        "webvtt": "WebVTT",
+                        "srt": "SRT",
+                        "text": "Plain Text"
+                    }.get(x, x)
+                )
             with col2:
                 if st.button(
                     "Start Transcription",
@@ -709,15 +721,24 @@ def render_process_view() -> None:
                             # Get the audio file path
                             audio_path = source["download_path"]
 
-                            # Generate the output path (WebVTT format)
+                            # Generate the output path based on selected format
                             title = Path(audio_path).stem
-                            transcript_path = f"media/transcripts/{title}.vtt"
+                            if format_option == "json":
+                                transcript_path = f"media/transcripts/{title}.json"
+                            elif format_option == "verbose_json":
+                                transcript_path = f"media/transcripts/{title}.verbose.json"
+                            elif format_option == "webvtt":
+                                transcript_path = f"media/transcripts/{title}.vtt"
+                            elif format_option == "srt":
+                                transcript_path = f"media/transcripts/{title}.srt"
+                            else:
+                                transcript_path = f"media/transcripts/{title}.txt"
 
                             # Transcribe the audio
                             transcript, output_path = transcribe_audio(
                                 file_path=audio_path,
                                 output_path=transcript_path,
-                                format="webvtt",  # Use WebVTT format
+                                format=format_option,  # Use the selected format
                             )
 
                             # Update the database with transcript path only
@@ -743,18 +764,93 @@ def render_process_view() -> None:
             st.success("✓ Transcription Complete")
             st.caption(f"Transcript: {source['transcript_path']}")
 
-            # Add a button to view the transcript
-            if st.button("View Transcript", key="view_transcript"):
-                transcript_path = source["transcript_path"]
-                try:
-                    with open(transcript_path, encoding="utf-8") as f:
-                        transcript_content = f.read()
+            # Add buttons to view and rerun transcription
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("View Transcript", key="view_transcript"):
+                    transcript_path = source["transcript_path"]
+                    try:
+                        with open(transcript_path, encoding="utf-8") as f:
+                            transcript_content = f.read()
 
-                    # Display the transcript in an expandable section
-                    with st.expander("Transcript Content", expanded=True):
-                        st.text(transcript_content)
-                except Exception as e:
-                    st.error(f"Error reading transcript: {e}")
+                        # Display the transcript in an expandable section
+                        with st.expander("Transcript Content", expanded=True):
+                            # Check if it's a JSON transcript
+                            if transcript_path.endswith('.json'):
+                                from backend.audio_processor import format_json_transcript_for_display
+                                formatted_transcript = format_json_transcript_for_display(transcript_content)
+                                st.text(formatted_transcript)
+                            else:
+                                st.text(transcript_content)
+                    except Exception as e:
+                        st.error(f"Error reading transcript: {e}")
+            with col2:
+                # Add format selection above the button
+                format_option = st.selectbox(
+                    "Transcription Format:",
+                    options=["json", "verbose_json", "webvtt", "srt", "text"],
+                    index=2,  # Set WebVTT as default (index 2)
+                    help="Select the output format for transcription",
+                    key="rerun_format",
+                    format_func=lambda x: {
+                        "json": "JSON",
+                        "verbose_json": "Verbose JSON",
+                        "webvtt": "WebVTT",
+                        "srt": "SRT",
+                        "text": "Plain Text"
+                    }.get(x, x)
+                )
+                
+                if st.button("Rerun Transcription", key="rerun_transcription"):
+                    st.session_state.transcription_started = True
+
+                    # Implement transcription logic
+                    try:
+                        with st.spinner("Transcribing audio... This may take a while."):
+                            from backend import transcribe_audio
+
+                            # Get the audio file path
+                            audio_path = source["download_path"]
+
+                            # Generate the output path based on selected format
+                            title = Path(audio_path).stem
+                            if format_option == "json":
+                                transcript_path = f"media/transcripts/{title}.json"
+                            elif format_option == "verbose_json":
+                                transcript_path = f"media/transcripts/{title}.verbose.json"
+                            elif format_option == "webvtt":
+                                transcript_path = f"media/transcripts/{title}.vtt"
+                            elif format_option == "srt":
+                                transcript_path = f"media/transcripts/{title}.srt"
+                            else:
+                                transcript_path = f"media/transcripts/{title}.txt"
+
+                            # Transcribe the audio
+                            transcript, output_path = transcribe_audio(
+                                file_path=audio_path,
+                                output_path=transcript_path,
+                                format=format_option,  # Use the selected format
+                            )
+
+                            # Update the database with transcript path only
+                            # Status remains "pending" in the simplified model
+                            update_source_status(
+                                doc_id=int(st.session_state.process_target_id),
+                                status="pending",  # Keep as pending
+                                transcript_path=output_path,
+                            )
+
+                            # Show success message
+                            st.success("Transcription completed successfully!")
+                            st.rerun()  # Refresh the page to show updated status
+
+                    except Exception as e:
+                        st.error(f"Error during transcription: {e}")
+                        # Update with error status
+                        update_source_status(
+                            doc_id=int(st.session_state.process_target_id),
+                            status="error",
+                        )
         else:
             st.info("Waiting for transcription...")
 
@@ -789,7 +885,7 @@ def render_process_view() -> None:
 
                             # Generate the output path
                             title = Path(audio_path).stem
-                            translation_path = f"media/translations/{title}.txt"
+                            translation_path = f"media/translations/{title}.vtt"
 
                             # Translate the audio directly to English
                             translation, output_path = translate_audio(
@@ -819,18 +915,62 @@ def render_process_view() -> None:
             st.success("✓ Translation Complete")
             st.caption(f"Translation: {source['translation_path']}")
 
-            # Add a button to view the translation
-            if st.button("View Translation", key="view_translation"):
-                translation_path = source["translation_path"]
-                try:
-                    with open(translation_path, encoding="utf-8") as f:
-                        translation_content = f.read()
+            # Add buttons to view and rerun translation
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("View Translation", key="view_translation"):
+                    translation_path = source["translation_path"]
+                    try:
+                        with open(translation_path, encoding="utf-8") as f:
+                            translation_content = f.read()
 
-                    # Display the translation in an expandable section
-                    with st.expander("Translation Content", expanded=True):
-                        st.text(translation_content)
-                except Exception as e:
-                    st.error(f"Error reading translation: {e}")
+                        # Display the translation in an expandable section
+                        with st.expander("Translation Content", expanded=True):
+                            st.text(translation_content)
+                    except Exception as e:
+                        st.error(f"Error reading translation: {e}")
+            with col2:
+                if st.button("Rerun Translation", key="rerun_translation"):
+                    st.session_state.translation_started = True
+
+                    # Implement translation logic
+                    try:
+                        with st.spinner(
+                            "Translating audio to English... This may take a while."
+                        ):
+                            from backend import translate_audio
+
+                            # Get the audio file path
+                            audio_path = source["download_path"]
+
+                            # Generate the output path
+                            title = Path(audio_path).stem
+                            translation_path = f"media/translations/{title}.vtt"
+
+                            # Translate the audio directly to English
+                            translation, output_path = translate_audio(
+                                file_path=audio_path, output_path=translation_path
+                            )
+
+                            # Update the database with translation path only
+                            # Status remains "pending" in the simplified model
+                            update_source_status(
+                                doc_id=int(st.session_state.process_target_id),
+                                status="pending",  # Keep as pending
+                                translation_path=output_path,
+                            )
+
+                            # Show success message
+                            st.success("Translation completed successfully!")
+                            st.rerun()  # Refresh the page to show updated status
+
+                    except Exception as e:
+                        st.error(f"Error during translation: {e}")
+                        # Update with error status
+                        update_source_status(
+                            doc_id=int(st.session_state.process_target_id),
+                            status="error",
+                        )
         else:
             st.info("Waiting for translation...")
             if not source["transcript_path"]:

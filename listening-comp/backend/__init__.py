@@ -5,6 +5,7 @@ from backend.audio_processor import (
     get_mp3_metadata,
     transcribe_audio,
     translate_audio,
+    format_json_transcript_for_display,
 )
 from backend.db import (
     get_processing_progress,
@@ -22,6 +23,7 @@ __all__ = [
     "get_mp3_metadata",
     "transcribe_audio",
     "translate_audio",
+    "format_json_transcript_for_display",
     "is_ready_for_transcription",
     "is_ready_for_translation",
     "is_ready_for_audio_generation",

@@ -33,7 +33,14 @@
 │   │   ├── MRJ_Podcast_179.mp3
 │   │   └── Reira_Warning_Audio.mp3
 │   ├── transcripts
+│   │   ├── MRJ_Podcast_173.vtt
+│   │   ├── Reira_Warning_Audio.json
+│   │   ├── Reira_Warning_Audio.srt
+│   │   ├── Reira_Warning_Audio.verbose.json
+│   │   └── Reira_Warning_Audio.vtt
 │   └── translations
+│       ├── MRJ_Podcast_173.vtt
+│       └── Reira_Warning_Audio.vtt
 ├── pyproject.toml
 ├── scripts
 │   ├── manage_db.py
@@ -50,4 +57,4 @@
 │   └── test_db.py
 └── uv.lock
 
-17 directories, 34 files
+17 directories, 41 files
