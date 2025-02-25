@@ -442,56 +442,56 @@ def render_add_content_view() -> None:
         "Process URL" if selected_base_type == "Podcast URL (.mp3)" else "Process File"
     )
     if st.button(button_label, key="process_content"):
-        # Validate title
-        title_valid, title_error = validate_title(title)
-        if not title_valid:
-            st.error(title_error)
-            return
-
-        # Validate URL or file
-        if selected_base_type == "Podcast URL (.mp3)":
-            # Validate URL
-            url_valid, url_error = validate_url(
-                url
-            )  # url is now a string, not Optional[str]
-            if not url_valid:
-                st.error(url_error)
+            # Validate title
+            title_valid, title_error = validate_title(title)
+            if not title_valid:
+                st.error(title_error)
                 return
 
-            # Process the content from URL
-            success, message = process_new_content(
-                url=url,  # url is now a string, not Optional[str]
-                title=title,
-                source_type=selected_base_type,
-            )
-        elif selected_base_type == "Local File (.mp3)":
-            # Validate file
-            if uploaded_file is None:
-                st.error("Please select a file")
-                return
+            # Validate URL or file
+            if selected_base_type == "Podcast URL (.mp3)":
+                # Validate URL
+                url_valid, url_error = validate_url(
+                    url
+                )  # url is now a string, not Optional[str]
+                if not url_valid:
+                    st.error(url_error)
+                    return
 
-            # Check file size
-            file_size_mb = uploaded_file.size / (1024 * 1024)
-            if file_size_mb > MAX_FILE_SIZE_MB:
-                st.error(
-                    f"File size ({file_size_mb:.2f}MB) exceeds the {MAX_FILE_SIZE_MB}MB limit."
+                # Process the content from URL
+                success, message = process_new_content(
+                    url=url,  # url is now a string, not Optional[str]
+                    title=title,
+                    source_type=selected_base_type,
                 )
+            elif selected_base_type == "Local File (.mp3)":
+                # Validate file
+                if uploaded_file is None:
+                    st.error("Please select a file")
+                    return
+
+                # Check file size
+                file_size_mb = uploaded_file.size / (1024 * 1024)
+                if file_size_mb > MAX_FILE_SIZE_MB:
+                    st.error(
+                        f"File size ({file_size_mb:.2f}MB) exceeds the {MAX_FILE_SIZE_MB}MB limit."
+                    )
+                    return
+
+                # Process the content from local file
+                success, message = process_local_file(
+                    uploaded_file=uploaded_file,
+                    title=title,
+                    source_type=selected_base_type,
+                )
+            else:
+                st.error("Unsupported source type")
                 return
 
-            # Process the content from local file
-            success, message = process_local_file(
-                uploaded_file=uploaded_file,
-                title=title,
-                source_type=selected_base_type,
-            )
-        else:
-            st.error("Unsupported source type")
-            return
-
-        if success:
-            st.success(message)
-        else:
-            st.error(message)
+                if success:
+                    st.success(message)
+                else:
+                    st.error(message)
 
 
 def render_library_view() -> None:
@@ -570,7 +570,7 @@ def render_library_view() -> None:
                 # Show different buttons based on content status
                 if is_ready_for_study(source):
                     if st.button(
-                        "Study", key=f"study_{source_id}", use_container_width=True
+                        "Study", key=f"study_{source_id}", type="primary", use_container_width=True
                     ):
                         st.session_state.study_target_id = source_id
                         st.session_state.current_view = "study"
@@ -614,12 +614,259 @@ def render_study_view() -> None:
         return
 
     st.subheader(source["title"])
-
-    # Audio player
-    st.subheader("Audio Player")
+    
+    # Initialize session state for current timestamp if not exists
+    if "current_timestamp" not in st.session_state:
+        st.session_state.current_timestamp = 0.0
     
     # Get the audio file path
     audio_path = source["download_path"]
+    
+    # Format duration as minutes:seconds for display
+    duration_seconds = source["duration_seconds"]
+    if duration_seconds > 0:
+        minutes = duration_seconds // 60
+        seconds = duration_seconds % 60
+        duration_str = f"{minutes}:{seconds:02d}"
+    else:
+        duration_str = "Unknown"
+        duration_seconds = 0  # Fallback to 0 if unknown
+    
+    # Parse transcript segments early for use throughout the function
+    transcript_segments = []
+    current_segment_text = "No transcript segment available for this timestamp"
+    
+    if source["transcript_path"] and Path(source["transcript_path"]).exists():
+        try:
+            with open(source["transcript_path"], encoding="utf-8") as f:
+                transcript_content = f.read()
+                
+            # Parse different transcript formats
+            if source["transcript_path"].endswith('.json'):
+                import json
+                try:
+                    transcript_data = json.loads(transcript_content)
+                    if "segments" in transcript_data:
+                        for segment in transcript_data["segments"]:
+                            start_time = segment.get("start", 0)
+                            end_time = segment.get("end", 0)
+                            text = segment.get("text", "")
+                            transcript_segments.append((start_time, end_time, text))
+                except json.JSONDecodeError:
+                    pass
+            elif source["transcript_path"].endswith('.vtt'):
+                lines = transcript_content.split('\n')
+                current_timestamp = None
+                current_text = []
+                start_time = 0
+                end_time = 0
+                
+                # Parse WebVTT content
+                for line in lines:
+                    if '-->' in line:
+                        # This is a timestamp line
+                        current_timestamp = line.strip()
+                        # Extract start and end times
+                        try:
+                            times = current_timestamp.split('-->')
+                            start_time_str = times[0].strip()
+                            end_time_str = times[1].strip()
+                            
+                            # Parse start time
+                            parts = start_time_str.split(':')
+                            if len(parts) == 3:
+                                hours, minutes, seconds = parts
+                                seconds, milliseconds = seconds.split('.')
+                                start_time = (int(hours) * 3600 + 
+                                            int(minutes) * 60 + 
+                                            int(seconds) + 
+                                            int(milliseconds) / 1000)
+                            else:
+                                minutes, seconds = parts
+                                seconds, milliseconds = seconds.split('.')
+                                start_time = (int(minutes) * 60 + 
+                                            int(seconds) + 
+                                            int(milliseconds) / 1000)
+                                
+                            # Parse end time
+                            parts = end_time_str.split(':')
+                            if len(parts) == 3:
+                                hours, minutes, seconds = parts
+                                seconds, milliseconds = seconds.split('.')
+                                end_time = (int(hours) * 3600 + 
+                                          int(minutes) * 60 + 
+                                          int(seconds) + 
+                                          int(milliseconds) / 1000)
+                            else:
+                                minutes, seconds = parts
+                                seconds, milliseconds = seconds.split('.')
+                                end_time = (int(minutes) * 60 + 
+                                          int(seconds) + 
+                                          int(milliseconds) / 1000)
+                        except Exception:
+                            start_time = 0
+                            end_time = 0
+                            
+                        current_text = []
+                    elif line.strip() and current_timestamp is not None:
+                        # This is text content
+                        current_text.append(line.strip())
+                    elif not line.strip() and current_timestamp is not None and current_text:
+                        # End of a segment
+                        text = ' '.join(current_text)
+                        transcript_segments.append((start_time, end_time, text))
+                        current_timestamp = None
+                
+                # Add the last segment if there is one
+                if current_timestamp is not None and current_text:
+                    text = ' '.join(current_text)
+                    transcript_segments.append((start_time, end_time, text))
+            elif source["transcript_path"].endswith('.srt'):
+                # Similar parsing for SRT format
+                lines = transcript_content.split('\n')
+                i = 0
+                while i < len(lines):
+                    if i + 2 < len(lines) and '-->' in lines[i+1]:
+                        # This is a timestamp line
+                        timestamp_line = lines[i+1].strip()
+                        # Extract start and end times
+                        try:
+                            times = timestamp_line.split('-->')
+                            start_time_str = times[0].strip()
+                            end_time_str = times[1].strip()
+                            
+                            # Parse start time
+                            parts = start_time_str.split(':')
+                            if len(parts) == 3:
+                                hours, minutes, seconds = parts
+                                seconds, milliseconds = seconds.split(',')
+                                start_time = (int(hours) * 3600 + 
+                                            int(minutes) * 60 + 
+                                            int(seconds) + 
+                                            int(milliseconds) / 1000)
+                            
+                            # Parse end time
+                            parts = end_time_str.split(':')
+                            if len(parts) == 3:
+                                hours, minutes, seconds = parts
+                                seconds, milliseconds = seconds.split(',')
+                                end_time = (int(hours) * 3600 + 
+                                          int(minutes) * 60 + 
+                                          int(seconds) + 
+                                          int(milliseconds) / 1000)
+                                
+                            # Collect text lines
+                            text_lines = []
+                            j = i + 2
+                            while j < len(lines) and lines[j].strip():
+                                text_lines.append(lines[j].strip())
+                                j += 1
+                                
+                            text = ' '.join(text_lines)
+                            transcript_segments.append((start_time, end_time, text))
+                            i = j
+                        except Exception:
+                            i += 1
+                    else:
+                        i += 1
+        except Exception as e:
+            st.error(f"Error parsing transcript: {e}")
+    
+    # Parse translation segments early for use throughout the function
+    translation_segments = []
+    current_translation_text = "No translation available for this timestamp"
+    
+    if source["translation_path"] and Path(source["translation_path"]).exists():
+        try:
+            with open(source["translation_path"], encoding="utf-8") as f:
+                translation_content = f.read()
+                
+            # Parse translation (currently only WebVTT is supported for translations)
+            if source["translation_path"].endswith('.vtt'):
+                lines = translation_content.split('\n')
+                current_timestamp = None
+                current_text = []
+                start_time = 0
+                end_time = 0
+                
+                # Parse WebVTT content
+                for line in lines:
+                    if '-->' in line:
+                        # This is a timestamp line
+                        current_timestamp = line.strip()
+                        # Extract start and end times
+                        try:
+                            times = current_timestamp.split('-->')
+                            start_time_str = times[0].strip()
+                            end_time_str = times[1].strip()
+                            
+                            # Parse start time
+                            parts = start_time_str.split(':')
+                            if len(parts) == 3:
+                                hours, minutes, seconds = parts
+                                seconds, milliseconds = seconds.split('.')
+                                start_time = (int(hours) * 3600 + 
+                                            int(minutes) * 60 + 
+                                            int(seconds) + 
+                                            int(milliseconds) / 1000)
+                            else:
+                                minutes, seconds = parts
+                                seconds, milliseconds = seconds.split('.')
+                                start_time = (int(minutes) * 60 + 
+                                            int(seconds) + 
+                                            int(milliseconds) / 1000)
+                                
+                            # Parse end time
+                            parts = end_time_str.split(':')
+                            if len(parts) == 3:
+                                hours, minutes, seconds = parts
+                                seconds, milliseconds = seconds.split('.')
+                                end_time = (int(hours) * 3600 + 
+                                          int(minutes) * 60 + 
+                                          int(seconds) + 
+                                          int(milliseconds) / 1000)
+                            else:
+                                minutes, seconds = parts
+                                seconds, milliseconds = seconds.split('.')
+                                end_time = (int(minutes) * 60 + 
+                                          int(seconds) + 
+                                          int(milliseconds) / 1000)
+                        except Exception:
+                            start_time = 0
+                            end_time = 0
+                            
+                        current_text = []
+                    elif line.strip() and current_timestamp is not None:
+                        # This is text content
+                        current_text.append(line.strip())
+                    elif not line.strip() and current_timestamp is not None and current_text:
+                        # End of a segment
+                        text = ' '.join(current_text)
+                        translation_segments.append((start_time, end_time, text))
+                        current_timestamp = None
+                
+                # Add the last segment if there is one
+                if current_timestamp is not None and current_text:
+                    text = ' '.join(current_text)
+                    translation_segments.append((start_time, end_time, text))
+        except Exception as e:
+            st.error(f"Error parsing translation: {e}")
+    
+    # Function to find the current segment based on timestamp
+    def find_current_segment(timestamp, segments):
+        for start, end, text in segments:
+            if start <= timestamp <= end:
+                return text
+        
+        # If no exact match, find the closest segment
+        if segments:
+            closest_segment = min(segments, key=lambda x: abs(x[0] - timestamp))
+            return closest_segment[2]
+        
+        return "No transcript segment available for this timestamp"
+    
+    # Audio player section
+    st.subheader("Audio Player")
     
     if Path(audio_path).exists():
         # Read the audio file
@@ -630,23 +877,46 @@ def render_study_view() -> None:
             # Display the audio player
             st.audio(audio_bytes, format="audio/mp3")
             
-            # Display audio file information
-            file_size_mb = Path(audio_path).stat().st_size / (1024 * 1024)
-            st.caption(f"Audio file: {Path(audio_path).name} ({file_size_mb:.2f}MB)")
+            # Find and display the current segment text
+            if transcript_segments:
+                current_segment_text = find_current_segment(st.session_state.current_timestamp, transcript_segments)
+                st.markdown(f"**Japanese:** {current_segment_text}")
             
-            # Format duration as minutes:seconds
-            duration_seconds = source["duration_seconds"]
-            if duration_seconds > 0:
-                minutes = duration_seconds // 60
-                seconds = duration_seconds % 60
-                duration_str = f"{minutes}:{seconds:02d}"
-                st.caption(f"Duration: {duration_str}")
+            # Find and display the current translation text
+            if translation_segments:
+                current_translation_text = find_current_segment(st.session_state.current_timestamp, translation_segments)
+                st.markdown(f"**English:** {current_translation_text}")
+            
+            # Add a timestamp slider to manually select position
+            selected_time = st.slider(
+                "Select timestamp (seconds)",
+                min_value=0.0,
+                max_value=float(duration_seconds),
+                value=st.session_state.current_timestamp,
+                step=1.0,
+                format="%.1f",
+                help="Drag to select a specific timestamp in the audio"
+            )
+            
+            # Update the session state and display current segment if slider value changed
+            if selected_time != st.session_state.current_timestamp:
+                st.session_state.current_timestamp = selected_time
+                # We'll use rerun to update the display with the new segment
+                st.rerun()
+                
+            # Format the selected time as MM:SS
+            selected_min = int(selected_time) // 60
+            selected_sec = int(selected_time) % 60
+            selected_time_str = f"{selected_min}:{selected_sec:02d}"
+            
+            st.info(f"Current position: {selected_time_str} (Note: You'll need to manually seek in the player)")
+            
         except Exception as e:
             st.error(f"Error loading audio file: {e}")
     else:
         st.error(f"Audio file not found: {audio_path}")
 
-    # Placeholder for transcript
+    # Transcript section
     st.subheader("Transcript")
     if source["transcript_path"] and Path(source["transcript_path"]).exists():
         try:
@@ -659,15 +929,161 @@ def render_study_view() -> None:
                 if source["transcript_path"].endswith('.json'):
                     from backend.audio_processor import format_json_transcript_for_display
                     formatted_transcript = format_json_transcript_for_display(transcript_content)
-                    st.text(formatted_transcript)
+                    
+                    # For JSON transcripts, try to extract segments and make them clickable
+                    import json
+                    try:
+                        transcript_data = json.loads(transcript_content)
+                        if "segments" in transcript_data:
+                            st.write("Click on a segment to set the current timestamp:")
+                            
+                            for segment in transcript_data["segments"]:
+                                start_time = segment.get("start", 0)
+                                end_time = segment.get("end", 0)
+                                text = segment.get("text", "")
+                                
+                                # Format timestamp as [MM:SS.ms]
+                                start_min = int(start_time) // 60
+                                start_sec = int(start_time) % 60
+                                start_ms = int((start_time - int(start_time)) * 1000)
+                                
+                                timestamp = f"[{start_min:02d}:{start_sec:02d}.{start_ms:03d}]"
+                                
+                                # Create a clickable segment
+                                if st.button(f"{timestamp} {text}", key=f"segment_{start_time}"):
+                                    st.session_state.current_timestamp = start_time
+                                    st.rerun()
+                        else:
+                            # Fallback to displaying the formatted transcript
+                            st.text(formatted_transcript)
+                    except json.JSONDecodeError:
+                        # Fallback to displaying the formatted transcript
+                        st.text(formatted_transcript)
+                elif source["transcript_path"].endswith('.vtt'):
+                    # For WebVTT, parse and make timestamps clickable
+                    lines = transcript_content.split('\n')
+                    current_timestamp = None
+                    current_text = []
+                    segments = []
+                    
+                    # Parse WebVTT content
+                    for line in lines:
+                        if '-->' in line:
+                            # This is a timestamp line
+                            current_timestamp = line.strip()
+                            current_text = []
+                        elif line.strip() and current_timestamp is not None:
+                            # This is text content
+                            current_text.append(line.strip())
+                        elif not line.strip() and current_timestamp is not None and current_text:
+                            # End of a segment
+                            segments.append((current_timestamp, ' '.join(current_text)))
+                            current_timestamp = None
+                    
+                    # Add the last segment if there is one
+                    if current_timestamp is not None and current_text:
+                        segments.append((current_timestamp, ' '.join(current_text)))
+                    
+                    # Display clickable segments
+                    if segments:
+                        st.write("Click on a segment to set the current timestamp:")
+                        for i, (timestamp, text) in enumerate(segments):
+                            # Extract start time in seconds
+                            try:
+                                start_time_str = timestamp.split('-->')[0].strip()
+                                # Parse HH:MM:SS.mmm format
+                                parts = start_time_str.split(':')
+                                if len(parts) == 3:
+                                    hours, minutes, seconds = parts
+                                    seconds, milliseconds = seconds.split('.')
+                                    start_time = (int(hours) * 3600 + 
+                                                int(minutes) * 60 + 
+                                                int(seconds) + 
+                                                int(milliseconds) / 1000)
+                                else:
+                                    minutes, seconds = parts
+                                    seconds, milliseconds = seconds.split('.')
+                                    start_time = (int(minutes) * 60 + 
+                                                int(seconds) + 
+                                                int(milliseconds) / 1000)
+                            except Exception:
+                                # If parsing fails, use segment index as fallback
+                                start_time = i * 5  # Assume 5 seconds per segment
+                            
+                            # Create a clickable segment
+                            if st.button(f"{timestamp} {text}", key=f"vtt_segment_{i}"):
+                                st.session_state.current_timestamp = start_time
+                                st.rerun()
+                    else:
+                        # Fallback to displaying the raw content
+                        st.text(transcript_content)
+                elif source["transcript_path"].endswith('.srt'):
+                    # For SRT, parse and make timestamps clickable
+                    lines = transcript_content.split('\n')
+                    segments = []
+                    i = 0
+                    
+                    # Parse SRT content
+                    while i < len(lines):
+                        if i + 2 < len(lines) and '-->' in lines[i+1]:
+                            # This is a timestamp line
+                            timestamp = lines[i+1].strip()
+                            
+                            # Collect text lines
+                            text_lines = []
+                            j = i + 2
+                            while j < len(lines) and lines[j].strip():
+                                text_lines.append(lines[j].strip())
+                                j += 1
+                                
+                            text = ' '.join(text_lines)
+                            segments.append((timestamp, text))
+                            i = j
+                        else:
+                            i += 1
+                    
+                    # Display clickable segments
+                    if segments:
+                        st.write("Click on a segment to set the current timestamp:")
+                        for i, (timestamp, text) in enumerate(segments):
+                            # Extract start time in seconds
+                            try:
+                                start_time_str = timestamp.split('-->')[0].strip()
+                                # Parse HH:MM:SS,mmm format (SRT uses comma instead of period)
+                                parts = start_time_str.split(':')
+                                if len(parts) == 3:
+                                    hours, minutes, seconds = parts
+                                    seconds, milliseconds = seconds.split(',')
+                                    start_time = (int(hours) * 3600 + 
+                                                int(minutes) * 60 + 
+                                                int(seconds) + 
+                                                int(milliseconds) / 1000)
+                                else:
+                                    minutes, seconds = parts
+                                    seconds, milliseconds = seconds.split(',')
+                                    start_time = (int(minutes) * 60 + 
+                                                int(seconds) + 
+                                                int(milliseconds) / 1000)
+                            except Exception:
+                                # If parsing fails, use segment index as fallback
+                                start_time = i * 5  # Assume 5 seconds per segment
+                            
+                            # Create a clickable segment
+                            if st.button(f"{timestamp} {text}", key=f"srt_segment_{i}"):
+                                st.session_state.current_timestamp = start_time
+                                st.rerun()
+                    else:
+                        # Fallback to displaying the raw content
+                        st.text(transcript_content)
                 else:
+                    # For other formats, just display the content
                     st.text(transcript_content)
         except Exception as e:
             st.error(f"Error reading transcript: {e}")
     else:
         st.info("Transcript not available.")
 
-    # Placeholder for translation
+    # Translation section
     st.subheader("Translation")
     if source["translation_path"] and Path(source["translation_path"]).exists():
         try:
@@ -676,7 +1092,67 @@ def render_study_view() -> None:
 
             # Display the translation in an expandable section
             with st.expander("Translation Content", expanded=True):
-                st.text(translation_content)
+                # For WebVTT translations, parse and make timestamps clickable
+                if source["translation_path"].endswith('.vtt'):
+                    lines = translation_content.split('\n')
+                    current_timestamp = None
+                    current_text = []
+                    segments = []
+                    
+                    # Parse WebVTT content
+                    for line in lines:
+                        if '-->' in line:
+                            # This is a timestamp line
+                            current_timestamp = line.strip()
+                            current_text = []
+                        elif line.strip() and current_timestamp is not None:
+                            # This is text content
+                            current_text.append(line.strip())
+                        elif not line.strip() and current_timestamp is not None and current_text:
+                            # End of a segment
+                            segments.append((current_timestamp, ' '.join(current_text)))
+                            current_timestamp = None
+                    
+                    # Add the last segment if there is one
+                    if current_timestamp is not None and current_text:
+                        segments.append((current_timestamp, ' '.join(current_text)))
+                    
+                    # Display clickable segments
+                    if segments:
+                        st.write("Click on a segment to set the current timestamp:")
+                        for i, (timestamp, text) in enumerate(segments):
+                            # Extract start time in seconds
+                            try:
+                                start_time_str = timestamp.split('-->')[0].strip()
+                                # Parse HH:MM:SS.mmm format
+                                parts = start_time_str.split(':')
+                                if len(parts) == 3:
+                                    hours, minutes, seconds = parts
+                                    seconds, milliseconds = seconds.split('.')
+                                    start_time = (int(hours) * 3600 + 
+                                                int(minutes) * 60 + 
+                                                int(seconds) + 
+                                                int(milliseconds) / 1000)
+                                else:
+                                    minutes, seconds = parts
+                                    seconds, milliseconds = seconds.split('.')
+                                    start_time = (int(minutes) * 60 + 
+                                                int(seconds) + 
+                                                int(milliseconds) / 1000)
+                            except Exception:
+                                # If parsing fails, use segment index as fallback
+                                start_time = i * 5  # Assume 5 seconds per segment
+                            
+                            # Create a clickable segment
+                            if st.button(f"{timestamp} {text}", key=f"translation_segment_{i}"):
+                                st.session_state.current_timestamp = start_time
+                                st.rerun()
+                    else:
+                        # Fallback to displaying the raw content
+                        st.text(translation_content)
+                else:
+                    # For other formats, just display the content
+                    st.text(translation_content)
         except Exception as e:
             st.error(f"Error reading translation: {e}")
     else:
@@ -1102,7 +1578,6 @@ def main() -> None:
         ):
             st.session_state.current_view = "study"
             st.rerun()
-
     st.divider()
 
     # Render content based on current view
