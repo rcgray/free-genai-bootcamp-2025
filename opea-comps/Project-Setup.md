@@ -50,24 +50,24 @@ dev/template/
 Implement the following in our new project (i.e., the root of the `dev/template` folder). Update this file to check off the completed actions:
 
 ## Step 1: File Structure Setup
-- [ ] Create a similar directory structure in the root of the project folder that mirrors that within our `dev/template` folder. For instance, when you are finished, there should be empty folders like `docs/reports` and `scripts`, etc
+- [x] Create a similar directory structure in the root of the project folder that mirrors that within our `dev/template` folder. For instance, when you are finished, there should be empty folders like `docs/reports` and `scripts`, etc
 
-## Step 2: Copy Essential Files
-- [ ] Copy the following files directly to the root of the project folder:
-  - [ ] `.cursorignore`
-  - [ ] `.cursorrules`
-  - [ ] `.env.example`
-  - [ ] `.gitignore`
-  - [ ] `scripts/update_docs.py`
+## Step 2: Copy essential files
+- [x] Copy the following files directly to the root of the project folder:
+  - [x] `.cursorignore`
+  - [x] `.cursorrules`
+  - [x] `.env.example`
+  - [x] `.gitignore`
+  - [x] `scripts/update_docs.py`
 
 ## Step 3: Documentation
 
 ### 3.1 Create Empty Files
-- [ ] Create the following BLANK files. Do not copy any content from the template directory, and do not add any content to the files, but rather create completely empty files:
-  - [ ] `docs/Action-Plan.md`
-  - [ ] `docs/PRD.md`
-  - [ ] `docs/Prompts.md`
-  - [ ] `docs/Technical-Spec.md`
+- [x] Create the following BLANK files. Do not copy any content from the template directory, and do not add any content to the files, but rather create completely empty files:
+  - [x] `docs/Action-Plan.md`
+  - [x] `docs/PRD.md`
+  - [x] `docs/Prompts.md`
+  - [x] `docs/Technical-Spec.md`
 
 ### 3.2 Generate Empty Core Project Specifications Files
 - [ ] We will work together to generate the following files. Do not write these on your own, but only once we have decided what we are going to add to it. You will use the corresponding files in the `dev/template` folder (from previous projects) as a suggestion for format, but the content will be very different for this new project. I will tell you when you have finished and we can check these off.
