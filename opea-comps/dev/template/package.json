@@ -1,0 +1,17 @@
+{
+  "name": "lang-portal",
+  "private": true,
+  "workspaces": [
+    "frontend-react",
+    "shared",
+    "games/*"
+  ],
+  "scripts": {
+    "build:shared": "yarn workspace @lang-portal/shared build",
+    "build:games": "node scripts/build-games.js",
+    "dev:games": "node scripts/build-games.js --watch"
+  },
+  "devDependencies": {
+    "chokidar": "^4.0.3"
+  }
+}
