@@ -96,6 +96,14 @@ Let's take a shot at building the `docs/Action-Plan.md` file, and only the `docs
 
 Great! We have completed section 3.2 of the `Project-Setup.md` file. Update our progress in the `Project-Setup.md` file.
 
+---
+
+We will skip Section 3.3 of the `Project-Setup.md` file, marking these items as `[~]` (intentionally skipped). We will move on to Section 3.4, where these Tool Files should be naturally created in the course of completing Step 1.1 in our `docs/Action-Plan.md` file. Note that in creating our tools files, if there are any that are not applicable, they should be individually marked as `[~]` (intentionally skipped).
+
+So let's move to implementing Step 1.1 in our `docs/Action-Plan.md` file.
+
+
+
 
 
 
