@@ -1,0 +1,4 @@
+python:
+  conda_env: opea
+  conda_path: /home/gray/miniconda3/bin/conda
+  python_path: /home/gray/miniconda3/envs/opea/bin/python
