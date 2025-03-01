@@ -102,6 +102,25 @@ We will skip Section 3.3 of the `Project-Setup.md` file, marking these items as 
 
 So let's move to implementing Step 1.1 in our `docs/Action-Plan.md` file.
 
+---
+
+Beautiful! our final step in the Project-Setup.md file (Step 4: Wrap-Up) is to evaluate the previously copied files for applicability to the new project, adding or removing elements as needed. Now that we've set up our tools and defined our tech stack, we should be able to update our `.gitignore`, `.cursorignore`, `.cursorrules`, `.env.example`, etc. files to better suit our project.
+
+We can then update our `Project-Setup.md` and `Action-Plan.md` files to reflect the changes.
+
+---
+
+Dev Steps:
+- Git commit everything
+- Create conda env or uv venv or what is needed
+- Install tools & dependencies, `uv sync --extra dev`, etc.
+- Set up .env from .env.example
+- Move (now completed) Project-Setup.md to the /docs directory
+- Delete the `dev/template` folder (optional)
+- Run `scripts/update_docs.py` script again
+
+- Start a new chat, pick up where we left off in the Action Plan
+
 
 
 

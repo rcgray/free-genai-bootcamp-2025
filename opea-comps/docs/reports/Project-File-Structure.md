@@ -1,5 +1,4 @@
 .
-├── Project-Setup.md
 ├── README.md
 ├── app
 │   ├── __init__.py
@@ -42,9 +41,11 @@
 ├── docs
 │   ├── Action-Plan.md
 │   ├── PRD.md
+│   ├── Project-Setup.md
 │   ├── Prompts.md
 │   ├── Technical-Spec.md
 │   └── reports
+│       └── Project-File-Structure.md
 ├── models
 ├── pyproject.toml
 ├── scripts
@@ -54,4 +55,4 @@
     ├── test_app.py
     └── test_backend.py
 
-16 directories, 39 files
+16 directories, 40 files

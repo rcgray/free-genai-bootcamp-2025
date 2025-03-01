@@ -28,16 +28,6 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Database and Media
-data/*.json
-!data/example.json
-media/sources/*
-!media/sources/.gitkeep
-media/transcripts/*
-!media/transcripts/.gitkeep
-media/translations/*
-!media/translations/.gitkeep
-
 # Documentation
 docs/reports/
 docs/_build/
@@ -45,6 +35,7 @@ site/
 
 # Dev Notes
 dev/template/
+dev/docs/
 
 # Test Data
 tests/data/
@@ -65,3 +56,28 @@ __pycache__/
 *.tmp
 *.temp
 .history/
+
+# OPEA-specific
+models/
+opea_cache/
+opea_logs/
+*.gguf
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.onnx
+*.ckpt
+
+# GPU profiling
+nsys_*
+nvprof_*
+*.qdrep
+*.sqlite
+*.nsys-rep
+
+# Large files
+*.tar
+*.tar.gz
+*.zip
+*.7z

@@ -107,6 +107,7 @@ temp/
 *.py[cod]
 *.sage.py
 .mypy_cache/
+.ruff_cache/
 
 # Documentation
 /site
@@ -115,6 +116,7 @@ docs/api/
 
 # Dev Notes
 dev/template/
+dev/docs/
 
 # Development Tools
 .ipynb_checkpoints
@@ -138,5 +140,31 @@ mock_data/
 docker-compose.override.yml
 *.override.yml
 *.override.yaml
+
+# OPEA-specific
+models/
+!models/.gitkeep
+opea_cache/
+opea_logs/
+*.gguf
+*.bin
+*.safetensors
+*.pt
+*.pth
+*.onnx
+*.ckpt
+
+# GPU profiling
+nsys_*
+nvprof_*
+*.qdrep
+*.sqlite
+*.nsys-rep
+
+# Large files
+*.tar
+*.tar.gz
+*.zip
+*.7z
 
 frontend-react/node_modules/

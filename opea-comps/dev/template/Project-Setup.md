@@ -7,7 +7,7 @@ We are setting up a new project from scratch (nature of the project will be prov
 - DO NOT EDIT ANY OF THE FILES IN THE `dev` FOLDER OR ANY OF ITS SUBFOLDERS.
 - DO NOT EDIT ANY OF THE FILES IN THE `dev/template` FOLDER OR ANY OF ITS SUBFOLDERS.
 - Do not populate any of the files you are creating with content, only create the files. Exceptions are noted explicitly.
-- Edit this file, `Project-Setup.md`, to check off the completed actions. You may copy this file to the root of the new project folder and edit that copy.
+- Edit this file, `Project-Setup.md`, to check off the completed actions. Since by the above rules you are not allowed to edit any files in the `dev` directory, you must copy this file to the root of the new project folder and edit that copy instead.
 
 # References
 

@@ -10,7 +10,7 @@ This action plan outlines the step-by-step process for building our OPEA-based L
 - [x] Create initial pyproject.toml with dependencies
 - [x] Set up Ruff and MyPy configurations
 - [x] Create basic project structure following technical spec
-- [ ] Set up Git repository with appropriate .gitignore
+- [x] Set up Git repository with appropriate .gitignore
 
 ### 1.2 OPEA Exploration and Testing
 - [ ] Study OPEA documentation and ChatQnA examples
@@ -20,10 +20,9 @@ This action plan outlines the step-by-step process for building our OPEA-based L
 - [ ] Identify minimal required components for our MVP
 
 ### 1.3 Docker Configuration
+- [x] Create basic Docker files (Dockerfile and docker-compose.yml)
 - [ ] Set up Docker and Docker Compose
 - [ ] Configure NVIDIA GPU support for Docker
-- [ ] Create basic Dockerfile for the application
-- [ ] Create docker-compose.yml for OPEA services
 - [ ] Test Docker setup with simple OPEA components
 
 ### 1.4 Local Model Integration

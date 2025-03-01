@@ -90,10 +90,10 @@ Implement the following in our new project (i.e., the root of the `dev/template`
   - [x] `pyproject.toml`
 
 ## Step 4: Wrap-Up
-- [ ] Evaluate the previously copied files for applicability to the new project, adding or removing elements as needed:
-  - [ ] `.cursorignore`
-  - [ ] `.cursorrules`
-  - [ ] `.env.example`
-  - [ ] `.gitignore`
+- [x] Evaluate the previously copied files for applicability to the new project, adding or removing elements as needed:
+  - [x] `.cursorignore`
+  - [x] `.cursorrules`
+  - [x] `.env.example`
+  - [x] `.gitignore`
 - [x] Generate a `README.md` file in the root of the project folder, you can use the `README.md` file in the `dev/template` folder as a suggestion for format, but the content will be very different for this new project.
 - [x] Run the `scripts/update_docs.py` script to update the doc reports for all our newly added files.
