@@ -19,7 +19,7 @@ A minimalistic chat application that demonstrates the use of Intel's Open Platfo
 - uv (for dependency management)
 - Docker and Docker Compose
 - NVIDIA GPU with appropriate drivers
-- Local LLM models (e.g., Qwen2.5-Coder-14B-Instruct, Microsoft Phi-4, or Llama-3.1-8B-Instruct)
+- Local LLM models (e.g., Llama-3.1-8B-Instruct, Microsoft Phi-4-Mini)
 
 ### Development Setup
 
@@ -142,9 +142,10 @@ uv run pytest
 
 The application has been tested with the following models:
 
-- **Qwen2.5-Coder-14B-Instruct** (11/06/24) - Preferred
-- **Microsoft Phi-4** (12/11/24) - Preferred
-- **Llama-3.1-8B-Instruct** (04/18/24) - Alternative option
+   - **Meta-Llama-3.1:8B**
+   - **Meta-Llama-3.2:1B**
+   - **Meta-Llama-3.2:3B**
+   - **Microsoft-Phi-4:Mini**
 
 ## OPEA Integration
 

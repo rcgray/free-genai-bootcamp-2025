@@ -12,34 +12,17 @@
 ├── config
 │   ├── __init__.py
 │   ├── app_config.py
+│   ├── local_config.yaml
 │   └── opea_config.py
 ├── dev
-│   └── template
-│       ├── Project-Setup.md
-│       ├── README.md
-│       ├── docs
-│       │   ├── Action-Plan.md
-│       │   ├── Backend-Technical-Spec.md
-│       │   ├── Database-Schema.md
-│       │   ├── Frontend-Design.md
-│       │   ├── Frontend-Technical-Spec.md
-│       │   ├── PRD.md
-│       │   ├── Prompts.md
-│       │   ├── Technical-Spec.md
-│       │   └── reports
-│       │       ├── Project-File-Structure.md
-│       │       └── Test-Results.md
-│       ├── package.json
-│       ├── pyproject.toml
-│       └── scripts
-│           ├── manage_db.py
-│           ├── prep_checkin.py
-│           └── update_docs.py
+│   └── template.zip
 ├── docker
 │   ├── Dockerfile
 │   └── docker-compose.yml
 ├── docs
 │   ├── Action-Plan.md
+│   ├── OPEA-Components.md
+│   ├── OPEA-Local-Testing.md
 │   ├── PRD.md
 │   ├── Project-Setup.md
 │   ├── Prompts.md
@@ -47,12 +30,19 @@
 │   └── reports
 │       └── Project-File-Structure.md
 ├── models
+│   ├── Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf
+│   ├── Meta-Llama-3.2-1B-Instruct-Q6_K_L.gguf
+│   ├── Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf
+│   └── Microsoft-Phi-4-Mini-Instruct-Q6_K_L.gguf
+├── opea_cache
+├── opea_logs
 ├── pyproject.toml
 ├── scripts
+│   ├── test_opea.py
 │   └── update_docs.py
 └── tests
     ├── __init__.py
     ├── test_app.py
     └── test_backend.py
 
-16 directories, 40 files
+14 directories, 32 files

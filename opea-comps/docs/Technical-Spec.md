@@ -36,11 +36,12 @@ The priority is to create a functional demonstration of OPEA's capabilities with
 
 ### LLM Models
 - Support for locally stored models:
-  - **Qwen2.5-Coder-14B-Instruct** (11/06/24) - Preferred
-  - **Microsoft Phi-4** (12/11/24) - Preferred
-  - **Llama-3.1-8B-Instruct** (04/18/24) - Alternative option
+   - **Meta-Llama-3.1:8B** (`models/Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf`)
+   - **Meta-Llama-3.2:1B** (`models/Meta-Llama-3.2-1B-Instruct-Q6_K_L.gguf`)
+   - **Meta-Llama-3.2:3B** (`models/Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf`)
+   - **Microsoft-Phi-4:Mini** (`models/Microsoft-Phi-4-Mini-Instruct-Q6_K_L.gguf`)
 
-The application will prioritize using Qwen2.5-Coder or Microsoft Phi-4 models if available, with Llama-3.1 as a fallback option. All models must be pre-downloaded and available locally.
+The application will prioritize using Meta-Llama-3.2:3B as the primary model, with Other Llama variants and Phi4-Mini as a fallback option. All models must be pre-downloaded and available locally.
 
 ## Documentation References
 

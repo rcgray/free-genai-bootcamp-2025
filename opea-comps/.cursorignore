@@ -29,13 +29,11 @@ htmlcov/
 Thumbs.db
 
 # Documentation
-docs/reports/
 docs/_build/
 site/
 
 # Dev Notes
 dev/template/
-dev/docs/
 
 # Test Data
 tests/data/

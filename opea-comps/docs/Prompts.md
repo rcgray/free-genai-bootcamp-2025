@@ -52,9 +52,10 @@ Additional OPEA documentation has been added to Cursor and is available at the d
 
 We must be able to load the LLM model from a local file on disk. This can be a model that we have downloaded from HuggingFace, or a model that we have already downloaded and placed in the `models` directory. We will not want a solution that requires the docker container to download the model from a remote source itself (e.g., from HuggingFace). As for compatibility, options include (but are not limited to):
 
-- Qwen2.5-Coder-14B-Instruct (11/06/24)
-- Microsoft Phi-4 (12/11/24)
-- Llama-3.1-8B-Instruct (04/18/24)
+- Meta-Llama-3.1:8B
+- Meta-Llama-3.2:1B
+- Meta-Llama-3.2:3B
+- Microsoft-Phi-4:Mini
 
 ---
 
@@ -121,9 +122,23 @@ Dev Steps:
 
 - Start a new chat, pick up where we left off in the Action Plan
 
+---
 
+We are building a chat application using OPEA, where our file structure is given in the `docs/reports/Project-File-Structure.md` file (@Project-File-Structure.md). Please review the `docs/PRD.md` file, the `docs/Technical-Spec.md` file for project overview and sources. Finally, the `docs/Action-Plan.md` file directs our implementation of this project and outlines the steps we will take and the order in which we will take them.
 
+We are now on Phase 1.2 OPEA Exploration and Testing. This is a critical part of our development and is a place where many issues can arise and many others have had difficulty.  Additional documentation regarding OPEA and in particular this ChatQnA example has been included in Cursor and are available here:
+### OPEA Documentation
+- **(@Getting Started with OPEA)**: https://opea-project.github.io/latest/getting-started/README.html#create-and-configure-a-virtual-server
+- **(@ChatQnA Overview)**: https://opea-project.github.io/latest/tutorial/ChatQnA/ChatQnA_Guide.html#
+- **(@MegaService of ChatQnA on NVidia)**: https://opea-project.github.io/latest/GenAIExamples/ChatQnA/docker_compose/nvidia/gpu/README.html
+- **(@GenAIComps GitHub)**: https://github.com/opea-project/GenAIComps
+- **(@GenAIExamples GitHub)**: https://github.com/opea-project/GenAIExamples
+- **(@ChatQnA GitHub)**: https://github.com/opea-project/GenAIExamples/tree/main/ChatQnA
+- **(@ChatQnA Single Node On-Premise Deployment on NVidia GPU)**: https://opea-project.github.io/latest/tutorial/ChatQnA/deploy/nvidia.html
 
+Please begin integrating the necessary OPEA libraries into our project toward achieving our MVP use of the library. Let us discuss any issues or conflicts that our plan has with the OPEA documentation.
 
+Take this step-by-step, little by little. Do not do extra work not yet agreed upon by both of us. Instead of doing ALL the tasks in Phase 1.2, we can just take one task at a time.  Think deeply about how to begin and how to implement the next step. Think carefully about how the OPEA documentation and the ChatQnA examples are relevant to our project.
 
+---
 
