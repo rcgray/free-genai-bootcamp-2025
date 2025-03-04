@@ -56,36 +56,36 @@ This action plan outlines the step-by-step process for building our OPEA-based L
 - [x] Document model-specific configurations
 - [x] Optimize model loading and inference settings
 
-## Phase 3: Streamlit Application Development 🟡
+## Phase 3: Streamlit Application Development ✅
 
 ### 3.1 Basic Streamlit Setup
-- [ ] Create app/main.py with minimal structure
-- [ ] Set up session state management
-- [ ] Create basic page layout
-- [ ] Implement simple header and footer
-- [ ] Add application configuration loading
+- [x] Create app/main.py with minimal structure
+- [x] Set up session state management
+- [x] Create basic page layout
+- [x] Implement simple header and footer
+- [x] Add application configuration loading
 
 ### 3.2 Chat Interface
-- [ ] Create chat message display component
-- [ ] Implement user input form
-- [ ] Add basic styling for chat messages
-- [ ] Create loading/processing indicators
-- [ ] Implement error message display
+- [x] Create chat message display component
+- [x] Implement user input form
+- [x] Add basic styling for chat messages
+- [x] Create loading/processing indicators
+- [x] Implement error message display
 
-### 3.3 OPEA Integration in UI
-- [ ] Connect Streamlit app to OPEA client
-- [ ] Implement response generation and display
-- [ ] Add model information display
-- [ ] Create simple response caching
-- [ ] Implement basic error handling
+### 3.3 Backend Integration in UI
+- [x] Connect Streamlit app to backend API
+- [x] Implement response generation and display
+- [x] Add health check for backend service
+- [x] Create basic error handling
+- [x] Implement script to run the Streamlit app
 
 ## Phase 4: Testing and Refinement 🟡
 
 ### 4.1 Unit Testing
 - [ ] Set up pytest infrastructure
-- [ ] Create tests for OPEA client
+- [ ] Create tests for backend client
 - [ ] Add tests for Streamlit components
-- [ ] Implement mocks for OPEA services
+- [ ] Implement mocks for backend services
 - [ ] Add test documentation
 
 ### 4.2 Performance Optimization
@@ -150,7 +150,7 @@ This action plan outlines the step-by-step process for building our OPEA-based L
 
 ## Current Testing Instructions
 
-Follow these steps to test the backend service:
+Follow these steps to test the application:
 
 ### 1. Prerequisites
 
@@ -186,23 +186,23 @@ This will:
 - Start the Docker containers
 - Display the service status
 
-### 5. Test the Backend Service
+### 5. Start the Streamlit Frontend
 
-To test that the backend service is working correctly:
+Run the Streamlit application:
 ```bash
-./backend/test.sh
+./app/run.sh
 ```
 
-This will send a test query to the API and display the response.
+This will:
+- Check if the backend service is running
+- Start the Streamlit application
+- Open a browser window with the chat interface
 
-### 6. Manually Test with Curl (Optional)
+### 6. Test the Application
 
-You can also manually test the API using curl:
-```bash
-curl -X POST -H "Content-Type: application/json" \
-  -d '{"messages":[{"role":"user","content":"Tell me a short joke"}],"stream":false,"context":[],"meta":{"auth_token":""}}' \
-  http://localhost:8888/v1/chatqna | jq
-```
+1. Access the Streamlit interface at http://localhost:8501
+2. Enter a message in the chat input
+3. View the LLM's response in the chat interface
 
 ### 7. Common Issues
 
@@ -220,6 +220,11 @@ If you encounter issues:
    - Ensure the service is running with `curl http://localhost:8888/health`
    - Check for port conflicts using `netstat -tulpn | grep 8888`
 
+4. **Streamlit issues**:
+   - Make sure you have all required dependencies installed (`uv sync`)
+   - Check Streamlit logs for any error messages
+   - Ensure the backend is running before starting Streamlit
+
 ## Notes
 
 ### Priority Levels
@@ -231,11 +236,11 @@ If you encounter issues:
 
 ### Implementation Approach
 1. ✅ Focus first on getting the backend service working with local models
-2. 🟡 Next step: integrate with Streamlit for a simple UI
-3. 🟢 Finally, refine and document the solution
+2. ✅ Integrate with Streamlit for a simple UI
+3. 🟡 Next step: refine and document the solution
 
 ### Key Success Criteria
 - ✅ Successfully load and use local LLM models with llama.cpp
 - ✅ Achieve reasonable response times with GPU acceleration
-- 🟡 Create a simple but functional chat interface
+- ✅ Create a simple but functional chat interface
 - ✅ Document the setup and usage process clearly

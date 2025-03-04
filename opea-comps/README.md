@@ -7,7 +7,7 @@ A Streamlit-based chat application that demonstrates the use of locally stored L
 This project consists of two main components:
 
 1. **Backend Service**: A FastAPI-based service that interfaces with llama.cpp to provide LLM capabilities
-2. **Streamlit Frontend** (coming soon): A user-friendly web interface for chatting with the LLM
+2. **Streamlit Frontend**: A user-friendly web interface for chatting with the LLM
 
 ## Features
 
@@ -89,12 +89,29 @@ To test that the backend service is working correctly:
 
 This will send a test query to the API and display the response.
 
-### Accessing the Streamlit Frontend (Coming Soon)
+### Running the Streamlit Frontend
 
-Once implemented, the Streamlit frontend will be available at:
+Once the backend service is running, you can start the Streamlit frontend:
+```bash
+./app/run.sh
+```
+
+This will:
+- Check if the backend service is running
+- Start the Streamlit application
+- Open a browser window with the chat interface
+
+The Streamlit frontend will be available at:
 ```
 http://localhost:8501
 ```
+
+## Usage
+
+1. Start the backend service with `./backend/setup.sh`
+2. Start the Streamlit frontend with `./app/run.sh`
+3. Enter your question or prompt in the chat input field
+4. View the AI response in the chat interface
 
 ## Architecture
 
@@ -111,10 +128,13 @@ http://localhost:8501
 
 ```
 opea-comps/
-├── app/                # Streamlit application (coming soon)
+├── app/                # Streamlit application
 │   ├── __init__.py
-│   ├── main.py         # Main Streamlit entry point (coming soon)
-│   └── components/     # UI components (coming soon)
+│   ├── main.py         # Main Streamlit entry point
+│   ├── run.sh          # Script to run the Streamlit app
+│   └── components/     # UI components
+│       ├── __init__.py
+│       └── chat.py     # Chat interface components
 ├── backend/            # Backend service implementation
 │   ├── chatqna/        # ChatQnA service code
 │   │   ├── __init__.py
@@ -146,7 +166,7 @@ uv sync
 uvicorn backend.chatqna.service:app --host 0.0.0.0 --port 8888 --reload
 ```
 
-3. Run the Streamlit app locally (coming soon):
+3. Run the Streamlit app locally:
 ```bash
 cd app
 streamlit run main.py
