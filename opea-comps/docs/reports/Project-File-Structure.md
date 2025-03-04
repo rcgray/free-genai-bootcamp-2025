@@ -1,4 +1,10 @@
 .
+├── .cursor-env
+├── .cursorignore
+├── .cursorrules
+├── .env.example
+├── .gitignore
+├── .venv
 ├── README.md
 ├── app
 │   ├── __init__.py
@@ -7,8 +13,22 @@
 │   │   └── chat.py
 │   └── main.py
 ├── backend
+│   ├── README.md
 │   ├── __init__.py
-│   └── opea_client.py
+│   ├── assets
+│   ├── chatqna
+│   │   ├── __init__.py
+│   │   └── service.py
+│   ├── config
+│   ├── docker
+│   │   ├── Dockerfile
+│   │   ├── compose.yaml
+│   │   └── set_env.sh
+│   ├── opea_client.py
+│   ├── requirements.txt
+│   ├── setup.sh
+│   ├── test.sh
+│   └── tests
 ├── config
 │   ├── __init__.py
 │   ├── app_config.py
@@ -22,6 +42,8 @@
 ├── docs
 │   ├── Action-Plan.md
 │   ├── OPEA-Components.md
+│   ├── OPEA-Exploration-Strategy.md
+│   ├── OPEA-Installation.md
 │   ├── OPEA-Local-Testing.md
 │   ├── PRD.md
 │   ├── Project-Setup.md
@@ -29,20 +51,18 @@
 │   ├── Technical-Spec.md
 │   └── reports
 │       └── Project-File-Structure.md
-├── models
-│   ├── Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf
-│   ├── Meta-Llama-3.2-1B-Instruct-Q6_K_L.gguf
-│   ├── Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf
-│   └── Microsoft-Phi-4-Mini-Instruct-Q6_K_L.gguf
 ├── opea_cache
+│   └── .gitkeep
 ├── opea_logs
+│   └── .gitkeep
 ├── pyproject.toml
 ├── scripts
 │   ├── test_opea.py
 │   └── update_docs.py
-└── tests
-    ├── __init__.py
-    ├── test_app.py
-    └── test_backend.py
+├── tests
+│   ├── __init__.py
+│   ├── test_app.py
+│   └── test_backend.py
+└── uv.lock
 
-14 directories, 32 files
+19 directories, 47 files

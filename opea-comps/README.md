@@ -1,6 +1,13 @@
 # OPEA-Based LLM Chat Application 💬
 
-A minimalistic chat application that demonstrates the use of Intel's Open Platform for Enterprise AI (OPEA) toolchain with locally stored LLM models. This application provides a simple Streamlit interface for interacting with large language models using NVIDIA GPU acceleration.
+A Streamlit-based chat application that demonstrates the use of locally stored LLM models with NVIDIA GPU acceleration, powered by llama.cpp and FastAPI. This application provides a simple interface for interacting with large language models through Intel's Open Platform for Enterprise AI (OPEA) toolchain.
+
+## Overview
+
+This project consists of two main components:
+
+1. **Backend Service**: A FastAPI-based service that interfaces with llama.cpp to provide LLM capabilities
+2. **Streamlit Frontend** (coming soon): A user-friendly web interface for chatting with the LLM
 
 ## Features
 
@@ -8,7 +15,8 @@ A minimalistic chat application that demonstrates the use of Intel's Open Platfo
 - **NVIDIA GPU Acceleration**: Optimized for performance with NVIDIA GPUs
 - **Simple Chat Interface**: Clean, intuitive Streamlit UI for sending prompts and receiving responses
 - **Docker Deployment**: Easy setup with Docker and Docker Compose
-- **Minimalistic Design**: Focused on demonstrating OPEA capabilities with minimal complexity
+- **Efficient Model Loading**: Fast model initialization and inference
+- **API-First Design**: Backend service with RESTful API for flexible integration
 
 ## Getting Started
 
@@ -21,12 +29,12 @@ A minimalistic chat application that demonstrates the use of Intel's Open Platfo
 - NVIDIA GPU with appropriate drivers
 - Local LLM models (e.g., Llama-3.1-8B-Instruct, Microsoft Phi-4-Mini)
 
-### Development Setup
+### Setup
 
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd opea-chat
+   cd opea-comps
    ```
 
 2. Create and activate a Python environment:
@@ -53,63 +61,96 @@ A minimalistic chat application that demonstrates the use of Intel's Open Platfo
    uv sync --extra dev
    ```
 
-4. Set up environment variables:
+4. Place your GGUF model files in the `models/` directory:
    ```bash
-   # Copy the example environment file
-   cp .env.example .env
-
-   # Edit .env with your configuration
+   # Example for Meta-Llama-3.2-3B-Instruct model
+   cp /path/to/your/model/Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf models/
    ```
 
-5. Place your LLM models in the `models/` directory.
+### Starting the Backend Service
 
-### Running the Application
+Run the setup script:
+```bash
+./backend/setup.sh
+```
 
-#### Using Docker (Recommended)
+This will:
+- Check for the required model files
+- Set up the necessary environment variables
+- Start the Docker containers
+- Display the service status
 
-1. Build and start the Docker containers:
-   ```bash
-   cd docker
-   docker-compose up -d
-   ```
+### Testing the Backend Service
 
-2. Access the application at `http://localhost:8501`
+To test that the backend service is working correctly:
+```bash
+./backend/test.sh
+```
 
-#### Local Development
+This will send a test query to the API and display the response.
 
-1. Start the Streamlit application:
-   ```bash
-   uv run streamlit run app/main.py
-   ```
+### Accessing the Streamlit Frontend (Coming Soon)
 
-2. The application will be available at `http://localhost:8501`
+Once implemented, the Streamlit frontend will be available at:
+```
+http://localhost:8501
+```
+
+## Architecture
+
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│                 │     │                 │     │                 │
+│    Streamlit    │────▶│    FastAPI      │────▶│    llama.cpp    │
+│    Frontend     │◀────│    Backend      │◀────│    Server       │
+│                 │     │                 │     │                 │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
 
 ## Project Structure
 
 ```
-opea-chat/
-├── app/                # Streamlit application
+opea-comps/
+├── app/                # Streamlit application (coming soon)
 │   ├── __init__.py
-│   ├── main.py         # Main Streamlit entry point
-│   └── components/     # UI components
-│       └── chat.py     # Chat interface components
-├── backend/            # Backend integration with OPEA
-│   ├── __init__.py
-│   └── opea_client.py  # OPEA API client
-├── config/             # Configuration files
-│   ├── app_config.py   # Application configuration
-│   └── opea_config.py  # OPEA configuration
-├── docker/             # Docker deployment files
-│   ├── docker-compose.yml
-│   └── Dockerfile
+│   ├── main.py         # Main Streamlit entry point (coming soon)
+│   └── components/     # UI components (coming soon)
+├── backend/            # Backend service implementation
+│   ├── chatqna/        # ChatQnA service code
+│   │   ├── __init__.py
+│   │   └── service.py  # FastAPI service implementation
+│   ├── config/         # Configuration files
+│   ├── docker/         # Docker deployment files
+│   │   ├── compose.yaml
+│   │   ├── Dockerfile
+│   │   └── set_env.sh
+│   ├── setup.sh        # Setup script
+│   └── test.sh         # Test script
 ├── models/             # Local model storage (not in repo)
-├── scripts/            # Utility scripts
+├── config/             # Application configuration
 ├── tests/              # Test suite
-├── pyproject.toml      # Project configuration and dependencies
-└── README.md
+└── README.md           # This file
 ```
 
 ## Development
+
+### Local Development Setup
+
+1. Install dependencies:
+```bash
+uv sync
+```
+
+2. Run the backend service locally:
+```bash
+uvicorn backend.chatqna.service:app --host 0.0.0.0 --port 8888 --reload
+```
+
+3. Run the Streamlit app locally (coming soon):
+```bash
+cd app
+streamlit run main.py
+```
 
 ### Development Tools
 
@@ -146,16 +187,6 @@ The application has been tested with the following models:
    - **Meta-Llama-3.2:1B**
    - **Meta-Llama-3.2:3B**
    - **Microsoft-Phi-4:Mini**
-
-## OPEA Integration
-
-This application demonstrates the use of Intel's OPEA toolchain for deploying and serving LLM models. Key OPEA components used include:
-
-- Model Service for loading and serving LLM models
-- Inference API for sending prompts and receiving responses
-- Docker Compose for orchestrating the services
-
-For more information about OPEA, refer to the [official documentation](https://opea-project.github.io/latest/).
 
 ## Future Enhancements
 

@@ -18,12 +18,12 @@ class OPEAConfig:
         self.models_dir = Path("models")
         
         # Default model settings
-        self.default_model = "Meta-Llama-3.2-3B-Instruct-Q6_K_L"  # Default model to use
+        self.default_model = "Meta-Llama-3.2-3B-Instruct"  # Default model to use
         self.available_models = [
-            "Meta-Llama-3.1-8B-Instruct-Q6_K_L",
-            "Meta-Llama-3.2-1B-Instruct-Q6_K_L",
-            "Meta-Llama-3.2-3B-Instruct-Q6_K_L",
-            "Microsoft-Phi-4-Mini-Instruct-Q6_K_L",
+            "Meta-Llama-3.1-8B-Instruct",
+            "Meta-Llama-3.2-1B-Instruct",
+            "Meta-Llama-3.2-3B-Instruct",
+            "Microsoft-Phi-4-Mini-Instruct",
         ]
         
         # OPEA API settings
@@ -48,7 +48,15 @@ class OPEAConfig:
         if model not in self.available_models:
             raise ValueError(f"Unknown model: {model}")
         
-        return self.models_dir / model
+        # Map model name to filename with extension
+        model_filename_map = {
+            "Meta-Llama-3.1-8B-Instruct": "Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf",
+            "Meta-Llama-3.2-1B-Instruct": "Meta-Llama-3.2-1B-Instruct-Q6_K_L.gguf",
+            "Meta-Llama-3.2-3B-Instruct": "Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf",
+            "Microsoft-Phi-4-Mini-Instruct": "Microsoft-Phi-4-Mini-Instruct-Q6_K_L.gguf",
+        }
+        
+        return self.models_dir / model_filename_map[model]
     
     def get_inference_params(self) -> Dict[str, Any]:
         """Get all inference parameters as a dictionary."""

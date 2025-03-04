@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  tgi-service:
+    image: ghcr.io/ggerganov/llama.cpp:full
+    container_name: tgi-server
+    ports:
+      - "8008:8080"
+    volumes:
+      - "../../models:/models"
+    command: --server --model /models/Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf --host 0.0.0.0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 20s
+      retries: 3
+      start_period: 120s
+
+  chatqna-backend-server:
+    build:
+      context: ../..
+      dockerfile: backend/docker/Dockerfile
+    container_name: chatqna-backend-server
+    depends_on:
+      - tgi-service
+    ports:
+      - "8888:8888"
+    environment:
+      - LLM_SERVER_HOST_IP=tgi-service
+      - LLM_SERVER_PORT=8080
+      - MEGA_SERVICE_HOST_IP=chatqna-backend-server
+      - MEGA_SERVICE_PORT=8888
+    restart: always
+
+networks:
+  default:
+    driver: bridge 

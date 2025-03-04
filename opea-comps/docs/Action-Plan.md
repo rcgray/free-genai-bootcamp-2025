@@ -2,7 +2,7 @@
 
 This action plan outlines the step-by-step process for building our OPEA-based LLM Chat Application, with a focus on creating a minimalistic MVP that demonstrates the successful use of OPEA tools and the ChatQnA examples.
 
-## Phase 1: Environment Setup and OPEA Integration 🔴
+## Phase 1: Environment Setup and OPEA Integration ✅
 
 ### 1.1 Development Environment Setup
 - [x] Set up Python 3.12+ environment with conda or pyenv
@@ -13,46 +13,48 @@ This action plan outlines the step-by-step process for building our OPEA-based L
 - [x] Set up Git repository with appropriate .gitignore
 
 ### 1.2 OPEA Exploration and Testing
-- [ ] Study OPEA documentation and ChatQnA examples
-- [ ] Test OPEA installation locally without Docker
-- [ ] Experiment with basic OPEA commands and APIs
-- [ ] Document key OPEA components and their functions
-- [ ] Identify minimal required components for our MVP
+- [x] Study OPEA documentation and ChatQnA examples
+- [x] Document key OPEA components and their functions
+- [x] Clone and install OPEA repositories locally
+- [x] Test OPEA installation locally without Docker
+- [x] Experiment with basic OPEA commands and APIs
+- [x] Identify minimal required components for our MVP
 
 ### 1.3 Docker Configuration
 - [x] Create basic Docker files (Dockerfile and docker-compose.yml)
-- [ ] Set up Docker and Docker Compose
-- [ ] Configure NVIDIA GPU support for Docker
-- [ ] Test Docker setup with simple OPEA components
+- [x] Set up Docker and Docker Compose
+- [x] Configure NVIDIA GPU support for Docker
+- [x] Test Docker setup with simple OPEA components
 
 ### 1.4 Local Model Integration
-- [ ] Create models directory structure
-- [ ] Document model requirements and formats
-- [ ] Test loading a local model with OPEA
-- [ ] Configure model paths in OPEA settings
-- [ ] Verify GPU acceleration is working
+- [x] Create models directory structure
+- [x] Document model requirements and formats
+- [x] Test loading a local model with OPEA
+- [x] Configure model paths in OPEA settings
+- [x] Verify GPU acceleration is working
 
-## Phase 2: Core OPEA Integration 🔴
+## Phase 2: Core Backend Implementation ✅
 
-### 2.1 OPEA Client Implementation
-- [ ] Create backend/opea_client.py module
-- [ ] Implement basic client initialization
-- [ ] Add configuration loading functionality
-- [ ] Implement model information retrieval
-- [ ] Create simple prompt-response function
-- [ ] Add error handling for API communication
+### 2.1 Backend Service Implementation
+- [x] Create backend/chatqna service module
+- [x] Implement FastAPI service
+- [x] Add llama.cpp integration
+- [x] Implement chat completion endpoint
+- [x] Create Docker configuration for the service
+- [x] Implement health check endpoint
+- [x] Add error handling for API communication
 
 ### 2.2 Command-Line Testing
-- [ ] Create a simple CLI script for testing
-- [ ] Implement basic prompt-response loop
-- [ ] Test with different prompt formats
-- [ ] Measure and optimize response times
-- [ ] Document successful configurations
+- [x] Create a simple CLI script for testing (test.sh)
+- [x] Implement basic prompt-response functionality
+- [x] Test with different prompt formats
+- [x] Document successful configurations
+- [x] Create a setup script for easy deployment (setup.sh)
 
 ### 2.3 Model Configuration
-- [ ] Test compatibility with a local LLM model
-- [ ] Document model-specific configurations
-- [ ] Optimize model loading and inference settings
+- [x] Test compatibility with a local LLM model
+- [x] Document model-specific configurations
+- [x] Optimize model loading and inference settings
 
 ## Phase 3: Streamlit Application Development 🟡
 
@@ -100,25 +102,25 @@ This action plan outlines the step-by-step process for building our OPEA-based L
 - [ ] Create user-friendly error displays
 - [ ] Document common errors and solutions
 
-## Phase 5: Documentation and Deployment 🟢
+## Phase 5: Documentation and Deployment 🟡
 
 ### 5.1 User Documentation
-- [ ] Create setup instructions
-- [ ] Document application usage
+- [x] Create setup instructions
+- [x] Document application usage
 - [ ] Add troubleshooting guide
-- [ ] Create model configuration guide
-- [ ] Document Docker deployment process
+- [x] Create model configuration guide
+- [x] Document Docker deployment process
 
 ### 5.2 Developer Documentation
-- [ ] Document code structure
-- [ ] Create API documentation
+- [x] Document code structure
+- [x] Create API documentation
 - [ ] Add development setup guide
 - [ ] Document testing procedures
 - [ ] Create contribution guidelines
 
 ### 5.3 Deployment Preparation
-- [ ] Finalize Docker configuration
-- [ ] Create deployment scripts
+- [x] Finalize Docker configuration
+- [x] Create deployment scripts
 - [ ] Document resource requirements
 - [ ] Add security considerations
 - [ ] Create backup and restore procedures
@@ -146,6 +148,78 @@ This action plan outlines the step-by-step process for building our OPEA-based L
 - [ ] Create advanced message formatting
 - [ ] Add keyboard shortcuts
 
+## Current Testing Instructions
+
+Follow these steps to test the backend service:
+
+### 1. Prerequisites
+
+- Docker and Docker Compose installed
+- NVIDIA GPU with drivers installed
+- LLM models in GGUF format (Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf is used by default)
+
+### 2. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd opea-comps
+```
+
+### 3. Set Up Model Files
+
+Place your GGUF model files in the `models/` directory:
+```bash
+# Example for Meta-Llama-3.2-3B-Instruct model
+cp /path/to/your/model/Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf models/
+```
+
+### 4. Start the Backend Service
+
+Run the setup script:
+```bash
+./backend/setup.sh
+```
+
+This will:
+- Check for the required model files
+- Set up the necessary environment variables
+- Start the Docker containers
+- Display the service status
+
+### 5. Test the Backend Service
+
+To test that the backend service is working correctly:
+```bash
+./backend/test.sh
+```
+
+This will send a test query to the API and display the response.
+
+### 6. Manually Test with Curl (Optional)
+
+You can also manually test the API using curl:
+```bash
+curl -X POST -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"Tell me a short joke"}],"stream":false,"context":[],"meta":{"auth_token":""}}' \
+  http://localhost:8888/v1/chatqna | jq
+```
+
+### 7. Common Issues
+
+If you encounter issues:
+
+1. **Docker containers conflicts**:
+   - Stop any existing containers with `docker compose down` or `docker rm -f <container-name>`
+   - Check running containers with `docker ps -a`
+
+2. **Model loading issues**:
+   - Verify model files exist in the models directory
+   - Check Docker logs with `docker logs tgi-server` or `docker logs chatqna-backend-server`
+
+3. **API connectivity issues**:
+   - Ensure the service is running with `curl http://localhost:8888/health`
+   - Check for port conflicts using `netstat -tulpn | grep 8888`
+
 ## Notes
 
 ### Priority Levels
@@ -156,12 +230,12 @@ This action plan outlines the step-by-step process for building our OPEA-based L
 - ✅ Completed
 
 ### Implementation Approach
-1. Focus first on getting OPEA working with local models via command line
-2. Then integrate with Streamlit for a simple UI
-3. Finally, refine and document the solution
+1. ✅ Focus first on getting the backend service working with local models
+2. 🟡 Next step: integrate with Streamlit for a simple UI
+3. 🟢 Finally, refine and document the solution
 
 ### Key Success Criteria
-- Successfully load and use local LLM models with OPEA
-- Achieve reasonable response times with GPU acceleration
-- Create a simple but functional chat interface
-- Document the setup and usage process clearly
+- ✅ Successfully load and use local LLM models with llama.cpp
+- ✅ Achieve reasonable response times with GPU acceleration
+- 🟡 Create a simple but functional chat interface
+- ✅ Document the setup and usage process clearly
