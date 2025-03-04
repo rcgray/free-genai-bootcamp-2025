@@ -167,3 +167,6 @@ nvprof_*
 *.7z
 
 frontend-react/node_modules/
+
+# Nested Git repositories
+**/.git/

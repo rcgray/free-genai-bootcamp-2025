@@ -10,10 +10,10 @@ Before testing, ensure you have the following:
 2. NVIDIA GPU with appropriate drivers (for GPU acceleration)
 3. CUDA toolkit installed and configured
 4. Local LLM models in the `models/` directory (at least one of the following):
-   - Meta-Llama-3.1:8B - `models/Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf`
-   - Meta-Llama-3.2:1B - `models/Meta-Llama-3.2-1B-Instruct-Q6_K_L.gguf`
-   - Meta-Llama-3.2:3B - `models/Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf`
-   - Microsoft-Phi-4:Mini - `models/Microsoft-Phi-4-Mini-Instruct-Q6_K_L.gguf`
+   - Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf
+   - Meta-Llama-3.2-1B-Instruct-Q6_K_L.gguf
+   - Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf
+   - Microsoft-Phi-4-Mini-Instruct-Q6_K_L.gguf
 
 ## Installation Steps
 
@@ -37,8 +37,8 @@ We need to run a local instance of the OPEA service to interact with our models.
 # Install the Genai Bridge package (should already be in dependencies)
 uv pip install genai-bridge
 
-# Run the OPEA service locally - this is a sample command, adjust as needed
-uv python -m genai_bridge --config local_config.yaml
+# Run the OPEA service locally 
+uv python -m genai_bridge --config config/local_config.yaml
 ```
 
 Note: The actual command may differ depending on the specific OPEA setup requirements we discover during testing.
@@ -62,7 +62,7 @@ We've created a test script to verify our OPEA integration. This script checks v
 ./scripts/test_opea.py --test models
 
 # Get information about a specific model
-./scripts/test_opea.py --test info --model "Meta-Llama-3.2:3B"
+./scripts/test_opea.py --test info --model "Meta-Llama-3.2-3B-Instruct"
 
 # Generate a response with a specific prompt
 ./scripts/test_opea.py --test generate --prompt "Explain how to implement merge sort in Python"
