@@ -26,6 +26,20 @@ def get_static_file_path(relative_path: str) -> Path:
     return static_dir / relative_path
 
 
+def get_file_content_as_string(file_path: Path) -> str:
+    """
+    Get the content of a file as a string.
+    
+    Args:
+        file_path: Path to the file
+        
+    Returns:
+        String content of the file
+    """
+    with open(file_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
 def get_file_content_as_base64(file_path: Path) -> str:
     """
     Get the content of a file as a base64 encoded string.
@@ -49,7 +63,7 @@ def inject_js(js_path: str) -> None:
         js_path: Path to the JavaScript file relative to the static directory
     """
     file_path = get_static_file_path(js_path)
-    js_content = open(file_path, "r").read()
+    js_content = get_file_content_as_string(file_path)
     
     st.markdown(
         f"""
@@ -69,7 +83,7 @@ def inject_css(css_path: str) -> None:
         css_path: Path to the CSS file relative to the static directory
     """
     file_path = get_static_file_path(css_path)
-    css_content = open(file_path, "r").read()
+    css_content = get_file_content_as_string(file_path)
     
     st.markdown(
         f"""
@@ -94,13 +108,19 @@ def serve_phaser_game() -> None:
     os.makedirs(js_dir, exist_ok=True)
     os.makedirs(css_dir, exist_ok=True)
     
-    # Check if Phaser is available, if not display a message
+    # Check if Phaser is available
     phaser_path = js_dir / "phaser.min.js"
     game_js_path = js_dir / "game.js"
     
-    if not phaser_path.exists() or not game_js_path.exists():
-        st.warning(
-            "Phaser library or game.js not found. Please add them to the static/js directory."
+    if not phaser_path.exists():
+        st.error(
+            "Phaser library not found. Please add phaser.min.js to the static/js directory."
+        )
+        return
+    
+    if not game_js_path.exists():
+        st.error(
+            "Game script not found. Please add game.js to the static/js directory."
         )
         return
     
@@ -111,5 +131,6 @@ def serve_phaser_game() -> None:
     inject_js("js/game.js")
     
     # Inject any custom CSS
-    if (css_dir / "game.css").exists():
+    css_path = css_dir / "game.css"
+    if css_path.exists():
         inject_css("css/game.css") 

@@ -155,3 +155,9 @@ Excellent.  Let's move on to Step 1.2 of the `docs/Action-Plan.md` file. In gene
 
 ---
 
+Good job, and thank you for remembering to limit your actions to only those requested in the prompt's latest, explicit instructions.  Let's move on to Step 1.3 of the `docs/Action-Plan.md` file. A new file `docs/Prompt-Notes.md` has been added to the project to provide some notes to consider with every prompt as we develop our project. Please review it and keep it in mind as we continue to develop our project.
+
+---
+
+
+
