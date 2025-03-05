@@ -71,10 +71,10 @@ Implement the following in our new project (i.e., the root of the `dev/template`
   - [x] `docs/Technical-Spec.md`
 
 ### 3.2 Generate Empty Core Project Specifications Files
-- [ ] We will work together to generate the following files. Do not write these on your own, but only once we have decided what we are going to add to it. You will use the corresponding files in the `dev/template` folder (from previous projects) as a suggestion for format, but the content will be very different for this new project. I will tell you when you have finished and we can check these off.
-  - [ ] `docs/PRD.md` 
-  - [ ] `docs/Technical-Spec.md`
-  - [ ] `docs/Action-Plan.md`
+- [x] We will work together to generate the following files. Do not write these on your own, but only once we have decided what we are going to add to it. You will use the corresponding files in the `dev/template` folder (from previous projects) as a suggestion for format, but the content will be very different for this new project. I will tell you when you have finished and we can check these off.
+  - [x] `docs/PRD.md` 
+  - [x] `docs/Technical-Spec.md`
+  - [x] `docs/Action-Plan.md`
 
 ### 3.3 Dynamic Documentation
 - [ ] Depending on the nature of the project, the stack and technologies involved (Python, JavaScript, Sqlite, MongoDB, Streamlit, FastAPI, Node.js, Express.js, Next.js, Tailwind CSS, uv, vite, pip, mocha, ruff, mypy, pytest, etc.), certain documentation will be needed. This includes (but is not limited to) the following. Do not write these files on your own, but only once we have decided what we are going to add to it. In this case, just as with 3.2 Generating Project Specifications, you will use the corresponding files in the `dev/template` folder (from previous projects) as a suggestion for format, but the content will be very different for this new project.

@@ -38,8 +38,9 @@ def update_file_structure() -> None:
     reports_dir = project_root / "docs" / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
 
-    # Run tree command and save output
-    returncode, stdout, stderr = run_command(["tree"], capture_output=True)
+    # Run tree command with pattern matching to ignore GenAI* directories
+    tree_command = ["tree", "-a", "--gitignore", "-I", ""]
+    returncode, stdout, stderr = run_command(tree_command, capture_output=True)
 
     if returncode == 0:
         # Write tree output to file
@@ -90,4 +91,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main() 
+    main()
