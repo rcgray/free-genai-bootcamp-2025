@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Japanese Language Learning Visual Novel</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="game-container">
+    <div class="row">
+      <div class="main-content">
+        <div class="scene-container">
+          <!-- Background image -->
+          <img id="background-image" class="background" src="assets/images/backgrounds/classroom.jpg" alt="Background">
+          
+          <!-- Character image -->
+          <img id="character-image" class="character" src="assets/images/characters/teacher/default.png" alt="Character">
+          
+          <!-- Dialog box -->
+          <div id="dialog-box" class="dialog-box">
+            <div id="character-name" class="character-name">先生</div>
+            <div id="japanese-text" class="japanese-text">こんにちは！私はあなたの先生です。</div>
+            <div id="english-text" class="english-text">Hello! I am your teacher.</div>
+            <div id="pronunciation" class="pronunciation">Konnichiwa! Watashi wa anata no sensei desu.</div>
+            
+            <!-- Choices -->
+            <div id="choices-container" class="choices-container">
+              <!-- Choices will be added dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="sidebar">
+        <h2>Game Menu</h2>
+        <button id="new-game-btn">New Game</button>
+        <button id="save-game-btn">Save Game</button>
+        <button id="load-game-btn">Load Game</button>
+        <button id="settings-btn">Settings</button>
+        
+        <div class="language-settings">
+          <h3>Language Level</h3>
+          <select id="language-level">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        
+        <div class="vocabulary-section">
+          <h3>Learned Words</h3>
+          <div id="vocabulary-list">
+            <!-- Vocabulary items will be added dynamically -->
+            <div class="vocabulary-item">
+              <div class="vocabulary-word">こんにちは</div>
+              <div class="vocabulary-reading">konnichiwa</div>
+              <div class="vocabulary-meaning">Hello</div>
+              <div class="mastery-level">
+                <div class="mastery-dot filled"></div>
+                <div class="mastery-dot filled"></div>
+                <div class="mastery-dot"></div>
+                <div class="mastery-dot"></div>
+                <div class="mastery-dot"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="js/game.js"></script>
+</body>
+</html> 

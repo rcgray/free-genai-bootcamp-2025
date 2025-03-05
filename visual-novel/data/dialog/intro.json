@@ -1,0 +1,38 @@
+[
+  {
+    "character": "Narrator",
+    "text": "日本語を学ぶ冒険へようこそ！",
+    "translation": "Welcome to your Japanese learning adventure!",
+    "pronunciation": "Nihongo o manabu bōken e yōkoso!"
+  },
+  {
+    "character": "Narrator",
+    "text": "この物語の中で、あなたは日本語を学びながら新しい友達を作るでしょう。",
+    "translation": "In this story, you will make new friends while learning Japanese.",
+    "pronunciation": "Kono monogatari no naka de, anata wa nihongo o manabinagara atarashii tomodachi o tsukuru deshou."
+  },
+  {
+    "character": "先生",
+    "text": "こんにちは！私はあなたの先生です。",
+    "translation": "Hello! I am your teacher.",
+    "pronunciation": "Konnichiwa! Watashi wa anata no sensei desu."
+  },
+  {
+    "character": "先生",
+    "text": "まず、あなたの名前を教えてください。",
+    "translation": "First, please tell me your name.",
+    "pronunciation": "Mazu, anata no namae o oshiete kudasai."
+  },
+  {
+    "character": "先生",
+    "text": "{player_name}さん、よろしくお願いします！",
+    "translation": "Nice to meet you, {player_name}!",
+    "pronunciation": "{player_name}-san, yoroshiku onegaishimasu!"
+  },
+  {
+    "character": "先生",
+    "text": "それでは、授業を始めましょう！",
+    "translation": "Now, let's begin the lesson!",
+    "pronunciation": "Sore dewa, jugyō o hajimemashō!"
+  }
+] 

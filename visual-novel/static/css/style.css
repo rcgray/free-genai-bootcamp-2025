@@ -1,0 +1,221 @@
+/* Main application styles */
+
+:root {
+  --primary-color: #4b7bec;
+  --secondary-color: #a55eea;
+  --background-color: #f5f5f5;
+  --text-color: #333;
+  --dialog-bg-color: rgba(255, 255, 255, 0.8);
+  --dialog-border-color: #ddd;
+  --choice-bg-color: #4b7bec;
+  --choice-hover-color: #3867d6;
+  --choice-text-color: white;
+}
+
+body {
+  font-family: 'Noto Sans', 'Noto Sans JP', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+/* Game container */
+.game-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Scene container */
+.scene-container {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Background */
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+/* Character */
+.character {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  max-height: 90%;
+  max-width: 50%;
+}
+
+/* Dialog box */
+.dialog-box {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  background-color: var(--dialog-bg-color);
+  border-radius: 10px;
+  padding: 20px;
+  z-index: 3;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.character-name {
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 5px;
+}
+
+.japanese-text {
+  font-size: 1.5em;
+  margin: 10px 0;
+}
+
+.english-text {
+  font-style: italic;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.pronunciation {
+  font-family: monospace;
+  color: #777;
+  font-size: 0.9em;
+}
+
+/* Choices */
+.choices-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.choice-button {
+  background-color: var(--choice-bg-color);
+  color: var(--choice-text-color);
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1em;
+}
+
+.choice-button:hover {
+  background-color: var(--choice-hover-color);
+}
+
+.choice-japanese {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.choice-english {
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h2 {
+  color: var(--primary-color);
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-top: 0;
+}
+
+.sidebar button {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  margin: 5px 0;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.sidebar button:hover {
+  background-color: var(--choice-hover-color);
+}
+
+/* Vocabulary section */
+.vocabulary-section {
+  margin-top: 20px;
+}
+
+.vocabulary-item {
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.vocabulary-word {
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.vocabulary-reading {
+  font-style: italic;
+  color: #666;
+}
+
+.vocabulary-meaning {
+  margin-top: 5px;
+}
+
+.mastery-level {
+  display: flex;
+  margin-top: 5px;
+}
+
+.mastery-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #ddd;
+  margin-right: 3px;
+}
+
+.mastery-dot.filled {
+  background-color: var(--primary-color);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .scene-container {
+    height: 400px;
+  }
+  
+  .dialog-box {
+    width: 95%;
+    padding: 15px;
+  }
+  
+  .japanese-text {
+    font-size: 1.2em;
+  }
+} 

@@ -1,0 +1,192 @@
+{
+  "こんにちは": {
+    "word": "こんにちは",
+    "reading": "こんにちは",
+    "romaji": "konnichiwa",
+    "meaning": "Hello (daytime greeting)",
+    "part_of_speech": "expression",
+    "level": "beginner",
+    "example": "こんにちは、元気ですか？",
+    "example_translation": "Hello, how are you?"
+  },
+  "おはよう": {
+    "word": "おはよう",
+    "reading": "おはよう",
+    "romaji": "ohayou",
+    "meaning": "Good morning",
+    "part_of_speech": "expression",
+    "level": "beginner",
+    "example": "おはよう、よく寝た？",
+    "example_translation": "Good morning, did you sleep well?"
+  },
+  "こんばんは": {
+    "word": "こんばんは",
+    "reading": "こんばんは",
+    "romaji": "konbanwa",
+    "meaning": "Good evening",
+    "part_of_speech": "expression",
+    "level": "beginner",
+    "example": "こんばんは、今日はいい天気でしたね。",
+    "example_translation": "Good evening, the weather was nice today."
+  },
+  "さようなら": {
+    "word": "さようなら",
+    "reading": "さようなら",
+    "romaji": "sayounara",
+    "meaning": "Goodbye",
+    "part_of_speech": "expression",
+    "level": "beginner",
+    "example": "さようなら、また明日。",
+    "example_translation": "Goodbye, see you tomorrow."
+  },
+  "ありがとう": {
+    "word": "ありがとう",
+    "reading": "ありがとう",
+    "romaji": "arigatou",
+    "meaning": "Thank you",
+    "part_of_speech": "expression",
+    "level": "beginner",
+    "example": "ありがとう、助かりました。",
+    "example_translation": "Thank you, that was helpful."
+  },
+  "すみません": {
+    "word": "すみません",
+    "reading": "すみません",
+    "romaji": "sumimasen",
+    "meaning": "Excuse me / I'm sorry",
+    "part_of_speech": "expression",
+    "level": "beginner",
+    "example": "すみません、トイレはどこですか？",
+    "example_translation": "Excuse me, where is the bathroom?"
+  },
+  "はい": {
+    "word": "はい",
+    "reading": "はい",
+    "romaji": "hai",
+    "meaning": "Yes",
+    "part_of_speech": "adverb",
+    "level": "beginner",
+    "example": "はい、わかりました。",
+    "example_translation": "Yes, I understand."
+  },
+  "いいえ": {
+    "word": "いいえ",
+    "reading": "いいえ",
+    "romaji": "iie",
+    "meaning": "No",
+    "part_of_speech": "adverb",
+    "level": "beginner",
+    "example": "いいえ、大丈夫です。",
+    "example_translation": "No, it's okay."
+  },
+  "私": {
+    "word": "私",
+    "reading": "わたし",
+    "romaji": "watashi",
+    "meaning": "I, me",
+    "part_of_speech": "pronoun",
+    "level": "beginner",
+    "example": "私は学生です。",
+    "example_translation": "I am a student."
+  },
+  "あなた": {
+    "word": "あなた",
+    "reading": "あなた",
+    "romaji": "anata",
+    "meaning": "You",
+    "part_of_speech": "pronoun",
+    "level": "beginner",
+    "example": "あなたの名前は何ですか？",
+    "example_translation": "What is your name?"
+  },
+  "名前": {
+    "word": "名前",
+    "reading": "なまえ",
+    "romaji": "namae",
+    "meaning": "Name",
+    "part_of_speech": "noun",
+    "level": "beginner",
+    "example": "あなたの名前を教えてください。",
+    "example_translation": "Please tell me your name."
+  },
+  "先生": {
+    "word": "先生",
+    "reading": "せんせい",
+    "romaji": "sensei",
+    "meaning": "Teacher",
+    "part_of_speech": "noun",
+    "level": "beginner",
+    "example": "田中先生は日本語を教えています。",
+    "example_translation": "Teacher Tanaka teaches Japanese."
+  },
+  "学生": {
+    "word": "学生",
+    "reading": "がくせい",
+    "romaji": "gakusei",
+    "meaning": "Student",
+    "part_of_speech": "noun",
+    "level": "beginner",
+    "example": "私は大学の学生です。",
+    "example_translation": "I am a university student."
+  },
+  "日本語": {
+    "word": "日本語",
+    "reading": "にほんご",
+    "romaji": "nihongo",
+    "meaning": "Japanese language",
+    "part_of_speech": "noun",
+    "level": "beginner",
+    "example": "日本語を勉強しています。",
+    "example_translation": "I am studying Japanese."
+  },
+  "勉強": {
+    "word": "勉強",
+    "reading": "べんきょう",
+    "romaji": "benkyou",
+    "meaning": "Study",
+    "part_of_speech": "noun, verb (する)",
+    "level": "beginner",
+    "example": "毎日日本語を勉強します。",
+    "example_translation": "I study Japanese every day."
+  },
+  "友達": {
+    "word": "友達",
+    "reading": "ともだち",
+    "romaji": "tomodachi",
+    "meaning": "Friend",
+    "part_of_speech": "noun",
+    "level": "beginner",
+    "example": "彼は私の友達です。",
+    "example_translation": "He is my friend."
+  },
+  "学校": {
+    "word": "学校",
+    "reading": "がっこう",
+    "romaji": "gakkou",
+    "meaning": "School",
+    "part_of_speech": "noun",
+    "level": "beginner",
+    "example": "学校に行きます。",
+    "example_translation": "I go to school."
+  },
+  "行く": {
+    "word": "行く",
+    "reading": "いく",
+    "romaji": "iku",
+    "meaning": "To go",
+    "part_of_speech": "verb (godan)",
+    "level": "beginner",
+    "example": "明日、東京に行きます。",
+    "example_translation": "I will go to Tokyo tomorrow."
+  },
+  "来る": {
+    "word": "来る",
+    "reading": "くる",
+    "romaji": "kuru",
+    "meaning": "To come",
+    "part_of_speech": "verb (irregular)",
+    "level": "beginner",
+    "example": "友達が家に来ます。",
+    "example_translation": "My friend is coming to my house."
+  }
+} 
