@@ -34,15 +34,11 @@ ENV/
 *.swp
 *.swo
 
-# SQLite
-*.db
-!data/empty.db
-*.sqlite3
-*.sqlite
-
 # Database
-#data/*.json
-!data/example.json
+data/*.db
+data/*.sqlite3
+data/*.sqlite
+data/game_saves/
 
 # Logs
 *.log
@@ -51,25 +47,7 @@ ENV/
 .coverage
 .pytest_cache/
 htmlcov/
-
-# Alembic
-alembic/versions/*
-!alembic/versions/.gitkeep
-
-# Frontend
-**/node_modules/
-frontend/dist/
-frontend/build/
-frontend/coverage/
-frontend/.next/
-frontend/.nuxt/
-frontend/.vuepress/dist
-frontend/.serverless/
-frontend/.fusebox/
-frontend/.dynamodb/
-.yarn/
-.pnp.*
-*.tsbuildinfo
+.ruff_cache/
 
 # OS
 .DS_Store
@@ -84,11 +62,6 @@ Desktop.ini
 $RECYCLE.BIN/
 
 # Logs and Temp Files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-.pnpm-debug.log*
 tmp/
 temp/
 
@@ -120,11 +93,8 @@ dev/template/
 .ipynb_checkpoints
 *.ipynb
 .python-version
-.node-version
-.nvmrc
 
 # Generated Files
-app/static/
 *.min.js
 *.min.css
 *.map
@@ -134,9 +104,13 @@ tests/fixtures/
 tests/data/
 mock_data/
 
-# Local Development Config
-docker-compose.override.yml
-*.override.yml
-*.override.yaml
+# Streamlit
+.streamlit/secrets.toml
+.streamlit/config.toml
 
-frontend-react/node_modules/ 
+# Game assets (keep examples, ignore user-generated)
+assets/images/user_uploads/
+assets/audio/user_uploads/
+!assets/images/backgrounds/example_*.jpg
+!assets/images/characters/example_*.png
+!assets/audio/example_*.mp3 

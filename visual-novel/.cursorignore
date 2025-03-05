@@ -29,14 +29,10 @@ htmlcov/
 Thumbs.db
 
 # Database and Media
-data/*.json
-!data/example.json
-media/sources/*
-!media/sources/.gitkeep
-media/transcripts/*
-!media/transcripts/.gitkeep
-media/translations/*
-!media/translations/.gitkeep
+data/game_saves/
+data/*.db
+assets/images/user_uploads/
+assets/audio/user_uploads/
 
 # Documentation
 docs/reports/
@@ -53,8 +49,6 @@ tests/fixtures/
 # Local Development
 .env.local
 .env.*.local
-*.override.yml
-*.override.yaml
 
 # Cache and Temporary
 .cache/
@@ -64,4 +58,8 @@ __pycache__/
 *.bak
 *.tmp
 *.temp
-.history/ 
+.history/
+
+# Streamlit
+.streamlit/secrets.toml
+.streamlit/config.toml 
