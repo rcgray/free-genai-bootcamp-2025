@@ -25,12 +25,19 @@ window.onload = function() {
 
 // Preload assets
 function preload() {
+    console.log('Preloading assets...');
+    
     // Load the title background image
-    this.load.image('title-background', '../assets/images/backgrounds/title.jpg');
+    // In Phaser, paths are relative to the HTML file
+    this.load.image('title-background', 'assets/images/backgrounds/title.jpg');
+    
+    console.log('Assets preloaded');
 }
 
 // Create the scene
 function create() {
+    console.log('Creating title scene...');
+    
     // Add the title background image
     // The image will be centered in the game canvas
     const background = this.add.image(
@@ -44,6 +51,21 @@ function create() {
     const scaleY = this.cameras.main.height / background.height;
     const scale = Math.max(scaleX, scaleY);
     background.setScale(scale);
+    
+    // Add a title text
+    const titleText = this.add.text(
+        this.cameras.main.width / 2,
+        100,
+        'Japanese Visual Novel',
+        {
+            font: '48px Arial',
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 6,
+            align: 'center'
+        }
+    );
+    titleText.setOrigin(0.5);
     
     console.log('Title scene created successfully');
 } 
