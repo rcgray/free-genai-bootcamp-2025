@@ -111,7 +111,6 @@ IMPORTANT NOTE: You may have a temptation to go further and actually start imple
 We were just intending to do Step 1.1 from the @Action-Plan.md Action Plan fileand set up our project structure, though it appears you have gone ahead and implemented some significant portions of the project already. This is not optimal, but we'll move forward with it.  However, in the course of that implementation you made some technical decisions (such as to use Streamlit, which was never specified).  Please review the choices that you made in this implementation and update the @Technical-Spec.md Technical-Spec.md document to include any other assumptions or technologies you've chosen to add to our implementation
 
 ---
-
 # edit the pyproject.toml file or package.json file to include my info
 ---
 
@@ -149,3 +148,10 @@ First, let's make sure that our `docs/Action-Plan.md` file is up to date.  There
 Since our project setup is complete, we have moved the Project-Setup.md file to the `docs/` directory and will not need to reference it again.
 
 It appears we have completed Step 1.1 of the `docs/Action-Plan.md` file. We've now decided to serve our Phaser game using Streamlit (which is not part of the original plan).  We may need to make updates both to our `docs/Action-Plan.md` file and our `docs/Technical-Spec.md` file and possibly the `README.md` file to reflect this change.  I want to make sure that all three of these files are in sync with each other.  If there are any inconsistencies, let's discuss them.
+
+---
+
+Excellent.  Let's move on to Step 1.2 of the `docs/Action-Plan.md` file. In general, we will want to implement as much of our project within the Phaser game, not the Streamlit wrapper.  We may add some utilities and UI outside the game to aid development, but the goal for now is to minimize the Streamlit wrapper and intend to implement as much as possible within the Phaser game itself.
+
+---
+

@@ -1,0 +1,61 @@
+"""
+Main entry point for the Japanese Visual Novel application.
+This file serves as the Streamlit wrapper for the Phaser game.
+"""
+import os
+import sys
+from pathlib import Path
+
+import streamlit as st
+from dotenv import load_dotenv
+
+# Add the project root to the Python path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from app.utils.static import serve_phaser_game
+
+# Load environment variables
+load_dotenv()
+
+# Configure Streamlit page
+st.set_page_config(
+    page_title="Japanese Visual Novel",
+    page_icon="🎮",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
+
+def main() -> None:
+    """Main application entry point."""
+    # Set up the page header
+    st.title("Japanese Visual Novel")
+    
+    # Create a container for the Phaser game
+    game_container = st.container()
+    
+    with game_container:
+        # Create a div for the Phaser game
+        st.markdown(
+            """
+            <div id="phaser-game">
+                <p class="loading-message">
+                    Loading Phaser game...
+                </p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        
+        # Serve the Phaser game (this will be implemented in the next step)
+        # serve_phaser_game()
+    
+    # Add minimal controls in the sidebar (for development purposes)
+    with st.sidebar:
+        st.header("Development Controls")
+        st.caption("These controls are for development purposes only.")
+        
+        if st.button("Reload Game"):
+            st.rerun()
+
+if __name__ == "__main__":
+    main() 
