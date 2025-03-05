@@ -1,7 +1,7 @@
 # Tools and Libraries
-- Do not use `npm` or Node.js for the backend (with exception of yarn for frontend)
 - Do not use `rye` or `poetry` for managing Python dependencies
-- Use `uv` when managing Python dependencies (i.e., `uv sync` to install dependencies, `uv run <script>` to run a script, etc.)
+- Use `uv` when managing Python dependencies (i.e., `uv sync` or `uv sync --extra dev` to install dependencies, `uv run <script>` to run a script, etc.)
+- Always ensure you are activating the project's conda environment before running any commands.
 - Python environments are managed by the user (e.g., `conda`, `pyenv` + `uv venv`)
 - Use `ruff` for linting and formatting (includes black and isort functionality)
 - Use `mypy` for type checking
@@ -10,9 +10,10 @@
 # Interaction with the user
 - Do not edit any files in the `dev/template` folder
 - Do not edit the `docs/Prompts.md` file, it is generated and maintained only by the user
-- Do not offer to run tests, simply provide the CLI command and await results from user
-- Do not offer to run database scripts, simply provide the CLI command and await results from user
+- Our project uses a conda environment called `vn` so please include activating that environment in your commands.
+- If working in Python, we are using `uv` to manage our dependencies, so please include that in your commands.
 - This project is a subfolder within a larger monorepo. Keep this in mind when making file paths, references, and suggesting commands (e.g., ruff format).
+- DO NOT DO ANYTHING OTHER THAN WHAT WAS REQUESTED IN THE PROMPT. You may be given access to an "Action-Plan.md" file, which is a list of completed tasks as well as those ahead of us. Access to this file or a request to update a particular section of it is not license to continue on to the next task. Just because a file is called "Action Plan" does not mean that those actions are all meant for you to complete.
 
 # General Python Recommendations
 - Use type hints in all Python code

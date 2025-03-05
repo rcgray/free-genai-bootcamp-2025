@@ -4,6 +4,7 @@
 
 ### Core Technologies
 - **Python 3.12+**: Base programming language
+- **Streamlit 1.32.0+**: Python web framework for serving the application
 - **Phaser 3.88.2**: JavaScript game framework for creating the visual novel interface
 - **OpenAI API Standard**: For LLM integration (with flexibility to change providers)
 - **TinyDB**: Lightweight, document-oriented database (for future implementation)
@@ -26,7 +27,7 @@
 visual-novel/
 ├── app/                # Main application
 │   ├── __init__.py
-│   ├── main.py         # Entry point
+│   ├── main.py         # Streamlit entry point
 │   ├── api/            # API endpoints
 │   │   └── llm.py      # LLM integration
 │   ├── game/           # Game logic
@@ -47,7 +48,9 @@ visual-novel/
 ├── static/             # Static web files
 │   ├── js/             # JavaScript files including Phaser
 │   ├── css/            # Stylesheets
-│   └── index.html      # Main HTML file
+│   └── index.html      # Main HTML file for Phaser game
+├── .streamlit/         # Streamlit configuration
+│   └── config.toml     # Streamlit settings
 └── tests/              # Test suite
     ├── test_game.py
     └── test_llm.py
@@ -136,23 +139,25 @@ class LLMClient:
     def get_pronunciation(self, japanese_text: str) -> str: ...
 ```
 
-#### Frontend Integration (`static/`)
-- Phaser game implementation
-- HTML/CSS for web interface
+#### Frontend Integration (`static/` and Streamlit)
+- Phaser game implementation embedded in Streamlit
+- Streamlit for UI framework and Python backend
 - JavaScript for game logic and API communication
+- Communication between Phaser and Python backend via Streamlit components
 
 **Key Files:**
+- `app/main.py`: Main Streamlit application entry point
 - `static/js/game.js`: Main Phaser game configuration
 - `static/js/scenes/`: JavaScript implementations of game scenes
-- `static/index.html`: Main HTML entry point
+- `static/index.html`: HTML template for Phaser game
 
 ### Game Flow
 
-1. **Game Initialization**
-   - Load assets (images, fonts)
-   - Initialize Phaser
-   - Set up API connections
-   - Display Title Scene
+1. **Application Initialization**
+   - Start Streamlit server
+   - Load Python backend components
+   - Serve Phaser game within Streamlit interface
+   - Initialize game assets and configuration
 
 2. **Title Scene**
    - Display game title and options
@@ -223,8 +228,8 @@ class LLMClient:
 
 ### Local Deployment
 - Single-user setup
-- Web browser interface
-- Local Python server
+- Streamlit web interface
+- Embedded Phaser game
 - No additional services required beyond LLM API
 
 ### Resource Requirements

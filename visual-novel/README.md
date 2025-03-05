@@ -1,6 +1,6 @@
 # Japanese Language Learning Visual Novel
 
-A visual novel game designed to help English speakers learn Japanese through interactive storytelling and gameplay, powered by a Large Language Model for dynamic dialog generation.
+A visual novel game designed to help English speakers learn Japanese through interactive storytelling and gameplay, powered by a Large Language Model for dynamic dialog generation. The application uses Streamlit as the web framework with an embedded Phaser game for the visual novel interface.
 
 ## Features
 
@@ -9,6 +9,7 @@ A visual novel game designed to help English speakers learn Japanese through int
 - Dynamic dialog generation using LLM
 - Vocabulary tracking and learning progress
 - Multiple difficulty levels for language learners
+- Streamlit-based user interface with embedded Phaser game
 
 ## Project Structure
 
@@ -21,7 +22,7 @@ A visual novel game designed to help English speakers learn Japanese through int
 │   │   ├── dialog/         # Dialog management
 │   │   └── scenes/         # Scene definitions
 │   ├── utils/              # Utility functions
-│   └── main.py             # Main entry point
+│   └── main.py             # Streamlit entry point
 ├── assets/                 # Game assets
 │   ├── images/             # Image files
 │   │   ├── backgrounds/    # Background images
@@ -32,10 +33,11 @@ A visual novel game designed to help English speakers learn Japanese through int
 ├── docs/                   # Documentation
 ├── static/                 # Static files
 │   ├── css/                # CSS files
-│   └── js/                 # JavaScript files
+│   └── js/                 # JavaScript files including Phaser
+├── .streamlit/             # Streamlit configuration
 ├── tests/                  # Test files
 ├── .env.example            # Example environment variables
-├── requirements.txt        # Python dependencies
+├── pyproject.toml          # Python dependencies and tool configuration
 └── README.md               # This file
 ```
 
@@ -57,12 +59,12 @@ A visual novel game designed to help English speakers learn Japanese through int
 2. Set up a virtual environment (using your preferred method):
    ```bash
    # Using conda
-   conda create -n visual-novel python=3.10
+   conda create -n visual-novel python=3.12
    conda activate visual-novel
    
    # Or using pyenv + uv venv
-   pyenv install 3.10.0
-   pyenv local 3.10.0
+   pyenv install 3.12
+   pyenv local 3.12
    uv venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
@@ -113,12 +115,3 @@ uv run streamlit run app/main.py
   uv run pytest
   ```
 
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- OpenAI for the LLM API
-- Streamlit for the web framework
-- All contributors to the project 

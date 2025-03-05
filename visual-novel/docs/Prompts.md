@@ -143,3 +143,9 @@ We are working within a conda environment called `vn` so please include activati
 Our project tools are set up as indicated in `Project-Setup.md`. Now it is time for us to start building the project GRADUALLY via the plan in `docs/Action-Plan.md`.
 
 First, let's make sure that our `docs/Action-Plan.md` file is up to date.  There may be work we've already done that we can use to check off items in the plan.
+
+---
+
+Since our project setup is complete, we have moved the Project-Setup.md file to the `docs/` directory and will not need to reference it again.
+
+It appears we have completed Step 1.1 of the `docs/Action-Plan.md` file. We've now decided to serve our Phaser game using Streamlit (which is not part of the original plan).  We may need to make updates both to our `docs/Action-Plan.md` file and our `docs/Technical-Spec.md` file and possibly the `README.md` file to reflect this change.  I want to make sure that all three of these files are in sync with each other.  If there are any inconsistencies, let's discuss them.

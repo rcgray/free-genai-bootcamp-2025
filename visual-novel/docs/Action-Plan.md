@@ -11,16 +11,17 @@
 - [x] Create basic README and documentation
 - [x] Set up environment variables (.env file)
 
-### 1.2 Web Framework Setup
-- [ ] Set up basic HTML/CSS structure
-- [ ] Create static file serving
-- [ ] Set up Python backend server
-- [ ] Implement basic routing
+### 1.2 Streamlit and Web Framework Setup
+- [ ] Set up Streamlit application structure
+- [ ] Create main.py entry point
+- [ ] Configure Streamlit settings
+- [ ] Set up static file serving through Streamlit
 - [ ] Create API endpoints structure
 
 ### 1.3 Phaser Integration
 - [ ] Add Phaser library to project
-- [ ] Create basic Phaser game container
+- [ ] Create HTML template for Phaser game
+- [ ] Embed Phaser game in Streamlit
 - [ ] Set up game configuration
 - [ ] Implement asset loading system
 - [ ] Create test scene to verify setup
