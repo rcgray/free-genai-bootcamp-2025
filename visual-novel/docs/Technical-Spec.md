@@ -3,12 +3,10 @@
 ## Technology Stack
 
 ### Core Technologies
-- **Python 3.10+**: Base programming language
-- **Streamlit 1.32.0**: Web framework for creating the interactive user interface
+- **Python 3.12+**: Base programming language
+- **Phaser 3.88.2**: JavaScript game framework for creating the visual novel interface
 - **OpenAI API Standard**: For LLM integration (with flexibility to change providers)
-- **TinyDB 4.8.0**: Lightweight, document-oriented database for game state persistence
-- **Pydantic 2.5.2**: Data validation and settings management
-- **Python-dotenv 1.0.0**: Environment variable management
+- **TinyDB**: Lightweight, document-oriented database (for future implementation)
 
 ### Development Tools
 - **Ruff**: Fast, comprehensive Python linter and formatter
@@ -16,18 +14,10 @@
 - **Pytest**: Testing framework
 - **uv**: Modern Python package installer and resolver
 
-### Japanese Language Processing
-- **Fugashi 1.3.0**: Japanese morphological analyzer
-- **Unidic-lite 1.0.8**: Dictionary for Japanese language processing
-
-### Image Processing
-- **Pillow 10.1.0**: Python Imaging Library for image processing
-
 ### Documentation
 
-- **Streamlit Documentation**: [Streamlit Documentation](https://docs.streamlit.io/)
-- **OpenAI API Documentation**: [OpenAI API Reference](https://platform.openai.com/docs/api-reference)
-- **TinyDB Documentation**: [TinyDB Documentation](https://tinydb.readthedocs.io/en/latest/)
+- Phaser General Documentation: (@Phaser General Documentation) - https://docs.phaser.io/phaser/getting-started/what-is-phaser
+- Phaser API Documentation: (@Phaser API Documentation) - https://docs.phaser.io/api-documentation/api-documentation
 
 ## Project Architecture
 
@@ -36,87 +26,68 @@
 visual-novel/
 ├── app/                # Main application
 │   ├── __init__.py
-│   ├── main.py         # Entry point (Streamlit application)
+│   ├── main.py         # Entry point
 │   ├── api/            # API endpoints
 │   │   └── llm.py      # LLM integration
 │   ├── game/           # Game logic
-│   │   ├── engine.py   # Core game engine
 │   │   ├── scenes/     # Game scenes (Title, VN, Study)
 │   │   ├── characters/ # Character definitions
 │   │   └── dialog/     # Dialog management
 │   └── utils/          # Utility functions
-│       ├── config.py   # Configuration management
-│       ├── database.py # Database operations
-│       └── language.py # Language processing utilities
 ├── assets/             # Game assets
 │   ├── images/         # Background and character images
 │   │   ├── backgrounds/
 │   │   └── characters/
 │   ├── audio/          # Sound effects and music
 │   └── fonts/          # Custom fonts for Japanese text
-├── data/               # Data storage
-│   ├── dialog/         # Static dialog JSON files
-│   └── vocabulary.json # Vocabulary database
+├── data/               # Data storage (for future implementation)
+│   └── game.json       # TinyDB database
 ├── scripts/            # Utility scripts
 │   └── update_docs.py  # Documentation updater
 ├── static/             # Static web files
-│   ├── js/             # JavaScript files
+│   ├── js/             # JavaScript files including Phaser
 │   ├── css/            # Stylesheets
-│   └── index.html      # HTML template
+│   └── index.html      # Main HTML file
 └── tests/              # Test suite
-    ├── conftest.py     # Test fixtures and configuration
-    ├── test_game_engine.py
-    └── test_language_utils.py
+    ├── test_game.py
+    └── test_llm.py
 ```
 
 ### Component Details
 
-#### Game Engine (`app/game/engine.py`)
-The game engine manages the core game logic and state:
+#### Game Engine (`app/game/`)
+The game module contains the core game logic, organized into submodules:
 
-**Key Classes:**
-```python
-class GameEngine:
-    """Core game engine that manages scenes, characters, and game state."""
-    def __init__(self, config: Dict[str, Any]) -> None: ...
-    def register_scene(self, scene_id: str, scene_class: Type[Scene], scene_config: Dict[str, Any]) -> None: ...
-    def register_character(self, character: Character) -> None: ...
-    def start_game(self, initial_scene: str) -> None: ...
-    def transition_to_scene(self, scene_id: str) -> None: ...
-    def update(self, delta_time: float) -> None: ...
-    def render(self) -> None: ...
-    def handle_input(self, event: Dict[str, Any]) -> None: ...
-    def save_game(self, save_slot: int = 0) -> bool: ...
-    def load_game(self, save_slot: int = 0) -> bool: ...
-```
-
-#### Scene Management (`app/game/scenes/`)
-- Implements the game scenes: Intro, Title, VN, and Study
+##### Scene Management (`app/game/scenes/`)
+- Implements the three main scenes: Title, VN, and Study
 - Handles transitions between scenes
 - Manages game state and progression
 
 **Key Classes:**
 ```python
-class Scene:
-    """Base class for all game scenes."""
-    def __init__(self, name: str, config: Dict[str, Any]) -> None: ...
-    def enter(self) -> None: ...
-    def exit(self) -> None: ...
-    def update(self, delta_time: float) -> None: ...
+class TitleScene:
+    """Title screen with game options and start button."""
+    def __init__(self, config: Dict[str, Any]) -> None: ...
     def render(self) -> None: ...
     def handle_input(self, event: Dict[str, Any]) -> None: ...
-    def transition_to(self, scene_name: str) -> None: ...
 
-class IntroScene(Scene):
-    """Introduction scene with initial story setup and player name input."""
-    def __init__(self, name: str, config: Dict[str, Any]) -> None: ...
-    def enter(self) -> None: ...
-    def update(self, delta_time: float) -> None: ...
+class VNScene:
+    """Main visual novel scene with character interactions."""
+    def __init__(self, game_state: Dict[str, Any]) -> None: ...
+    def load_background(self, image_path: str) -> None: ...
+    def display_character(self, character_id: str, emotion: str) -> None: ...
+    def display_dialog(self, text: str, character_id: Optional[str] = None) -> None: ...
+    def display_choices(self, choices: List[str]) -> None: ...
+    def handle_choice(self, choice_index: int) -> None: ...
+
+class StudyScene:
+    """Language study scene for focused learning."""
+    def __init__(self, phrase: str, translation: str, pronunciation: str) -> None: ...
     def render(self) -> None: ...
-    def handle_input(self, event: Dict[str, Any]) -> None: ...
+    def return_to_vn(self) -> None: ...
 ```
 
-#### Character Management (`app/game/characters/`)
+##### Character Management (`app/game/characters/`)
 - Defines character attributes and sprites
 - Manages character emotions and expressions
 - Handles character positioning in scenes
@@ -125,21 +96,16 @@ class IntroScene(Scene):
 ```python
 class Character:
     """Represents a character in the visual novel."""
-    def __init__(
-        self,
-        name: str,
-        display_name: str,
-        description: str,
-        images: Dict[str, str],
-        traits: Optional[Dict[str, Any]] = None,
-        language_level: str = "beginner"
-    ) -> None: ...
-    def get_image(self, pose: str = "default") -> str: ...
-    def add_dialog(self, text: str, translation: str, context: Optional[Dict[str, Any]] = None) -> None: ...
-    def to_dict(self) -> Dict[str, Any]: ...
+    def __init__(self, 
+                 character_id: str, 
+                 name: str, 
+                 sprite_base_path: str,
+                 emotions: List[str]) -> None: ...
+    def get_sprite(self, emotion: str) -> str: ...
+    def get_name(self) -> str: ...
 ```
 
-#### Dialog Management (`app/game/dialog/`)
+##### Dialog Management (`app/game/dialog/`)
 - Handles text display and formatting
 - Manages dialog flow and choices
 - Integrates with LLM for dynamic content
@@ -148,24 +114,10 @@ class Character:
 ```python
 class DialogManager:
     """Manages dialog display and interaction."""
-    def __init__(
-        self,
-        llm_client: Optional[LLMClient] = None,
-        static_dialog_path: Optional[Path] = None
-    ) -> None: ...
-    def load_static_dialog(self, scene_id: str) -> List[Dict[str, Any]]: ...
-    def generate_dynamic_dialog(
-        self,
-        character_name: str,
-        context: Dict[str, Any],
-        language_level: str = "beginner"
-    ) -> Dict[str, Any]: ...
-    def generate_choices(
-        self,
-        context: Dict[str, Any],
-        num_choices: int = 3,
-        language_level: str = "beginner"
-    ) -> List[Dict[str, Any]]: ...
+    def __init__(self, llm_client: LLMClient) -> None: ...
+    def display_text(self, text: str, character_id: Optional[str] = None) -> None: ...
+    def generate_response_options(self, context: Dict[str, Any]) -> List[str]: ...
+    def process_player_choice(self, choice_index: int, context: Dict[str, Any]) -> str: ...
 ```
 
 #### LLM Integration (`app/api/llm.py`)
@@ -184,115 +136,64 @@ class LLMClient:
     def get_pronunciation(self, japanese_text: str) -> str: ...
 ```
 
-#### Database Management (`app/utils/database.py`)
-- Manages game state persistence
-- Handles player data and game saves
-- Provides vocabulary access
+#### Frontend Integration (`static/`)
+- Phaser game implementation
+- HTML/CSS for web interface
+- JavaScript for game logic and API communication
 
-**Key Classes:**
-```python
-class PlayerData(TypedDict):
-    """Type definition for player data."""
-    name: str
-    language_level: str
-    progress: Dict[str, Any]
-    learned_words: List[Dict[str, Any]]
-    score: int
-
-class GameSave(TypedDict):
-    """Type definition for game save data."""
-    save_id: int
-    timestamp: str
-    player: PlayerData
-    current_scene: str
-    flags: Dict[str, Any]
-    inventory: List[Dict[str, Any]]
-
-class DatabaseManager:
-    """Manages database operations for the game."""
-    def __init__(self, data_path: Union[str, Path]) -> None: ...
-    def save_game(self, save_data: GameSave) -> bool: ...
-    def load_game(self, save_id: int) -> Optional[GameSave]: ...
-    def get_vocabulary_word(self, word: str) -> Optional[Dict[str, Any]]: ...
-    def update_player_data(self, player_data: PlayerData) -> bool: ...
-```
-
-#### Language Utilities (`app/utils/language.py`)
-- Provides Japanese language processing
-- Handles vocabulary extraction and analysis
-- Manages pronunciation guides and translations
-
-**Key Functions:**
-```python
-def extract_vocabulary(text: str) -> List[str]: ...
-def get_word_info(
-    word: str,
-    llm_client: Optional[LLMClient] = None,
-    vocabulary_db: Optional[Path] = None
-) -> Dict[str, Any]: ...
-def get_pronunciation_guide(
-    text: str,
-    llm_client: Optional[LLMClient] = None
-) -> str: ...
-def translate_text(
-    text: str,
-    source_lang: str = "ja",
-    target_lang: str = "en",
-    llm_client: Optional[LLMClient] = None
-) -> str: ...
-```
-
-### Streamlit Integration
-
-The application uses Streamlit as the primary web framework, which differs from the original Phaser-based approach. Key Streamlit components include:
-
-1. **Main Application (`app/main.py`)**
-   - Sets up the Streamlit page configuration
-   - Initializes session state for game persistence
-   - Renders the game UI components
-
-2. **Game UI Components**
-   - Dialog rendering with Japanese and English text
-   - Character display with emotion states
-   - Choice selection interface
-   - Game controls (save/load/settings)
-
-3. **Session State Management**
-   - Tracks game state across interactions
-   - Manages dialog history and player choices
-   - Persists player progress and settings
+**Key Files:**
+- `static/js/game.js`: Main Phaser game configuration
+- `static/js/scenes/`: JavaScript implementations of game scenes
+- `static/index.html`: Main HTML entry point
 
 ### Game Flow
 
 1. **Game Initialization**
-   - Load configuration from environment variables
-   - Initialize Streamlit session state
-   - Set up game engine and components
-   - Display intro scene
+   - Load assets (images, fonts)
+   - Initialize Phaser
+   - Set up API connections
+   - Display Title Scene
 
-2. **Game Progression**
-   - Render current scene and dialog
-   - Process player input and choices
-   - Transition between scenes based on player actions
-   - Update game state and session variables
+2. **Title Scene**
+   - Display game title and options
+   - Handle player customization
+   - Transition to VN Scene on start
 
-3. **Language Learning Integration**
-   - Extract vocabulary from dialog
-   - Provide translations and pronunciation guides
-   - Track player's vocabulary progress
-   - Offer contextual explanations for language elements
+3. **VN Scene Flow**
+   - Load background and characters
+   - Display dialog (from LLM or predefined)
+   - Present player choices
+   - Process player selection
+   - Offer study opportunities
+   - Update game state
 
-### Data Management
+4. **Study Scene Flow**
+   - Display selected phrase
+   - Show pronunciation guide
+   - Provide translation
+   - Offer contextual explanations
+   - Return to VN Scene
 
-1. **Static Data**
-   - Dialog scripts stored as JSON files
-   - Character definitions in Python modules
-   - Vocabulary database as JSON
+### LLM Integration Workflow
 
-2. **Dynamic Data**
-   - Game saves stored in TinyDB
-   - Player progress tracking
-   - Vocabulary mastery levels
+#### Dialog Generation
+1. Construct context object with scene information, characters, and history
+2. Send context to LLM API
+3. Process response to extract dialog text
+4. Display dialog in game interface
+
+#### Choice Generation
+1. Send current game state and dialog history to LLM
+2. Request appropriate response options (max 3)
+3. Process and validate responses
+4. Present choices to player
+
+#### Language Learning Features
+1. Extract phrase for study
+2. Request translation from LLM
+3. Request pronunciation guide
+4. Request contextual explanations
+5. Present information in Study Scene
 
 ## Development Environment
 
@@ -302,59 +203,58 @@ The application uses Streamlit as the primary web framework, which differs from 
 - Virtual environments for isolation
 
 ### Dependency Management
-- Core dependencies defined in `pyproject.toml`
-- Package installation and management via `uv`
-- Version pinning for reproducibility
-- Development dependencies included in `pyproject.toml` under tool sections
+- Core dependencies in `pyproject.toml`
+- Development extras for tooling
+- Version pinning through `uv.lock`
 
 ### Code Quality
 - Ruff configuration in `pyproject.toml`
 - MyPy strict type checking
 - Google-style docstrings
-- 100-character line length
+- 88-character line length (Black compatible)
 
 ### Testing Strategy
 - Unit tests with pytest
 - Integration tests for game logic
 - Mocked LLM responses
-- Test fixtures in conftest.py
+- Test coverage tracking
 
 ## Deployment Considerations
 
 ### Local Deployment
-- Streamlit local server
-- Environment variable configuration via .env file
-- Local file system for data storage
-- OpenAI API key required for dynamic content
+- Single-user setup
+- Web browser interface
+- Local Python server
+- No additional services required beyond LLM API
 
 ### Resource Requirements
-- Python 3.10+ runtime
-- Modern web browser
+- Python 3.12+ runtime
+- Modern web browser with WebGL support
 - Internet connection for LLM API
-- Sufficient memory for application
+- Sufficient memory for game assets
 
 ### Security Considerations
-- API key management through environment variables
-- Input validation for all user inputs
+- API key management
+- Input validation
 - Error handling for external services
 - Content filtering for LLM responses
 
 ## Future Technical Considerations
 
 ### Scalability
-- Cloud deployment options (Streamlit Cloud)
-- Database migration to more robust solutions
+- TinyDB implementation for game state persistence
+- Cloud deployment options
 - User account system
 - Progress tracking across sessions
 
 ### Performance Optimization
-- Caching strategies for LLM responses
+- Asset preloading and caching
+- LLM response caching
 - Asynchronous API calls
 - Resource cleanup
-- Image optimization
 
 ### Feature Expansion
-- Voice generation for dialog
+- Voice generation integration
 - Speech recognition for pronunciation practice
 - Expanded character and scene library
 - Advanced language learning analytics 
