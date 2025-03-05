@@ -1,0 +1,67 @@
+# Python
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.env
+.venv
+**/.venv/
+venv/
+ENV/
+
+# Development Tools
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# IDE/Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Database and Media
+data/*.json
+!data/example.json
+media/sources/*
+!media/sources/.gitkeep
+media/transcripts/*
+!media/transcripts/.gitkeep
+media/translations/*
+!media/translations/.gitkeep
+
+# Documentation
+docs/reports/
+docs/_build/
+site/
+
+# Dev Notes
+dev/template/
+
+# Test Data
+tests/data/
+tests/fixtures/
+
+# Local Development
+.env.local
+.env.*.local
+*.override.yml
+*.override.yaml
+
+# Cache and Temporary
+.cache/
+__pycache__/
+*.py[cod]
+*$py.class
+*.bak
+*.tmp
+*.temp
+.history/ 
