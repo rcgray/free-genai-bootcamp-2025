@@ -3,6 +3,7 @@
 ├── .cursorrules
 ├── .env.example
 ├── .gitignore
+├── .streamlit
 ├── Project-Setup.md
 ├── README.md
 ├── app
@@ -38,7 +39,7 @@
 │   └── images
 │       ├── backgrounds
 │       │   ├── classroom.jpg
-│       │   └── default.jpg
+│       │   └── title.jpg
 │       └── characters
 │           ├── teacher
 │           │   ├── default.png
@@ -79,4 +80,4 @@
 │   └── test_language_utils.py
 └── uv.lock
 
-32 directories, 48 files
+33 directories, 48 files

@@ -30,13 +30,13 @@ app/game/characters/teacher.py         9      9     0%
 app/game/dialog/manager.py            57     37    35%
 app/game/engine.py                    96     35    64%
 app/game/scenes/base.py               19      0   100%
-app/game/scenes/intro.py              62     62     0%
-app/main.py                          104    104     0%
+app/game/scenes/intro.py              58     58     0%
+app/main.py                          130    130     0%
 app/utils/config.py                   54     54     0%
 app/utils/database.py                111    111     0%
 app/utils/language.py                 86     45    48%
 ------------------------------------------------------
-TOTAL                                638    473    26%
+TOTAL                                660    495    25%
 
 
-============================== 13 passed in 0.09s ==============================
+============================== 13 passed in 0.14s ==============================
