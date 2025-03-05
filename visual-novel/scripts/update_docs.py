@@ -84,8 +84,8 @@ def main() -> None:
     print("Updating file structure documentation...")
     update_file_structure()
 
-    #print("\nRunning tests and generating report...")
-    #run_tests()
+    print("\nRunning tests and generating report...")
+    run_tests()
 
     print("\nDocumentation update complete!")
 

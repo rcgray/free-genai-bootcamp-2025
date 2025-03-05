@@ -4,12 +4,11 @@ A visual novel game designed to help English speakers learn Japanese through int
 
 ## Features
 
-- Interactive visual novel gameplay with branching storylines
+- Interactive visual novel gameplay with dynamic interactions
 - Japanese language learning integrated into the gameplay
 - Dynamic dialog generation using LLM
 - Vocabulary tracking and learning progress
 - Multiple difficulty levels for language learners
-- Save and load game progress
 
 ## Project Structure
 
@@ -70,7 +69,9 @@ A visual novel game designed to help English speakers learn Japanese through int
 
 3. Install dependencies:
    ```bash
-   uv sync
+   uv sync  # for production dependencies
+   # or
+   uv sync --extra dev  # for development dependencies
    ```
 
 4. Create a `.env` file from the example:
@@ -79,6 +80,10 @@ A visual novel game designed to help English speakers learn Japanese through int
    ```
    
 5. Edit the `.env` file to add your OpenAI API key (optional, for dynamic dialog generation).
+
+6. (Optional) Disable Streamlit telemetry:
+   The application uses Streamlit, which collects anonymous usage statistics by default.
+   A configuration file is included at `.streamlit/config.toml` that disables this behavior.
 
 ### Running the Application
 
