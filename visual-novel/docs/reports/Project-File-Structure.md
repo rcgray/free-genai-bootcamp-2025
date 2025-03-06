@@ -40,8 +40,14 @@
 │   │   └── game.css
 │   ├── index.html
 │   └── js
-│       └── game.js
+│       ├── game.js
+│       └── scenes
+│           ├── AssetManager.js
+│           ├── BaseScene.js
+│           ├── SceneRegistry.js
+│           ├── TestScene.js
+│           └── loader.js
 ├── tests
 └── uv.lock
 
-21 directories, 24 files
+22 directories, 29 files

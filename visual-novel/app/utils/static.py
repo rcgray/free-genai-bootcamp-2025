@@ -104,9 +104,11 @@ def serve_phaser_game() -> None:
     static_dir = Path(__file__).parent.parent.parent / "static"
     js_dir = static_dir / "js"
     css_dir = static_dir / "css"
+    scenes_dir = js_dir / "scenes"
     
     os.makedirs(js_dir, exist_ok=True)
     os.makedirs(css_dir, exist_ok=True)
+    os.makedirs(scenes_dir, exist_ok=True)
     
     # Check if Phaser is available
     phaser_path = js_dir / "phaser.min.js"
@@ -126,6 +128,22 @@ def serve_phaser_game() -> None:
     
     # Inject Phaser library
     inject_js("js/phaser.min.js")
+    
+    # Inject scene management scripts
+    scene_scripts = [
+        "js/scenes/BaseScene.js",
+        "js/scenes/SceneRegistry.js",
+        "js/scenes/AssetManager.js",
+        "js/scenes/TestScene.js",
+        "js/scenes/loader.js"
+    ]
+    
+    for script in scene_scripts:
+        script_path = static_dir / script
+        if script_path.exists():
+            inject_js(script)
+        else:
+            st.warning(f"Scene script {script} not found. Some features may not work correctly.")
     
     # Inject game script
     inject_js("js/game.js")

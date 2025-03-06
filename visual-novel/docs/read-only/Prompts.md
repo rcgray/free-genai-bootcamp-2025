@@ -199,6 +199,18 @@ We have added a new file `/docs/Game-LLM-Prompts.md` (@Game-LLM-Prompts.md) that
 
 ---
 
+# started new chat
+
+---
+
+(Interaction Guidelines: @Prompt-Header.md)
+(Project File Structure: @Project-File-Structure.md)
+
+We are building a Japanese learning app in the form of a visual novel game. Our project is a Streamlit app running a game that we are writing using Phaser.  Our project file structure can be found in the `docs/reports/Project-File-Structure.md` file. Our PRD is in the `docs/PRD.md` file. Our Technical Spec is in the `docs/Technical-Spec.md` file. The design for the game (when we get there) is in the `docs/Game-Design.md` file. Our Action Plan is in the `docs/Action-Plan.md` file.
+
+We currently have a shell of a project, consisting of a lightweight Streamlit app that loads a Phaser game for the user. We are now moving to Phase 2 of our Action Plan, where we will build the scenes for our game, starting with a base Scene class to serve as the foundation for the scenes we will build afterward.
+
+Once I can confirm for you the successful implementation of the tasks in our current sub-phase (2.1), we can continue on to others.
 
 
 

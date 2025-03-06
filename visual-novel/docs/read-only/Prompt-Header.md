@@ -7,7 +7,7 @@ For the human developer, add new items when mistakes are discovered in communica
 ## General Guidelines
 - DO NOT DO ANYTHING OTHER THAN WHAT WAS REQUESTED IN THE PROMPT. You may be given access to an "Action-Plan.md" file, which is a list of completed tasks as well as those ahead of us. Access to this file or a request to update a particular section of it is not license to continue on to the next task. Just because a file is called "Action Plan" does not mean that those actions are all meant for you to complete.
 - You will always be working from a list of instructions from a file (e.g., `docs/Action-Plan.md`, or earlier in the project `Project-Setup.md`). After you complete the current task, always update the steps in the file to reflect the current state of the project. If we intentionally skip a step, make sure to mark the item as `[~]` so we can track that intentional decision.
-- Do not edit any files in the `docs/read-only` folder, which include files such as `Prompt-Notes.md` and `Prompts.md`. Files in this folder are generated and maintained only by the user. You may read these files, but do not edit them.
+- Do not edit any files in the `docs/read-only` folder, which include files such as `Prompt-Header.md` and `Prompts.md`. Files in this folder are generated and maintained only by the user. You may read these files, but do not edit them.
 
 ## Command Line Interface
 - We are using a conda environment called `vn` so please include activating that environment in your commands.
