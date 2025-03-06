@@ -121,12 +121,12 @@ We can then update our `Project-Setup.md` and `Action-Plan.md` files to reflect 
 
 ---
 
-Dev Steps:
+# Dev Steps:
 - Git commit everything
 - Create conda env or uv venv or what is needed
 - Install tools & dependencies, `uv sync --extra dev`, etc.
 - Set up .env from .env.example
-- Move (now completed) Project-Setup.md to the /docs directory
+- Move (now completed) Project-Setup.md to the /docs/read-only directory
 - Delete the `dev/template` folder (optional)
 - Run `scripts/update_docs.py` script again
 
@@ -159,5 +159,36 @@ Good job, and thank you for remembering to limit your actions to only those requ
 
 ---
 
+Fantastic. The `docs/Prompt-Notes.md` file has been updated as well, so I'm including it again in the prompt.
 
+Before we move on to Phase 2 of the `docs/Action-Plan.md` file, let's make sure that we have a solid plan for the scenes that we will be building. The documentation for this is sparse in our `docs/Technical-Spec.md` file, so let's take a moment to review the current state of the file and make sure that we flesh out some details. As a reminder:
 
+The primary goals of this project are:
+- (Functional) To create a simple engine for crafting web-based visual novel game experiences.
+- (Design) To design a game that provides English-speaking players with a way to learn Japanese through gameplay.
+- (Exploration) To explore the potential and limitations of LLMs as a design material for game development.
+
+The game will consist of three scenes:
+
+- Title Scene
+- VN (visual novel) Scene
+- Study Scene
+
+The player will start on the Title Scene, which may have some options to toggle to customize the game experience (TBD). They will then click a button to start the VN Scene, which is where the majority of the game takes place. There are four UI elements in the VN Scene:
+
+- A background image, such as a landscape or a room.
+- Character sprites in front of the background image, showing a vignette of the character's face and body that the player is currently interacting with.
+- A chat section in front of the background image and character sprites, where the character dialog is displayed.
+- A selection of multiple-choice dialog options (max 3) that the player can click on as their choice of what their character says in the scene to the other characters.
+
+Because this is a game intended for language learning, there will be opportunities in the VN Scene to select language (i.e., a phrase said by a character or the dialog options available to the player) and enter a focused study session for that phrase, which is where the Study Scene comes in. After completing the Study Scene, the player will return to the VN Scene, where the game will continue. These opportunities will be indicated by a button in the VN Scene next to the chat section.
+
+The Study Scene will take the text associated with the portion of the dialog that the player chose to study and present it in a way that allows the player to examine it more closely. For example, with pronunciation (romaji) and English translation. A "Back" button will return the player to the VN Scene.
+
+The game will be supported by a Large Language Model (LLM) that will be used to generate the dialog for the game and provide dynamic content for the study objectives such as pronunciation and translation.
+
+Ensure we have everything we need in the `docs/Technical-Spec.md` file to direct the construction of our game scenes. It may be the case that our current documentation is sufficient, but this is the time to double check. When you show that you have completed this, and I agree with your edits, we will move on to Phase 2 of the `docs/Action-Plan.md` file. Do not move on to implementing anything, however, until you have my confirmation.
+
+---
+
+We have added a new file `/docs/Game-Design.md` that contains a detailed design for the visual novel game (locations and characters). Take a look and think about how we might add details to this that would help our development. Does everything make sense with regard to how the scenes should progress, what content we will want to include in each scene, what images we will need for each scene, and so on?

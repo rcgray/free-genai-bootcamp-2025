@@ -9,7 +9,7 @@
 
 # Interaction with the user
 - Do not edit any files in the `dev/template` folder
-- Do not edit the `docs/Prompts.md` file, it is generated and maintained only by the user
+- Do not edit any files in the `docs/read-only` folder, which include files such as `Prompt-Notes.md` and `Prompts.md`. Files in this folder are generated and maintained only by the user. You may read these files, but do not edit them.
 - Our project uses a conda environment called `vn` so please include activating that environment in your commands.
 - We are using `uv` to manage our Python dependencies, so please configure your commands accordingly (e.g., `uv sync` or `uv sync --extra dev` to install dependencies, `uv run <script>` to run a script, `uv run pytest` to run tests, etc.).
 - This project is a subfolder within a larger monorepo. Keep this in mind when making file paths, references, and suggesting commands (e.g., ruff format).
