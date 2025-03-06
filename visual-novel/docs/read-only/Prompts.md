@@ -192,3 +192,6 @@ Ensure we have everything we need in the `docs/Technical-Spec.md` file to direct
 ---
 
 We have added a new file `/docs/Game-Design.md` that contains a detailed design for the visual novel game (locations and characters). Take a look and think about how we might add details to this that would help our development. Does everything make sense with regard to how the scenes should progress, what content we will want to include in each scene, what images we will need for each scene, and so on?
+
+---
+
