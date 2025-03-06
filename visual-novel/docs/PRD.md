@@ -3,6 +3,14 @@
 ## Overview
 The Japanese Language Learning Visual Novel is a web-based game built in Python that operates similar to a Renpy visual novel engine. The game is designed for English-speaking players who want to learn Japanese through an immersive gameplay experience. The application provides an interactive visual novel experience with integrated language learning features, supported by Large Language Models (LLMs) for generating dialog and processing study objectives.
 
+## Primary Goals
+The primary goals of this project are:
+- **Functional Goal**: To create a simple engine for crafting web-based visual novel game experiences.
+- **Design Goal**: To design a game that provides English-speaking players with a way to learn Japanese through gameplay.
+- **Research Goal**: To explore the potential and limitations of LLMs as a design material for game development.
+
+These goals will guide all design and development decisions throughout the project lifecycle, ensuring we maintain focus on our core objectives.
+
 ## Problem Statement
 Learning Japanese through traditional methods can be:
 - Boring and lacking in context

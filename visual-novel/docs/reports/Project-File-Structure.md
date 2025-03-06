@@ -4,23 +4,44 @@
 ├── .env.example
 ├── .gitignore
 ├── .streamlit
-├── Project-Setup.md
 ├── README.md
 ├── app
+│   ├── api
+│   │   └── __init__.py
+│   ├── main.py
+│   └── utils
+│       ├── __init__.py
+│       └── static.py
+├── assets
+│   ├── audio
+│   ├── fonts
+│   └── images
+│       ├── backgrounds
+│       └── characters
 ├── dev
 ├── docs
 │   ├── Action-Plan.md
+│   ├── Game-Design.md
+│   ├── Game-LLM-Prompts.md
 │   ├── PRD.md
-│   ├── Prompts.md
 │   ├── Technical-Spec.md
+│   ├── read-only
+│   │   ├── Project-Setup.md
+│   │   ├── Prompt-Header.md
+│   │   └── Prompts.md
 │   └── reports
 │       └── Project-File-Structure.md
 ├── pyproject.toml
 ├── scripts
 │   └── update_docs.py
 ├── static
-│   └── assets
+│   ├── assets
+│   ├── css
+│   │   └── game.css
+│   ├── index.html
+│   └── js
+│       └── game.js
 ├── tests
 └── uv.lock
 
-10 directories, 14 files
+21 directories, 24 files
