@@ -36,6 +36,7 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 // Create game instance
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const game = new Phaser.Game(config);
 
 // Enable full page reload on changes instead of HMR

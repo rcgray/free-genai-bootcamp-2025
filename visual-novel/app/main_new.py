@@ -96,24 +96,19 @@ def main() -> None:
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Japanese Visual Novel</title>
         <style>
-            html, body {{
+            body {{
                 margin: 0;
                 padding: 0;
-                width: 100%;
-                height: 100%;
-                overflow: hidden;
-                background-color: transparent;
-            }}
-            body {{
+                background-color: #333;
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                height: 100%;
+                overflow: hidden;
             }}
             #game-container {{
                 width: 1200px;
                 height: 800px;
-                margin: 0;
-                padding: 0;
             }}
         </style>
     </head>
@@ -134,7 +129,7 @@ def main() -> None:
     """
     
     # Display the game
-    st.components.v1.html(html_content, height=800, width=1200)
+    st.components.v1.html(html_content, height=850, width=1250)
     
     # Show asset info in sidebar
     with st.sidebar:
@@ -148,7 +143,7 @@ def main() -> None:
                 st.text(f"Data URL preview: {assets['title-bg'][:50]}...")
                 
                 # Show the image in the sidebar
-                st.image(str(title_img_path), caption="Title Image", width=200)
+                st.image(title_img_path, caption="Title Image", width=200)
             else:
                 st.warning("Title image not embedded")
         

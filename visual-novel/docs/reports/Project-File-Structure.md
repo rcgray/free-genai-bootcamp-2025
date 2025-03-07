@@ -8,7 +8,9 @@
 ├── app
 │   ├── api
 │   │   └── __init__.py
+│   ├── dev_iframe.py
 │   ├── main.py
+│   ├── main_new.py
 │   └── utils
 │       ├── __init__.py
 │       └── static.py
@@ -60,8 +62,10 @@
 │   └── vite.config.ts
 ├── pyproject.toml
 ├── scripts
+│   ├── build_game.py
 │   ├── dev.sh
 │   ├── run-phaser-dev.sh
+│   ├── run_app.py
 │   └── update_docs.py
 ├── static
 │   ├── assets
@@ -86,4 +90,4 @@
 ├── tests
 └── uv.lock
 
-39 directories, 48 files
+39 directories, 52 files
