@@ -51,7 +51,9 @@
 │   │   ├── index.ts
 │   │   ├── scenes
 │   │   │   ├── BaseScene.ts
-│   │   │   └── SceneRegistry.ts
+│   │   │   ├── SceneRegistry.ts
+│   │   │   ├── TestScene.ts
+│   │   │   └── TitleScene.ts
 │   │   └── utils
 │   │       └── AssetManager.ts
 │   ├── tsconfig.json
@@ -59,6 +61,7 @@
 ├── pyproject.toml
 ├── scripts
 │   ├── dev.sh
+│   ├── run-phaser-dev.sh
 │   └── update_docs.py
 ├── static
 │   ├── assets
@@ -83,4 +86,4 @@
 ├── tests
 └── uv.lock
 
-39 directories, 45 files
+39 directories, 48 files

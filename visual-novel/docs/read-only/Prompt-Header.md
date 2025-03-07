@@ -18,7 +18,9 @@ This file differs from .cursorrules in that it is meant to be constructed over t
 ## Command Line Interface
 - We are using a conda environment called `vn` so please include activating that environment in your commands.
 - We are using `uv` to manage our Python dependencies, so please configure your commands accordingly (e.g., `uv sync` or `uv sync --extra dev` to install dependencies, `uv run <script>` to run a script, `uv run pytest` to run tests, etc.).
-- Create commands from the root of the project. There are some config files in the root of the project that dictate how certain components run (for example, `.streamlit/config.toml`). If you attempt to `cd app` and then `uv run streamlit run main.py`, our config will not be applied. Instead, run your commands from the project root: `uv run streamlit run app/main.py`.
+- CREATE COMMANDS FROM THE ROOT OF THE PROJECT. There are some config files in the root of the project that dictate how certain components run (for example, `.streamlit/config.toml`). If you attempt to `cd app` and then `uv run streamlit run main.py`, our config will not be applied. Instead, run your commands from the project root: `uv run streamlit run app/main.py`.
+- CREATE INSTRUCTIONAL COMMANDS FROM THE ROOT OF THE PROJECT. If you are going to have us build a game, don't have us `cd phaser_game && npm run build`, instead, set up the build command in the root so that we can simply `npm run build` without the `cd phaser_game`. You often forget what directory you're in and this leads to incorrect commands.
+- REFERENCE FILES FROM THE ROOT OF THE PROJECT. If you are going to move a file, it is better to run `mv subdir/subdir1/file.txt subdir/subdir2/file.txt` than to run `cd subdir && mv subdir1/file.txt subdir2/file.txt`. You often forget what directory you're in and this leads to incorrect commands.
 - Include a "💻" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate that you understand these Command Line Interface guidelines, so I'll know whether or not I need to remind you of this `Prompt-Header.md` file.
 
 ## Coding Guidelines

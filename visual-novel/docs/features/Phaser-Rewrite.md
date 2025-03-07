@@ -284,332 +284,105 @@ With the decisions made regarding development environment, build process, asset 
 ## Action Plan
 
 ### Phase 1: Environment Setup and Project Structure
-- [ ] **1.1 Development Environment Setup**
-  - [ ] Install Node.js and npm if not already installed
-  - [ ] Verify Node.js (v16+) and npm (v8+) versions
-  - [ ] Document Node.js and npm requirements in README.md
+- [x] **1.1 Development Environment Setup**
+  - [x] Install Node.js and npm if not already installed
+  - [x] Verify Node.js (v16+) and npm (v8+) versions
+  - [x] Document Node.js and npm requirements in README.md
 
-- [ ] **1.2 Create Phaser Game Project Structure**
-  - [ ] Create `phaser_game` directory in project root
-  - [ ] Initialize npm project: `cd phaser_game && npm init -y`
-  - [ ] Install dependencies:
+- [x] **1.2 Create Phaser Game Project Structure**
+  - [x] Create `phaser_game` directory in project root
+  - [x] Initialize npm project: `cd phaser_game && npm init -y`
+  - [x] Install dependencies:
     ```bash
     npm install phaser@3.88.2
     npm install --save-dev typescript vite @vitejs/plugin-react
     ```
 
-- [ ] **1.3 Configure TypeScript and Vite**
-  - [ ] Create `tsconfig.json` with appropriate configuration:
-    ```json
-    {
-      "compilerOptions": {
-        "target": "ES2020",
-        "useDefineForClassFields": true,
-        "module": "ESNext",
-        "lib": ["ES2020", "DOM", "DOM.Iterable"],
-        "skipLibCheck": true,
-        "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "noEmit": true,
-        "strict": true,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true
-      },
-      "include": ["src"]
-    }
-    ```
-  - [ ] Create `vite.config.ts` with appropriate configuration:
-    ```typescript
-    import { defineConfig } from 'vite';
-    import { resolve } from 'path';
+- [x] **1.3 Configure TypeScript and Vite**
+  - [x] Create `tsconfig.json` with appropriate configuration
+  - [x] Create `vite.config.ts` with appropriate configuration
 
-    export default defineConfig({
-      base: './',
-      build: {
-        outDir: 'dist',
-        assetsDir: 'assets',
-        rollupOptions: {
-          input: {
-            main: resolve(__dirname, 'index.html'),
-          },
-        },
-      },
-      server: {
-        port: 5173,
-        open: true,
-        hmr: true, // Enable Hot Module Replacement
-      },
-    });
-    ```
+- [x] **1.4 Create Basic HTML Template**
+  - [x] Create `phaser_game/index.html`
 
-- [ ] **1.4 Create Basic HTML Template**
-  - [ ] Create `phaser_game/index.html`:
-    ```html
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Japanese Visual Novel</title>
-      <style>
-        body {
-          margin: 0;
-          padding: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          background-color: #333;
-        }
-        #game-container {
-          width: 1200px;
-          height: 800px;
-        }
-      </style>
-    </head>
-    <body>
-      <div id="game-container"></div>
-      <script type="module" src="/src/index.ts"></script>
-    </body>
-    </html>
-    ```
+- [x] **1.5 Set Up Directory Structure**
+  - [x] Create `phaser_game/src` directory
+  - [x] Create `phaser_game/src/scenes` directory
+  - [x] Create `phaser_game/assets` directory
+  - [x] Create subdirectories for different asset types:
+    - [x] `phaser_game/assets/images`
+    - [x] `phaser_game/assets/images/backgrounds`
+    - [x] `phaser_game/assets/images/characters`
+    - [x] `phaser_game/assets/audio`
+    - [x] `phaser_game/assets/fonts`
 
-- [ ] **1.5 Set Up Directory Structure**
-  - [ ] Create `phaser_game/src` directory
-  - [ ] Create `phaser_game/src/scenes` directory
-  - [ ] Create `phaser_game/assets` directory
-  - [ ] Create subdirectories for different asset types:
-    - [ ] `phaser_game/assets/images`
-    - [ ] `phaser_game/assets/images/backgrounds`
-    - [ ] `phaser_game/assets/images/characters`
-    - [ ] `phaser_game/assets/audio` (if needed)
-    - [ ] `phaser_game/assets/fonts` (if needed)
+- [x] **1.6 Configure Build Scripts**
+  - [x] Add npm scripts to `package.json`
 
-- [ ] **1.6 Configure Build Scripts**
-  - [ ] Add npm scripts to `package.json`:
-    ```json
-    "scripts": {
-      "dev": "vite",
-      "build": "tsc && vite build",
-      "preview": "vite preview",
-      "streamlit": "npm run build && cd .. && uv run streamlit run app/main.py",
-      "watch": "vite --watch"
-    }
-    ```
+- [x] **1.7 Set Up Development Workflow with Hot Reloading**
+  - [x] Create a development script that runs both Vite dev server and Streamlit
 
-- [ ] **1.7 Set Up Development Workflow with Hot Reloading**
-  - [ ] Create a development script that runs both Vite dev server and Streamlit:
-    ```bash
-    # scripts/dev.sh
-    #!/bin/bash
-    
-    # Start Vite dev server in the background
-    cd phaser_game && npm run dev &
-    VITE_PID=$!
-    
-    # Wait for Vite server to start
-    sleep 3
-    
-    # Go back to project root
-    cd ..
-    
-    # Create a development version of main.py that uses the Vite dev server
-    cat > app/dev_main.py << EOF
-    import streamlit as st
-    
-    st.set_page_config(
-        page_title="Japanese Visual Novel (Dev)",
-        page_icon="🎮",
-        layout="wide",
-    )
-    
-    st.title("Japanese Visual Novel (Development Mode)")
-    
-    # Embed the Vite dev server in an iframe
-    st.components.v1.iframe(
-        src="http://localhost:5173",
-        height=820,
-        width=1220,
-        scrolling=False
-    )
-    
-    st.caption("Development mode: Changes to Phaser code will automatically reload.")
-    EOF
-    
-    # Run Streamlit with the development main.py
-    uv run streamlit run app/dev_main.py
-    
-    # Clean up when Streamlit is closed
-    kill $VITE_PID
-    rm app/dev_main.py
-    ```
-  - [ ] Make the script executable: `chmod +x scripts/dev.sh`
-  - [ ] Add a npm script for development mode:
-    ```json
-    "scripts": {
-      "dev": "vite",
-      "build": "tsc && vite build",
-      "preview": "vite preview",
-      "streamlit": "npm run build && cd .. && uv run streamlit run app/main.py",
-      "watch": "vite --watch",
-      "dev:streamlit": "cd .. && ./scripts/dev.sh"
-    }
-    ```
-
-**[CHECKPOINT 1: Basic Project Setup]**
+**[CHECKPOINT 1: Basic Project Setup]** ✅
 *Verification Steps:*
-1. Verify Node.js and npm are installed: `node -v && npm -v`
-2. Verify project structure is created correctly: `ls -la phaser_game/`
-3. Verify Vite development server works: `cd phaser_game && npm run dev`
-4. Verify the development script works: `./scripts/dev.sh`
-5. Check that a blank page with a game container appears in the browser
-6. Verify hot reloading by making a simple change to the HTML file
+1. ✅ Verify Node.js and npm are installed: `node -v && npm -v`
+2. ✅ Verify project structure is created correctly: `ls -la phaser_game/`
+3. ✅ Verify Vite development server works: `cd phaser_game && npm run dev`
+4. ✅ Verify the development script works: `./scripts/dev.sh`
+5. ✅ Check that a blank page with a game container appears in the browser
+6. ✅ Verify hot reloading by making a simple change to the HTML file
 
 ### Phase 2: Asset Migration and Core Implementation
 
-- [ ] **2.1 Migrate Assets**
-  - [ ] Copy existing assets from `assets/` to `phaser_game/assets/`
-  - [ ] Organize assets by type in the appropriate subdirectories
-  - [ ] Optimize images if needed (compression, format conversion)
+- [x] **2.1 Migrate Assets**
+  - [x] Copy existing assets from `assets/` to `phaser_game/assets/`
+  - [x] Organize assets by type in the appropriate subdirectories
+  - [x] Optimize images if needed (compression, format conversion)
 
-- [ ] **2.2 Create Main Entry Point**
-  - [ ] Create `phaser_game/src/index.ts`:
-    ```typescript
-    import Phaser from 'phaser';
-    // Import scenes here as they are created
-    // import TitleScene from './scenes/TitleScene';
+- [x] **2.2 Create Main Entry Point**
+  - [x] Create `phaser_game/src/index.ts` with game configuration
+  - [x] Add test scene for verification
 
-    const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.AUTO,
-      width: 1200,
-      height: 800,
-      parent: 'game-container',
-      backgroundColor: '#333333',
-      scene: [
-        // Add scenes here as they are created
-        // TitleScene
-      ],
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-      }
-    };
+- [x] **2.3 Implement Base Scene Class**
+  - [x] Create `phaser_game/src/scenes/BaseScene.ts`
+  - [x] Port all methods from the existing BaseScene.js with proper TypeScript types
 
-    // Create game instance
-    const game = new Phaser.Game(config);
+- [x] **2.4 Implement Scene Registry**
+  - [x] Create `phaser_game/src/scenes/SceneRegistry.ts`
+  - [x] Port all methods from the existing SceneRegistry.js with proper TypeScript types
 
-    // Enable hot module replacement for development
-    if (import.meta.hot) {
-      import.meta.hot.accept(() => {
-        console.log('HMR update detected');
-      });
-    }
-    ```
+- [x] **2.5 Implement Asset Manager**
+  - [x] Create `phaser_game/src/utils/AssetManager.ts`
+  - [x] Port all methods from the existing AssetManager.js with proper TypeScript types
 
-- [ ] **2.3 Implement Base Scene Class**
-  - [ ] Create `phaser_game/src/scenes/BaseScene.ts`:
-    ```typescript
-    import Phaser from 'phaser';
-
-    export default class BaseScene extends Phaser.Scene {
-      protected gameState: any;
-      protected transitionDuration: number;
-      protected isTransitioning: boolean;
-
-      constructor(config: Phaser.Types.Scenes.SettingsConfig) {
-        super(config);
-        this.gameState = null;
-        this.transitionDuration = 500;
-        this.isTransitioning = false;
-      }
-
-      // Port existing BaseScene methods with TypeScript types
-      // ...
-    }
-    ```
-  - [ ] Port all methods from the existing BaseScene.js with proper TypeScript types
-
-- [ ] **2.4 Implement Scene Registry**
-  - [ ] Create `phaser_game/src/scenes/SceneRegistry.ts`:
-    ```typescript
-    import Phaser from 'phaser';
-
-    class SceneRegistry {
-      private scenes: Map<string, typeof Phaser.Scene>;
-      private gameState: any;
-
-      constructor() {
-        this.scenes = new Map();
-        this.gameState = null;
-      }
-
-      // Port existing SceneRegistry methods with TypeScript types
-      // ...
-    }
-
-    // Export as singleton
-    export default new SceneRegistry();
-    ```
-  - [ ] Port all methods from the existing SceneRegistry.js with proper TypeScript types
-
-- [ ] **2.5 Implement Asset Manager**
-  - [ ] Create `phaser_game/src/utils/AssetManager.ts`:
-    ```typescript
-    class AssetManager {
-      private assets: {
-        images: Map<string, any>;
-        audio: Map<string, any>;
-        spritesheets: Map<string, any>;
-        fonts: Map<string, any>;
-      };
-      private paths: Record<string, string>;
-
-      constructor() {
-        // Initialize with TypeScript types
-        // ...
-      }
-
-      // Port existing AssetManager methods with TypeScript types
-      // ...
-    }
-
-    // Export as singleton
-    export default new AssetManager();
-    ```
-  - [ ] Port all methods from the existing AssetManager.js with proper TypeScript types
-
-**[CHECKPOINT 2: Core Framework Implementation]**
+**[CHECKPOINT 2: Core Framework Implementation]** ✅
 *Verification Steps:*
-1. Verify TypeScript compilation works: `cd phaser_game && npm run build`
-2. Check for any TypeScript errors in the console
-3. Verify the main entry point creates a Phaser game instance by running the dev server and checking the console
-4. Verify the BaseScene, SceneRegistry, and AssetManager are properly implemented by importing them in the main entry point
-5. Test basic asset loading by adding a test image and loading it in the main entry point
-6. Verify the development workflow still works with the new TypeScript files
+1. ✅ Verify TypeScript compilation works: `cd phaser_game && npm run build`
+2. ✅ Check for any TypeScript errors in the console
+3. ✅ Verify the main entry point creates a Phaser game instance by running the dev server and checking the console
+4. ✅ Verify the BaseScene, SceneRegistry, and AssetManager are properly implemented by importing them in the main entry point
+5. ✅ Test basic asset loading by adding a test image and loading it in the main entry point
+6. ✅ Verify the development workflow still works with the new TypeScript files
 
 ### Phase 3: Scene Migration
 
-- [ ] **3.1 Implement Test Scene**
-  - [ ] Create `phaser_game/src/scenes/TestScene.ts`
-  - [ ] Port existing TestScene.js with proper TypeScript types
-  - [ ] Update asset loading paths
-  - [ ] Register the scene in the main entry point
+- [x] **3.1 Implement Test Scene**
+  - [x] Create `phaser_game/src/scenes/TestScene.ts`
+  - [x] Port existing TestScene.js with proper TypeScript types
+  - [x] Update asset loading paths
+  - [x] Register the scene in the main entry point
 
-- [ ] **3.2 Implement Title Scene**
-  - [ ] Create `phaser_game/src/scenes/TitleScene.ts`
-  - [ ] Port existing TitleScene.js with proper TypeScript types
-  - [ ] Update asset loading paths
-  - [ ] Register the scene in the main entry point
+- [x] **3.2 Implement Title Scene**
+  - [x] Create `phaser_game/src/scenes/TitleScene.ts`
+  - [x] Port existing TitleScene.js with proper TypeScript types
+  - [x] Update asset loading paths
+  - [x] Register the scene in the main entry point
 
-- [ ] **3.3 Test Scene Functionality**
-  - [ ] Run the development server with hot reloading: `cd phaser_game && npm run dev`
-  - [ ] Verify scenes load correctly
-  - [ ] Verify assets load correctly
-  - [ ] Verify scene transitions work
-  - [ ] Test hot reloading by making changes to scene files
+- [x] **3.3 Test Scene Functionality**
+  - [x] Run the development server with hot reloading
+  - [x] Verify scenes load correctly
+  - [x] Verify assets load correctly
+  - [x] Verify scene transitions work
+  - [x] Test hot reloading by making changes to scene files
 
 **[CHECKPOINT 3: Scene Implementation]**
 *Verification Steps:*

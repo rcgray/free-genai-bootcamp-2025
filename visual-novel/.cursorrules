@@ -7,6 +7,7 @@
 - Use `uv` when managing Python dependencies (i.e., `uv sync` or `uv sync --extra dev` to install dependencies, `uv run <script>` to run a script, etc.)
 - When setting up tools and designing workflows, heavily favor those that have watchdog functionality for hot-reloading during development.
 - Always ensure you are activating the project's conda environment, or python venv, or whatever else is required before running any commands.
+- Remain in the root of the project at all times - update commands such that they can be run from the root of the project.
 - Python environments are managed by the user (e.g., `conda`, `pyenv` + `uv venv`)
 - Use `ruff` for linting and formatting (includes black and isort functionality)
 - Use `mypy` for type checking

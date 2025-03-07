@@ -302,3 +302,13 @@ Excellent job, and [CHECKPOINT] is cleared. The project file structure doc `docs
 
 ---
 
+Excellent job, and [CHECKPOINT] is cleared. The project file structure doc `docs/reports/Project-File-Structure.md` (@Project-File-Structure.md) has been updated to reflect the changes we have made. Let's update this file to mark our progress, then let's move on to Phase 3 of the `docs/features/Phaser-Rewrite.md` feature Action Plan, stopping at the next [CHECKPOINT] instructions to ensure we are on track.
+
+---
+
+I have updated the @Prompt-Header.md and the @.cursorrules files to prevent you from frequently changing directories. You seem to get often confused on where you are, and we should be creating commands that enable us to remain in the root directory of the project. If there is something that you can't run from the root directory, let me know. Please navigate back to the root directory, and let's continue.
+
+---
+
+OK, the [CHECKPOINT] is cleared. The project file structure doc `docs/reports/Project-File-Structure.md` (@Project-File-Structure.md) has been updated to reflect the changes we have made. Let's update this file to mark our progress, then let's move on to Phase 4 of the `docs/features/Phaser-Rewrite.md` feature Action Plan, stopping at the next [CHECKPOINT] instructions to ensure we are on track.
+

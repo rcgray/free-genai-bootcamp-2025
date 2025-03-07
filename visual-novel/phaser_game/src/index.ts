@@ -5,46 +5,14 @@ declare global {
   interface ImportMeta {
     hot?: {
       accept(callback?: () => void): void;
+      dispose(callback: () => void): void;
     };
   }
 }
 
-// Import scenes as they are created
-// import TitleScene from './scenes/TitleScene';
-// import TestScene from './scenes/TestScene';
-
-// Temporary test scene until we implement the proper scenes
-class TestScene extends Phaser.Scene {
-  constructor() {
-    super({ key: 'TestScene' });
-  }
-
-  preload() {
-    // Preload assets
-    this.load.image('title', 'assets/images/backgrounds/title.png');
-  }
-
-  create() {
-    // Add title background if loaded successfully
-    if (this.textures.exists('title')) {
-      const title = this.add.image(600, 400, 'title');
-      // Scale the image to fit within our game size
-      title.setScale(0.6);
-    }
-    
-    // Add text
-    this.add.text(600, 200, 'Japanese Visual Novel', {
-      fontSize: '32px',
-      color: '#ffffff',
-      fontStyle: 'bold'
-    }).setOrigin(0.5);
-    
-    this.add.text(600, 600, 'Phaser + TypeScript + Vite Setup Working!', {
-      fontSize: '20px',
-      color: '#ffffff'
-    }).setOrigin(0.5);
-  }
-}
+// Import scenes
+import TitleScene from './scenes/TitleScene';
+import TestScene from './scenes/TestScene';
 
 // Game configuration
 const config: Phaser.Types.Core.GameConfig = {
@@ -53,7 +21,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: 800,
   parent: 'game-container',
   backgroundColor: '#333333',
-  scene: [TestScene],
+  scene: [TitleScene, TestScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
@@ -69,12 +37,11 @@ const config: Phaser.Types.Core.GameConfig = {
 
 // Create game instance
 const game = new Phaser.Game(config);
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export { game };
 
-// Enable hot module replacement for development
+// Enable full page reload on changes instead of HMR
 if (import.meta.hot) {
   import.meta.hot.accept(() => {
-    console.log('HMR update detected - reloading game components');
+    console.log('Change detected - reloading entire page for clean state');
+    window.location.reload();
   });
 } 
