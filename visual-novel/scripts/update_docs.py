@@ -39,7 +39,7 @@ def update_file_structure() -> None:
     reports_dir.mkdir(parents=True, exist_ok=True)
 
     # Run tree command with pattern matching to ignore GenAI* directories
-    tree_command = ["tree", "-a", "--gitignore", "-I", ""]
+    tree_command = ["tree", "-a", "--gitignore", "-I", "node_modules"]
     returncode, stdout, stderr = run_command(tree_command, capture_output=True)
 
     if returncode == 0:

@@ -113,4 +113,25 @@ assets/images/user_uploads/
 assets/audio/user_uploads/
 !assets/images/backgrounds/example_*.jpg
 !assets/images/characters/example_*.png
-!assets/audio/example_*.mp3 
+!assets/audio/example_*.mp3
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm
+.node_repl_history
+.yarn-integrity
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vite
+.vite/
+phaser_game/dist/
+
+# Development
+app/dev_main.py 

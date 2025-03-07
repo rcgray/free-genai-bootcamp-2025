@@ -36,8 +36,25 @@
 │   │   └── Streamlit-Phaser-Howto.md
 │   └── reports
 │       └── Project-File-Structure.md
+├── phaser_game
+│   ├── assets
+│   │   ├── audio
+│   │   ├── fonts
+│   │   └── images
+│   │       ├── backgrounds
+│   │       └── characters
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── src
+│   │   ├── index.ts
+│   │   ├── scenes
+│   │   └── utils
+│   ├── tsconfig.json
+│   └── vite.config.ts
 ├── pyproject.toml
 ├── scripts
+│   ├── dev.sh
 │   └── update_docs.py
 ├── static
 │   ├── assets
@@ -62,4 +79,4 @@
 ├── tests
 └── uv.lock
 
-29 directories, 34 files
+39 directories, 41 files
