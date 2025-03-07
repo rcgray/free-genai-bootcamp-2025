@@ -29,10 +29,8 @@ htmlcov/
 Thumbs.db
 
 # Database and Media
-data/game_saves/
-data/*.db
-assets/images/user_uploads/
-assets/audio/user_uploads/
+data/*.json
+!data/example.json
 
 # Documentation
 docs/reports/

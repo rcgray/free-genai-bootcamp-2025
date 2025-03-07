@@ -42,6 +42,7 @@
 │   │   ├── fonts
 │   │   └── images
 │   │       ├── backgrounds
+│   │       │   └── title.png
 │   │       └── characters
 │   ├── index.html
 │   ├── package-lock.json
@@ -49,7 +50,10 @@
 │   ├── src
 │   │   ├── index.ts
 │   │   ├── scenes
+│   │   │   ├── BaseScene.ts
+│   │   │   └── SceneRegistry.ts
 │   │   └── utils
+│   │       └── AssetManager.ts
 │   ├── tsconfig.json
 │   └── vite.config.ts
 ├── pyproject.toml
@@ -79,4 +83,4 @@
 ├── tests
 └── uv.lock
 
-39 directories, 41 files
+39 directories, 45 files
