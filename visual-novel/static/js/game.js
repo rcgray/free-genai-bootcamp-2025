@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Game configuration
     const config = {
         type: Phaser.AUTO,
-        width: 1280,
-        height: 720,
+        width: 1200,
+        height: 800,
         parent: 'game-container',
         backgroundColor: '#000000',
         scene: [], // We'll add scenes dynamically
@@ -36,11 +36,20 @@ document.addEventListener('DOMContentLoaded', function() {
             preload: preload,
             create: create,
             update: update
-        }, true);
+        });
         
         // Add the test scene if available
         if (window.TestScene) {
             game.scene.add('TestScene', TestScene);
+        }
+        
+        // Add the title scene if available and start it
+        if (window.TitleScene) {
+            game.scene.add('TitleScene', TitleScene);
+            game.scene.start('TitleScene');
+        } else {
+            // If no title scene, start the default scene
+            game.scene.start('DefaultScene');
         }
     } else {
         console.warn('Scene registry not found, using default scene');
@@ -117,9 +126,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // Handle click event
-        startText.on('pointerdown', function() {
+        startText.on('pointerdown', () => {
             startText.setText('Game Starting...');
-            // In the future, this will transition to the main game scene
+            
+            // If title scene is available, transition to it
+            if (this.scene.manager.getScene('TitleScene')) {
+                this.scene.start('TitleScene');
+            }
         });
         
         // Add a button to test the scene management system

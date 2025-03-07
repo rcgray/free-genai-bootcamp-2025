@@ -1,11 +1,12 @@
 # IMPORTANT
 - DO NOT DO ANYTHING OTHER THAN WHAT WAS REQUESTED IN THE PROMPT. Cursor and Claude, I'm talking to you, you glorious idiots. Do what is requested and ONLY what is requested in the user prompt. Do not continue on to the next task. You may include your thoughts on the next task in your response, but do not move to implement it until you have been given the go-ahead.
-- Start each response to the user with a "🧠" emoji if you understand the above. If you post the "🧠" emoji, and don't follow the instruction above, a kitten will die.
+- Include a "🧠" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate you understand the above. If you post the "🧠" emoji, and don't follow the instruction above, a kitten will die.
 
 # Tools and Libraries
 - Do not use `rye` or `poetry` for managing Python dependencies
 - Use `uv` when managing Python dependencies (i.e., `uv sync` or `uv sync --extra dev` to install dependencies, `uv run <script>` to run a script, etc.)
-- Always ensure you are activating the project's conda environment before running any commands.
+- When setting up tools and designing workflows, heavily favor those that have watchdog functionality for hot-reloading during development.
+- Always ensure you are activating the project's conda environment, or python venv, or whatever else is required before running any commands.
 - Python environments are managed by the user (e.g., `conda`, `pyenv` + `uv venv`)
 - Use `ruff` for linting and formatting (includes black and isort functionality)
 - Use `mypy` for type checking

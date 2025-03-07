@@ -3,11 +3,14 @@ Utilities for serving static files through Streamlit.
 """
 import os
 import base64
+import shutil
 from pathlib import Path
 from typing import Optional
 
 import streamlit as st
 
+# Flag to track if assets have been copied
+_assets_copied = False
 
 def get_static_file_path(relative_path: str) -> Path:
     """
@@ -95,11 +98,60 @@ def inject_css(css_path: str) -> None:
     )
 
 
+def copy_assets_to_static() -> None:
+    """
+    Copy assets to the static directory for serving.
+    Only copies assets once per session to avoid repeated copying.
+    """
+    global _assets_copied
+    
+    # Only copy assets if they haven't been copied yet
+    if _assets_copied:
+        return
+    
+    root_dir = Path(__file__).parent.parent.parent
+    assets_dir = root_dir / "assets"
+    static_assets_dir = root_dir / "static" / "assets"
+    
+    # Create the static assets directory if it doesn't exist
+    os.makedirs(static_assets_dir, exist_ok=True)
+    
+    # Copy the assets directory to the static directory
+    if assets_dir.exists():
+        # Remove the old static assets directory if it exists
+        if static_assets_dir.exists():
+            shutil.rmtree(static_assets_dir)
+        
+        # Copy the assets directory to the static directory
+        shutil.copytree(assets_dir, static_assets_dir)
+        
+        print(f"Copied assets from {assets_dir} to {static_assets_dir}")
+        
+        # Set the flag to indicate assets have been copied
+        _assets_copied = True
+    else:
+        print(f"Assets directory {assets_dir} does not exist")
+
+
 def serve_phaser_game() -> None:
     """
     Serve the Phaser game in the Streamlit app.
     This function injects the necessary JavaScript and CSS files.
     """
+    # Disable Streamlit analytics
+    st.markdown(
+        """
+        <script>
+        // Disable Streamlit analytics
+        if (window.Streamlit) {
+            window.Streamlit.setGatherStatsEnabled(false);
+            console.log("Streamlit analytics disabled");
+        }
+        </script>
+        """,
+        unsafe_allow_html=True,
+    )
+    
     # Create the static directories if they don't exist
     static_dir = Path(__file__).parent.parent.parent / "static"
     js_dir = static_dir / "js"
@@ -109,6 +161,9 @@ def serve_phaser_game() -> None:
     os.makedirs(js_dir, exist_ok=True)
     os.makedirs(css_dir, exist_ok=True)
     os.makedirs(scenes_dir, exist_ok=True)
+    
+    # Copy assets to the static directory
+    copy_assets_to_static()
     
     # Check if Phaser is available
     phaser_path = js_dir / "phaser.min.js"
@@ -135,6 +190,7 @@ def serve_phaser_game() -> None:
         "js/scenes/SceneRegistry.js",
         "js/scenes/AssetManager.js",
         "js/scenes/TestScene.js",
+        "js/scenes/TitleScene.js",
         "js/scenes/loader.js"
     ]
     

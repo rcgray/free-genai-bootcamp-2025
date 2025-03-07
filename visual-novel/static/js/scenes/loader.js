@@ -18,6 +18,10 @@ function initScenes() {
         sceneRegistry.register('TestScene', TestScene);
     }
     
+    if (window.TitleScene) {
+        sceneRegistry.register('TitleScene', TitleScene);
+    }
+    
     console.log('Scene registry initialized');
 }
 
@@ -26,7 +30,7 @@ function initAssets() {
     console.log('Initializing asset manager...');
     
     // Register default assets here
-    // Example: assetManager.registerBackground('title', 'title.jpg');
+    assetManager.registerBackground('title', 'title.png');
     
     console.log('Asset manager initialized');
 }

@@ -2,7 +2,12 @@
 
 Here are some notes to consider as part of every prompt as we develop our project. They cover preferences for communication, tool use, project structure, and other topics relevant to nearly all of the communciation between the AI agent and the human developer.
 
-For the human developer, add new items when mistakes are discovered in communicating with the AI or when particular dev decisions (such as division of labor among compnents) need to be made. This file differs from .cursorrules in that it is meant to be constructed over the course of a project through the course of discovering these choices. Some critical prompt rules (that don't seem to be affected by .cursorrules) are also repeated as well.
+For the human developer, this is intended to be a project- AND machine-specific file separate from `.cursorrules` that:
+
+1. Allows us to add new items when mistakes are discovered in communicating with the AI or when particular dev decisions (such as division of labor among components) need to be made.
+2. Allows for machine-specific directions (e.g., conda environments on Windows and python venv on MacOS).
+
+This file differs from .cursorrules in that it is meant to be constructed over the life of a project through the course of discovering project-specific preferences and choices. Some critical prompt rules (that don't seem to be sufficiently affected by .cursorrules) are also repeated as well.
 
 ## General Guidelines
 - DO NOT DO ANYTHING OTHER THAN WHAT WAS REQUESTED IN THE PROMPT. You may be given access to an "Action-Plan.md" file, which is a list of completed tasks as well as those ahead of us. Access to this file or a request to update a particular section of it is not license to continue on to the next task. Just because a file is called "Action Plan" does not mean that those actions are all meant for you to complete.
@@ -12,6 +17,8 @@ For the human developer, add new items when mistakes are discovered in communica
 ## Command Line Interface
 - We are using a conda environment called `vn` so please include activating that environment in your commands.
 - We are using `uv` to manage our Python dependencies, so please configure your commands accordingly (e.g., `uv sync` or `uv sync --extra dev` to install dependencies, `uv run <script>` to run a script, `uv run pytest` to run tests, etc.).
+- Create commands from the root of the project. There are some config files in the root of the project that dictate how certain components run (for example, `.streamlit/config.toml`). If you attempt to `cd app` and then `uv run streamlit run main.py`, our config will not be applied. Instead, run your commands from the project root: `uv run streamlit run app/main.py`.
+- Include a "💻" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate that you understand these Command Line Interface guidelines, so I'll know whether or not I need to remind you of this `Prompt-Header.md` file.
 
 ## Coding Guidelines
 - This project must be portable, so it is absolutely unacceptable to use full paths (i.e., from the `/home/user` directory or the `C:\` directory) in your commands.  Instead, use relative paths from the project root directory such that this project can be run on any other machine.

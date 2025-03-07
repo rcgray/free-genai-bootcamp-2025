@@ -30,11 +30,11 @@
 ## Phase 2: Core Game Engine 🔴
 
 ### 2.1 Scene Management
-- [ ] Implement base Scene class
-- [ ] Create scene transition system
-- [ ] Set up game state management
-- [ ] Implement asset preloading
-- [ ] Create scene registry
+- [x] Implement base Scene class
+- [x] Create scene transition system
+- [x] Set up game state management
+- [x] Implement asset preloading
+- [x] Create scene registry
 
 ### 2.2 Title Scene
 - [ ] Design and implement title screen layout

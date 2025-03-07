@@ -212,5 +212,52 @@ We currently have a shell of a project, consisting of a lightweight Streamlit ap
 
 Once I can confirm for you the successful implementation of the tasks in our current sub-phase (2.1), we can continue on to others.
 
+---
 
+Great! We have completed Step 2.1 of the `docs/Action-Plan.md` file (let's go ahead and update the file to reflect that). Let's move on to Step 2.2 of the `docs/Action-Plan.md` file.
+
+We want the game to automatically load the Title Scene when the user first opens the game. For now, this can simply be a background image (title.png) that takes up the full game screen - (what is our game's canvas size, by the way?). Remember that you can create any stand-in image you need to via the CLI (ImageMagick) `convert` command (and we should create them as we encounter need of them).
+
+When you show that you have completed this, and I agree with your edits, we will move on to the next step of the `docs/Action-Plan.md` file. Do not move on to implementing anything, however, until you have my confirmation.
+
+---
+
+(For other project with working Phaser game):
+
+In this project, we have many smaller projects, one of which is a Phaser game. In particular, check out the files in the `games/kanji-snake` directory (@kanji-snake) and its subdirectories.  We have been successful in loading images in this game (for instance, `games/kanji-snake/assets/titlebanner.png`), but I have a friend who is also trying to build a Phaser game and is having significant trouble even getting images to load.
+
+I don't want you to actually do any development work here, but rather I wanted you to help me write a how-to document for structuring a Streamlit app to run a Phaser game. The document we want to write should be called `docs/Streamlit-Phaser-Howto.md` (@Streamlit-Phaser-Howto.md).  Please write this document in a way that is easy to understand and follow that explains how to structure the Phaser game (e.g., where to put the assets directory), and how to get one of the images in that directory to render in the game.  If it makes any difference, my friend is using Streamlit as a simple wrapper to present the game to the user.
+
+---
+
+We seem to be stuck, and I think it is a problem with our foundation for the Phaser game.  I have a friend who has created Phaser games before (using React as a frontend), and I asked him to write a how-to document for developing a Phaser game that is run within a Streamlit app.  He has written a document that you can find in the `docs/reference/Streamlit-Phaser-Howto.md` file (@Streamlit-Phaser-Howto.md).  Look this over and compare it to how we have set up our project.  Come back with a list of things you can see we would need to change to follow his recommendations, and write them to a new file `docs/features/Phaser-Rewrite.md` (@Phaser-Rewrite.md).  We can then move forward from there.
+
+DO NOT MAKE ANY CHANGES TO CODE. This is strictly a documentation task. This is an investigation into the problem, not a development task. Consider our current project structure, tools, and approach, and then compare it to the recommendations in the `Streamlit-Phaser-Howto.md` file.  Your response should be a compilation of changes written to the `docs/features/Phaser-Rewrite.md` file.
+
+---
+
+[Chat] on #4 in @Phaser-Rewrite.md, we have a choice between moving the built Phaser game to a dot folder or embedding the game directly in the Streamlit app.  The latter sounds preferable, since the only purpose of the Streamlit app is as a convenient wrapper for displaying the game, and it is not intended that it will ever serve any other game, so modularization doesn't seem necessary.  However, I would like to know your thoughts.
+
+---
+
+Let's talk about the Javascript vs. TypeScript decision presented in the feature plan.  I'm inclined to go with TypeScript, but let's make that certain in the `docs/features/Phaser-Rewrite.md` file.  Beyond this, are there any other decisions to be made or uncertainties that should be addressed before we would begin to make these changes?  If you edit anything, it must be limited to the `docs/features/Phaser-Rewrite.md` file.
+
+---
+
+That is a great list. Let's start with #1 (Development Environment Setup) - It seems like our new direction will involve Vite and Typescript, so there is very little chance that we won't be using NPM, correct (is there another way)? As for other team members, they should be covered by changes to the documentation that we make following this migration. As for #2 (Build Process Integration), there seem to be significant advantages to automating the build process and adding watch mode, so let's do that. For #3 (Asset Organization), it is not important to the development team where the assets are stored within the project, so let's go with the simplest approach that will minimize the number of steps needed to build and minimize potential points of failure.  For #4 (Backward Compatibility), we are early in the project and there is no need to worry about the previous implementation working; it will be fully replaced, so let's just move forward with whatever will mean the least amount of work for us. For #5 (Testing Strategy), let us not be concerned with testing yet, since we are just starting to build the project.
+
+
+---
+
+Let's add a #6 to our "Specific Changes Needed" section that covers updates to our project documentation and build commands.  For instance, we will want to make sure we update the `README.md` file to reflect the changes we have made to the project, especially if we are using new tools like Vite, NPM, and Typescript.  We will also want to make sure we update the `docs/Technical-Spec.md` file to reflect the changes we have made to the project. All of this should be considered carefully so that nothing is missed, and let's add this to the `docs/features/Phaser-Rewrite.md` file.
+
+---
+
+One final review of the `docs/features/Phaser-Rewrite.md` file.  Let's make sure that we have everything we need in the file to move forward with the implementation, given our discussions and decisions we've made.  I want this document to be thorough such that I could hand it to someone unfamiliar with our conversation and they would be able to perform this migration. At the very bottom, add a "Action Plan" section that provides step-by-step checkboxes for everything we will do and the order we will do them in. Be as detailed as possible. If you edit anything, it must be limited to the `docs/features/Phaser-Rewrite.md` file.
+
+---
+
+Does this include a watchdog development workflow? One of the great things about the other project is when any change is made to the Phaser game code, the webpage displaying the game automatically updates to reflect the changes.  I don't know if this requires watchdog in both the Phaser and Streamlit parts of the project, but we definitely want to create this kind of setup for ease of development.
+
+---
 
