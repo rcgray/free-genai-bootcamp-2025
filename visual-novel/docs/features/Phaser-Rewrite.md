@@ -459,6 +459,15 @@ With the decisions made regarding development environment, build process, asset 
     }
     ```
 
+**[CHECKPOINT 1: Basic Project Setup]**
+*Verification Steps:*
+1. Verify Node.js and npm are installed: `node -v && npm -v`
+2. Verify project structure is created correctly: `ls -la phaser_game/`
+3. Verify Vite development server works: `cd phaser_game && npm run dev`
+4. Verify the development script works: `./scripts/dev.sh`
+5. Check that a blank page with a game container appears in the browser
+6. Verify hot reloading by making a simple change to the HTML file
+
 ### Phase 2: Asset Migration and Core Implementation
 
 - [ ] **2.1 Migrate Assets**
@@ -572,6 +581,15 @@ With the decisions made regarding development environment, build process, asset 
     ```
   - [ ] Port all methods from the existing AssetManager.js with proper TypeScript types
 
+**[CHECKPOINT 2: Core Framework Implementation]**
+*Verification Steps:*
+1. Verify TypeScript compilation works: `cd phaser_game && npm run build`
+2. Check for any TypeScript errors in the console
+3. Verify the main entry point creates a Phaser game instance by running the dev server and checking the console
+4. Verify the BaseScene, SceneRegistry, and AssetManager are properly implemented by importing them in the main entry point
+5. Test basic asset loading by adding a test image and loading it in the main entry point
+6. Verify the development workflow still works with the new TypeScript files
+
 ### Phase 3: Scene Migration
 
 - [ ] **3.1 Implement Test Scene**
@@ -592,6 +610,15 @@ With the decisions made regarding development environment, build process, asset 
   - [ ] Verify assets load correctly
   - [ ] Verify scene transitions work
   - [ ] Test hot reloading by making changes to scene files
+
+**[CHECKPOINT 3: Scene Implementation]**
+*Verification Steps:*
+1. Verify each scene loads correctly in isolation
+2. Test scene transitions between the Test and Title scenes
+3. Verify all assets are loading correctly in each scene
+4. Test hot reloading by making changes to scene files and verifying they update in real-time
+5. Check that game state is properly maintained between scene transitions
+6. Verify that all functionality from the original JavaScript implementation works in the TypeScript version
 
 ### Phase 4: Streamlit Integration
 
@@ -696,6 +723,17 @@ With the decisions made regarding development environment, build process, asset 
   - [ ] Make changes to a scene file and verify hot reloading works
   - [ ] Test the full development cycle from code change to seeing the result in the browser
 
+**[CHECKPOINT 4: Streamlit Integration]**
+*Verification Steps:*
+1. Verify the production build works: `cd phaser_game && npm run build`
+2. Check that the Streamlit app loads the game correctly: `uv run streamlit run app/main.py`
+3. Verify all assets are displayed correctly in the embedded game
+4. Test scene transitions and interactions in the Streamlit-embedded game
+5. Verify the development workflow with hot reloading works: `./scripts/dev.sh`
+6. Make changes to scene files and verify they update in real-time in the development mode
+7. Test the full development cycle from code change to seeing the result in the browser
+8. Verify that the game works correctly in both development and production modes
+
 ### Phase 5: Documentation and Cleanup
 
 - [ ] **5.1 Update README.md**
@@ -725,3 +763,14 @@ With the decisions made regarding development environment, build process, asset 
 - [ ] **5.5 Update Action Plan**
   - [ ] Mark the Phaser rewrite as completed in `docs/Action-Plan.md`
   - [ ] Update any related tasks or dependencies
+
+**[CHECKPOINT 5: Final Verification]**
+*Verification Steps:*
+1. Review all documentation for accuracy and completeness
+2. Verify the project builds and runs correctly from a clean state
+3. Test the game in multiple browsers (Chrome, Firefox, Safari, Edge) if applicable
+4. Verify all functionality from the original implementation works in the new implementation
+5. Check that the development workflow is properly documented and works as expected
+6. Verify that all unused code and assets have been removed
+7. Ensure the Action Plan is updated to reflect the completed rewrite
+8. Have another team member review the changes and test the implementation

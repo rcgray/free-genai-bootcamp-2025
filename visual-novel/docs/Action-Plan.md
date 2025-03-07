@@ -27,6 +27,14 @@
 - [x] Create test scene to verify setup
 - [x] Create detailed Technical Specification for game scenes
 
+**[CHECKPOINT: Project Foundation]**
+*Verification Steps:*
+1. Verify Streamlit app runs without errors: `uv run streamlit run app/main.py`
+2. Verify Phaser game loads in Streamlit
+3. Verify development tools (ruff, mypy, pytest) are properly configured
+4. Verify project structure matches the Technical Specification
+5. Ensure all team members can run the project locally
+
 ## Phase 2: Core Game Engine 🔴
 
 ### 2.1 Scene Management
@@ -35,6 +43,25 @@
 - [x] Set up game state management
 - [x] Implement asset preloading
 - [x] Create scene registry
+
+### 2.1.5 Phaser Implementation Rewrite
+- [ ] Set up modern build system with npm, TypeScript, and Vite
+- [ ] Implement proper asset management with Vite
+- [ ] Refactor code structure to use TypeScript modules
+- [ ] Implement direct game embedding in Streamlit
+- [ ] Create hot-reloading development workflow
+- [ ] Port existing scenes to TypeScript
+- [ ] Update documentation to reflect new architecture
+
+**[CHECKPOINT: Phaser Rewrite]**
+*Verification Steps:*
+1. Verify TypeScript compilation works correctly
+2. Test the development workflow with hot reloading
+3. Verify all scenes function correctly in the new implementation
+4. Test the Streamlit integration with the embedded game
+5. Verify asset loading works correctly
+6. Ensure documentation is updated to reflect the new architecture
+7. Confirm the project builds and runs from a clean state
 
 ### 2.2 Title Scene
 - [ ] Design and implement title screen layout
@@ -56,6 +83,15 @@
 - [ ] Implement "Back to VN" functionality
 - [ ] Add basic styling and layout
 
+**[CHECKPOINT: Core Game Scenes]**
+*Verification Steps:*
+1. Verify all three main scenes (Title, VN, Study) load correctly
+2. Test scene transitions between all scenes
+3. Verify UI elements are properly positioned and styled
+4. Test basic interactions (buttons, choices, navigation)
+5. Verify game state is maintained between scene transitions
+6. Test on different screen sizes to ensure responsive design
+
 ## Phase 3: Game Content and Flow 🟡
 
 ### 3.1 Character System
@@ -72,6 +108,15 @@
 - [ ] Create dialog history system
 - [ ] Implement basic choice system
 
+**[CHECKPOINT: Character and Dialog Systems]**
+*Verification Steps:*
+1. Verify characters display correctly with different emotions/expressions
+2. Test character positioning and transitions
+3. Verify dialog text displays correctly with proper formatting
+4. Test typewriter animation effect
+5. Verify dialog history system works correctly
+6. Test choice system with multiple options
+
 ### 3.3 Game Flow
 - [ ] Create game state management
 - [ ] Implement scene transitions based on choices
@@ -85,6 +130,15 @@
 - [ ] Write initial dialog sequences
 - [ ] Create test choices and branches
 - [ ] Implement static study content
+
+**[CHECKPOINT: Game Flow and Content]**
+*Verification Steps:*
+1. Test complete game flow from title to end of sample content
+2. Verify branching narrative works correctly based on choices
+3. Test study mode entry and exit points
+4. Verify all static content (backgrounds, characters, dialog) displays correctly
+5. Test game state persistence throughout the flow
+6. Verify all transitions and animations work smoothly
 
 ## Phase 4: Language Learning Features 🟡
 
@@ -109,6 +163,17 @@
 - [ ] Add navigation between study elements
 - [ ] Create return to game flow
 
+**[CHECKPOINT: Language Learning Features]**
+*Verification Steps:*
+1. Verify Japanese text renders correctly with proper fonts
+2. Test furigana/ruby text display above kanji
+3. Verify phrase selection mechanism works correctly
+4. Test translation and pronunciation guide display
+5. Verify contextual explanations are displayed correctly
+6. Test study progress tracking
+7. Verify all language learning UI components work as expected
+8. Test the complete learning flow from VN scene to study mode and back
+
 ## Phase 5: LLM Integration 🟡
 
 ### 5.1 LLM Client Setup
@@ -117,6 +182,14 @@
 - [ ] Add error handling for API calls
 - [ ] Create response parsing utilities
 - [ ] Implement request rate limiting
+
+**[CHECKPOINT: LLM Client]**
+*Verification Steps:*
+1. Verify LLM API client connects successfully
+2. Test API key management and security
+3. Verify error handling for various failure scenarios
+4. Test response parsing with sample responses
+5. Verify request rate limiting works correctly
 
 ### 5.2 Dialog Generation
 - [ ] Design prompt templates for dialog
@@ -139,6 +212,17 @@
 - [ ] Create cultural note generation
 - [ ] Implement content filtering for educational accuracy
 
+**[CHECKPOINT: LLM Content Generation]**
+*Verification Steps:*
+1. Test dialog generation with different character contexts
+2. Verify choice generation produces relevant and diverse options
+3. Test translation and pronunciation guide generation
+4. Verify contextual explanations and cultural notes are accurate
+5. Test fallback mechanisms when LLM responses are unsuitable
+6. Verify content filtering correctly handles inappropriate content
+7. Test the complete flow with LLM-generated content
+8. Verify performance and response times are acceptable
+
 ## Phase 6: Advanced Game Features 🟢
 
 ### 6.1 Save/Load System
@@ -155,6 +239,15 @@
 - [ ] Create language preference options
 - [ ] Implement UI customization options
 
+**[CHECKPOINT: Save/Load and Settings]**
+*Verification Steps:*
+1. Test manual save and load functionality
+2. Verify auto-save works at appropriate points
+3. Test save data validation and error handling
+4. Verify settings menu displays and functions correctly
+5. Test each customization option (text speed, volume, language, UI)
+6. Verify settings persist between sessions
+
 ### 6.3 Audio Integration
 - [ ] Add background music system
 - [ ] Implement sound effects
@@ -168,6 +261,16 @@
 - [ ] Create dialog special effects
 - [ ] Add background animations
 - [ ] Implement UI animations and feedback
+
+**[CHECKPOINT: Audio and Visual Enhancements]**
+*Verification Steps:*
+1. Verify background music plays correctly and loops appropriately
+2. Test sound effects for different interactions
+3. Verify audio controls work correctly
+4. Test scene transitions and visual effects
+5. Verify character animations play smoothly
+6. Test dialog and UI animations
+7. Verify all visual enhancements work together without performance issues
 
 ## Phase 7: Database Integration 🟢
 
@@ -192,6 +295,16 @@
 - [ ] Add content versioning
 - [ ] Implement content updates
 
+**[CHECKPOINT: Database Integration]**
+*Verification Steps:*
+1. Verify TinyDB integration works correctly
+2. Test CRUD operations for all data types
+3. Verify game state persistence across sessions
+4. Test player choice and dialog history persistence
+5. Verify study progress tracking and statistics collection
+6. Test dynamic content loading and caching
+7. Verify content versioning and updates work correctly
+
 ## Phase 8: Testing and Optimization 🔴
 
 ### 8.1 Unit Testing
@@ -208,6 +321,14 @@
 - [ ] Validate study mode functionality
 - [ ] Test save/load system
 
+**[CHECKPOINT: Testing Coverage]**
+*Verification Steps:*
+1. Verify unit tests cover all critical components
+2. Run integration tests and verify all systems work together
+3. Check test coverage metrics
+4. Verify all critical paths are tested
+5. Test edge cases and error handling
+
 ### 8.3 Performance Optimization
 - [ ] Optimize asset loading
 - [ ] Implement caching strategies
@@ -221,6 +342,14 @@
 - [ ] Test on Safari
 - [ ] Test on Edge
 - [ ] Address browser-specific issues
+
+**[CHECKPOINT: Performance and Compatibility]**
+*Verification Steps:*
+1. Measure and verify performance metrics (load time, FPS, memory usage)
+2. Test on all target browsers and verify compatibility
+3. Verify responsive design works on different screen sizes
+4. Test on lower-end devices to ensure acceptable performance
+5. Verify all optimizations work correctly without introducing bugs
 
 ## Phase 9: Documentation and Deployment 🟢
 
@@ -245,6 +374,15 @@
 - [ ] Add analytics
 - [ ] Create backup and recovery procedures
 
+**[CHECKPOINT: Documentation and Deployment]**
+*Verification Steps:*
+1. Review all documentation for accuracy and completeness
+2. Verify deployment script works correctly
+3. Test production environment setup
+4. Verify error logging and analytics work correctly
+5. Test backup and recovery procedures
+6. Perform a complete deployment and verify all features work in production
+
 ## Phase 10: Future Enhancements 🔮
 
 ### 10.1 Advanced Language Features
@@ -268,6 +406,14 @@
 - [ ] Implement leaderboards
 - [ ] Add social sharing features
 
+**[CHECKPOINT: Future Enhancements]**
+*Verification Steps:*
+1. Evaluate each enhancement based on user feedback and priorities
+2. Develop proof-of-concept for selected enhancements
+3. Test integration with existing features
+4. Verify performance impact of new features
+5. Gather user feedback on enhancements
+
 ## Notes
 
 ### Priority Levels
@@ -287,3 +433,10 @@
 - Implement unit tests for core logic
 - Use manual testing for UI and game flow
 - Create integration tests for critical paths 
+
+### Checkpoint Guidelines
+- At each checkpoint, the team should review progress and verify all functionality
+- Document any issues or bugs found during verification
+- Address critical issues before proceeding to the next phase
+- Update the Action Plan as needed based on findings
+- Involve stakeholders in checkpoint reviews for major milestones 

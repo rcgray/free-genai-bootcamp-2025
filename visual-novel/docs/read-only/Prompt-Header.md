@@ -11,6 +11,7 @@ This file differs from .cursorrules in that it is meant to be constructed over t
 
 ## General Guidelines
 - DO NOT DO ANYTHING OTHER THAN WHAT WAS REQUESTED IN THE PROMPT. You may be given access to an "Action-Plan.md" file, which is a list of completed tasks as well as those ahead of us. Access to this file or a request to update a particular section of it is not license to continue on to the next task. Just because a file is called "Action Plan" does not mean that those actions are all meant for you to complete.
+- Always stop at [CHECKPOINT] instructions in any Action Plan (Project-Setup.md, Action-Plan.md, feature spec action plan, etc.). These are designed for the human developer to verify that the AI is on track to complete the project. Do not perform any actions beyond those requested in the checkpoint instructions, and do not continue on to the next task until the human developer has verified that the current task is complete.
 - You will always be working from a list of instructions from a file (e.g., `docs/Action-Plan.md`, or earlier in the project `Project-Setup.md`). After you complete the current task, always update the steps in the file to reflect the current state of the project. If we intentionally skip a step, make sure to mark the item as `[~]` so we can track that intentional decision.
 - Do not edit any files in the `docs/read-only` folder, which include files such as `Prompt-Header.md` and `Prompts.md`. Files in this folder are generated and maintained only by the user. You may read these files, but do not edit them.
 

@@ -17,6 +17,7 @@
 │   ├── fonts
 │   └── images
 │       ├── backgrounds
+│       │   └── title.png
 │       └── characters
 ├── dev
 ├── docs
@@ -25,10 +26,14 @@
 │   ├── Game-LLM-Prompts.md
 │   ├── PRD.md
 │   ├── Technical-Spec.md
+│   ├── features
+│   │   └── Phaser-Rewrite.md
 │   ├── read-only
 │   │   ├── Project-Setup.md
 │   │   ├── Prompt-Header.md
 │   │   └── Prompts.md
+│   ├── reference
+│   │   └── Streamlit-Phaser-Howto.md
 │   └── reports
 │       └── Project-File-Structure.md
 ├── pyproject.toml
@@ -36,6 +41,12 @@
 │   └── update_docs.py
 ├── static
 │   ├── assets
+│   │   ├── audio
+│   │   ├── fonts
+│   │   └── images
+│   │       ├── backgrounds
+│   │       │   └── title.png
+│   │       └── characters
 │   ├── css
 │   │   └── game.css
 │   ├── index.html
@@ -46,8 +57,9 @@
 │           ├── BaseScene.js
 │           ├── SceneRegistry.js
 │           ├── TestScene.js
+│           ├── TitleScene.js
 │           └── loader.js
 ├── tests
 └── uv.lock
 
-22 directories, 29 files
+29 directories, 34 files

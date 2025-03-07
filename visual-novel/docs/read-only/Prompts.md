@@ -1,6 +1,10 @@
  # Edit the prompts below and review them before submitting (some marked with @ require file linking)
 ---
 
+# New chat (Agent, claude-3.7-sonnet)
+
+---
+
 We are setting up a new project, using some of the files from previous projects as a starting point. Please follow the instructions in `dev/template/Project-Setup.md` (@Project-Setup.md) up to Step 3.3 Dynamic Documentation, where we will then work together to generate the core project specifications files.
 
 ---
@@ -92,6 +96,10 @@ Let's take a shot at building the `docs/Action-Plan.md` file, and only the `docs
 
 ---
 
+Nice work. Now that we have our Action Plan, please use your intuition regarding the work items to determine when natural stopping points occur, and let us be sure to include [Checkpoint] instructions at these natural stopping points for us to pause and evaluate. Mark these with [Checkpoint] instructions.
+
+---
+
 Great! We have completed section 3.2 of the `Project-Setup.md` file. Update our progress in the `Project-Setup.md` file.
 
 ---
@@ -132,6 +140,10 @@ We can then update our `Project-Setup.md` and `Action-Plan.md` files to reflect 
 
 - Start a new chat, pick up where we left off in the Action Plan
 
+
+---
+
+# New chat (Agent, claude-3.7-sonnet)
 
 ---
 
@@ -199,7 +211,7 @@ We have added a new file `/docs/Game-LLM-Prompts.md` (@Game-LLM-Prompts.md) that
 
 ---
 
-# started new chat
+# New chat (Agent, claude-3.7-sonnet)
 
 ---
 
@@ -261,3 +273,16 @@ Does this include a watchdog development workflow? One of the great things about
 
 ---
 
+One last update to the `docs/features/Phaser-Rewrite.md` file, specifically the "Action Plan" section.  These are great steps outlined, but I would rather not do it all in one shot and then evaluate if we succeeded.  It is MUCH better to take it step-by-step and evaluate as we go along. Looking at the Action Plan, do you see any places that are natural or convenient stopping points for us to pause and ensure that everything we've done to that point is functional?  It doesn't have to be after every step, but certainly there are key places where it would be natural to pause and evaluate.  Can you mark these places with some kind of special character sequence or reserved phrase that we can reference in the future?  When you mark these places, can you also indicate the steps that someone would need to take to ensure that everything is working as expected (for example, a developer or one of our QA team)?
+
+---
+
+This is great! Could you also do the same for our `docs/Action-Plan.md` (@Action-Plan.md) file for the overall project? Use your intuition to determine the natural stopping points for us to pause and evaluate, and mark these with [Checkpoint] instructions.
+
+---
+
+# New chat (Agent, claude-3.7-sonnet)
+
+---
+
+OK, we're all set to start our feature development on migrating over to the new Phaser game. The project file structure has been refreshed and is available at `docs/reports/Project-File-Structure.md` (@Project-File-Structure.md).  Let's look at our `docs/features/Phaser-Rewrite.md` file and start our implementation up to the next checkpoint.
