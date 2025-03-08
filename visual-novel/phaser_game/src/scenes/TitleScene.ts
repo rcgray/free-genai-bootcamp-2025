@@ -22,6 +22,14 @@ function debugAsset(name: string) {
 }
 
 export default class TitleScene extends BaseScene {
+  // Add properties to track state
+  private startButtonTween?: Phaser.Tweens.Tween;
+  private startButton?: Phaser.GameObjects.Text;
+  private titleText?: Phaser.GameObjects.Text;
+  private background?: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
+  private gradientRect?: Phaser.GameObjects.Rectangle;
+  private hasGradientBackground: boolean = false;
+
   /**
    * Constructor for the TitleScene class
    */
@@ -70,28 +78,31 @@ export default class TitleScene extends BaseScene {
     try {
       // Add the title background
       if (this.textures.exists('title-bg')) {
-        const background = this.add.image(
+        this.background = this.add.image(
           this.cameras.main.width / 2,
           this.cameras.main.height / 2,
           'title-bg'
         );
         
         // Scale the background to fit the screen
-        background.setDisplaySize(this.cameras.main.width, this.cameras.main.height);
+        (this.background as Phaser.GameObjects.Image).setDisplaySize(this.cameras.main.width, this.cameras.main.height);
         console.log('Background image added successfully');
+        this.hasGradientBackground = false;
       } else {
         // Create a gradient background if the image failed to load
         console.log('Title background image not found, creating gradient background');
         this.createGradientBackground();
+        this.hasGradientBackground = true;
       }
     } catch (error) {
       console.error('Error adding background:', error);
       // Create a gradient background as fallback
       this.createGradientBackground();
+      this.hasGradientBackground = true;
     }
     
     // Add a start button
-    const startButton = this.add.text(
+    this.startButton = this.add.text(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 + 150,
       'Start Game',
@@ -103,21 +114,21 @@ export default class TitleScene extends BaseScene {
         strokeThickness: 4
       }
     );
-    startButton.setOrigin(0.5, 0.5);
-    startButton.setInteractive({ useHandCursor: true });
+    this.startButton.setOrigin(0.5, 0.5);
+    this.startButton.setInteractive({ useHandCursor: true });
     
     // Add hover effect
-    startButton.on('pointerover', () => {
-      startButton.setStyle({ color: '#ff8800' });
+    this.startButton.on('pointerover', () => {
+      this.startButton?.setStyle({ color: '#ff8800' });
     });
     
-    startButton.on('pointerout', () => {
-      startButton.setStyle({ color: '#ffffff' });
+    this.startButton.on('pointerout', () => {
+      this.startButton?.setStyle({ color: '#ffffff' });
     });
     
     // Make the button pulse
-    this.tweens.add({
-      targets: startButton,
+    this.startButtonTween = this.tweens.add({
+      targets: this.startButton,
       scale: 1.1,
       duration: 800,
       ease: 'Power2',
@@ -126,14 +137,14 @@ export default class TitleScene extends BaseScene {
     });
     
     // Handle click event
-    startButton.on('pointerdown', () => {
+    this.startButton.on('pointerdown', () => {
       console.log('Start button clicked');
       // For now, just transition to the test scene if available
       this.transitionTo('TestScene');
     });
     
     // Add title text
-    const titleText = this.add.text(
+    this.titleText = this.add.text(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 - 100,
       'Japanese Visual Novel',
@@ -145,7 +156,7 @@ export default class TitleScene extends BaseScene {
         strokeThickness: 6
       }
     );
-    titleText.setOrigin(0.5, 0.5);
+    this.titleText.setOrigin(0.5, 0.5);
   }
   
   /**
@@ -153,25 +164,65 @@ export default class TitleScene extends BaseScene {
    */
   createGradientBackground(): void {
     // Create a rectangle for the background
-    const background = this.add.rectangle(
+    this.background = this.add.rectangle(
       0, 0,
       this.cameras.main.width,
       this.cameras.main.height,
       0x4b7bec
     );
-    background.setOrigin(0, 0);
+    this.background.setOrigin(0, 0);
     
     // Add a gradient overlay
-    const gradientRect = this.add.rectangle(
+    this.gradientRect = this.add.rectangle(
       0, 0,
       this.cameras.main.width,
       this.cameras.main.height,
       0x3867d6
     );
-    gradientRect.setOrigin(0, 0);
-    gradientRect.setAlpha(0.5);
+    this.gradientRect.setOrigin(0, 0);
+    this.gradientRect.setAlpha(0.5);
     
     console.log('Gradient background created');
+  }
+
+  /**
+   * Override serializeState to include TitleScene-specific state
+   */
+  serializeState(): any {
+    // Get base state from parent
+    const baseState = super.serializeState();
+    
+    // Add scene-specific state
+    return {
+      ...baseState,
+      hasGradientBackground: this.hasGradientBackground,
+      startButtonPosition: this.startButton ? {
+        x: this.startButton.x,
+        y: this.startButton.y,
+        scale: this.startButton.scale
+      } : undefined,
+      titleTextPosition: this.titleText ? {
+        x: this.titleText.x,
+        y: this.titleText.y
+      } : undefined
+    };
+  }
+  
+  /**
+   * Override deserializeState to restore TitleScene-specific state
+   */
+  deserializeState(state: any): void {
+    // Apply base state
+    super.deserializeState(state);
+    
+    // Restore scene-specific state
+    if (state.hasGradientBackground !== undefined) {
+      this.hasGradientBackground = state.hasGradientBackground;
+    }
+    
+    // Note: Most UI elements will be recreated in create(),
+    // but we could use this state to modify their appearance or behavior
+    console.log('TitleScene state restored');
   }
 }
 

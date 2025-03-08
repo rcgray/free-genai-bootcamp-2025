@@ -343,3 +343,10 @@ Write up this feature in the `docs/features/Scene-Specific-Reloading.md` file an
 
 This is great.  Add a new work item to the `docs/Action-Plan.md` file just prior to 2.2 Title Scene that summaries the steps that need to be performed to implement this, followed by a [CHECKPOINT]. Once I confirm everything is correct, we can implement it.
 
+---
+
+Alright, let's do it - Phase 2.1.6 of our `docs/Action-Plan.md` Action Plan, which implements the steps outlined in the  spec document `docs/features/Scene-Specific-Reloading.md` for the feature we've been discussing.
+
+---
+
+

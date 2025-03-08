@@ -63,13 +63,15 @@
 6. ✅ Confirm documentation is updated with new architecture
 
 ### 2.1.6 Scene-Specific Reloading
-- [ ] Create GameStateManager for state serialization and deserialization
-- [ ] Define StatefulScene interface for scene state management
-- [ ] Update BaseScene to implement StatefulScene interface
-- [ ] Integrate with Vite's HMR system to preserve state during development
-- [ ] Add development keyboard shortcuts for manual state saving/loading
-- [ ] Implement basic state persistence for the TitleScene
-- [ ] Test and refine the state preservation system
+- [x] Create GameStateManager for state serialization and deserialization
+- [x] Define StatefulScene interface for scene state management
+- [x] Update BaseScene to implement StatefulScene interface
+- [x] Integrate with Vite's HMR system to preserve state during development
+- [x] Add development keyboard shortcuts for manual state saving/loading
+- [x] Implement basic state persistence for the TitleScene
+- [x] Test and refine the state preservation system
+  - [x] Fix registry serialization error
+  - [ ] Complete remaining verification tests
 
 **[CHECKPOINT: Scene-Specific Reloading]**
 *Verification Steps:*

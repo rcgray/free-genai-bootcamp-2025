@@ -4,7 +4,7 @@ import Phaser from 'phaser';
 declare global {
   interface ImportMeta {
     hot?: {
-      accept(callback?: () => void): void;
+      accept(callback?: (newModule?: any) => void): void;
       dispose(callback: () => void): void;
     };
   }
@@ -13,6 +13,9 @@ declare global {
 // Import scenes
 import TitleScene from './scenes/TitleScene';
 import TestScene from './scenes/TestScene';
+
+// Import state management
+import { GameStateManager } from './utils/GameStateManager';
 
 // Import HMR test
 import './hmr-test';
@@ -39,13 +42,49 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 // Create game instance
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const game = new Phaser.Game(config);
 
-// Enable full page reload on changes instead of HMR
+// Initialize the GameStateManager
+const stateManager = GameStateManager.getInstance(game);
+
+// Set up HMR with state preservation
 if (import.meta.hot) {
-  import.meta.hot.accept(() => {
-    console.log('Change detected - reloading entire page for clean state');
-    window.location.reload();
+  // Add keyboard shortcuts for development
+  document.addEventListener('keydown', (event) => {
+    // Ctrl+S to save current state
+    if (event.ctrlKey && event.key === 's') {
+      event.preventDefault();
+      stateManager.persistState('manual-save');
+      console.log('💾 Game state manually saved');
+    }
+    
+    // Ctrl+L to load saved state
+    if (event.ctrlKey && event.key === 'l') {
+      event.preventDefault();
+      const savedState = stateManager.loadPersistedState('manual-save');
+      if (savedState) {
+        stateManager.restoreState(savedState);
+        console.log('📂 Game state manually loaded');
+      } else {
+        console.log('❌ No saved game state found');
+      }
+    }
+  });
+
+  // Handle HMR updates
+  import.meta.hot.accept((newModule) => {
+    console.log('🔄 HMR update detected, preserving game state...');
+    
+    // Save current state before module replacement
+    const gameState = stateManager.saveState();
+    
+    // Also persist to localStorage as a backup
+    stateManager.persistState('hmr-backup');
+    
+    // After module replacement, restore state
+    setTimeout(() => {
+      console.log('🔄 Restoring game state...');
+      stateManager.restoreState(gameState);
+    }, 100); // Small delay to ensure modules are fully loaded
   });
 } 

@@ -5,6 +5,7 @@
  */
 
 import Phaser from 'phaser';
+import { StatefulScene } from '../utils/StatefulScene';
 
 // Type definitions for game state
 export interface GameSettings {
@@ -30,7 +31,7 @@ export interface SceneData {
   [key: string]: any;
 }
 
-export default class BaseScene extends Phaser.Scene {
+export default class BaseScene extends Phaser.Scene implements StatefulScene {
   protected gameState: GameState | null;
   protected transitionDuration: number;
   protected isTransitioning: boolean;
@@ -228,5 +229,55 @@ export default class BaseScene extends Phaser.Scene {
     } else {
       console.log('sendToStreamlit function not available, data:', data);
     }
+  }
+
+  /**
+   * Serialize the scene's state into a JSON-serializable object.
+   * This method captures all relevant state that needs to be preserved.
+   * @returns A JSON-serializable object representing the scene's state
+   */
+  serializeState(): any {
+    // Base implementation that can be overridden by child scenes
+    return {
+      // Include the gameState object
+      gameState: this.gameState,
+      
+      // Basic scene state
+      sceneKey: this.scene.key,
+      active: this.scene.isActive(),
+      visible: this.scene.isVisible(),
+      isTransitioning: this.isTransitioning,
+      
+      // Add more common state properties as needed
+    };
+  }
+  
+  /**
+   * Deserialize and apply a previously serialized state to the scene.
+   * This method restores the scene to the state represented by the provided object.
+   * @param state The state object to apply to the scene
+   */
+  deserializeState(state: any): void {
+    // Base implementation that can be overridden by child scenes
+    
+    // Restore gameState if provided
+    if (state.gameState) {
+      this.gameState = state.gameState;
+    }
+    
+    // Restore basic scene properties
+    if (state.active === false) {
+      this.scene.setActive(false);
+    }
+    if (state.visible === false) {
+      this.scene.setVisible(false);
+    }
+    if (state.isTransitioning !== undefined) {
+      this.isTransitioning = state.isTransitioning;
+    }
+    
+    // Apply more common state properties as needed
+    
+    console.log(`State restored for scene: ${this.scene.key}`);
   }
 } 
