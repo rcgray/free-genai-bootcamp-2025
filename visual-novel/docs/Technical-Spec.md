@@ -6,6 +6,9 @@
 - **Python 3.12+**: Base programming language
 - **Streamlit 1.32.0+**: Python web framework for serving the application
 - **Phaser 3.88.2**: JavaScript game framework for creating the visual novel interface
+- **TypeScript 5.x**: Type-safe superset of JavaScript
+- **Vite 6.x**: Modern frontend build tool
+- **Node.js 16+**: JavaScript runtime for development
 - **OpenAI API Standard**: For LLM integration (with flexibility to change providers)
 - **TinyDB**: Lightweight, document-oriented database (for future implementation)
 
@@ -14,255 +17,274 @@
 - **MyPy**: Static type checker for Python
 - **Pytest**: Testing framework
 - **uv**: Modern Python package installer and resolver
+- **npm**: Node.js package manager
 
 ### Documentation
 
 - Phaser General Documentation: (@Phaser General Documentation) - https://docs.phaser.io/phaser/getting-started/what-is-phaser
 - Phaser API Documentation: (@Phaser API Documentation) - https://docs.phaser.io/api-documentation/api-documentation
+- TypeScript Documentation: https://www.typescriptlang.org/docs/
+- Vite Documentation: https://vitejs.dev/guide/
 
 ## Project Architecture
 
 ### Directory Structure
 ```
 visual-novel/
-├── app/                # Main application
+├── app/                    # Streamlit application
 │   ├── __init__.py
-│   ├── main.py         # Streamlit entry point
-│   ├── api/            # API endpoints
-│   │   └── llm.py      # LLM integration
-│   ├── game/           # Game logic
-│   │   ├── scenes/     # Game scenes (Title, VN, Study)
-│   │   ├── characters/ # Character definitions
-│   │   └── dialog/     # Dialog management
-│   └── utils/          # Utility functions
-├── assets/             # Game assets
-│   ├── images/         # Background and character images
-│   │   ├── backgrounds/
-│   │   └── characters/
-│   ├── audio/          # Sound effects and music
-│   └── fonts/          # Custom fonts for Japanese text
-├── data/               # Data storage (for future implementation)
-│   └── game.json       # TinyDB database
-├── scripts/            # Utility scripts
-│   └── update_docs.py  # Documentation updater
-├── static/             # Static web files
-│   ├── js/             # JavaScript files including Phaser
-│   ├── css/            # Stylesheets
-│   └── index.html      # Main HTML file for Phaser game
-├── .streamlit/         # Streamlit configuration
-│   └── config.toml     # Streamlit settings
-└── tests/              # Test suite
+│   ├── main.py             # Streamlit entry point
+│   └── api/                # API endpoints
+│       └── llm.py          # LLM integration
+├── phaser_game/            # Phaser game (TypeScript)
+│   ├── assets/             # Game assets
+│   │   ├── images/         # Image files
+│   │   │   ├── backgrounds/
+│   │   │   └── characters/
+│   │   ├── audio/          # Audio files
+│   │   └── fonts/          # Font files
+│   ├── src/                # Game source code
+│   │   ├── index.ts        # Main entry point
+│   │   ├── scenes/         # Game scenes
+│   │   │   ├── BaseScene.ts
+│   │   │   ├── TitleScene.ts
+│   │   │   ├── VNScene.ts
+│   │   │   └── StudyScene.ts
+│   │   └── utils/          # Utility functions
+│   ├── index.html          # Game HTML template
+│   ├── package.json        # npm dependencies
+│   ├── tsconfig.json       # TypeScript configuration
+│   └── vite.config.ts      # Vite build configuration
+├── data/                   # Game data
+│   └── game.json           # TinyDB database (future)
+├── scripts/                # Utility scripts
+│   ├── update_docs.py      # Documentation updater
+│   ├── watch-phaser.sh     # Development script for Phaser
+│   ├── watch-streamlit.sh  # Development script for Streamlit
+│   └── cleanup-dev.sh      # Clean up development processes
+├── .streamlit/             # Streamlit configuration
+│   └── config.toml         # Streamlit settings
+└── tests/                  # Test suite
     ├── test_game.py
     └── test_llm.py
 ```
 
 ### Component Details
 
-#### Game Engine (`app/game/`)
-The game module contains the core game logic, organized into submodules:
-
-##### Scene Management (`app/game/scenes/`)
-- Implements the three main scenes: Title, VN, and Study
-- Handles transitions between scenes
-- Manages game state and progression
-
-**Key Classes:**
-```python
-class TitleScene:
-    """Title screen with game options and start button."""
-    def __init__(self, config: Dict[str, Any]) -> None: ...
-    def render(self) -> None: ...
-    def handle_input(self, event: Dict[str, Any]) -> None: ...
-
-class VNScene:
-    """Main visual novel scene with character interactions."""
-    def __init__(self, game_state: Dict[str, Any]) -> None: ...
-    def load_background(self, image_path: str) -> None: ...
-    def display_character(self, character_id: str, emotion: str) -> None: ...
-    def display_dialog(self, text: str, character_id: Optional[str] = None) -> None: ...
-    def display_choices(self, choices: List[str]) -> None: ...
-    def handle_choice(self, choice_index: int) -> None: ...
-
-class StudyScene:
-    """Language study scene for focused learning."""
-    def __init__(self, phrase: str, translation: str, pronunciation: str) -> None: ...
-    def render(self) -> None: ...
-    def return_to_vn(self) -> None: ...
-```
-
-##### Character Management (`app/game/characters/`)
-- Defines character attributes and sprites
-- Manages character emotions and expressions
-- Handles character positioning in scenes
-
-**Key Classes:**
-```python
-class Character:
-    """Represents a character in the visual novel."""
-    def __init__(self, 
-                 character_id: str, 
-                 name: str, 
-                 sprite_base_path: str,
-                 emotions: List[str]) -> None: ...
-    def get_sprite(self, emotion: str) -> str: ...
-    def get_name(self) -> str: ...
-```
-
-##### Dialog Management (`app/game/dialog/`)
-- Handles text display and formatting
-- Manages dialog flow and choices
-- Integrates with LLM for dynamic content
-
-**Key Classes:**
-```python
-class DialogManager:
-    """Manages dialog display and interaction."""
-    def __init__(self, llm_client: LLMClient) -> None: ...
-    def display_text(self, text: str, character_id: Optional[str] = None) -> None: ...
-    def generate_response_options(self, context: Dict[str, Any]) -> List[str]: ...
-    def process_player_choice(self, choice_index: int, context: Dict[str, Any]) -> str: ...
-```
-
-#### LLM Integration (`app/api/llm.py`)
-- Implements OpenAI API standard interface
-- Handles prompt construction for dialog generation
-- Processes language learning features (translation, pronunciation)
-
-**Key Classes:**
-```python
-class LLMClient:
-    """Client for interacting with LLM APIs."""
-    def __init__(self, api_key: str, model: str = "gpt-4") -> None: ...
-    def generate_dialog(self, context: Dict[str, Any], character_id: str) -> str: ...
-    def generate_choices(self, context: Dict[str, Any]) -> List[str]: ...
-    def translate_text(self, japanese_text: str) -> str: ...
-    def get_pronunciation(self, japanese_text: str) -> str: ...
-```
-
-#### Frontend Integration (`static/` and Streamlit)
-- Phaser game implementation embedded in Streamlit
-- Streamlit for UI framework and Python backend
-- JavaScript for game logic and API communication
-- Communication between Phaser and Python backend via Streamlit components
+#### Streamlit App (`app/`)
+- Main entry point for the application
+- Embeds the Phaser game
+- Handles API integration and backend logic
 
 **Key Files:**
-- `app/main.py`: Main Streamlit application entry point
-- `static/js/game.js`: Main Phaser game configuration
-- `static/js/scenes/`: JavaScript implementations of game scenes
-- `static/index.html`: HTML template for Phaser game
+```python
+# app/main.py
+def main() -> None:
+    """Main entry point for the Streamlit application."""
+    # Set up Streamlit page
+    # Embed Phaser game
+    # Handle API communication
+```
 
-### Game Flow
+#### Phaser Game (`phaser_game/`)
+The Phaser game is built using TypeScript and Vite, organized into modules:
 
-1. **Application Initialization**
-   - Start Streamlit server
-   - Load Python backend components
-   - Serve Phaser game within Streamlit interface
-   - Initialize game assets and configuration
+##### Base Scene (`phaser_game/src/scenes/BaseScene.ts`)
+- Abstract base class for all game scenes
+- Handles common functionality
+- Provides structure for scene implementation
 
-2. **Title Scene**
-   - Display game title and options
-   - Handle player customization
-   - Transition to VN Scene on start
+**Key Implementation:**
+```typescript
+// phaser_game/src/scenes/BaseScene.ts
+export default abstract class BaseScene extends Phaser.Scene {
+    constructor(config: Phaser.Types.Scenes.SettingsConfig) {
+        super(config);
+    }
+    
+    // Common methods for all scenes
+    preload(): void {
+        // Common asset loading
+    }
+    
+    create(): void {
+        // Common scene setup
+    }
+}
+```
 
-3. **VN Scene Flow**
-   - Load background and characters
-   - Display dialog (from LLM or predefined)
-   - Present player choices
-   - Process player selection
-   - Offer study opportunities
-   - Update game state
+##### Title Scene (`phaser_game/src/scenes/TitleScene.ts`)
+- Displays game title and options
+- Handles transitions to main game scene
+- Offers game customization options
 
-4. **Study Scene Flow**
-   - Display selected phrase
-   - Show pronunciation guide
-   - Provide translation
-   - Offer contextual explanations
-   - Return to VN Scene
+**Key Implementation:**
+```typescript
+// phaser_game/src/scenes/TitleScene.ts
+export default class TitleScene extends BaseScene {
+    constructor() {
+        super({ key: 'TitleScene' });
+    }
+    
+    preload(): void {
+        super.preload();
+        // Load title-specific assets
+    }
+    
+    create(): void {
+        // Create title screen elements
+        // Add start button with transition to VN scene
+    }
+}
+```
 
-### LLM Integration Workflow
+##### VN Scene (`phaser_game/src/scenes/VNScene.ts`)
+- Main visual novel scene with interactive elements
+- Displays background, characters, and dialog
+- Handles player choices and game progression
 
-#### Dialog Generation
-1. Construct context object with scene information, characters, and history
-2. Send context to LLM API
-3. Process response to extract dialog text
-4. Display dialog in game interface
+**Key Implementation:**
+```typescript
+// phaser_game/src/scenes/VNScene.ts
+export default class VNScene extends BaseScene {
+    constructor() {
+        super({ key: 'VNScene' });
+    }
+    
+    preload(): void {
+        super.preload();
+        // Load VN-specific assets
+    }
+    
+    create(): void {
+        // Create scene elements
+        // Set up character display
+        // Implement dialog system
+        // Handle player choices
+    }
+    
+    displayDialog(text: string, character?: string): void {
+        // Display dialog text
+    }
+    
+    displayChoices(choices: string[]): void {
+        // Display player choice options
+    }
+}
+```
 
-#### Choice Generation
-1. Send current game state and dialog history to LLM
-2. Request appropriate response options (max 3)
-3. Process and validate responses
-4. Present choices to player
+##### Study Scene (`phaser_game/src/scenes/StudyScene.ts`)
+- Language learning focused scene
+- Displays phrase details including translation and pronunciation
+- Allows return to VN scene after study
 
-#### Language Learning Features
-1. Extract phrase for study
-2. Request translation from LLM
-3. Request pronunciation guide
-4. Request contextual explanations
-5. Present information in Study Scene
+**Key Implementation:**
+```typescript
+// phaser_game/src/scenes/StudyScene.ts
+export default class StudyScene extends BaseScene {
+    constructor() {
+        super({ key: 'StudyScene' });
+    }
+    
+    init(data: { phrase: string, translation: string, pronunciation: string }): void {
+        // Initialize scene with phrase data
+    }
+    
+    create(): void {
+        // Display phrase information
+        // Show translation and pronunciation
+        // Add return button
+    }
+}
+```
 
-## Development Environment
+#### Integration between Streamlit and Phaser
 
-### Environment Management
-- Conda or pyenv for Python version management
-- uv for dependency management
-- Virtual environments for isolation
+The Phaser game is embedded in Streamlit using two approaches:
 
-### Dependency Management
-- Core dependencies in `pyproject.toml`
-- Development extras for tooling
-- Version pinning through `uv.lock`
+1. **Development Mode**:
+   - Vite development server runs on port 5173
+   - Streamlit detects the development server
+   - Game is embedded via iframe for hot module replacement
 
-### Code Quality
-- Ruff configuration in `pyproject.toml`
-- MyPy strict type checking
-- Google-style docstrings
-- 88-character line length (Black compatible)
+2. **Production Mode**:
+   - Built Phaser game (HTML/JS) is embedded directly in Streamlit
+   - Assets are included as base64-encoded data
+   - Static deployment with no external dependencies
 
-### Testing Strategy
-- Unit tests with pytest
-- Integration tests for game logic
-- Mocked LLM responses
-- Test coverage tracking
+**Key Implementation:**
+```python
+# app/main.py
+def embed_phaser_game():
+    """Embed the Phaser game in Streamlit."""
+    # Check if development server is running
+    if is_dev_server_running():
+        # Embed iframe to dev server
+        st.components.v1.html("""
+            <iframe src="http://localhost:5173" width="1200" height="800"></iframe>
+        """, height=800, width=1200)
+    else:
+        # Embed built game directly
+        html_content = get_built_game_html()
+        st.components.v1.html(html_content, height=800, width=1200)
+```
 
-## Deployment Considerations
+### Development Workflow
 
-### Local Deployment
-- Single-user setup
-- Streamlit web interface
-- Embedded Phaser game
-- No additional services required beyond LLM API
+The project uses a dual-terminal development workflow:
 
-### Resource Requirements
-- Python 3.12+ runtime
-- Modern web browser with WebGL support
-- Internet connection for LLM API
-- Sufficient memory for game assets
+1. **Phaser Development**:
+   - Watch script runs Vite development server with HMR
+   - Changes to TypeScript files are instantly reflected
+   - Direct access available at http://localhost:5173
 
-### Security Considerations
-- API key management
-- Input validation
-- Error handling for external services
-- Content filtering for LLM responses
+2. **Streamlit Development**:
+   - Streamlit server runs in watch mode
+   - Embeds the Phaser game via iframe when in development
+   - Changes to Python files trigger automatic reload
+
+3. **Combined Workflow**:
+   - Scripts handle process management and cleanup
+   - Automatic detection of development mode
+   - Consistent experience across environments
+
+### Build Process
+
+The build process for the Phaser game uses Vite:
+
+1. TypeScript compilation
+2. Asset optimization
+3. Bundle creation
+4. Output to `phaser_game/dist/`
+
+The built game is then embedded in the Streamlit app for deployment.
+
+### API Integration
+
+Communication between the Phaser game and Python backend happens through Streamlit's bidirectional communication:
+
+1. Phaser game sends messages via the Streamlit message event system
+2. Python backend processes requests and returns responses
+3. Messages are handled asynchronously to maintain performance
 
 ## Future Technical Considerations
 
 ### Scalability
 - TinyDB implementation for game state persistence
-- Cloud deployment options
-- User account system
-- Progress tracking across sessions
+- Game progress saving mechanism
+- Additional scenes and game mechanics
+- Enhanced visual and audio assets
 
 ### Performance Optimization
-- Asset preloading and caching
-- LLM response caching
-- Asynchronous API calls
-- Resource cleanup
+- Asset preloading strategies
+- Bundle splitting for faster initial loading
+- Texture atlas for sprite optimization
+- Audio compression for size reduction
 
-### Feature Expansion
-- Voice generation integration
-- Speech recognition for pronunciation practice
-- Expanded character and scene library
-- Advanced language learning analytics 
+### Offline Support
+- PWA implementation for offline gameplay
+- Local LLM integration for disconnected operation
+- Cache-first asset loading strategy
 
 ## Scene Designs and UI Layouts
 
@@ -410,291 +432,6 @@ interface GameState {
 - Character entrance/exit animations in the VN Scene
 - Dialog box slide-in animation
 - Study mode transition with focus effect on the selected phrase 
-
-## Phaser Implementation Details
-
-### Scene Structure
-Each game scene will be implemented as a Phaser.Scene subclass:
-
-```javascript
-// Base scene with common functionality
-class BaseScene extends Phaser.Scene {
-    constructor(config) {
-        super(config);
-        this.gameState = null;
-    }
-    
-    init(data) {
-        // Initialize scene with game state
-        this.gameState = data.gameState || {};
-    }
-    
-    // Common methods for all scenes
-    transitionTo(sceneName, data = {}) {
-        // Handle scene transitions with data passing
-    }
-    
-    saveGameState() {
-        // Save current game state
-    }
-}
-
-// Title scene implementation
-class TitleScene extends BaseScene {
-    constructor() {
-        super({ key: 'TitleScene' });
-    }
-    
-    create() {
-        // Create title UI elements
-        // Set up event handlers
-    }
-}
-
-// VN scene implementation
-class VNScene extends BaseScene {
-    constructor() {
-        super({ key: 'VNScene' });
-        this.dialogManager = null;
-        this.characterManager = null;
-    }
-    
-    create() {
-        // Create VN UI elements
-        // Set up dialog and character managers
-        // Set up event handlers
-    }
-    
-    showDialog(text, character) {
-        // Display dialog with typewriter effect
-    }
-    
-    showChoices(choices) {
-        // Display player choice options
-    }
-    
-    handleChoice(choiceIndex) {
-        // Process player choice
-    }
-    
-    enterStudyMode(phrase) {
-        // Transition to study scene with selected phrase
-    }
-}
-
-// Study scene implementation
-class StudyScene extends BaseScene {
-    constructor() {
-        super({ key: 'StudyScene' });
-    }
-    
-    create() {
-        // Create study UI elements
-        // Display phrase information
-        // Set up event handlers
-    }
-    
-    returnToVN() {
-        // Return to VN scene at the correct point
-    }
-}
-```
-
-### Asset Management
-Phaser's asset loading system will be used to manage game resources:
-
-```javascript
-function preload() {
-    // Load backgrounds
-    this.load.image('bg_classroom', 'assets/images/backgrounds/classroom.jpg');
-    this.load.image('bg_street', 'assets/images/backgrounds/street.jpg');
-    
-    // Load character sprites
-    this.load.atlas('character_sensei', 
-                   'assets/images/characters/sensei.png',
-                   'assets/images/characters/sensei.json');
-    
-    // Load UI elements
-    this.load.image('dialog_box', 'assets/images/ui/dialog_box.png');
-    this.load.image('choice_button', 'assets/images/ui/choice_button.png');
-    
-    // Load audio (future implementation)
-    // this.load.audio('bgm_title', 'assets/audio/bgm_title.mp3');
-}
-```
-
-### UI Component Implementation
-UI components will be implemented using Phaser's built-in objects:
-
-#### Dialog Box
-```javascript
-class DialogBox {
-    constructor(scene, x, y, width, height) {
-        this.scene = scene;
-        this.container = scene.add.container(x, y);
-        
-        // Background panel
-        this.background = scene.add.image(0, 0, 'dialog_box');
-        this.background.setOrigin(0, 0);
-        this.background.setDisplaySize(width, height);
-        
-        // Character name text
-        this.nameText = scene.add.text(10, 10, '', {
-            fontFamily: 'Arial',
-            fontSize: '24px',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 4
-        });
-        
-        // Dialog text
-        this.dialogText = scene.add.text(20, 50, '', {
-            fontFamily: 'Arial',
-            fontSize: '20px',
-            color: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 2,
-            wordWrap: { width: width - 40 }
-        });
-        
-        // Add elements to container
-        this.container.add([this.background, this.nameText, this.dialogText]);
-        
-        // Initially hidden
-        this.container.setAlpha(0);
-    }
-    
-    show(characterName, text, callback) {
-        // Display the dialog box with text
-        this.nameText.setText(characterName || '');
-        this.dialogText.setText('');
-        
-        // Show container with animation
-        this.scene.tweens.add({
-            targets: this.container,
-            alpha: 1,
-            duration: 200,
-            onComplete: () => {
-                // Start typewriter effect
-                this.typewriteText(text, callback);
-            }
-        });
-    }
-    
-    typewriteText(text, callback) {
-        // Implement typewriter text effect
-    }
-    
-    hide() {
-        // Hide dialog box with animation
-    }
-}
-```
-
-#### Choice Panel
-```javascript
-class ChoicePanel {
-    constructor(scene, x, y, width) {
-        this.scene = scene;
-        this.container = scene.add.container(x, y);
-        this.choices = [];
-        this.width = width;
-        
-        // Initially hidden
-        this.container.setAlpha(0);
-    }
-    
-    showChoices(choices, callback) {
-        // Clear previous choices
-        this.clearChoices();
-        
-        // Create new choice buttons
-        let yOffset = 0;
-        choices.forEach((choice, index) => {
-            const button = this.createChoiceButton(0, yOffset, choice, () => {
-                callback(index);
-            });
-            
-            this.choices.push(button);
-            yOffset += 60; // Button height + spacing
-        });
-        
-        // Add all buttons to container
-        this.container.add(this.choices);
-        
-        // Show with animation
-        this.scene.tweens.add({
-            targets: this.container,
-            alpha: 1,
-            duration: 200
-        });
-    }
-    
-    createChoiceButton(x, y, text, callback) {
-        // Create and return an interactive button with text
-    }
-    
-    clearChoices() {
-        // Remove all choice buttons
-    }
-    
-    hide() {
-        // Hide choice panel with animation
-    }
-}
-```
-
-### Communication with Streamlit
-The Phaser game will communicate with the Streamlit backend when needed:
-
-```javascript
-function sendToStreamlit(data) {
-    if (window.Streamlit) {
-        window.Streamlit.setComponentValue(data);
-    }
-}
-
-// Example: Request LLM-generated dialog
-function requestDialog(context, characterId) {
-    sendToStreamlit({
-        type: 'request_dialog',
-        context: context,
-        characterId: characterId
-    });
-    
-    // The response will be handled by Streamlit's component API
-    // and passed back to the game
-}
-```
-
-### Game State Persistence
-Game state will be maintained within the Phaser game and synchronized with Streamlit:
-
-```javascript
-// Save game state
-function saveGameState(state) {
-    // Save to local storage for immediate persistence
-    localStorage.setItem('gameState', JSON.stringify(state));
-    
-    // Optionally send to Streamlit for server-side storage
-    sendToStreamlit({
-        type: 'save_game_state',
-        state: state
-    });
-}
-
-// Load game state
-function loadGameState() {
-    // Try to load from local storage first
-    const savedState = localStorage.getItem('gameState');
-    if (savedState) {
-        return JSON.parse(savedState);
-    }
-    
-    // Return default state if nothing is saved
-    return createDefaultGameState();
-}
-```
 
 ## Japanese Language Learning Features
 

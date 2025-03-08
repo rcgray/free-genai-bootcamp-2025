@@ -312,3 +312,6 @@ I have updated the @Prompt-Header.md and the @.cursorrules files to prevent you 
 
 OK, the [CHECKPOINT] is cleared. The project file structure doc `docs/reports/Project-File-Structure.md` (@Project-File-Structure.md) has been updated to reflect the changes we have made. Let's update this file to mark our progress, then let's move on to Phase 4 of the `docs/features/Phaser-Rewrite.md` feature Action Plan, stopping at the next [CHECKPOINT] instructions to ensure we are on track.
 
+---
+
+OK, the [CHECKPOINT] is cleared. The project file structure doc `docs/reports/Project-File-Structure.md` (@Project-File-Structure.md) has been updated to reflect the changes we have made. Let's update this file to mark our progress, then let's move on to Phase 5 of the `docs/features/Phaser-Rewrite.md` feature Action Plan, stopping at the next [CHECKPOINT] instructions to ensure we are on track.

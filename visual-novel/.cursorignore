@@ -33,12 +33,13 @@ data/*.json
 !data/example.json
 
 # Documentation
-docs/reports/
 docs/_build/
 site/
 
 # Dev Notes
 dev/template/
+docs/read-only/Project-Setup.md
+docs/read-only/Prompts.md
 
 # Test Data
 tests/data/
@@ -60,4 +61,4 @@ __pycache__/
 
 # Streamlit
 .streamlit/secrets.toml
-.streamlit/config.toml 
+.streamlit/config.toml
