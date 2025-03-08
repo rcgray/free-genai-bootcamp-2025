@@ -68,6 +68,9 @@ export default class TitleScene extends BaseScene {
   create(): void {
     console.log('Creating TitleScene');
     
+    // Check for restoration target
+    this.checkForRestorationTarget();
+    
     // Debug log to verify the image was loaded
     console.log('Loaded images:', Object.keys(this.textures.list));
     console.log('title-bg texture exists:', this.textures.exists('title-bg'));
@@ -105,7 +108,7 @@ export default class TitleScene extends BaseScene {
     this.startButton = this.add.text(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 + 150,
-      'Start Game',
+      'Start Game3',
       {
         fontFamily: 'Arial',
         fontSize: '32px',
@@ -157,6 +160,75 @@ export default class TitleScene extends BaseScene {
       }
     );
     this.titleText.setOrigin(0.5, 0.5);
+  }
+  
+  /**
+   * Check if there's a restoration target and handle it
+   */
+  private checkForRestorationTarget(): void {
+    // Check if we have a restoration target
+    const win = window as any;
+    if (win.__PHASER_RESTORATION_TARGET__) {
+      console.log('🔄 Found restoration target in TitleScene:', win.__PHASER_RESTORATION_TARGET__);
+      
+      // Make sure we're fully initialized before attempting transition
+      // Use a longer delay and Phaser's own timing system
+      this.time.delayedCall(800, () => {
+        try {
+          // Double-check that we're still in a valid state
+          if (!this.scene || !this.scene.manager) {
+            console.warn('⚠️ Scene or scene manager not available, delaying transition');
+            // Try again in a bit
+            this.time.delayedCall(500, this.checkForRestorationTarget, [], this);
+            return;
+          }
+          
+          // Get the target scene information
+          const target = win.__PHASER_RESTORATION_TARGET__;
+          if (!target || !target.scene) {
+            console.warn('⚠️ Invalid restoration target, aborting transition');
+            return;
+          }
+          
+          console.log(`🔄 Executing delayed transition from TitleScene to ${target.scene}`);
+          
+          // Use a safer approach to scene transition
+          try {
+            // First check if the target scene exists
+            if (this.scene.manager.getScene(target.scene)) {
+              // Use Phaser's scene transition instead of direct start
+              this.scene.transition({
+                target: target.scene,
+                duration: 100,
+                data: target.data || {}
+              });
+              
+              console.log(`✅ Transition to ${target.scene} initiated`);
+              
+              // Clear the target after successful transition
+              win.__PHASER_RESTORATION_TARGET__ = null;
+            } else {
+              console.warn(`⚠️ Target scene ${target.scene} not found, cannot transition`);
+            }
+          } catch (transitionError) {
+            console.error('Error during scene transition:', transitionError);
+            
+            // Fallback to direct scene start
+            try {
+              this.scene.start(target.scene, target.data || {});
+              console.log(`✅ Direct start of ${target.scene} as fallback`);
+              
+              // Clear the target after successful start
+              win.__PHASER_RESTORATION_TARGET__ = null;
+            } catch (startError) {
+              console.error('Error during direct scene start:', startError);
+            }
+          }
+        } catch (e) {
+          console.error('Error executing delayed transition from TitleScene:', e);
+        }
+      });
+    }
   }
   
   /**

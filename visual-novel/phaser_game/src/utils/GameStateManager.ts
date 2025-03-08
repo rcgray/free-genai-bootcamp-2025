@@ -52,21 +52,30 @@ export class GameStateManager {
    */
   public saveState(): GameState {
     try {
+      // Make sure the game is fully initialized
+      if (!this.game || !this.game.isBooted) {
+        console.error('Cannot save state: Game not initialized');
+        throw new Error('Game not initialized');
+      }
+      
       // Get the currently active scene
       const activeScenes = this.game.scene.getScenes(true);
       if (activeScenes.length === 0) {
         console.warn('No active scenes found when saving state');
-        return {
-          currentScene: '',
-          globalState: this.captureGlobalState(),
-          sceneStates: {},
-          timestamp: Date.now()
-        };
+        throw new Error('No active scenes found');
       }
       
+      // Get the current scene key
       const currentScene = activeScenes[0].scene.key;
+      if (!currentScene) {
+        console.error('Cannot save state: Current scene has no key');
+        throw new Error('Current scene has no key');
+      }
+      
+      // Capture scene states
       const sceneStates = this.captureSceneStates();
       
+      // Create the state object
       const state: GameState = {
         currentScene,
         globalState: this.captureGlobalState(),
@@ -74,13 +83,19 @@ export class GameStateManager {
         timestamp: Date.now()
       };
       
+      // Validate the state
+      if (!this.validateState(state)) {
+        console.error('Invalid state generated:', state);
+        throw new Error('Invalid state generated');
+      }
+      
       console.log(`🔄 Game state saved (current scene: ${currentScene})`);
       return state;
     } catch (e) {
       console.error('Error saving game state:', e);
-      // Return a minimal valid state
+      // Return a minimal valid state as a fallback
       return {
-        currentScene: '',
+        currentScene: 'TitleScene', // Always fall back to TitleScene
         globalState: {},
         sceneStates: {},
         timestamp: Date.now()
@@ -89,38 +104,206 @@ export class GameStateManager {
   }
   
   /**
+   * Validate a game state object
+   * @param state The state to validate
+   * @returns True if the state is valid
+   */
+  private validateState(state: GameState): boolean {
+    // Basic validation
+    if (!state) return false;
+    if (!state.currentScene) return false;
+    if (!state.sceneStates || typeof state.sceneStates !== 'object') return false;
+    if (!state.globalState || typeof state.globalState !== 'object') return false;
+    if (!state.timestamp || typeof state.timestamp !== 'number') return false;
+    
+    // Make sure the current scene exists in the scene states
+    if (!state.sceneStates[state.currentScene]) {
+      console.warn(`Current scene ${state.currentScene} not found in scene states`);
+      // This is not a fatal error, so we'll still return true
+    }
+    
+    return true;
+  }
+  
+  /**
    * Restore a previously saved game state.
    * @param state The GameState object to restore
    */
   public restoreState(state: GameState): void {
-    if (!state || !state.currentScene) {
-      console.error('Invalid state provided to restoreState');
+    // Validate the state
+    if (!state) {
+      console.error('Invalid state provided to restoreState: state is null or undefined');
       return;
     }
     
-    // Restore global state first
-    this.restoreGlobalState(state.globalState);
+    if (!state.currentScene) {
+      console.error('Invalid state provided to restoreState: no currentScene property');
+      return;
+    }
     
-    // Start the current scene with its state
-    if (this.game.scene.getScene(state.currentScene)) {
-      console.log(`🔄 Restoring scene: ${state.currentScene}`);
+    if (!state.sceneStates || typeof state.sceneStates !== 'object') {
+      console.error('Invalid state provided to restoreState: invalid sceneStates property');
+      return;
+    }
+    
+    try {
+      // Restore global state first
+      this.restoreGlobalState(state.globalState);
       
-      // Stop all currently running scenes
-      this.game.scene.getScenes(true).forEach(scene => {
-        if (scene.scene.key !== state.currentScene) {
-          scene.scene.stop();
-        }
-      });
+      console.log(`🔄 Preparing to restore scene: ${state.currentScene}`);
       
-      // If the scene is already running, restart it with the saved state
-      if (this.game.scene.isActive(state.currentScene)) {
-        this.game.scene.stop(state.currentScene);
-        this.game.scene.start(state.currentScene, state.sceneStates[state.currentScene]);
-      } else {
-        // Otherwise, start it fresh with the saved state
-        this.game.scene.start(state.currentScene, state.sceneStates[state.currentScene]);
+      // Use a safer approach to scene restoration
+      const sceneData = state.sceneStates[state.currentScene] || {};
+      
+      // Instead of trying to force scene restoration immediately,
+      // we'll use a completely different approach: start with the title scene
+      // and use Phaser's event system to handle the transition
+      
+      // First, make sure we have a clean slate
+      try {
+        // Stop all scenes
+        this.game.scene.scenes.forEach(scene => {
+          if (scene && scene.scene) {
+            scene.scene.stop();
+          }
+        });
+      } catch (e) {
+        console.warn('Warning when stopping scenes:', e);
       }
       
+      // Store the target scene and data for later use
+      const targetScene = state.currentScene;
+      const targetSceneData = sceneData;
+      
+      // Always start with the title scene, which we know exists and works
+      try {
+        // Start with TitleScene which is guaranteed to be available
+        this.game.scene.start('TitleScene');
+        
+        // Wait for the title scene to be ready, then transition to our target scene
+        const checkSceneReady = () => {
+          const titleScene = this.game.scene.getScene('TitleScene');
+          
+          if (titleScene && titleScene.events) {
+            console.log('✅ Title scene is ready, setting up transition to target scene');
+            
+            // Use Phaser's event system to transition once the scene is fully ready
+            titleScene.events.once('create', () => {
+              console.log(`🔄 Title scene created, transitioning to ${targetScene}`);
+              
+              // Short delay to ensure everything is initialized
+              setTimeout(() => {
+                try {
+                  // Now it's safe to transition to our target scene
+                  this.game.scene.start(targetScene, targetSceneData);
+                  console.log(`✅ Transitioned to ${targetScene} with saved state`);
+                  
+                  // Restore other scene states after a short delay
+                  setTimeout(() => this.restoreOtherScenes(state), 300);
+                } catch (e) {
+                  console.error(`Error transitioning to ${targetScene}:`, e);
+                }
+              }, 100);
+            });
+          } else {
+            // Title scene not ready yet, check again in a bit
+            setTimeout(checkSceneReady, 100);
+          }
+        };
+        
+        // Start checking if the title scene is ready
+        checkSceneReady();
+        
+        // Mark as successful even if we're still in the process of restoring
+        console.log('✅ Game state restoration process started (via title scene)');
+        return;
+      } catch (e) {
+        console.error('Error starting title scene:', e);
+        
+        // Fallback to direct restoration if title scene approach fails
+        console.log('⚠️ Falling back to direct scene restoration');
+        this.fallbackRestore(state);
+      }
+    } catch (e) {
+      console.error('Error in main restoreState:', e);
+      
+      // Try fallback as last resort
+      this.fallbackRestore(state);
+    }
+  }
+  
+  /**
+   * Fallback restoration method that tries a more direct approach
+   * @param state The game state to restore
+   */
+  private fallbackRestore(state: GameState): void {
+    try {
+      console.log(`🔄 Attempting fallback restoration for scene: ${state.currentScene}`);
+      
+      // Store the target scene and data for later use
+      const targetScene = state.currentScene;
+      const targetSceneData = state.sceneStates[targetScene] || {};
+      
+      // Just start with TitleScene and set up a delayed transition
+      console.log('🔄 Starting with TitleScene and setting up delayed transition');
+      
+      // Clear any existing scenes first
+      try {
+        this.game.scene.scenes.forEach(scene => {
+          if (scene && scene.scene) {
+            scene.scene.stop();
+          }
+        });
+      } catch (e) {
+        // Ignore errors when stopping scenes
+      }
+      
+      // Set up a global variable to track our restoration target
+      const win = window as any;
+      win.__PHASER_RESTORATION_TARGET__ = {
+        scene: targetScene,
+        data: targetSceneData,
+        timestamp: Date.now()
+      };
+      
+      // Start with TitleScene
+      try {
+        // Use a simpler approach - just start TitleScene
+        // TitleScene will handle the transition in its create method
+        this.game.scene.start('TitleScene');
+        console.log('✅ Started TitleScene successfully');
+      } catch (e) {
+        console.error('Error starting TitleScene:', e);
+        
+        // Last resort: try again with a delay
+        setTimeout(() => {
+          try {
+            this.game.scene.start('TitleScene');
+            console.log('✅ Started TitleScene with delay');
+          } catch (delayedError) {
+            console.error('Error starting TitleScene with delay:', delayedError);
+          }
+        }, 500);
+      }
+    } catch (e) {
+      console.error('Error in fallbackRestore:', e);
+      
+      // Last resort: just try to start TitleScene directly
+      try {
+        this.game.scene.start('TitleScene');
+        console.log('⚠️ Started TitleScene as absolute last resort');
+      } catch (lastError) {
+        console.error('Even TitleScene failed to start:', lastError);
+      }
+    }
+  }
+  
+  /**
+   * Restore states for scenes other than the current one.
+   * @param state The full game state
+   */
+  private restoreOtherScenes(state: GameState): void {
+    try {
       // Restore other scene states (for scenes that might be running in parallel)
       Object.entries(state.sceneStates).forEach(([sceneKey, sceneState]) => {
         if (sceneKey !== state.currentScene) {
@@ -131,8 +314,8 @@ export class GameStateManager {
           }
         }
       });
-    } else {
-      console.error(`Scene ${state.currentScene} not found when restoring state`);
+    } catch (e) {
+      console.error('Error restoring other scenes:', e);
     }
   }
   

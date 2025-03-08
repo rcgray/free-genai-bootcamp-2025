@@ -71,6 +71,21 @@
 - [x] Implement basic state persistence for the TitleScene
 - [x] Test and refine the state preservation system
   - [x] Fix registry serialization error
+  - [x] Fix HMR integration to properly clean up old game instances
+  - [x] Improve HMR state preservation to maintain game state across reloads
+  - [x] Enhance state storage with sessionStorage for better reliability
+  - [x] Fix state restoration timing to ensure proper scene initialization
+  - [x] Implement robust retry mechanism with comprehensive error handling
+  - [x] Add self-contained retry logic in GameStateManager for better reliability
+  - [x] Implement event-based scene restoration using Phaser's event system
+  - [x] Add comprehensive state validation and error handling
+  - [x] Implement delayed transition mechanism via TitleScene
+  - [x] Enhance scene transition with Phaser's built-in transition system
+  - [x] Implement manual navigation UI instead of automatic restoration
+  - [x] Add Phaser debugging utilities for troubleshooting
+  - [x] Implement smart automatic restoration with multiple safety checks
+  - [x] Keep manual navigation as fallback for reliability
+  - [x] Add scene transition tracking to maintain correct state across manual navigation
   - [ ] Complete remaining verification tests
 
 **[CHECKPOINT: Scene-Specific Reloading]**
