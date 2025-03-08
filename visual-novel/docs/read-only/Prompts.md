@@ -315,3 +315,31 @@ OK, the [CHECKPOINT] is cleared. The project file structure doc `docs/reports/Pr
 ---
 
 OK, the [CHECKPOINT] is cleared. The project file structure doc `docs/reports/Project-File-Structure.md` (@Project-File-Structure.md) has been updated to reflect the changes we have made. Let's update this file to mark our progress, then let's move on to Phase 5 of the `docs/features/Phaser-Rewrite.md` feature Action Plan, stopping at the next [CHECKPOINT] instructions to ensure we are on track.
+
+---
+
+# New chat (Agent, claude-3.7-sonnet)
+
+---
+
+(Interaction Guidelines: @Prompt-Header.md)
+(Project File Structure: @Project-File-Structure.md)
+
+We are building a Japanese learning app in the form of a visual novel game. Our project is a Streamlit app running a game that we are writing using Phaser.  Our project file structure can be found in the `docs/reports/Project-File-Structure.md` file. Our PRD is in the `docs/PRD.md` file. Our Technical Spec is in the `docs/Technical-Spec.md` file. The design for the game (when we get there) is in the `docs/Game-Design.md` file. Our Action Plan is in the `docs/Action-Plan.md` file. We are currently on Phase 2.2 (Phaser Implementation Rewrite) of our Action Plan.
+
+Before we move on to Phase 2.2 of our Action Plan, let's make some small adjustments to our streamlit app. First, when we are in development mode, we get a few messages on the Streamlit page above the Phaser game, which say things like "Development mode active!..." and "Any changes to the Phaser game source files should be instantly reflected...".  Can we move those to below the game instead of above?  Second, our vite server (when we run `./scripts/watch-phaser.sh`) is extremely verbose, is there a way we can have it just alert us to the server running and HMR events, and not everything that it does?
+
+---
+
+In order to get hot-reload working, we eventually fell on a workaround by having the whole Phaser app reload whenever a change in the code was detected - this might be necessary and the way things are usually done (i don't know), but it would also be nice if you could change something in the game and have it update similar to how designing a webpage with React.js can be done with hot-reload where the changes in layout are immediately reflected in the open browser.  is this possible?  or should we expect to be kicked back out to the title screen every time we change any detail in the Phaser game code? I'm not super familiar with either Phaser or Vite.
+
+---
+
+Yeah, let's a great idea.  It also sounds like it would share functionality with a feature that allows for saving and loading a game.  What would this look like?  Please explain your development plan in a new file `docs/features/Scene-Specific-Reloading.md` and designed in a way that we could extend it in the future to enable saving a player's game (e.g., exporting JSON) and importing (e.g., importing JSON and taking the player to precisely that game state - scene & supporting state variables). And for now, we are focused on a better HMR experience.
+
+Write up this feature in the `docs/features/Scene-Specific-Reloading.md` file and let's discuss further.
+
+---
+
+This is great.  Add a new work item to the `docs/Action-Plan.md` file just prior to 2.2 Title Scene that summaries the steps that need to be performed to implement this, followed by a [CHECKPOINT]. Once I confirm everything is correct, we can implement it.
+

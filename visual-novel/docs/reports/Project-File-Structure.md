@@ -10,10 +10,8 @@
 │   │   └── __init__.py
 │   ├── dev_iframe.py
 │   ├── main.py
-│   ├── main_new.py
 │   └── utils
-│       ├── __init__.py
-│       └── static.py
+│       └── __init__.py
 ├── assets
 │   ├── audio
 │   ├── fonts
@@ -29,7 +27,8 @@
 │   ├── PRD.md
 │   ├── Technical-Spec.md
 │   ├── features
-│   │   └── Phaser-Rewrite.md
+│   │   ├── Phaser-Rewrite.md
+│   │   └── Scene-Specific-Reloading.md
 │   ├── read-only
 │   │   ├── Project-Setup.md
 │   │   ├── Prompt-Header.md
@@ -65,34 +64,12 @@
 ├── scripts
 │   ├── build_game.py
 │   ├── cleanup-dev.sh
-│   ├── dev.sh
-│   ├── run-phaser-dev.sh
 │   ├── run_app.py
 │   ├── start-dev.sh
 │   ├── update_docs.py
 │   ├── watch-phaser.sh
 │   └── watch-streamlit.sh
-├── static
-│   ├── assets
-│   │   ├── audio
-│   │   ├── fonts
-│   │   └── images
-│   │       ├── backgrounds
-│   │       │   └── title.png
-│   │       └── characters
-│   ├── css
-│   │   └── game.css
-│   ├── index.html
-│   └── js
-│       ├── game.js
-│       └── scenes
-│           ├── AssetManager.js
-│           ├── BaseScene.js
-│           ├── SceneRegistry.js
-│           ├── TestScene.js
-│           ├── TitleScene.js
-│           └── loader.js
 ├── tests
 └── uv.lock
 
-39 directories, 57 files
+29 directories, 44 files

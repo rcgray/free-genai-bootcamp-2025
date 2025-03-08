@@ -36,6 +36,7 @@ echo "Starting Vite development server with HMR..."
 echo "Hot Module Replacement (HMR) is enabled - changes should reflect automatically"
 echo "Tip: Open browser console to see HMR-related messages"
 
-# Enable debug output for Vite
-export DEBUG="vite:*"
-npm run dev 
+# Run Vite with "goldilocks" logging level
+# Enable only HMR-related debug logs and info-level general logs
+export DEBUG="vite:hmr"
+npm run dev -- --logLevel info 
