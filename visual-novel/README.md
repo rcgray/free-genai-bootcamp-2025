@@ -115,3 +115,52 @@ uv run streamlit run app/main.py
   uv run pytest
   ```
 
+## Development Workflow
+
+This project uses a dual development workflow to provide the best experience when working on both the Phaser game and the Streamlit app.
+
+### Option 1: Automatic Development Environment (Recommended)
+
+Run the all-in-one development script:
+
+```bash
+./scripts/start-dev.sh
+```
+
+This will:
+1. Clean up any existing development processes
+2. Launch the Phaser development server in one terminal
+3. Launch the Streamlit app in another terminal
+
+### Option 2: Manual Development Environment
+
+For more control, run the scripts in separate terminals in this specific order:
+
+Terminal 1 (Phaser - Start this FIRST):
+```bash
+./scripts/watch-phaser.sh
+```
+
+Terminal 2 (Streamlit - Start this AFTER Phaser is running):
+```bash
+./scripts/watch-streamlit.sh
+```
+
+### How the Development Workflow Works
+
+- The Phaser game runs a Vite development server with hot module replacement (HMR)
+- The Streamlit app detects the Vite dev server and embeds it via iframe
+- Changes to Phaser game files are instantly reflected without manual refresh
+- Changes to Streamlit app files utilize Streamlit's built-in hot reloading
+- Each script now handles only its own process cleanup to avoid conflicts
+
+### Stopping the Development Environment
+
+To stop both the Phaser and Streamlit servers:
+
+```bash
+./scripts/cleanup-dev.sh
+```
+
+Or close the terminal windows where they're running.
+

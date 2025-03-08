@@ -50,6 +50,7 @@
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── src
+│   │   ├── hmr-test.ts
 │   │   ├── index.ts
 │   │   ├── scenes
 │   │   │   ├── BaseScene.ts
@@ -63,10 +64,14 @@
 ├── pyproject.toml
 ├── scripts
 │   ├── build_game.py
+│   ├── cleanup-dev.sh
 │   ├── dev.sh
 │   ├── run-phaser-dev.sh
 │   ├── run_app.py
-│   └── update_docs.py
+│   ├── start-dev.sh
+│   ├── update_docs.py
+│   ├── watch-phaser.sh
+│   └── watch-streamlit.sh
 ├── static
 │   ├── assets
 │   │   ├── audio
@@ -90,4 +95,4 @@
 ├── tests
 └── uv.lock
 
-39 directories, 52 files
+39 directories, 57 files

@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --force",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "streamlit": "npm run build && cd .. && uv run streamlit run app/main.py",
-    "watch": "vite --watch",
+    "watch": "vite",
     "dev:streamlit": "cd .. && ./scripts/dev.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

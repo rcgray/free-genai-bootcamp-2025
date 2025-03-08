@@ -5,6 +5,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    emptyOutDir: true,
+    sourcemap: true,
+    chunkSizeWarningLimit: 1500,
     rollupOptions: {
       input: {
         main: './index.html',
@@ -13,7 +16,11 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    open: true,
-    hmr: true, // Enable Hot Module Replacement
+    host: true, // Listen on all addresses
+    hmr: true,  // Enable HMR
+    watch: {
+      usePolling: true,     // Use polling for better compatibility in WSL and VMs
+      interval: 100,        // How often to check for changes in milliseconds
+    }
   },
 }); 

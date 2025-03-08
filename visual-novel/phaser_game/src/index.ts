@@ -14,6 +14,9 @@ declare global {
 import TitleScene from './scenes/TitleScene';
 import TestScene from './scenes/TestScene';
 
+// Import HMR test
+import './hmr-test';
+
 // Game configuration
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
