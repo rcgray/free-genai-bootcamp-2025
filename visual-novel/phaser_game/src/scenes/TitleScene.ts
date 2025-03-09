@@ -142,8 +142,8 @@ export default class TitleScene extends BaseScene {
     // Handle click event
     this.startButton.on('pointerdown', () => {
       console.log('Start button clicked');
-      // For now, just transition to the test scene if available
-      this.transitionTo('TestScene');
+      // Transition to the VN scene
+      this.transitionTo('VNScene');
     });
     
     // Add reset button in the top right corner

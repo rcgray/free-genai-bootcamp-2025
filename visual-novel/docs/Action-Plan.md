@@ -101,11 +101,11 @@
 - [x] Implement scene transition to VN Scene
 
 ### 2.3 Visual Novel Scene - Core
-- [ ] Implement background display system
-- [ ] Create character sprite display system
-- [ ] Implement dialog box UI
-- [ ] Create choice selection UI
-- [ ] Add basic scene navigation
+- [x] Implement background display system
+- [x] Create character sprite display system
+- [x] Implement dialog box UI
+- [x] Create choice selection UI
+- [x] Add basic scene navigation
 
 ### 2.4 Study Scene - Core
 - [ ] Design and implement study screen layout

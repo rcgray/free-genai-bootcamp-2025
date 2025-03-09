@@ -386,6 +386,30 @@ Our Title Scene can be very simple, and this task is nearly completed. Remove th
 
 ---
 
-Awesome. Let's move on to create our Visual Novel Scene - Core (2.3 in our Action Plan)
+Awesome. Let's update our `docs/Action-Plan.md` file.  Let's move on to create our Visual Novel Scene - Core (2.3 in our Action Plan)
 
 ---
+
+[Feedback]The textbox for Cursor Chat (Windows 10) really needs some love:
+
+ - It is too small (vertically)
+ - It sometimes puts keyboard input at a location different than the cursor
+ - Arrow navigation stops on the paragraph break, drag/dropping files (for @ references) sometimes overwrite existing text
+ - Sometimes (like right now) it doesn't respond to keyboard input or Ctrl-V (paste) at all!  I have to constantly workaround by "Open Chat as Editor" -> drag chat window off of the app to create a new window for it -> "Open as Pane" to get it to receive keyboard input again for _one prompt_.
+
+It's so unusable for anything more than quips that I generally have to write my prompts in another window and then copy-paste in to be able to craft prompts in my preferred style.
+
+As the primary interaction with your product, this really grinds on the experience.
+
+Feature request: as someone who often writes prompts in a different window, is there a way for the chat textbox to recognize @Filename in pasted text to automatically "link" them (blue) in the pasted prompt?
+
+---
+
+yes, let's create it, and then let's have the Start button on the Title Scene send the player to it.  In addition to the details discussed in @Technical-Spec.md , include a button in the bottom right of the VN scene that will take the player back to the Title Scene
+
+---
+
+It would seem in your creation of the VN Scene, you did not pay attention to the details of the game design discussed in `docs/Game-Design.md` ( @Game-Design.md ), which was given to you above.  For instance, there is no school scene, and you have the example of a key character (no need for a placeholder).  You have the list of all folders in the project via `docs/reports/Project-File-Structure.md` (@Project-File-Structure.md ), so you could have known it was not necessary to `mkdir -p assets/images/backgrounds`.  I'm just confused, because it doesn't appear that you are referencing the information you've been given, so please advise on how I can better provide it to you.  Further, you don't need to attempt to run the game, we have a script `./scripts/watch-phaser.sh` that is already running with hot-reload for the game.
+
+---
+

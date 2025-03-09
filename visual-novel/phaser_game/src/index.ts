@@ -14,6 +14,7 @@ declare global {
 // Import scenes
 import TitleScene from './scenes/TitleScene';
 import TestScene from './scenes/TestScene';
+import VNScene from './scenes/VNScene';
 
 // Import state management
 import { GameStateManager, GameState } from './utils/GameStateManager';
@@ -31,7 +32,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: 800,
   parent: 'game-container',
   backgroundColor: '#333333',
-  scene: [TitleScene, TestScene],
+  scene: [TitleScene, TestScene, VNScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
