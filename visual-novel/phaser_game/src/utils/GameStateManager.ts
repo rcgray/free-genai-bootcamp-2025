@@ -66,10 +66,31 @@ export class GameStateManager {
       }
       
       // Get the current scene key
-      const currentScene = activeScenes[0].scene.key;
+      let currentScene = activeScenes[0].scene.key;
       if (!currentScene) {
         console.error('Cannot save state: Current scene has no key');
         throw new Error('Current scene has no key');
+      }
+      
+      // Check if StudyScene is active and handle it - fail aggressively if invariants are violated
+      const studySceneActive = activeScenes.some(scene => scene.scene.key === 'StudyScene');
+      const vnScene = this.game.scene.getScene('VNScene');
+      
+      // StudyScene should NEVER be active without VNScene existing in the background
+      if (studySceneActive) {
+        if (!vnScene) {
+          console.error('🛑 CRITICAL ERROR: StudyScene is active but VNScene does not exist!');
+          throw new Error('StudyScene cannot exist without VNScene');
+        }
+        
+        // If StudyScene is active, VNScene must be paused
+        if (!vnScene.scene.isPaused()) {
+          console.error('🛑 CRITICAL ERROR: StudyScene is active but VNScene is not paused!');
+          throw new Error('StudyScene active requires VNScene to be paused');
+        }
+        
+        console.log('Detected StudyScene as active - using VNScene as current scene for state saving');
+        currentScene = 'VNScene';
       }
       
       // Capture scene states
@@ -303,17 +324,31 @@ export class GameStateManager {
    * @param state The full game state
    */
   private restoreOtherScenes(state: GameState): void {
+    // Only proceed if we have scene states to restore
+    if (!state.sceneStates || Object.keys(state.sceneStates).length === 0) {
+      return;
+    }
+    
     try {
-      // Restore other scene states (for scenes that might be running in parallel)
-      Object.entries(state.sceneStates).forEach(([sceneKey, sceneState]) => {
-        if (sceneKey !== state.currentScene) {
-          const scene = this.game.scene.getScene(sceneKey);
-          if (scene) {
-            // Apply state to scene if it exists
-            this.applyStateToScene(scene, sceneState);
-          }
+      // Loop through the scene states and restore each one
+      for (const sceneKey in state.sceneStates) {
+        // Skip if trying to restore StudyScene - it should never be restored
+        if (sceneKey === 'StudyScene') {
+          console.log('⚠️ Skipping restoration of StudyScene - it is ephemeral by design');
+          continue;
         }
-      });
+        
+        // Skip the current scene as it's already been restored
+        if (sceneKey === state.currentScene) {
+          continue;
+        }
+        
+        const scene = this.game.scene.getScene(sceneKey);
+        if (scene) {
+          // Apply state to scene if it exists
+          this.applyStateToScene(scene, state.sceneStates[sceneKey]);
+        }
+      }
     } catch (e) {
       console.error('Error restoring other scenes:', e);
     }
@@ -331,6 +366,12 @@ export class GameStateManager {
         if (scene.sys && scene.sys.settings.active) {
           try {
             const sceneKey = scene.scene.key;
+            
+            // Skip StudyScene - it should never be serialized
+            if (sceneKey === 'StudyScene') {
+              console.log('⚠️ Skipping serialization of StudyScene - it is ephemeral by design');
+              return; // Skip to next scene
+            }
             
             // Call serializeState on the scene if it implements our interface
             if (this.isStatefulScene(scene)) {
@@ -461,12 +502,22 @@ export class GameStateManager {
    * @param state The state to apply
    */
   private applyStateToScene(scene: Phaser.Scene, state: any): void {
-    // Call deserializeState on the scene if it implements our interface
-    if (this.isStatefulScene(scene)) {
-      (scene as unknown as StatefulScene).deserializeState(state);
-    } else {
-      // Default deserialization for scenes without custom implementation
-      this.defaultDeserializeScene(scene, state);
+    // Skip if trying to restore StudyScene
+    if (scene.scene.key === 'StudyScene') {
+      console.log('⚠️ Skipping restoration of StudyScene - it is ephemeral by design');
+      return;
+    }
+    
+    try {
+      // Call deserializeState on the scene if it implements our interface
+      if (this.isStatefulScene(scene)) {
+        (scene as unknown as StatefulScene).deserializeState(state);
+      } else {
+        // Default deserialization for scenes without custom implementation
+        this.defaultDeserializeScene(scene, state);
+      }
+    } catch (e) {
+      console.error(`Error applying state to scene ${scene.scene?.key || 'unknown'}:`, e);
     }
   }
   
@@ -520,5 +571,69 @@ export class GameStateManager {
       console.error('Failed to load game state from localStorage:', e);
     }
     return null;
+  }
+  
+  /**
+   * Save the current game state specifically before an HMR update.
+   * This method handles the special case where StudyScene is active.
+   * @returns A GameState object representing the current state
+   */
+  public saveStateBeforeHMR(): GameState {
+    try {
+      // Check if StudyScene is active - this is the only way to determine "study mode"
+      const studySceneActive = this.game.scene.getScenes(true).some(scene => scene.scene.key === 'StudyScene');
+      
+      if (studySceneActive) {
+        console.log('📝 Study mode detected (StudyScene active) - will preserve VNScene state');
+        
+        // If StudyScene is active, VNScene must exist and be paused
+        const vnScene = this.game.scene.getScene('VNScene');
+        if (!vnScene) {
+          console.error('🛑 CRITICAL ERROR: StudyScene is active but VNScene does not exist!');
+          throw new Error('StudyScene cannot exist without VNScene');
+        }
+        
+        // Get a state object, which will correctly use VNScene as currentScene
+        const state = this.saveState();
+        
+        // Additional safety check - state.currentScene should now be 'VNScene'
+        if (state.currentScene !== 'VNScene') {
+          console.error('🛑 CRITICAL ERROR: saveState did not set VNScene as current scene when StudyScene is active!');
+          throw new Error('Inconsistent scene state handling');
+        }
+        
+        // Ensure we have the VNScene state saved properly
+        if (this.isStatefulScene(vnScene)) {
+          state.sceneStates['VNScene'] = (vnScene as unknown as StatefulScene).serializeState();
+        } else {
+          state.sceneStates['VNScene'] = this.defaultSerializeScene(vnScene);
+        }
+        
+        return state;
+      } else {
+        // Regular state saving when StudyScene is not active
+        return this.saveState();
+      }
+    } catch (e) {
+      console.error('Error in saveStateBeforeHMR:', e);
+      // Let the error propagate rather than masking it
+      throw e;
+    }
+  }
+  
+  /**
+   * Restore the game state after an HMR update.
+   * This method handles any case where StudyScene might be involved.
+   * @param state The GameState object to restore
+   */
+  public restoreStateAfterHMR(state: GameState): void {
+    // Check if we're attempting to restore to StudyScene - this should never happen
+    if (state.currentScene === 'StudyScene') {
+      console.error('🛑 CRITICAL ERROR: Attempting to restore to StudyScene!');
+      throw new Error('Cannot restore to StudyScene - it is ephemeral by design');
+    }
+    
+    // Proceed with normal state restoration
+    this.restoreState(state);
   }
 } 

@@ -435,4 +435,266 @@ This is a great start.  Let me also introduce you to our plan for integrating th
 
 We have a decision to make about the HMR special case for the study scene.  On one hand, if the HMR save and restore is centrally coded, we can add the special case there (i.e., handle the save-before-HMR-reset code to save the state of the VNScene that's still active behind it). What do you think?
 
+---
+
+Alright, let's do it.  We'll move on to Phase 2.4 (and at the same time 2.4.1) of our Action Plan (@Action-Plan.md), which is to create the Study Scene.  Remember to use our spec plan in the `docs/features/Study-Scene.md` (@Study-Scene.md) file to guide our development.  Do not go past the [CHECKPOINT] instructions in the Action Plan.
+
+---
+
+The HMR edits were a complete failure.  On reload we go to the Study Scene, but according to our design it should not even be possible for 'StudyScene' to be set as the "scene" in the game state save.  The GameStateManager should only be capable of saving `TitleScene' and 'VNScene' as the scene.  How is the GameStateManager failing at detecting when we are in the Study Scene?  Please fix this.
+
+---
+
+It is bad design to be checking anything regarding the StudyScene on load or restoration.  This allows for there to be potential bugs in our save code.  Remove the StudyScene check from index.ts file on restoration - if we are failing to correctly save the VNScene, then we need to know about it by failing.
+
+---
+
+This also means the StudyScene does not need a serializeState() or deserializeState() function, correct?  because it could never be called because we are never going to save the state of this scene, but would always save the state of the VNScene behind it. Instead of removing them entirely (since it extends a StatefulScene @StatefulScene.ts ), have it make us aware of the error (exception, etc. - whatever is most appropriate for our system).
+
+---
+
+I conducted the following scenario:
+
+1. Restarted the Vite server
+2. Opened a fresh browser tab to http://localhost:5173 (i.e., there should be no HMR game state to restore)
+3. Clicked the Start Game button to navigate to the VN Scene
+4. Clicked the Study button on Kaori's first line of dialogue to navigate to the Study Scene
+5. Changed a string in `phaser_game/src/scenes/TitleScene.ts` and saved to prompt an HMR event
+6. Game reloads in the browser tab and flashes the Title Scene briefly before displaying the Study Scene
+
+Here is the console log through this whole scenario:
+
+```
+Registered scene: TitleScene
+SceneRegistry.ts:40 Registered scene: TestScene
+SceneRegistry.ts:40 Registered scene: VNScene
+SceneRegistry.ts:40 Registered scene: StudyScene
+hmr-test.ts:12 [HMR Test] Version: 1
+hmr-test.ts:13 [HMR Test] Time: 2025-03-09T04:39:07.808Z
+hmr-test.ts:18 [HMR] Connected and waiting for updates...
+phaser.js?v=4a835f10:8457      Phaser v3.88.2 (WebGL | Web Audio)  https://phaser.io/v388
+GameStateManager.ts:46 🎮 GameStateManager initialized
+index.ts:249 ⚠️ No valid HMR state found
+index.ts:362 🎯 Target scene for next navigation: TitleScene
+BaseScene.ts:60 Initializing TitleScene scene
+TitleScene.ts:5 Debugging asset: title-bg
+TitleScene.ts:6 window.GAME_ASSETS exists: false
+TitleScene.ts:40 Loading title background image from assets/images/backgrounds/title.png
+TitleScene.ts:48 Creating TitleScene
+TitleScene.ts:50 Loaded images: Array(5)
+TitleScene.ts:51 title-bg texture exists: true
+TitleScene.ts:61 Background image added successfully
+PhaserDebug.ts:10 🔍 Phaser Game Instance Debug:
+PhaserDebug.ts:13 Game instance: Object
+PhaserDebug.ts:57 🔍 Scene Manager Debug:
+PhaserDebug.ts:65 Scene Manager: Object
+PhaserDebug.ts:74 Scenes:
+PhaserDebug.ts:81 Scene #0 [TitleScene]: Object
+PhaserDebug.ts:81 Scene #1 [TestScene]: Object
+PhaserDebug.ts:81 Scene #2 [VNScene]: Object
+PhaserDebug.ts:81 Scene #3 [StudyScene]: Object
+PhaserDebug.ts:34 Renderer: Object
+index.ts:128 ✅ Scene transition listeners set up successfully
+index.ts:104 🎮 Active scenes: TitleScene
+TitleScene.ts:102 Start button clicked
+BaseScene.ts:183 Transitioning from TitleScene to VNScene
+index.ts:114 🔄 Scene changed from TitleScene to VNScene
+index.ts:249 ⚠️ No valid HMR state found
+BaseScene.ts:60 Initializing VNScene scene
+index.ts:104 🎮 Active scenes: 
+hook.js:608 Failed to process file: image "train_platform"
+overrideMethod @ hook.js:608
+onProcessError @ phaser.js?v=4a835f10:66146
+data.onerror @ phaser.js?v=4a835f10:69155
+hook.js:608 Failed to process file: image "kaori_default"
+overrideMethod @ hook.js:608
+onProcessError @ phaser.js?v=4a835f10:66146
+data.onerror @ phaser.js?v=4a835f10:69155
+VNScene.ts:81 Creating VNScene
+VNScene.ts:125 Background image not found, using color background
+index.ts:104 🎮 Active scenes: VNScene
+VNScene.ts:433 Study button clicked
+VNScene.ts:483 Opening Study Scene with phrase: こんにちは！久しぶり！元気？
+VNScene.ts:500 VNScene paused, StudyScene launched - inStudyMode flag set
+index.ts:114 🔄 Scene changed from VNScene to StudyScene
+index.ts:249 ⚠️ No valid HMR state found
+StudyScene.ts:53 StudyScene initialized with phrase: こんにちは！久しぶり！元気？
+StudyScene.ts:68 Creating StudyScene
+index.ts:104 🎮 Active scenes: StudyScene
+index.ts:446 🧹 Cleaning up old game instance...
+index.ts:456 🔍 HMR detected current scene: StudyScene
+GameStateManager.ts:563 📚 Study mode detected via registry flag
+GameStateManager.ts:605 📝 Study mode detected - will preserve VNScene state
+GameStateManager.ts:351 ⚠️ Skipping serialization of StudyScene - it is ephemeral by design
+GameStateManager.ts:121 Current scene StudyScene not found in scene states
+overrideMethod @ hook.js:608
+validateState @ GameStateManager.ts:121
+saveState @ GameStateManager.ts:87
+saveStateBeforeHMR @ GameStateManager.ts:609
+(anonymous) @ index.ts:459
+fetchUpdate @ client:199
+queueUpdate @ client:176
+(anonymous) @ client:884
+handleMessage @ client:882
+onMessage @ client:299
+(anonymous) @ client:429
+GameStateManager.ts:92 🔄 Game state saved (current scene: StudyScene)
+GameStateManager.ts:617 📝 HMR with active StudyScene detected - preserving underlying VNScene
+index.ts:145 🔄 Updating state.currentScene from VNScene to StudyScene
+index.ts:150 💾 Saving HMR state: {currentScene: 'StudyScene', timestamp: '2025-03-09T04:39:33.358Z', hasGlobalState: true, sceneStateKeys: Array(1)}
+index.ts:160 💾 HMR state saved to sessionStorage (750 bytes)
+SceneRegistry.ts:36 Scene with key TitleScene already registered. Overwriting.
+overrideMethod @ hook.js:608
+register @ SceneRegistry.ts:36
+(anonymous) @ TitleScene.ts:355
+SceneRegistry.ts:40 Registered scene: TitleScene
+index.ts:59      Phaser v3.88.2 (WebGL | Web Audio)  https://phaser.io/v388
+index.ts:190 📂 Retrieved state from sessionStorage: {currentScene: 'StudyScene', timestamp: '2025-03-09T04:39:33.358Z', hasGlobalState: true, sceneStateKeys: Array(1)}
+index.ts:362 🎯 Target scene for next navigation: StudyScene
+index.ts:368 📝 Detected HMR during Study mode - using specialized restoration
+GameStateManager.ts:658 📝 Restoring VNScene after HMR (Study mode will not be resumed)
+GameStateManager.ts:667 🐛 BUG DETECTED: Attempting to restore to StudyScene!
+overrideMethod @ hook.js:608
+restoreStateAfterHMR @ GameStateManager.ts:667
+(anonymous) @ index.ts:370
+GameStateManager.ts:153 🔄 Preparing to restore scene: StudyScene
+GameStateManager.ts:221 Error starting title scene: TypeError: Cannot read properties of null (reading 'emit')
+    at Systems2.start (phaser.js?v=4a835f10:112713:28)
+    at SceneManager2.start (phaser.js?v=4a835f10:111042:27)
+    at GameStateManager.restoreState (GameStateManager.ts:181:25)
+    at GameStateManager.restoreStateAfterHMR (GameStateManager.ts:672:10)
+    at index.ts:370:18
+overrideMethod @ hook.js:608
+restoreState @ GameStateManager.ts:221
+restoreStateAfterHMR @ GameStateManager.ts:672
+(anonymous) @ index.ts:370
+GameStateManager.ts:224 ⚠️ Falling back to direct scene restoration
+GameStateManager.ts:241 🔄 Attempting fallback restoration for scene: StudyScene
+GameStateManager.ts:248 🔄 Starting with TitleScene and setting up delayed transition
+GameStateManager.ts:274 ✅ Started TitleScene successfully
+index.ts:508 🔄 HMR update detected
+BaseScene.ts:60 Initializing TitleScene scene
+TitleScene.ts:13 Debugging asset: title-bg
+TitleScene.ts:14 window.GAME_ASSETS exists: false
+TitleScene.ts:60 Loading title background image from assets/images/backgrounds/title.png
+TitleScene.ts:69 Creating TitleScene
+TitleScene.ts:229 🔄 Found restoration target in TitleScene: {scene: 'StudyScene', data: {…}, timestamp: 1741495173442}
+TitleScene.ts:75 Loaded images: (5) ['__NORMAL', '__DEFAULT', '__MISSING', '__WHITE', 'title-bg']
+TitleScene.ts:76 title-bg texture exists: true
+TitleScene.ts:92 Background image added successfully
+PhaserDebug.ts:10 🔍 Phaser Game Instance Debug:
+PhaserDebug.ts:13 Game instance: {isBooted: true, isPaused: false, renderer: 2, config: {…}}
+PhaserDebug.ts:57 🔍 Scene Manager Debug:
+PhaserDebug.ts:65 Scene Manager: {Total scenes: 4, Active scenes: 1, isBooted: true, Processing: false}
+PhaserDebug.ts:74 Scenes:
+PhaserDebug.ts:81 Scene #0 [TitleScene]: {Active: true, Visible: true, Systems initialized: true, Events initialized: true, Input initialized: true}
+PhaserDebug.ts:81 Scene #1 [TestScene]: {Active: false, Visible: true, Systems initialized: true, Events initialized: true, Input initialized: true}
+PhaserDebug.ts:81 Scene #2 [VNScene]: {Active: false, Visible: true, Systems initialized: true, Events initialized: true, Input initialized: true}
+PhaserDebug.ts:81 Scene #3 [StudyScene]: {Active: false, Visible: true, Systems initialized: true, Events initialized: true, Input initialized: true}
+PhaserDebug.ts:34 Renderer: {type: 2, width: 1200, height: 800, resolution: undefined, context exists: true}
+TitleScene.ts:250 🔄 Executing delayed transition from TitleScene to StudyScene
+StudyScene.ts:53 StudyScene initialized with phrase: 
+StudyScene.ts:68 Creating StudyScene
+TitleScene.ts:263 ✅ Transition to StudyScene initiated
+index.ts:128 ✅ Scene transition listeners set up successfully
+index.ts:408 Scene already restored automatically, skipping button creation
+```
+
+---
+
+I have updated our `@.cursorrules` file to include the following:
+
+- Be agressive about failures. Fail at the point of failure immediately instead of creating workarounds. If a particular state or combination of variables could never occur, throw an exception or console log an error or whatever is appropriate.
+- Handle external uncertainties gracefully (i.e., an API call fails, a file is not found, etc.), but be strict about internal logic. Don't create workarounds for failures in states or variables that we control internally.
+- Be precise. Don't create "multiple attempts" sequences for determining a particular state or value via multiple means if one doesn't work. There should not be "fallbacks" - if a particular state or value cannot be determined as expected, throw an exception or console log an error or whatever is appropriate.
+
+For example: Be agressive. fail at the point of failure immediately instead of creating workarounds.  For example, in GameStateManager.ts:80 we check to see if `currentScene == 'StudyScene' && vnSceneExists` and then set the proper scene - HOWEVER, it would be a bug if StudyScene is the current scene and vnSceneExists is false!  So fail there!
+
+Why are we setting state.globalState['inStudyMode'] to true in GameStateManager.saveState() (line 97)? Why, if the Study State is never to be acknowledged at load would we want this value to be true on load? Are there other things this global state variable is used for? Why do we even track it? There is no such thing as a study state, there is simply the case that the Study Scene is active ephemerally. Why does any other scene need to know about it?
+
+---
+
+Yes, good call. Let's remove it entirely.  I like your insight on favoring sources of truth over additional variables that have to be tracked and maintained alongside something that is already self-verifiable. 
+
+---
+
+Nice, now we're getting somewhere. Here are the logs when I click the Study button on Kaori's first line of dialogue:
+
+```
+🎮 Active scenes: VNScene
+VNScene.ts:433 Study button clicked
+VNScene.ts:483 Opening Study Scene with phrase: こんにちは！久しぶり！元気？
+VNScene.ts:491 VNScene paused, StudyScene launched
+index.ts:114 🔄 Scene changed from VNScene to StudyScene
+index.ts:193 📂 Retrieved state from sessionStorage: {currentScene: 'VNScene', timestamp: '2025-03-09T04:44:52.393Z', hasGlobalState: true, sceneStateKeys: Array(1)}
+index.ts:146 🛑 CRITICAL ERROR: Attempted to save StudyScene as currentScene in HMR state!
+overrideMethod @ hook.js:608
+saveHmrState @ index.ts:146
+(anonymous) @ index.ts:121
+emit @ phaser.js?v=d27d5418:117
+start @ phaser.js?v=d27d5418:112713
+start @ phaser.js?v=d27d5418:111042
+processQueue @ phaser.js?v=d27d5418:110376
+update @ phaser.js?v=d27d5418:110554
+step @ phaser.js?v=d27d5418:8625
+step @ phaser.js?v=d27d5418:9079
+step @ phaser.js?v=d27d5418:16406
+requestAnimationFrame
+step @ phaser.js?v=d27d5418:16408
+...
+requestAnimationFrame
+step @ phaser.js?v=d27d5418:16408
+index.ts:173 ❌ Failed to save HMR state: Error: StudyScene cannot be saved as currentScene
+    at saveHmrState (index.ts:147:13)
+    at EventEmitter2.<anonymous> (index.ts:121:15)
+    at EventEmitter2.emit (phaser.js?v=d27d5418:117:43)
+    at Systems2.start (phaser.js?v=d27d5418:112713:28)
+    at SceneManager2.start (phaser.js?v=d27d5418:111042:27)
+    at SceneManager2.processQueue (phaser.js?v=d27d5418:110376:37)
+    at SceneManager2.update (phaser.js?v=d27d5418:110554:26)
+    at Game2.step (phaser.js?v=d27d5418:8625:32)
+    at TimeStep2.step (phaser.js?v=d27d5418:9079:26)
+    at step (phaser.js?v=d27d5418:16406:29)
+overrideMethod @ hook.js:608
+saveHmrState @ index.ts:173
+(anonymous) @ index.ts:121
+emit @ phaser.js?v=d27d5418:117
+start @ phaser.js?v=d27d5418:112713
+start @ phaser.js?v=d27d5418:111042
+processQueue @ phaser.js?v=d27d5418:110376
+update @ phaser.js?v=d27d5418:110554
+step @ phaser.js?v=d27d5418:8625
+step @ phaser.js?v=d27d5418:9079
+step @ phaser.js?v=d27d5418:16406
+requestAnimationFrame
+step @ phaser.js?v=d27d5418:16408
+...
+requestAnimationFrame
+step @ phaser.js?v=d27d5418:16408
+index.ts:122 💾 Updated HMR state with new scene: StudyScene
+StudyScene.ts:53 StudyScene initialized with phrase: こんにちは！久しぶり！元気？
+StudyScene.ts:68 Creating StudyScene
+index.ts:104 🎮 Active scenes: StudyScene
+```
+
+---
+
+Excellent.  With everythinig working, let's review our `docs/features/Study-Scene.md` (@Study-Scene.md) and `docs/Action-Plan.md` files and make sure they are up-to-date.
+
+---
+
+I think there are probably a few more checkboxes in both files that can be checked.
+ - The layout isn't final, but this is for the "core" of the scene, which appears to function.
+ - We found our solution for pause/resume of the VNScene
+ - The back button works for returning us to the VNScene
+ - Japanese, furigana, and translation are displayed
+ - We can correctly navigate to the Study Scene by clicking the Study button emoji (though its placement will need to be adjusted)
+ - Study buttons appear for every piece of dialog - Kaori's statements as well as each of the player's responses
+ - The focus phrase in the Study Session has always been correct, so information is being passed correctly
+ - We certainly had our fun with the HMR system, but that seems to be working perfectly now.
+
+---
+
+
+---
 

@@ -108,44 +108,43 @@
 - [x] Add basic scene navigation
 
 ### 2.4 Study Scene - Core
-- [ ] Design and implement study screen layout
-- [ ] Create text display components
-- [ ] Implement "Back to VN" functionality
-- [ ] Add basic styling and layout
+- [x] Design and implement study screen layout
+- [x] Create text display components
+- [x] Implement "Back to VN" functionality
+- [x] Add basic styling and layout
 
 ### 2.4.1 Study Scene - Enhanced
-- [ ] Create StudyScene class with proper scene handling
-- [ ] Implement scene transition with pause/resume approach
-- [ ] Design overlay background and content panel
-- [ ] Add back button for returning to VN Scene
-- [ ] Implement JapaneseText utility for furigana display
-- [ ] Create phrase display with proper Japanese text rendering
-- [ ] Add translation and context display
-- [ ] Create study button (emoji) component
-- [ ] Add study buttons to dialog in VN Scene
-- [ ] Add study buttons to choice options in VN Scene
-- [ ] Implement data passing between scenes
-- [ ] Update HMR handling for Study Scene
-- [ ] Test and debug all interactions and transitions
+- [x] Create StudyScene class with proper scene handling
+- [x] Implement scene transition with pause/resume approach
+- [x] Design overlay background and content panel
+- [x] Add back button for returning to VN Scene
+- [x] Implement JapaneseText utility for furigana display
+- [x] Create phrase display with proper Japanese text rendering
+- [x] Add translation and context display
+- [x] Create study button (emoji) component
+- [x] Add study buttons to dialog in VN Scene
+- [x] Add study buttons to choice options in VN Scene
+- [x] Implement data passing between scenes
+- [x] Update HMR handling for Study Scene
+- [~] Test and debug all interactions and transitions
 
 **[CHECKPOINT: Study Scene Implementation]**
 *Verification Steps:*
-1. Verify study buttons appear correctly next to dialog and choices
-2. Test navigation from VN Scene to Study Scene and back
-3. Verify Japanese phrases display correctly with furigana
-4. Confirm translations and contextual information are displayed properly
-5. Test that VN Scene state is preserved when returning from Study Scene
-6. Verify HMR works properly when modifications occur during Study Scene
-7. Test on different screen sizes to ensure responsive layout
+1. ✅ Verify study buttons appear correctly next to dialog and choices
+2. ✅ Test navigation from VN Scene to Study Scene and back
+3. ✅ Verify Japanese phrases display correctly with furigana
+4. ✅ Confirm translations and contextual information are displayed properly
+5. ✅ Test that VN Scene state is preserved when returning from Study Scene
+6. ✅ Verify HMR works properly when modifications occur during Study Scene
+7. [~] Test on different screen sizes to ensure responsive layout
 
 **[CHECKPOINT: Core Game Scenes]**
 *Verification Steps:*
-1. Verify all three main scenes (Title, VN, Study) load correctly
-2. Test scene transitions between all scenes
-3. Verify UI elements are properly positioned and styled
-4. Test basic interactions (buttons, choices, navigation)
-5. Verify game state is maintained between scene transitions
-6. Test on different screen sizes to ensure responsive design
+1. ✅ Verify all three main scenes (Title, VN, Study) load correctly
+2. ✅ Test scene transitions between all scenes
+3. ✅ Verify UI elements are properly positioned and styled
+4. ✅ Test basic interactions (buttons, choices, navigation)
+5. ✅ Verify game state is maintained between scene transitions
 
 ## Phase 3: Game Content and Flow 🟡
 
@@ -159,8 +158,9 @@
 ### 3.2 Dialog System
 - [ ] Create dialog data structure
 - [ ] Implement text display with Japanese support
+- [ ] Add Ruby furigana support for Kanji
 - [ ] Add text animation effects (typewriter)
-- [ ] Create dialog history system
+- [~] Create dialog history system
 - [ ] Implement basic choice system
 
 **[CHECKPOINT: Character and Dialog Systems]**

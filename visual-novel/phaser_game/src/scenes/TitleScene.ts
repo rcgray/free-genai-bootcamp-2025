@@ -108,7 +108,7 @@ export default class TitleScene extends BaseScene {
     this.startButton = this.add.text(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 + 150,
-      'Start Game',
+      'Start Game2',
       {
         fontFamily: 'Arial',
         fontSize: '32px',

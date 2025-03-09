@@ -675,70 +675,98 @@ private updateWithLLMData(data: PhraseLLMData): void {
 
 ### 8. HMR Considerations
 
-Since the Study Scene is designed to be ephemeral, we'll handle HMR specifically to ensure a good development experience. We'll implement a centralized approach in the GameStateManager:
+Since the Study Scene is designed to be ephemeral, we handle HMR specifically to ensure a good development experience. The approach is more direct and relies on the scene system itself as the source of truth:
 
 ```typescript
 // In GameStateManager.ts
 public saveStateBeforeHMR(): GameState {
-  const state = {
-    timestamp: Date.now(),
-    currentScene: '',
-    sceneStates: {}
-  };
-  
-  // Get all active scenes
-  const activeScenes = this.game.scene.getScenes(true);
-  
-  // Special case: If StudyScene is active
-  if (activeScenes.some(scene => scene.scene.key === 'StudyScene')) {
-    console.log('📝 HMR with active StudyScene detected - preserving underlying VNScene');
+  try {
+    // Check if StudyScene is active - this is the only way to determine "study mode"
+    const studySceneActive = this.game.scene.getScenes(true).some(scene => scene.scene.key === 'StudyScene');
     
-    // Find the paused VNScene
-    const vnScene = this.game.scene.getScene('VNScene');
-    
-    if (vnScene && 'serializeState' in vnScene) {
-      // Set VNScene as the target scene for restoration
-      state.currentScene = 'VNScene';
+    if (studySceneActive) {
+      console.log('📝 Study mode detected (StudyScene active) - will preserve VNScene state');
       
-      // Save VNScene state
-      state.sceneStates['VNScene'] = (vnScene as any).serializeState();
+      // If StudyScene is active, VNScene must exist and be paused
+      const vnScene = this.game.scene.getScene('VNScene');
+      if (!vnScene) {
+        console.error('🛑 CRITICAL ERROR: StudyScene is active but VNScene does not exist!');
+        throw new Error('StudyScene cannot exist without VNScene');
+      }
       
-      // Add a flag indicating we were in study mode
-      state.wasInStudyMode = true;
+      // Get a state object, which will correctly use VNScene as currentScene
+      const state = this.saveState();
+      
+      // Additional safety check - state.currentScene should now be 'VNScene'
+      if (state.currentScene !== 'VNScene') {
+        console.error('🛑 CRITICAL ERROR: saveState did not set VNScene as current scene when StudyScene is active!');
+        throw new Error('Inconsistent scene state handling');
+      }
+      
+      // Ensure we have the VNScene state saved properly
+      if (this.isStatefulScene(vnScene)) {
+        state.sceneStates['VNScene'] = (vnScene as unknown as StatefulScene).serializeState();
+      }
+      
+      return state;
     } else {
-      // Fallback to normal behavior
-      state.currentScene = 'StudyScene';
-      this.captureSceneStates(state);
+      // Regular state saving when StudyScene is not active
+      return this.saveState();
     }
-  } else {
-    // Normal behavior for other scenes
-    state.currentScene = activeScenes[0].scene.key;
-    this.captureSceneStates(state);
+  } catch (e) {
+    console.error('Error in saveStateBeforeHMR:', e);
+    // Let the error propagate rather than masking it
+    throw e;
   }
-  
-  return state;
 }
 
 // When restoring after HMR
 public restoreStateAfterHMR(state: GameState): void {
-  // ... normal restoration code ...
-  
-  // If we were in study mode, just restore the VN scene
-  if (state.wasInStudyMode) {
-    console.log('📝 Restoring VNScene after HMR (Study mode will not be resumed)');
-    // We intentionally do not launch StudyScene again
-    // Developer will need to navigate back to study mode if needed
+  // Check if we're attempting to restore to StudyScene - this should never happen
+  if (state.currentScene === 'StudyScene') {
+    console.error('🛑 CRITICAL ERROR: Attempting to restore to StudyScene!');
+    throw new Error('Cannot restore to StudyScene - it is ephemeral by design');
   }
+  
+  // Proceed with normal state restoration
+  this.restoreState(state);
 }
 ```
 
 This approach has several benefits:
 
-1. **Respects Scene Hierarchy**: Works with the existing pause/resume relationship between scenes
-2. **Better Developer Experience**: Returns to the exact state of the gameplay instead of trying to recreate the study context
-3. **Reduced Complexity**: No need to track what was being studied - developers can click the study button again if needed
-4. **Consistent with Design**: Follows the principle that the Study Scene is ephemeral and doesn't need to be preserved
+1. **Direct Source of Truth**: Uses the scene system itself to determine state rather than flags
+2. **Aggressive Failure Handling**: Throws errors for invalid states rather than silently fixing them
+3. **Simplified State Management**: No need for additional flags or special tracking variables
+4. **Better Developer Experience**: Returns to the exact state of the gameplay
 5. **Centralized Logic**: All HMR handling happens in one place, making it easier to maintain
+
+Additionally, our scene transition handling in index.ts explicitly prevents StudyScene from ever being tracked as the current scene:
+
+```typescript
+// Listen for scene transitions
+game.scene.scenes.forEach(scene => {
+  // Listen for scene start events
+  scene.events.on('start', () => {
+    const newSceneKey = scene.scene.key;
+    
+    // Never track StudyScene as the current scene
+    if (newSceneKey === 'StudyScene') {
+      console.log(`ℹ️ StudyScene started, but not tracking it as current scene`);
+      return;
+    }
+    
+    if (newSceneKey !== currentSceneKey) {
+      console.log(`🔄 Scene changed from ${currentSceneKey} to ${newSceneKey}`);
+      currentSceneKey = newSceneKey;
+      
+      // Update stored scene information...
+    }
+  });
+});
+```
+
+By implementing these safeguards, we ensure StudyScene is truly ephemeral and never persisted during HMR.
 
 ## Implementation Plan
 
@@ -792,14 +820,14 @@ This approach has several benefits:
 
 ## Acceptance Criteria
 
-- [ ] Players can access the Study Scene by clicking a study button (emoji) next to dialog or choices
-- [ ] The Study Scene displays the Japanese phrase with proper furigana
-- [ ] Translation and contextual information are clearly presented
+- [x] Players can access the Study Scene by clicking a study button (emoji) next to dialog or choices
+- [x] The Study Scene displays the Japanese phrase with proper furigana
+- [x] Translation and contextual information are clearly presented
 - [ ] The UI has a tabbed interface ready to accommodate future LLM data
-- [ ] Content sections are designed to display word breakdowns, grammar points, examples, etc.
-- [ ] Players can return to the VN Scene exactly where they left off using the back button
-- [ ] Scene transitions are smooth and maintain game state
-- [ ] HMR works correctly when code changes occur during Study Scene
+- [x] Content sections are designed to display word breakdowns, grammar points, examples, etc.
+- [x] Players can return to the VN Scene exactly where they left off using the back button
+- [x] Scene transitions are smooth and maintain game state
+- [x] HMR works correctly when code changes occur during Study Scene
 - [ ] The interface is visually consistent with the rest of the game
 - [ ] All text is properly displayed with appropriate fonts and styling
 

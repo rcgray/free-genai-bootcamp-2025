@@ -7,6 +7,7 @@
 
 import BaseScene from './BaseScene';
 import sceneRegistry from './SceneRegistry';
+import { StudyPhraseData } from './StudyScene';
 
 export default class VNScene extends BaseScene {
   // UI Components
@@ -19,6 +20,7 @@ export default class VNScene extends BaseScene {
   private choiceContainer?: Phaser.GameObjects.Container;
   private choiceButtons: Phaser.GameObjects.Text[] = [];
   private titleButton?: Phaser.GameObjects.Text;
+  private studyButton?: Phaser.GameObjects.Text;
   
   // Character display
   private characterSprites: Record<string, Phaser.GameObjects.Sprite> = {};
@@ -311,6 +313,7 @@ export default class VNScene extends BaseScene {
     const targets = this.input.hitTestPointer(pointer);
     return targets.some(target => 
       (target === this.titleButton) || 
+      (target === this.studyButton) ||
       this.choiceButtons.includes(target as Phaser.GameObjects.Text)
     );
   }
@@ -324,6 +327,12 @@ export default class VNScene extends BaseScene {
     // Stop any existing dialog timer
     if (this.dialogTimer) {
       this.dialogTimer.remove();
+    }
+    
+    // Remove any existing study button
+    if (this.studyButton) {
+      this.studyButton.destroy();
+      this.studyButton = undefined;
     }
     
     // Set the current dialog and speaker
@@ -374,7 +383,112 @@ export default class VNScene extends BaseScene {
       if (this.nextIndicator) {
         this.nextIndicator.setAlpha(1);
       }
+      
+      // Add the study button
+      this.addStudyButton();
     }
+  }
+  
+  /**
+   * Add a study button next to the dialog
+   */
+  private addStudyButton(): void {
+    if (!this.dialogBox || !this.dialogText) return;
+    
+    // Only add study button if we have actual dialog
+    if (this.currentDialog.trim() === '') return;
+    
+    // Get the current dialog text
+    const dialogText = this.currentDialog;
+    
+    // Extract furigana and translation (example: extract from format "Japanese (Romaji) [Translation]")
+    const furigana = this.extractFurigana(dialogText);
+    const translation = this.extractTranslation(dialogText);
+    
+    // Create the study button
+    this.studyButton = this.add.text(
+      this.dialogBox.x + this.dialogBox.width / 2 - 80,
+      this.dialogBox.y - this.dialogBox.height / 2 - 10,
+      '📝', // Study emoji
+      { 
+        fontSize: '32px'
+      }
+    );
+    
+    this.studyButton.setOrigin(0.5, 0.5);
+    this.studyButton.setInteractive({ useHandCursor: true });
+    this.studyButton.setDepth(this.DEPTH_UI);
+    
+    // Add hover effect
+    this.studyButton.on('pointerover', () => {
+      this.studyButton?.setScale(1.2);
+    });
+    
+    this.studyButton.on('pointerout', () => {
+      this.studyButton?.setScale(1.0);
+    });
+    
+    // Handle click event
+    this.studyButton.on('pointerdown', () => {
+      console.log('Study button clicked');
+      
+      // Prepare phrase data
+      const phraseData: StudyPhraseData = {
+        phrase: this.extractJapaneseText(dialogText),
+        furigana: furigana,
+        translation: translation,
+        context: `Currently at ${this.currentLocation}, spoken by ${this.currentSpeaker}`,
+        source: this.currentSpeaker
+      };
+      
+      // Launch the study scene
+      this.openStudyScene(phraseData);
+    });
+  }
+  
+  /**
+   * Extract Japanese text from the dialog
+   * Assumes format: "Japanese (Romaji) [Translation]"
+   */
+  private extractJapaneseText(text: string): string {
+    // For now, a simple extraction - take everything before the first '('
+    const match = text.match(/^([^(]+)/);
+    return match ? match[1].trim() : text;
+  }
+  
+  /**
+   * Extract furigana (romaji) from the dialog
+   * Assumes format: "Japanese (Romaji) [Translation]"
+   */
+  private extractFurigana(text: string): string {
+    // Extract text between the first pair of parentheses
+    const match = text.match(/\(([^)]+)\)/);
+    return match ? match[1].trim() : '';
+  }
+  
+  /**
+   * Extract translation from the dialog
+   * Assumes format: "Japanese (Romaji) [Translation]"
+   */
+  private extractTranslation(text: string): string {
+    // Extract text between the first pair of square brackets
+    const match = text.match(/\[([^\]]+)\]/);
+    return match ? match[1].trim() : '';
+  }
+  
+  /**
+   * Open the Study Scene with the given phrase data
+   */
+  private openStudyScene(phraseData: StudyPhraseData): void {
+    console.log('Opening Study Scene with phrase:', phraseData.phrase);
+    
+    // Launch the study scene as an overlay
+    this.scene.launch('StudyScene', phraseData);
+    
+    // Pause this scene (but keep it visible in the background)
+    this.scene.pause();
+    
+    console.log('VNScene paused, StudyScene launched');
   }
   
   /**
@@ -396,6 +510,9 @@ export default class VNScene extends BaseScene {
     if (this.nextIndicator) {
       this.nextIndicator.setAlpha(1);
     }
+    
+    // Add the study button
+    this.addStudyButton();
   }
   
   /**
@@ -475,6 +592,7 @@ export default class VNScene extends BaseScene {
     if (this.nameBox) this.nameBox.setAlpha(0);
     if (this.nameText) this.nameText.setAlpha(0);
     if (this.nextIndicator) this.nextIndicator.setAlpha(0);
+    if (this.studyButton) this.studyButton.setAlpha(0);
     
     // Create new choice buttons
     const buttonHeight = 50;
@@ -514,9 +632,15 @@ export default class VNScene extends BaseScene {
         this.handleChoice(index);
       });
       
+      // Add study button for this choice
+      const studyChoiceButton = this.addStudyButtonToChoice(button, choice);
+      
       // Add to container and button array
       if (this.choiceContainer) {
         this.choiceContainer.add(button);
+        if (studyChoiceButton) {
+          this.choiceContainer.add(studyChoiceButton);
+        }
       }
       this.choiceButtons.push(button);
       
@@ -532,6 +656,51 @@ export default class VNScene extends BaseScene {
       duration: 300,
       ease: 'Power2'
     });
+  }
+  
+  /**
+   * Add a study button to a choice
+   */
+  private addStudyButtonToChoice(button: Phaser.GameObjects.Text, choiceText: string): Phaser.GameObjects.Text | undefined {
+    const studyButton = this.add.text(
+      button.width / 2 + 40,
+      0,
+      '📝', // Study emoji
+      { 
+        fontSize: '24px'
+      }
+    );
+    
+    studyButton.setOrigin(0.5, 0.5);
+    studyButton.setInteractive({ useHandCursor: true });
+    
+    // Add hover effect
+    studyButton.on('pointerover', () => {
+      studyButton.setScale(1.2);
+    });
+    
+    studyButton.on('pointerout', () => {
+      studyButton.setScale(1.0);
+    });
+    
+    // Handle click event
+    studyButton.on('pointerdown', () => {
+      console.log('Study choice button clicked');
+      
+      // Prepare phrase data
+      const phraseData: StudyPhraseData = {
+        phrase: this.extractJapaneseText(choiceText),
+        furigana: this.extractFurigana(choiceText),
+        translation: this.extractTranslation(choiceText),
+        context: `Choice option at ${this.currentLocation}`,
+        source: 'Player Option'
+      };
+      
+      // Launch the study scene
+      this.openStudyScene(phraseData);
+    });
+    
+    return studyButton;
   }
   
   /**

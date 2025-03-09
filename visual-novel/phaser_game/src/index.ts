@@ -15,6 +15,7 @@ declare global {
 import TitleScene from './scenes/TitleScene';
 import TestScene from './scenes/TestScene';
 import VNScene from './scenes/VNScene';
+import StudyScene from './scenes/StudyScene';
 
 // Import state management
 import { GameStateManager, GameState } from './utils/GameStateManager';
@@ -32,7 +33,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: 800,
   parent: 'game-container',
   backgroundColor: '#333333',
-  scene: [TitleScene, TestScene, VNScene],
+  scene: [TitleScene, TestScene, VNScene, StudyScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
@@ -51,6 +52,21 @@ let game: Phaser.Game;
 
 // Keep track of the current scene outside of the GameStateManager for HMR
 let currentSceneKey: string = 'TitleScene';
+
+// Helper function to safely update currentSceneKey
+function safeSetCurrentSceneKey(value: string): void {
+  // Never allow currentSceneKey to be StudyScene
+  if (value === 'StudyScene') {
+    console.warn('⚠️ Attempted to set currentSceneKey to StudyScene - ignoring');
+    return;
+  }
+  
+  // Only log if actually changing
+  if (currentSceneKey !== value) {
+    console.log(`📊 Setting currentSceneKey: ${currentSceneKey} → ${value}`);
+    currentSceneKey = value;
+  }
+}
 
 // Function to initialize the game
 function initGame() {
@@ -83,14 +99,47 @@ function setupSceneTransitionListeners() {
         return;
       }
       
+      // Debug listener - track scene changes in real-time
+      game.events.on('step', () => {
+        // Get currently active scenes
+        const activeScenes = game.scene.getScenes(true);
+        const activeSceneKeys = activeScenes.map(s => s.scene.key);
+        
+        // Only log when there's a change to avoid console spam
+        const activeSceneString = JSON.stringify(activeSceneKeys);
+        if ((window as any).__lastActiveScenes !== activeSceneString) {
+          (window as any).__lastActiveScenes = activeSceneString;
+          
+          // Update tracking variable but never use StudyScene
+          if (activeSceneKeys.length > 0) {
+            // Skip StudyScene for tracking
+            if (activeSceneKeys[0] !== 'StudyScene' && currentSceneKey !== activeSceneKeys[0]) {
+              console.log(`🔍 Scene tracking updated: ${currentSceneKey} → ${activeSceneKeys[0]}`);
+              safeSetCurrentSceneKey(activeSceneKeys[0]);
+            } else if (activeSceneKeys[0] === 'StudyScene') {
+              console.log(`🔍 StudyScene is active, but not tracking it as current scene`);
+            }
+          }
+          
+          console.log(`🎮 Active scenes: ${activeSceneKeys.join(', ')}`);
+        }
+      });
+      
       // Listen for scene transitions
       game.scene.scenes.forEach(scene => {
         // Listen for scene start events
         scene.events.on('start', () => {
           const newSceneKey = scene.scene.key;
+          
+          // Never track StudyScene as the current scene
+          if (newSceneKey === 'StudyScene') {
+            console.log(`ℹ️ StudyScene started, but not tracking it as current scene`);
+            return;
+          }
+          
           if (newSceneKey !== currentSceneKey) {
             console.log(`🔄 Scene changed from ${currentSceneKey} to ${newSceneKey}`);
-            currentSceneKey = newSceneKey;
+            safeSetCurrentSceneKey(newSceneKey);
             
             // Update stored scene information
             const hmrState = getHmrState();
@@ -113,18 +162,29 @@ function setupSceneTransitionListeners() {
 // Helper functions for HMR state management
 function saveHmrState(state: GameState): void {
   try {
+    // Validate the input state
     if (!state || !state.currentScene) {
       console.error('❌ Invalid state object provided to saveHmrState:', state);
-      return;
+      throw new Error('Invalid state object provided to saveHmrState');
     }
     
-    // Update the current scene in the state based on our tracking
-    if (currentSceneKey && currentSceneKey !== state.currentScene) {
+    // Critical safety check - never allow StudyScene as currentScene
+    if (state.currentScene === 'StudyScene') {
+      console.error('🛑 CRITICAL ERROR: Attempted to save StudyScene as currentScene in HMR state!');
+      throw new Error('StudyScene cannot be saved as currentScene');
+    }
+    
+    // Secondary validation - ensure currentSceneKey and state.currentScene match
+    // unless currentSceneKey is StudyScene
+    if (currentSceneKey !== state.currentScene && currentSceneKey !== 'StudyScene') {
       console.log(`🔄 Updating state.currentScene from ${state.currentScene} to ${currentSceneKey}`);
       state.currentScene = currentSceneKey;
     }
     
-    // Log the state being saved for debugging
+    // Create a JSON-serializable version of the state
+    const stateJson = JSON.stringify(state);
+    
+    // Log what we're saving
     console.log('💾 Saving HMR state:', {
       currentScene: state.currentScene,
       timestamp: new Date(state.timestamp).toISOString(),
@@ -133,7 +193,6 @@ function saveHmrState(state: GameState): void {
     });
     
     // Save to sessionStorage (persists across page reloads within the same tab)
-    const stateJson = JSON.stringify(state);
     sessionStorage.setItem('hmr-state', stateJson);
     console.log(`💾 HMR state saved to sessionStorage (${stateJson.length} bytes)`);
     
@@ -292,7 +351,7 @@ function attemptAutoRestore(targetScene: string, maxAttempts = 5): void {
       game.scene.start(targetScene);
       
       // Update the current scene tracking
-      currentSceneKey = targetScene;
+      safeSetCurrentSceneKey(targetScene);
       
       // Log success
       console.log(`🎮 Automatically restored to ${targetScene} scene`);
@@ -341,6 +400,13 @@ console.log(`🎯 Target scene for next navigation: ${targetScene}`);
 
 // Try automatic restoration first
 if (savedHmrState && targetScene !== 'TitleScene') {
+  // Critical safety check - StudyScene should never be saved as the target scene
+  if (targetScene === 'StudyScene') {
+    console.error('🛑 CRITICAL ERROR: HMR attempting to restore to StudyScene!');
+    throw new Error('Cannot restore to StudyScene - it is ephemeral by design');
+  }
+  
+  // Standard restoration approach
   attemptAutoRestore(targetScene);
 }
 
@@ -361,7 +427,7 @@ if (savedHmrState && targetScene !== 'TitleScene') {
     game.scene.start(sceneKey);
     
     // Update the current scene tracking
-    currentSceneKey = sceneKey;
+    safeSetCurrentSceneKey(sceneKey);
   } catch (e) {
     console.error('Error during manual navigation:', e);
   }
@@ -417,20 +483,21 @@ if (import.meta.hot) {
     try {
       // Make sure the game is initialized before trying to save state
       if (game && game.isBooted) {
-        const currentState = stateManager.saveState();
+        // Check if we're currently in the StudyScene
+        const isInStudyScene = currentSceneKey === 'StudyScene';
+        
+        // Log the current scene detection for debugging
+        console.log(`🔍 HMR detected current scene: ${currentSceneKey}`);
+        
+        // Use the specialized HMR state saving method that handles StudyScene
+        const currentState = stateManager.saveStateBeforeHMR();
         
         // Validate the state before saving
         if (currentState && currentState.currentScene) {
-          // Update the current scene in the state based on our tracking
-          if (currentSceneKey && currentSceneKey !== currentState.currentScene) {
-            console.log(`🔄 Updating currentState.currentScene from ${currentState.currentScene} to ${currentSceneKey}`);
-            currentState.currentScene = currentSceneKey;
-          }
-          
           // Store the state for persistence
           saveHmrState(currentState);
         } else {
-          console.error('❌ Invalid state returned from saveState:', currentState);
+          console.error('❌ Invalid state returned from saveStateBeforeHMR:', currentState);
         }
       } else {
         console.warn('⚠️ Game not initialized, skipping state save');
