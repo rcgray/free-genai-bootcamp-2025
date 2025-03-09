@@ -12,13 +12,6 @@
 │   ├── main.py
 │   └── utils
 │       └── __init__.py
-├── assets
-│   ├── audio
-│   ├── fonts
-│   └── images
-│       ├── backgrounds
-│       │   └── title.png
-│       └── characters
 ├── dev
 ├── docs
 │   ├── Action-Plan.md
@@ -28,7 +21,8 @@
 │   ├── Technical-Spec.md
 │   ├── features
 │   │   ├── Phaser-Rewrite.md
-│   │   └── Scene-Specific-Reloading.md
+│   │   ├── Scene-Specific-Reloading.md
+│   │   └── Study-Scene.md
 │   ├── read-only
 │   │   ├── Project-Setup.md
 │   │   ├── Prompt-Header.md
@@ -43,8 +37,26 @@
 │   │   ├── fonts
 │   │   └── images
 │   │       ├── backgrounds
-│   │       │   └── title.png
+│   │       │   ├── clothing_store.png
+│   │       │   ├── hotel_lobby.png
+│   │       │   ├── inside_restaurant.png
+│   │       │   ├── inside_train.png
+│   │       │   ├── outside_mall.png
+│   │       │   ├── outside_restaurant.png
+│   │       │   ├── park_bench.png
+│   │       │   ├── park_lawn.png
+│   │       │   ├── title.png
+│   │       │   └── train_platform.png
 │   │       └── characters
+│   │           ├── kaori
+│   │           │   ├── default.png
+│   │           │   ├── surprised.png
+│   │           │   ├── thinking.png
+│   │           │   └── worried.png
+│   │           ├── shopkeeper
+│   │           │   └── default.png
+│   │           └── takashi
+│   │               └── default.png
 │   ├── index.html
 │   ├── package-lock.json
 │   ├── package.json
@@ -54,10 +66,14 @@
 │   │   ├── scenes
 │   │   │   ├── BaseScene.ts
 │   │   │   ├── SceneRegistry.ts
+│   │   │   ├── StudyScene.ts
 │   │   │   ├── TestScene.ts
-│   │   │   └── TitleScene.ts
+│   │   │   ├── TitleScene.ts
+│   │   │   └── VNScene.ts
 │   │   └── utils
 │   │       ├── AssetManager.ts
+│   │       ├── Character.ts
+│   │       ├── CharacterManager.ts
 │   │       ├── GameStateManager.ts
 │   │       ├── PhaserDebug.ts
 │   │       └── StatefulScene.ts
@@ -75,4 +91,4 @@
 ├── tests
 └── uv.lock
 
-29 directories, 47 files
+26 directories, 66 files

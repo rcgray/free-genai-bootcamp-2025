@@ -8,6 +8,8 @@
 import BaseScene from './BaseScene';
 import sceneRegistry from './SceneRegistry';
 import { StudyPhraseData } from './StudyScene';
+import { CharacterManager } from '../utils/CharacterManager';
+import { CharacterPosition } from '../utils/Character';
 
 export default class VNScene extends BaseScene {
   // UI Components
@@ -22,8 +24,8 @@ export default class VNScene extends BaseScene {
   private titleButton?: Phaser.GameObjects.Text;
   private studyButton?: Phaser.GameObjects.Text;
   
-  // Character display
-  private characterSprites: Record<string, Phaser.GameObjects.Sprite> = {};
+  // Character management
+  private characterManager: CharacterManager;
   
   // Dialog state
   private currentDialog: string = '';
@@ -46,6 +48,9 @@ export default class VNScene extends BaseScene {
    */
   constructor() {
     super({ key: 'VNScene' });
+    
+    // Initialize the character manager
+    this.characterManager = new CharacterManager();
   }
   
   /**
@@ -57,21 +62,27 @@ export default class VNScene extends BaseScene {
     
     // Load background images for the train station location
     this.load.image('train_platform', 'assets/images/backgrounds/train_platform.png');
+    this.load.image('inside_train', 'assets/images/backgrounds/inside_train.png');
+    this.load.image('outside_restaurant', 'assets/images/backgrounds/outside_restaurant.png');
+    this.load.image('inside_restaurant', 'assets/images/backgrounds/inside_restaurant.png');
+    this.load.image('park_lawn', 'assets/images/backgrounds/park_lawn.png');
+    this.load.image('park_bench', 'assets/images/backgrounds/park_bench.png');
+    this.load.image('outside_mall', 'assets/images/backgrounds/outside_mall.png');
+    this.load.image('clothing_store', 'assets/images/backgrounds/clothing_store.png');
+    this.load.image('hotel_lobby', 'assets/images/backgrounds/hotel_lobby.png');
     
-    // Load character sprites for Kaori
+    // Load character images
+    // Kaori
     this.load.image('kaori_default', 'assets/images/characters/kaori/default.png');
+    this.load.image('kaori_worried', 'assets/images/characters/kaori/worried.png');
+    this.load.image('kaori_surprised', 'assets/images/characters/kaori/surprised.png');
+    this.load.image('kaori_thinking', 'assets/images/characters/kaori/thinking.png');
     
-    // Check if we're in the embedded mode (Streamlit) with assets provided
-    const win = window as any;
-    if (win.GAME_ASSETS) {
-      // Use embedded assets if available
-      if (win.GAME_ASSETS['train_platform']) {
-        this.load.image('train_platform', win.GAME_ASSETS['train_platform']);
-      }
-      if (win.GAME_ASSETS['kaori_default']) {
-        this.load.image('kaori_default', win.GAME_ASSETS['kaori_default']);
-      }
-    }
+    // Takashi
+    this.load.image('takashi_default', 'assets/images/characters/takashi/default.png');
+    
+    // Shopkeeper
+    this.load.image('shopkeeper_default', 'assets/images/characters/shopkeeper/default.png');
   }
   
   /**
@@ -83,8 +94,11 @@ export default class VNScene extends BaseScene {
     // Set up the background (lowest layer)
     this.createBackground();
     
+    // Set the character manager's scene reference
+    this.characterManager.setScene(this);
+    
     // Display Kaori character (middle layer)
-    this.displayCharacter('kaori', 'kaori_default', 'center');
+    this.characterManager.show('kaori', 'center');
     
     // Set up the UI elements (highest layer)
     this.createDialogBox();
@@ -529,51 +543,21 @@ export default class VNScene extends BaseScene {
   
   /**
    * Display character sprite on screen
+   * @deprecated Use characterManager.show() instead
    */
   private displayCharacter(id: string, spriteKey: string, position: 'left' | 'center' | 'right'): void {
-    // Remove existing character sprite if it exists
-    if (this.characterSprites[id]) {
-      this.characterSprites[id].destroy();
-    }
+    console.warn('displayCharacter is deprecated, use characterManager.show() instead');
     
-    // Calculate x position based on position parameter
-    let x: number;
-    switch (position) {
-      case 'left':
-        x = this.cameras.main.width * 0.25;
-        break;
-      case 'right':
-        x = this.cameras.main.width * 0.75;
-        break;
-      case 'center':
-      default:
-        x = this.cameras.main.width * 0.5;
-        break;
-    }
+    // Convert old position format to CharacterPosition type
+    const characterPosition = position as CharacterPosition;
     
-    // Create the character sprite
-    const y = this.cameras.main.height * 0.5;
-    const sprite = this.add.sprite(x, y, spriteKey);
+    // Extract emotion from spriteKey (e.g., kaori_default -> default)
+    const parts = spriteKey.split('_');
+    const characterId = parts[0];
+    const emotion = parts.length > 1 ? parts[1] : 'default';
     
-    // Scale the sprite to a reasonable size
-    const scale = this.cameras.main.height * 0.7 / sprite.height;
-    sprite.setScale(scale);
-    
-    // Set the character depth to be above background but below UI
-    sprite.setDepth(this.DEPTH_CHARACTER);
-    
-    // Store the sprite reference
-    this.characterSprites[id] = sprite;
-    
-    // Add entrance animation
-    sprite.setAlpha(0);
-    this.tweens.add({
-      targets: sprite,
-      alpha: 1,
-      y: y - 20,
-      duration: 500,
-      ease: 'Power2'
-    });
+    // Use the character manager to show the character
+    this.characterManager.show(characterId, characterPosition, emotion);
   }
   
   /**
@@ -751,67 +735,70 @@ export default class VNScene extends BaseScene {
   }
   
   /**
-   * Override serializeState to include VNScene-specific state
+   * Serialize scene state for hot module replacement and save/load functionality
    */
   serializeState(): any {
-    // Get base state from parent
-    const baseState = super.serializeState();
+    const state = super.serializeState();
+    
+    // Add character manager state
+    state.characterState = this.characterManager.serialize();
     
     // Add scene-specific state
     return {
-      ...baseState,
+      ...state,
       currentDialog: this.currentDialog,
       currentSpeaker: this.currentSpeaker,
       isDialogComplete: this.isDialogComplete,
       displayedTextLength: this.displayedTextLength,
-      currentLocation: this.currentLocation,
-      characters: Object.keys(this.characterSprites).map(id => {
-        const sprite = this.characterSprites[id];
-        if (!sprite) return null;
-        
-        return {
-          id,
-          spriteKey: sprite.texture.key,
-          x: sprite.x,
-          y: sprite.y,
-          alpha: sprite.alpha,
-          scale: sprite.scale
-        };
-      }).filter(Boolean)
+      currentLocation: this.currentLocation
     };
   }
   
   /**
-   * Override deserializeState to restore VNScene-specific state
+   * Deserialize and apply previously serialized state
    */
   deserializeState(state: any): void {
-    // Apply base state
     super.deserializeState(state);
     
-    // Restore scene-specific state
-    if (state.currentDialog) {
-      this.currentDialog = state.currentDialog;
+    // Restore VN scene specific state
+    if (state) {
+      this.currentDialog = state.currentDialog || '';
+      this.currentSpeaker = state.currentSpeaker || '';
+      this.isDialogComplete = state.isDialogComplete || false;
+      this.displayedTextLength = state.displayedTextLength || 0;
+      this.currentLocation = state.currentLocation || 'train_platform';
+      
+      // Restore character manager state
+      if (state.characterState) {
+        this.characterManager.deserialize(state.characterState);
+      }
+      
+      // Update UI elements to match state
+      if (this.dialogText && this.currentDialog) {
+        this.dialogText.setText(this.currentDialog.substring(0, this.displayedTextLength));
+      }
+      
+      if (this.nameText && this.currentSpeaker) {
+        this.nameText.setText(this.currentSpeaker);
+      }
+      
+      // Update background
+      this.setBackground(this.currentLocation);
+    }
+  }
+  
+  /**
+   * Set the current background
+   */
+  private setBackground(locationKey: string): void {
+    if (!this.background) {
+      this.createBackground();
     }
     
-    if (state.currentSpeaker) {
-      this.currentSpeaker = state.currentSpeaker;
+    if (this.background) {
+      this.background.setTexture(locationKey);
+      this.currentLocation = locationKey;
     }
-    
-    if (state.isDialogComplete !== undefined) {
-      this.isDialogComplete = state.isDialogComplete;
-    }
-    
-    if (state.displayedTextLength !== undefined) {
-      this.displayedTextLength = state.displayedTextLength;
-    }
-    
-    if (state.currentLocation) {
-      this.currentLocation = state.currentLocation;
-    }
-    
-    // Note: Character sprites will be recreated in create(),
-    // but we could use this state to modify their appearance or behavior
-    console.log('VNScene state restored');
   }
 }
 

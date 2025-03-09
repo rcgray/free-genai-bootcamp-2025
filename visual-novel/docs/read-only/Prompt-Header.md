@@ -29,3 +29,6 @@ This file differs from .cursorrules in that it is meant to be constructed over t
 ## Project-SpecificDesign Guidelines
 - In general, we will want to implement as much of our project within the Phaser game, not the Streamlit wrapper.  We may add some utilities and UI outside the game to aid development, but the goal for now is to minimize the Streamlit wrapper and intend to implement as much as possible within the Phaser game itself.
 - If adding images to the game, and the game file does not exist, add it to the code anyway. Then, create an image file of the appropriate size and name using the CLI utility `convert` (ImageMagick).
+
+## Workflow
+- We have established a pair of scripts to enable hot-reloading of the Phaser game.  The `./scripts/watch-phaser.sh` launches our Vite server for the Phaser game and our `./scripts/watch-streamlit.sh` launches our watch server for the Streamlit app that hosts the game. These are configured to run in the background and will automatically reload the game when changes are detected. It is unecessary for you to run these commands yourself.

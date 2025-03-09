@@ -1,4 +1,5 @@
 import { StatefulScene } from './StatefulScene';
+import { SerializedCharacterState } from './CharacterManager';
 
 /**
  * Interface representing the complete game state.
@@ -12,6 +13,8 @@ export interface GameState {
   sceneStates: Record<string, any>;
   /** Timestamp when the state was saved */
   timestamp: number;
+  /** Character state */
+  characterState?: SerializedCharacterState;
 }
 
 /**

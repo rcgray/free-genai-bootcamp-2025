@@ -26,6 +26,7 @@ export default class TitleScene extends BaseScene {
   private startButtonTween?: Phaser.Tweens.Tween;
   private startButton?: Phaser.GameObjects.Text;
   private resetButton?: Phaser.GameObjects.Text;
+  private testButton?: Phaser.GameObjects.Text;
   private background?: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
   private gradientRect?: Phaser.GameObjects.Rectangle;
   private hasGradientBackground: boolean = false;
@@ -98,85 +99,139 @@ export default class TitleScene extends BaseScene {
         this.hasGradientBackground = true;
       }
     } catch (error) {
-      console.error('Error adding background:', error);
-      // Create a gradient background as fallback
+      console.error('Error creating background:', error);
       this.createGradientBackground();
       this.hasGradientBackground = true;
     }
     
-    // Add a start button
-    this.startButton = this.add.text(
+    // Add the title text
+    const titleText = this.add.text(
       this.cameras.main.width / 2,
-      this.cameras.main.height / 2 + 150,
-      'Start Game2',
+      this.cameras.main.height * 0.3,
+      'Japanese Visual Novel',
       {
         fontFamily: 'Arial',
-        fontSize: '32px',
+        fontSize: '48px',
+        color: '#ffffff',
+        stroke: '#000000',
+        strokeThickness: 6
+      }
+    );
+    titleText.setOrigin(0.5, 0.5);
+    
+    // Add the subtitle text
+    const subtitleText = this.add.text(
+      this.cameras.main.width / 2,
+      this.cameras.main.height * 0.3 + 50,
+      'Language Learning Game',
+      {
+        fontFamily: 'Arial',
+        fontSize: '24px',
         color: '#ffffff',
         stroke: '#000000',
         strokeThickness: 4
       }
     );
-    this.startButton.setOrigin(0.5, 0.5);
-    this.startButton.setInteractive({ useHandCursor: true });
+    subtitleText.setOrigin(0.5, 0.5);
     
-    // Add hover effect
+    // Create the start button
+    this.startButton = this.add.text(
+      this.cameras.main.width / 2,
+      this.cameras.main.height * 0.6,
+      'Start Game',
+      {
+        fontFamily: 'Arial',
+        fontSize: '32px',
+        color: '#ffffff',
+        backgroundColor: '#2ecc71',
+        padding: { left: 20, right: 20, top: 10, bottom: 10 }
+      }
+    );
+    this.startButton.setOrigin(0.5, 0.5);
+    this.startButton.setInteractive({ cursor: 'pointer' });
+    
+    // Add hover effect to start button
     this.startButton.on('pointerover', () => {
-      this.startButton?.setStyle({ color: '#ff8800' });
+      this.startButton?.setStyle({ backgroundColor: '#27ae60' });
     });
     
     this.startButton.on('pointerout', () => {
-      this.startButton?.setStyle({ color: '#ffffff' });
+      this.startButton?.setStyle({ backgroundColor: '#2ecc71' });
     });
     
-    // Make the button pulse
-    this.startButtonTween = this.tweens.add({
-      targets: this.startButton,
-      scale: 1.1,
-      duration: 800,
-      ease: 'Power2',
-      yoyo: true,
-      repeat: -1
-    });
-    
-    // Handle click event
+    // Add click handler to start button
     this.startButton.on('pointerdown', () => {
-      console.log('Start button clicked');
-      // Transition to the VN scene
       this.transitionTo('VNScene');
     });
     
-    // Add reset button in the top right corner
+    // Create the reset button
     this.resetButton = this.add.text(
-      this.cameras.main.width - 20,
-      20,
-      'Reset',
+      this.cameras.main.width / 2,
+      this.cameras.main.height * 0.6 + 60,
+      'Reset Game',
       {
         fontFamily: 'Arial',
         fontSize: '20px',
         color: '#ffffff',
-        stroke: '#000000',
-        strokeThickness: 2,
-        backgroundColor: '#ff0000'
+        backgroundColor: '#e74c3c',
+        padding: { left: 10, right: 10, top: 5, bottom: 5 }
       }
     );
-    this.resetButton.setOrigin(1, 0); // Align to top right
-    this.resetButton.setPadding(8);
-    this.resetButton.setInteractive({ useHandCursor: true });
+    this.resetButton.setOrigin(0.5, 0.5);
+    this.resetButton.setInteractive({ cursor: 'pointer' });
     
-    // Add hover effect for reset button
+    // Add hover effect to reset button
     this.resetButton.on('pointerover', () => {
-      this.resetButton?.setStyle({ color: '#ffff00' });
+      this.resetButton?.setStyle({ backgroundColor: '#c0392b' });
     });
     
     this.resetButton.on('pointerout', () => {
-      this.resetButton?.setStyle({ color: '#ffffff' });
+      this.resetButton?.setStyle({ backgroundColor: '#e74c3c' });
     });
     
-    // Handle reset button click
+    // Add click handler to reset button
     this.resetButton.on('pointerdown', () => {
-      console.log('Reset button clicked - clearing game state');
       this.resetGameState();
+    });
+    
+    // Create the test scene button
+    this.testButton = this.add.text(
+      this.cameras.main.width / 2,
+      this.cameras.main.height * 0.6 + 120,
+      'Character Test Scene',
+      {
+        fontFamily: 'Arial',
+        fontSize: '20px',
+        color: '#ffffff',
+        backgroundColor: '#3498db',
+        padding: { left: 10, right: 10, top: 5, bottom: 5 }
+      }
+    );
+    this.testButton.setOrigin(0.5, 0.5);
+    this.testButton.setInteractive({ cursor: 'pointer' });
+    
+    // Add hover effect to test button
+    this.testButton.on('pointerover', () => {
+      this.testButton?.setStyle({ backgroundColor: '#2980b9' });
+    });
+    
+    this.testButton.on('pointerout', () => {
+      this.testButton?.setStyle({ backgroundColor: '#3498db' });
+    });
+    
+    // Add click handler to test button
+    this.testButton.on('pointerdown', () => {
+      this.transitionTo('TestScene');
+    });
+    
+    // Add button animation
+    this.startButtonTween = this.tweens.add({
+      targets: this.startButton,
+      y: this.cameras.main.height * 0.6 + 5,
+      duration: 1000,
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: -1
     });
   }
   

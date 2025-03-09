@@ -149,11 +149,20 @@
 ## Phase 3: Game Content and Flow 🟡
 
 ### 3.1 Character System
-- [ ] Create character data structure
-- [ ] Implement character sprite loading
-- [ ] Add character emotion/expression system
-- [ ] Create character positioning system
-- [ ] Implement character animation basics
+- [x] Create character data structure
+- [x] Implement character sprite loading
+- [x] Add character emotion/expression system
+- [x] Create character positioning system
+- [x] Implement character animation basics
+
+**[CHECKPOINT: Character System]** ✅
+*Verification Steps:*
+1. ✅ Verify characters display correctly with different emotions/expressions
+2. ✅ Test character positioning and transitions between positions
+3. ✅ Verify character emotion changes work correctly
+4. ✅ Test character entrance and exit animations
+5. ✅ Verify position persistence when character is hidden
+6. ✅ Test the character system using the Character Test Scene
 
 ### 3.2 Dialog System
 - [ ] Create dialog data structure
@@ -162,15 +171,6 @@
 - [ ] Add text animation effects (typewriter)
 - [~] Create dialog history system
 - [ ] Implement basic choice system
-
-**[CHECKPOINT: Character and Dialog Systems]**
-*Verification Steps:*
-1. Verify characters display correctly with different emotions/expressions
-2. Test character positioning and transitions
-3. Verify dialog text displays correctly with proper formatting
-4. Test typewriter animation effect
-5. Verify dialog history system works correctly
-6. Test choice system with multiple options
 
 ### 3.3 Game Flow
 - [ ] Create game state management
