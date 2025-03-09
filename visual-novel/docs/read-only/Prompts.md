@@ -373,7 +373,7 @@ Many back-and-forth specific prompts (eventually switching to claude-3.7-sonnet-
 
 ---
 
-# New chat (Agent, claude-3.7-sonnet)
+# New chat (Agent, claude-3.7-sonnet-thinking)
 
 ---
 
@@ -412,4 +412,27 @@ yes, let's create it, and then let's have the Start button on the Title Scene se
 It would seem in your creation of the VN Scene, you did not pay attention to the details of the game design discussed in `docs/Game-Design.md` ( @Game-Design.md ), which was given to you above.  For instance, there is no school scene, and you have the example of a key character (no need for a placeholder).  You have the list of all folders in the project via `docs/reports/Project-File-Structure.md` (@Project-File-Structure.md ), so you could have known it was not necessary to `mkdir -p assets/images/backgrounds`.  I'm just confused, because it doesn't appear that you are referencing the information you've been given, so please advise on how I can better provide it to you.  Further, you don't need to attempt to run the game, we have a script `./scripts/watch-phaser.sh` that is already running with hot-reload for the game.
 
 ---
+
+[Chat] Looks good! Now let's move on to the next step of our Action Plan, which is to create the Study Scene. There should be an emoji button next to any dialog (either presented by a character or as one of the Response Options of the player). Clicking this button should navigate to our Study Scene with the corresponding phrase.  We will want to be sure to carry over the furigana and translation of the phrase as well.
+
+Once in the Study Scene, the player will be presented with the phrase in Japanese as the main focus of the scene. The player will also be able to see the furigana and translation of the phrase.  There will be a "Back" button in the top left of the scene that will take the player back to the VN Scene, which should load exactly where they left off.
+
+I am unfamiliar with how scenes work in Phaser, so the technique for accomplishing the return may need some clarification. Is it possible to navigate to a scene while keeping an existing scene active (such that it could be returned to exactly where it was left)? If not, we may want to consider a method for using the GameState (that we have for loading/saving and currently use for the HMR functionality) to allow reloading the VNScene to exactly where it was.
+
+Let me know your thoughts on this before we move forward.
+
+---
+
+Pefect, let's do that, pausing the VNScene and launching the Study Scene over it, then on return closing the Study Scene and resuming the VNScene.  There will probably be consequences for this to consider in the HMR functionality - if the game code is refreshed while in the Study Scene, perhaps it would be easiest to ignore the Study Scene and have it just reload to the appropriate place in the VNScene below it.  For now, player activity in the Study Scene can simply be forgotten in terms of saved games and hot-reloads. We will treat the study scene as ephemeral, meant only to exist temporarily when a player clicks the Study button next to a phrase.
+
+Could you please create a new file `docs/features/Study-Scene.md` (@Study-Scene.md) that outlines the details of the Study Scene?  It would be best if we could have more details regarding this feature (as well as an Action Plan for its implementation written at the bottom of the file). See other features like `docs/features/Scene-Specific-Reloading.md` (@Scene-Specific-Reloading.md) for examples of how to write these files.  Let's also add a new item to the `docs/Action-Plan.md` file that summarizes the steps we will take to implement this, and add a [CHECKPOINT] to the end of the item.
+
+---
+
+This is a great start.  Let me also introduce you to our plan for integrating the LLM, which will be queried (EVENTUALLY, NOT AT THIS POINT) to populate the Study Scene with additional data regarding the focused phrases. Take a look at the `docs/features/LLM-Integration.md` file (@LLM-Integration.md) to see the type of information we will be receiving from the LLM and want to add to the Study Scene to help inform our layout and design. Update the `docs/features/Study-Scene.md` feature plan to include relevant information.
+
+---
+
+We have a decision to make about the HMR special case for the study scene.  On one hand, if the HMR save and restore is centrally coded, we can add the special case there (i.e., handle the save-before-HMR-reset code to save the state of the VNScene that's still active behind it). What do you think?
+
 
