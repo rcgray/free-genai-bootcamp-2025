@@ -25,7 +25,7 @@ export default class TitleScene extends BaseScene {
   // Add properties to track state
   private startButtonTween?: Phaser.Tweens.Tween;
   private startButton?: Phaser.GameObjects.Text;
-  private titleText?: Phaser.GameObjects.Text;
+  private resetButton?: Phaser.GameObjects.Text;
   private background?: Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle;
   private gradientRect?: Phaser.GameObjects.Rectangle;
   private hasGradientBackground: boolean = false;
@@ -108,7 +108,7 @@ export default class TitleScene extends BaseScene {
     this.startButton = this.add.text(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 + 150,
-      'Start Game3',
+      'Start Game',
       {
         fontFamily: 'Arial',
         fontSize: '32px',
@@ -146,20 +146,77 @@ export default class TitleScene extends BaseScene {
       this.transitionTo('TestScene');
     });
     
-    // Add title text
-    this.titleText = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height / 2 - 100,
-      'Japanese Visual Novel',
+    // Add reset button in the top right corner
+    this.resetButton = this.add.text(
+      this.cameras.main.width - 20,
+      20,
+      'Reset',
       {
         fontFamily: 'Arial',
-        fontSize: '64px',
+        fontSize: '20px',
         color: '#ffffff',
         stroke: '#000000',
-        strokeThickness: 6
+        strokeThickness: 2,
+        backgroundColor: '#ff0000'
       }
     );
-    this.titleText.setOrigin(0.5, 0.5);
+    this.resetButton.setOrigin(1, 0); // Align to top right
+    this.resetButton.setPadding(8);
+    this.resetButton.setInteractive({ useHandCursor: true });
+    
+    // Add hover effect for reset button
+    this.resetButton.on('pointerover', () => {
+      this.resetButton?.setStyle({ color: '#ffff00' });
+    });
+    
+    this.resetButton.on('pointerout', () => {
+      this.resetButton?.setStyle({ color: '#ffffff' });
+    });
+    
+    // Handle reset button click
+    this.resetButton.on('pointerdown', () => {
+      console.log('Reset button clicked - clearing game state');
+      this.resetGameState();
+    });
+  }
+  
+  /**
+   * Reset the game state completely
+   */
+  private resetGameState(): void {
+    console.log('🔄 Resetting game state completely');
+    
+    // Clear any restoration target
+    const win = window as any;
+    if (win.__PHASER_RESTORATION_TARGET__) {
+      console.log('Clearing restoration target:', win.__PHASER_RESTORATION_TARGET__);
+      win.__PHASER_RESTORATION_TARGET__ = null;
+    }
+    
+    // Clear any stored game state
+    if (localStorage) {
+      console.log('Clearing localStorage game state');
+      localStorage.removeItem('gameState');
+      localStorage.removeItem('currentScene');
+      
+      // Clear any other game-related items
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('phaser') || key.startsWith('game') || key.includes('Scene'))) {
+          keysToRemove.push(key);
+        }
+      }
+      
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+        console.log(`Removed localStorage item: ${key}`);
+      });
+    }
+    
+    // Restart the current scene to apply the reset
+    console.log('Restarting TitleScene to apply reset');
+    this.scene.restart();
   }
   
   /**
@@ -272,10 +329,6 @@ export default class TitleScene extends BaseScene {
         x: this.startButton.x,
         y: this.startButton.y,
         scale: this.startButton.scale
-      } : undefined,
-      titleTextPosition: this.titleText ? {
-        x: this.titleText.x,
-        y: this.titleText.y
       } : undefined
     };
   }

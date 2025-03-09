@@ -349,4 +349,43 @@ Alright, let's do it - Phase 2.1.6 of our `docs/Action-Plan.md` Action Plan, whi
 
 ---
 
+# Dev notes
 
+Many back-and-forth specific prompts (eventually switching to claude-3.7-sonnet-thinking to break a loop). The main goal was to perfect load/save for hot-reload functionality, and it was trickier than expected. 
+
+- [x] Test and refine the state preservation system
+  - [x] Fix registry serialization error
+  - [x] Fix HMR integration to properly clean up old game instances
+  - [x] Improve HMR state preservation to maintain game state across reloads
+  - [x] Enhance state storage with sessionStorage for better reliability
+  - [x] Fix state restoration timing to ensure proper scene initialization
+  - [x] Implement robust retry mechanism with comprehensive error handling
+  - [x] Add self-contained retry logic in GameStateManager for better reliability
+  - [x] Implement event-based scene restoration using Phaser's event system
+  - [x] Add comprehensive state validation and error handling
+  - [x] Implement delayed transition mechanism via TitleScene
+  - [x] Enhance scene transition with Phaser's built-in transition system
+  - [x] Implement manual navigation UI instead of automatic restoration
+  - [x] Add Phaser debugging utilities for troubleshooting
+  - [x] Implement smart automatic restoration with multiple safety checks
+  - [x] Keep manual navigation as fallback for reliability
+  - [x] Add scene transition tracking to maintain correct state across manual navigation
+
+---
+
+# New chat (Agent, claude-3.7-sonnet)
+
+---
+
+(Interaction Guidelines: @Prompt-Header.md)
+(Project File Structure: @Project-File-Structure.md)
+
+We are building a Japanese learning app in the form of a visual novel game. Our project is a Streamlit app running a game that we are writing using Phaser.  Our project file structure can be found in the `docs/reports/Project-File-Structure.md` file. Our PRD is in the `docs/PRD.md` file. Our Technical Spec is in the `docs/Technical-Spec.md` file. The design for the game (when we get there) is in the `docs/Game-Design.md` file. Our Action Plan is in the `docs/Action-Plan.md` file. We are currently on Phase 2.2 (Title Scene) of our Action Plan.
+
+Our Title Scene can be very simple, and this task is nearly completed. Remove the title text (it will be integrated into the final background image).  Keep the Start Game button just as it is.  Let's add a button in the top right of just the title screen that causes the game to "reset" - i.e., it clears out any game state and prevents the auto-application of any HMR-related state to allow the player (or more importantly, the developer!) to completely reset the game - which is no longer possible with our recent HMR features.
+
+---
+
+Awesome. Let's move on to create our Visual Novel Scene - Core (2.3 in our Action Plan)
+
+---

@@ -57,7 +57,10 @@
 │   │   │   ├── TestScene.ts
 │   │   │   └── TitleScene.ts
 │   │   └── utils
-│   │       └── AssetManager.ts
+│   │       ├── AssetManager.ts
+│   │       ├── GameStateManager.ts
+│   │       ├── PhaserDebug.ts
+│   │       └── StatefulScene.ts
 │   ├── tsconfig.json
 │   └── vite.config.ts
 ├── pyproject.toml
@@ -72,4 +75,4 @@
 ├── tests
 └── uv.lock
 
-29 directories, 44 files
+29 directories, 47 files

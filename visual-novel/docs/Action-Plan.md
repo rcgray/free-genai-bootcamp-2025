@@ -83,26 +83,22 @@
   - [x] Enhance scene transition with Phaser's built-in transition system
   - [x] Implement manual navigation UI instead of automatic restoration
   - [x] Add Phaser debugging utilities for troubleshooting
-  - [x] Implement smart automatic restoration with multiple safety checks
-  - [x] Keep manual navigation as fallback for reliability
-  - [x] Add scene transition tracking to maintain correct state across manual navigation
-  - [ ] Complete remaining verification tests
+  - [x] Complete remaining verification tests
 
 **[CHECKPOINT: Scene-Specific Reloading]**
 *Verification Steps:*
-1. Verify that game state is preserved when code changes are made
-2. Test that the game returns to the same scene after HMR updates
-3. Confirm that scene-specific state (like dialog position) is maintained
-4. Test manual state saving and loading with keyboard shortcuts
-5. Verify that the implementation follows the design in docs/features/Scene-Specific-Reloading.md
-6. Ensure the system is extensible for future save/load game functionality
+1. ✅ Verify that game state is preserved when code changes are made
+2. ✅ Test that the game returns to the same scene after HMR updates
+3. ✅ Confirm that scene-specific state (like dialog position) is maintained
+4. ✅ Test manual state saving and loading with keyboard shortcuts
+5. ✅ Verify that the implementation follows the design in docs/features/Scene-Specific-Reloading.md
+6. ✅ Ensure the system is extensible for future save/load game functionality
 
 ### 2.2 Title Scene
-- [ ] Design and implement title screen layout
-- [ ] Create start game button
-- [ ] Add basic settings options
-- [ ] Implement scene transition to VN Scene
-- [ ] Add basic animations and styling
+- [x] Design and implement title screen layout
+- [x] Create start game button
+- [x] Add reset button
+- [x] Implement scene transition to VN Scene
 
 ### 2.3 Visual Novel Scene - Core
 - [ ] Implement background display system

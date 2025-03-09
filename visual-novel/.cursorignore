@@ -39,7 +39,6 @@ site/
 # Dev Notes
 dev/template/
 docs/read-only/Project-Setup.md
-docs/read-only/Prompts.md
 
 # Test Data
 tests/data/
