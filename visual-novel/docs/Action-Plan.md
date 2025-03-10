@@ -132,7 +132,7 @@
 *Verification Steps:*
 1. ✅ Verify study buttons appear correctly next to dialog and choices
 2. ✅ Test navigation from VN Scene to Study Scene and back
-3. ✅ Verify Japanese phrases display correctly with furigana
+3. ✅ Verify Japanese phrases display correctly with romaji
 4. ✅ Confirm translations and contextual information are displayed properly
 5. ✅ Test that VN Scene state is preserved when returning from Study Scene
 6. ✅ Verify HMR works properly when modifications occur during Study Scene

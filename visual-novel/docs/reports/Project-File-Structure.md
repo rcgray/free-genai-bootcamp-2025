@@ -20,10 +20,12 @@
 │   ├── PRD.md
 │   ├── Technical-Spec.md
 │   ├── features
+│   │   ├── Dialog-System.md
 │   │   ├── Phaser-Rewrite.md
 │   │   ├── Scene-Specific-Reloading.md
 │   │   └── Study-Scene.md
 │   ├── read-only
+│   │   ├── Feature-Spec-Template.md
 │   │   ├── Project-Setup.md
 │   │   ├── Prompt-Header.md
 │   │   └── Prompts.md
@@ -91,4 +93,4 @@
 ├── tests
 └── uv.lock
 
-26 directories, 66 files
+26 directories, 68 files

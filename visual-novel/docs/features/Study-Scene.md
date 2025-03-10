@@ -10,7 +10,7 @@ This feature document outlines the design and implementation of the Study Scene,
 
 1. **Enhanced Learning Experience**: Provide players with a focused learning environment that breaks down Japanese phrases
 2. **Seamless Integration**: Create a smooth transition between gameplay and study modes without disrupting immersion
-3. **Detailed Language Breakdown**: Present comprehensive information about Japanese phrases including furigana, translation, and usage
+3. **Detailed Language Breakdown**: Present comprehensive information about Japanese phrases including furigana, romaji pronunciation, translation, and usage
 4. **Efficient Navigation**: Allow players to quickly study phrases and return to gameplay exactly where they left off
 5. **Extensible Framework**: Create a foundation that can be extended with additional learning features in the future
 6. **LLM Integration Ready**: Design the UI to accommodate rich phrase data that will eventually be provided by LLM

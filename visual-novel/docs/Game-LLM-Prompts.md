@@ -59,8 +59,8 @@ For each dialog exchange, provide the following information in JSON format:
 {
   "dialogs": [
     {
-      "character": "CHARACTER_NAME",
-      "emotion": "EMOTION", // one of: default, worried, surprised, thinking
+      "character": "CHARACTER_NAME", // empty string for narration
+      "emotion": "EMOTION", // one of: default, worried, surprised, thinking (omit for narration)
       "japanese_text": "JAPANESE_TEXT", // 1-3 sentences in Japanese
       "romaji": "ROMAJI", // pronunciation in romaji
       "english": "ENGLISH_TRANSLATION",
@@ -87,12 +87,14 @@ For each dialog exchange, provide the following information in JSON format:
 }
 
 IMPORTANT GUIDELINES:
+- **The first dialog in the conversation should always be narration** (indicated by an empty character field) that sets up the scene context
+- **Player responses should be narratively neutral** and all lead to the same next dialog; there is no branching narrative based on player choices
 - Use natural, conversational Japanese appropriate for the context
-- For beginner level, use simple grammar and vocabulary with full furigana
+- For beginner level, use simple grammar and vocabulary with full furigana and romaji pronunciation
 - For intermediate level, use moderate complexity with some kanji
 - For advanced level, use natural Japanese with appropriate keigo (politeness levels)
-- Ensure player response options are narratively neutral and all lead appropriately to the next dialog
 - Ensure player response options are meaningfully different but all maintain narrative flow
+- Character dialog can be followed by other character dialog (without player responses) to support character-to-character conversation
 - Include culturally relevant expressions and phrases
 - Incorporate the conversational objectives naturally into the dialog
 - Make sure the conversation flows logically from one exchange to the next

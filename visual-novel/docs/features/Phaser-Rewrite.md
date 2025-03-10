@@ -283,7 +283,7 @@ By embedding the game directly in the Streamlit app rather than using separate s
 
 With the decisions made regarding development environment, build process, asset organization, backward compatibility, and testing strategy, we now have a clear path forward for implementing the rewrite. These decisions prioritize simplicity, automation, and minimizing potential points of failure, which should lead to a smoother development experience and a more robust application.
 
-## Action Plan
+## Feature Implementation Plan (FIP)
 
 ### Phase 1: Environment Setup and Project Structure
 - [x] **1.1 Development Environment Setup**

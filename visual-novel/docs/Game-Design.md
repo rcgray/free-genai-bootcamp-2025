@@ -9,21 +9,21 @@ Along the way, Kaori will teach you some conversational Japanese as you travel o
 
 ### Scene Structure
 Each location will follow this general structure:
-1. **Background Introduction**: Brief narration setting the scene
+1. **Background Introduction**: Brief narration setting the scene (implemented as a dialog with isNarration=true)
 2. **Character Dialog**: Conversation with characters in the scene
 3. **Learning Moment**: Introduction of new Japanese phrases with explanations
-4. **Player Choices**: 2-3 options that affect the conversation flow
+4. **Player Choices**: 2-3 options that affect the conversation style but not the overall narrative flow
 5. **Study Opportunity**: Option to study specific phrases from the conversation
 6. **Transition**: Move to the next scene or location
 
 ### Player Interaction
 - **Dialog Advancement**: Click/tap to advance dialog
-- **Choices**: Select from multiple options that affect the conversation
+- **Choices**: Select from multiple options to express different responses (Note: choices do not create branching narratives, they are expressive rather than consequential)
 - **Study Mode**: Click on highlighted Japanese phrases to enter Study Mode
 - **Settings**: Access language difficulty settings from the menu
 
 ### Difficulty Levels
-- **Beginner**: All Japanese text has furigana and English translations
+- **Beginner**: All Japanese text has furigana, with romaji pronunciation and English translations
 - **Intermediate**: Common kanji without furigana, some context-only Japanese
 - **Advanced**: Minimal assistance, natural Japanese conversation
 
