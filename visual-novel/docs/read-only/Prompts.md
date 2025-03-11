@@ -911,4 +911,18 @@ Is there a reasonably easy way to do this?  What other dependencies might we nee
 
 If the 43rd and 44th characters are both kanji, go back to the previous kana character (hiragana or katakana) and break there.
 
+---
+
+There is no need for you to `npm run dev` - I am running the `watch-phaser.sh` script as discussed in our @Prompt-Header.md file. If there is a problem (like a build break), I will let you know.
+
+We have a small update to the strategy described above for breaking up Japanese text: if the 44th character is punctuation, we will keep it and allow for the line to be 44 characters.
+
+In fact, I have provided a new reference document at `docs/reference/Japanese-Text-Line-Breaking.md` @Japanese-Text-Line-Breaking.md that describes the strategy in more detail as well as implementation details. The system is slightly more complicated than we expected, and I would like for it to be reusable and flexible. It probably doesn't belong cluttering up the VNScene.ts file, and it would probably be more appropriate to put all this logic either as part of the Dialog or DialogManager class. or even a new class.
+
+That way, we can simply call into this functionality giving our full Japanese text and our max line length and get back a list of lines that we can use to display the text and greatly simplify the code we are cluttering up the VNScene.ts file with.
+
+---
+
+Great, let's update the `docs/features/Dialog-System.md` file to reflect this work, including possibly a brief explanation of the need for it and definitely inclusion of it in the FIP.
+
 

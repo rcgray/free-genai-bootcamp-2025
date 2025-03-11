@@ -8,10 +8,7 @@
 import BaseScene from './BaseScene';
 import sceneRegistry from './SceneRegistry';
 import { StudyPhraseData } from './StudyScene';
-import { CharacterManager } from '../utils/CharacterManager';
-import { CharacterPosition } from '../utils/Character';
-import { DialogManager } from '../utils/DialogManager';
-import { Dialog, PlayerResponse } from '../utils/Dialog';
+import { CharacterManager, CharacterPosition, DialogManager, Dialog, PlayerResponse, JapaneseTextWrapper } from '../utils';
 import trainPlatformConversation from '../data/conversations/train_platform';
 
 export default class VNScene extends BaseScene {
@@ -207,21 +204,24 @@ export default class VNScene extends BaseScene {
    * Format dialog text based on the current difficulty level
    */
   private formatDialogForDifficulty(dialog: Dialog): string {
+    // Enable debug logging for longer Japanese text that might need complex wrapping
+    const enableDebug = dialog.japaneseText.length > 43;
+    
     switch (this.difficultyLevel) {
       case 'beginner':
         // Show Japanese text, romaji, and English translation
-        return `${dialog.japaneseText}\n(${dialog.romaji})\n[${dialog.englishText}]`;
+        return `${JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug)}\n(${dialog.romaji})\n[${dialog.englishText}]`;
       
       case 'intermediate':
         // Show Japanese text and romaji only
-        return `${dialog.japaneseText}\n(${dialog.romaji})`;
+        return `${JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug)}\n(${dialog.romaji})`;
       
       case 'advanced':
         // Show only Japanese text
-        return dialog.japaneseText;
+        return JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug);
       
       default:
-        return dialog.japaneseText;
+        return JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug);
     }
   }
   
@@ -229,21 +229,24 @@ export default class VNScene extends BaseScene {
    * Format choice text based on the current difficulty level
    */
   private formatChoiceForDifficulty(response: PlayerResponse): string {
+    // Enable debug logging for longer Japanese text that might need complex wrapping
+    const enableDebug = response.japaneseText.length > 43;
+    
     switch (this.difficultyLevel) {
       case 'beginner':
         // Show Japanese text, romaji, and English translation for choices too
-        return `${response.japaneseText}\n(${response.romaji})\n[${response.englishText}]`;
+        return `${JapaneseTextWrapper.wrap(response.japaneseText, 43, enableDebug)}\n(${response.romaji})\n[${response.englishText}]`;
       
       case 'intermediate':
         // Show Japanese text and romaji only
-        return `${response.japaneseText}\n(${response.romaji})`;
+        return `${JapaneseTextWrapper.wrap(response.japaneseText, 43, enableDebug)}\n(${response.romaji})`;
       
       case 'advanced':
         // Show only Japanese text
-        return response.japaneseText;
+        return JapaneseTextWrapper.wrap(response.japaneseText, 43, enableDebug);
       
       default:
-        return response.japaneseText;
+        return JapaneseTextWrapper.wrap(response.japaneseText, 43, enableDebug);
     }
   }
   
@@ -321,7 +324,7 @@ export default class VNScene extends BaseScene {
    */
   private createDialogBox(): void {
     const width = this.cameras.main.width * 0.9;
-    const height = this.cameras.main.height * 0.25;
+    const height = this.cameras.main.height * 0.3; // Increased from 0.25 to 0.3 for more text space
     const x = this.cameras.main.width / 2;
     const y = this.cameras.main.height - height / 2 - 20;
     
@@ -338,10 +341,11 @@ export default class VNScene extends BaseScene {
       y - height / 2 + 20,
       'Loading dialog...',  // Initial text to ensure it's visible
       {
-        fontFamily: 'Arial',
+        fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif', // Better Japanese font support
         fontSize: '24px',
         color: '#ffffff',
-        wordWrap: { width: width - 40 }
+        wordWrap: { width: width - 40 },
+        lineSpacing: 6 // Add some line spacing for better readability
       }
     );
     this.dialogText.setDepth(this.DEPTH_UI);
@@ -364,7 +368,7 @@ export default class VNScene extends BaseScene {
     const width = 200;
     const height = 40;
     const x = this.cameras.main.width * 0.05 + width / 2;
-    const y = this.cameras.main.height - this.cameras.main.height * 0.25 - 40;
+    const y = this.cameras.main.height - this.cameras.main.height * 0.3 - 40; // Adjusted for new dialog box height
     
     // Create the name box background
     this.nameBox = this.add.rectangle(x, y, width, height, 0x5a5a5a);
@@ -378,7 +382,7 @@ export default class VNScene extends BaseScene {
       y,
       'Character',  // Initial text to ensure it's visible
       {
-        fontFamily: 'Arial',
+        fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif', // Match dialog text
         fontSize: '20px',
         color: '#ffffff'
       }
@@ -446,7 +450,7 @@ export default class VNScene extends BaseScene {
       y,
       'Title Screen',
       {
-        fontFamily: 'Arial',
+        fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif', // Match other text
         fontSize: '18px',
         color: '#ffffff',
         backgroundColor: '#5a1e1e',
@@ -488,7 +492,7 @@ export default class VNScene extends BaseScene {
       y,
       buttonText,
       {
-        fontFamily: 'Arial',
+        fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif', // Match other text
         fontSize: '18px',
         color: '#ffffff',
         backgroundColor: '#1e5a5a',
@@ -764,13 +768,17 @@ export default class VNScene extends BaseScene {
       context += `, spoken by ${currentDialog.characterId}`;
     }
     
-    // Create the study button
+    // Create the study button with text rather than emoji for better cross-platform support
     this.studyButton = this.add.text(
       this.dialogBox.x + this.dialogBox.width / 2 - 80,
       this.dialogBox.y - this.dialogBox.height / 2 - 10,
-      '📝', // Study emoji
+      'Study', 
       { 
-        fontSize: '32px'
+        fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
+        fontSize: '20px',
+        color: '#ffffff',
+        backgroundColor: '#1e5a5a',
+        padding: { left: 10, right: 10, top: 5, bottom: 5 }
       }
     );
     
@@ -780,11 +788,15 @@ export default class VNScene extends BaseScene {
     
     // Add hover effect
     this.studyButton.on('pointerover', () => {
-      this.studyButton?.setScale(1.2);
+      if (this.studyButton) {
+        this.studyButton.setStyle({ backgroundColor: '#2a7a7a' });
+      }
     });
     
     this.studyButton.on('pointerout', () => {
-      this.studyButton?.setScale(1.0);
+      if (this.studyButton) {
+        this.studyButton.setStyle({ backgroundColor: '#1e5a5a' });
+      }
     });
     
     // Handle click event
@@ -882,8 +894,8 @@ export default class VNScene extends BaseScene {
     if (this.studyButton) this.studyButton.setAlpha(0);
     
     // Create new choice buttons
-    const buttonHeight = 50;
-    const padding = 10;
+    const buttonHeight = 60; // Increased from 50 to 60 for more text space
+    const padding = 15; // Increased from 10 to 15 for better spacing
     const totalHeight = choices.length * buttonHeight + (choices.length - 1) * padding;
     let yOffset = -totalHeight / 2;
     
@@ -893,12 +905,13 @@ export default class VNScene extends BaseScene {
         yOffset,
         choice,
         {
-          fontFamily: 'Arial',
+          fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif', // Match dialog text
           fontSize: '20px',
           color: '#ffffff',
           backgroundColor: '#5a5a5a',
-          padding: { left: 15, right: 15, top: 8, bottom: 8 },
-          wordWrap: { width: this.cameras.main.width * 0.6 }
+          padding: { left: 15, right: 15, top: 10, bottom: 10 }, // Slightly more padding
+          wordWrap: { width: this.cameras.main.width * 0.7 }, // Wider wrap width for choice buttons
+          lineSpacing: 5 // Add line spacing for readability
         }
       );
       
@@ -952,9 +965,13 @@ export default class VNScene extends BaseScene {
     const studyButton = this.add.text(
       button.width / 2 + 40,
       0,
-      '📝', // Study emoji
+      'Study', 
       { 
-        fontSize: '24px'
+        fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
+        fontSize: '16px',
+        color: '#ffffff',
+        backgroundColor: '#1e5a5a',
+        padding: { left: 8, right: 8, top: 4, bottom: 4 }
       }
     );
     
@@ -963,11 +980,11 @@ export default class VNScene extends BaseScene {
     
     // Add hover effect
     studyButton.on('pointerover', () => {
-      studyButton.setScale(1.2);
+      studyButton.setStyle({ backgroundColor: '#2a7a7a' });
     });
     
     studyButton.on('pointerout', () => {
-      studyButton.setScale(1.0);
+      studyButton.setStyle({ backgroundColor: '#1e5a5a' });
     });
     
     // Handle click event
