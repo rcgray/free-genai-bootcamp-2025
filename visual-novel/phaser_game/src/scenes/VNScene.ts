@@ -10,6 +10,9 @@ import sceneRegistry from './SceneRegistry';
 import { StudyPhraseData } from './StudyScene';
 import { CharacterManager } from '../utils/CharacterManager';
 import { CharacterPosition } from '../utils/Character';
+import { DialogManager } from '../utils/DialogManager';
+import { Dialog, PlayerResponse } from '../utils/Dialog';
+import trainPlatformConversation from '../data/conversations/train_platform';
 
 export default class VNScene extends BaseScene {
   // UI Components
@@ -26,6 +29,9 @@ export default class VNScene extends BaseScene {
   
   // Character management
   private characterManager: CharacterManager;
+  
+  // Dialog management
+  private dialogManager: DialogManager;
   
   // Dialog state
   private currentDialog: string = '';
@@ -51,6 +57,9 @@ export default class VNScene extends BaseScene {
     
     // Initialize the character manager
     this.characterManager = new CharacterManager();
+    
+    // Initialize the dialog manager
+    this.dialogManager = new DialogManager();
   }
   
   /**
@@ -97,6 +106,11 @@ export default class VNScene extends BaseScene {
     // Set the character manager's scene reference
     this.characterManager.setScene(this);
     
+    // Set the dialog manager's scene reference and character manager
+    this.dialogManager.setScene(this);
+    this.dialogManager.setCharacterManager(this.characterManager);
+    this.setupDialogManagerCallbacks();
+    
     // Display Kaori character (middle layer)
     this.characterManager.show('kaori', 'center');
     
@@ -110,8 +124,36 @@ export default class VNScene extends BaseScene {
     // Set up input handling
     this.setupInputHandlers();
     
-    // Display initial dialog from the Game Design document
-    this.displayDialog('こんにちは！久しぶり！元気？ (Konnichiwa! Hisashiburi! Genki?)', 'Kaori');
+    // Load and start the train platform conversation
+    this.dialogManager.loadConversation(trainPlatformConversation);
+    this.dialogManager.startConversation(trainPlatformConversation.id);
+  }
+  
+  /**
+   * Set up callbacks for the dialog manager
+   */
+  private setupDialogManagerCallbacks(): void {
+    this.dialogManager.setCallbacks({
+      onDialogDisplay: (dialog: Dialog) => {
+        // Display dialog
+        if (dialog.characterId === '') {
+          // Narration has no speaker
+          this.displayDialog(dialog.japaneseText, '');
+        } else {
+          // Character dialog
+          this.displayDialog(dialog.japaneseText, dialog.characterId);
+        }
+      },
+      onDialogComplete: () => {
+        console.log('Conversation complete');
+        // Handle end of conversation
+      },
+      onShowChoices: (responses: PlayerResponse[]) => {
+        // Convert to simple string array for existing method
+        const choiceTexts = responses.map(response => response.japaneseText);
+        this.showChoices(choiceTexts);
+      }
+    });
   }
   
   /**
@@ -302,8 +344,8 @@ export default class VNScene extends BaseScene {
       }
       
       if (this.isDialogComplete) {
-        // If dialog is complete, advance to next dialog
-        this.advanceDialog();
+        // If dialog is complete, advance to next dialog using DialogManager
+        this.dialogManager.advanceDialog();
       } else {
         // If dialog is still typing, complete it immediately
         this.completeDialog();
@@ -313,7 +355,7 @@ export default class VNScene extends BaseScene {
     // Keyboard input for advancing dialog
     this.input.keyboard?.on('keydown-SPACE', () => {
       if (this.isDialogComplete) {
-        this.advanceDialog();
+        this.dialogManager.advanceDialog();
       } else {
         this.completeDialog();
       }
@@ -415,9 +457,12 @@ export default class VNScene extends BaseScene {
     // Get the current dialog text
     const dialogText = this.currentDialog;
     
-    // Extract furigana and translation (example: extract from format "Japanese (Romaji) [Translation]")
-    const furigana = this.extractFurigana(dialogText);
-    const translation = this.extractTranslation(dialogText);
+    // Get current dialog from DialogManager for proper study data
+    const currentDialog = this.dialogManager.getCurrentDialog();
+    let context = `Currently at ${this.currentLocation}`;
+    if (currentDialog && currentDialog.characterId) {
+      context += `, spoken by ${currentDialog.characterId}`;
+    }
     
     // Create the study button
     this.studyButton = this.add.text(
@@ -446,14 +491,27 @@ export default class VNScene extends BaseScene {
     this.studyButton.on('pointerdown', () => {
       console.log('Study button clicked');
       
-      // Prepare phrase data
-      const phraseData: StudyPhraseData = {
-        phrase: this.extractJapaneseText(dialogText),
-        furigana: furigana,
-        translation: translation,
-        context: `Currently at ${this.currentLocation}, spoken by ${this.currentSpeaker}`,
-        source: this.currentSpeaker
-      };
+      // Prepare phrase data using DialogManager
+      let phraseData: StudyPhraseData;
+      
+      if (currentDialog) {
+        phraseData = {
+          phrase: currentDialog.japaneseText,
+          furigana: currentDialog.romaji,
+          translation: currentDialog.englishText,
+          context: context,
+          source: currentDialog.characterId || 'Narration'
+        };
+      } else {
+        // Fallback to original method if DialogManager doesn't have current dialog
+        phraseData = {
+          phrase: this.extractJapaneseText(dialogText),
+          furigana: this.extractFurigana(dialogText),
+          translation: this.extractTranslation(dialogText),
+          context: context,
+          source: this.currentSpeaker
+        };
+      }
       
       // Launch the study scene
       this.openStudyScene(phraseData);
@@ -527,18 +585,6 @@ export default class VNScene extends BaseScene {
     
     // Add the study button
     this.addStudyButton();
-  }
-  
-  /**
-   * Advance to the next dialog or show choices
-   */
-  private advanceDialog(): void {
-    // Show choices from the Game Design document
-    this.showChoices([
-      'こんにちは！元気です！(Konnichiwa! Genki desu!) [Hello! I\'m good!]',
-      'やあ、カオリ！会えて嬉しいよ！(Yaa, Kaori! Aete ureshii yo!) [Hey, Kaori! Happy to see you!]',
-      '疲れたよ。長いフライトだった。(Tsukareta yo. Nagai furaito datta.) [I\'m tired. It was a long flight.]'
-    ]);
   }
   
   /**
@@ -689,6 +735,7 @@ export default class VNScene extends BaseScene {
   
   /**
    * Handle choice selection
+   * @param choiceIndex Index of the selected choice
    */
   private handleChoice(choiceIndex: number): void {
     if (!this.choiceContainer) return;
@@ -710,26 +757,37 @@ export default class VNScene extends BaseScene {
         if (this.dialogBox) this.dialogBox.setAlpha(0.7);
         if (this.dialogText) this.dialogText.setAlpha(1);
         
-        // Display new dialog based on choice
-        let nextDialog = '';
-        let speaker = 'Kaori';
-        
-        switch (choiceIndex) {
-          case 0:
-            nextDialog = "元気で何よりです！東京へようこそ！(Genki de nani yori desu! Tokyo e yōkoso!) [I'm glad you're well! Welcome to Tokyo!]";
-            break;
-          case 1:
-            nextDialog = "私も会えて嬉しいよ！東京を案内するのが楽しみ！(Watashi mo aete ureshii yo! Tokyo wo annai suru no ga tanoshimi!) [I'm also happy to see you! I'm looking forward to showing you around Tokyo!]";
-            break;
-          case 2:
-            nextDialog = "大変だったね。ホテルに行く前に何か食べる？(Taihen datta ne. Hoteru ni iku mae ni nanika taberu?) [That was tough. Want to eat something before going to the hotel?]";
-            break;
-          default:
-            nextDialog = "さあ、東京観光を始めましょう！(Sā, Tokyo kankō wo hajimemashō!) [Now, let's start our Tokyo tour!]";
-            break;
+        // Get the current dialog from DialogManager
+        const currentDialog = this.dialogManager.getCurrentDialog();
+        if (currentDialog && currentDialog.playerResponses) {
+          // Use the response ID for proper choice handling
+          const selectedResponse = currentDialog.playerResponses[choiceIndex];
+          if (selectedResponse) {
+            this.dialogManager.selectChoice(selectedResponse.id);
+          }
+        } else {
+          // Fallback to original method if DialogManager doesn't have current dialog
+          // Display new dialog based on choice
+          let nextDialog = '';
+          let speaker = 'Kaori';
+          
+          switch (choiceIndex) {
+            case 0:
+              nextDialog = "元気で何よりです！東京へようこそ！(Genki de nani yori desu! Tokyo e yōkoso!) [I'm glad you're well! Welcome to Tokyo!]";
+              break;
+            case 1:
+              nextDialog = "私も会えて嬉しいよ！東京を案内するのが楽しみ！(Watashi mo aete ureshii yo! Tokyo wo annai suru no ga tanoshimi!) [I'm also happy to see you! I'm looking forward to showing you around Tokyo!]";
+              break;
+            case 2:
+              nextDialog = "大変だったね。ホテルに行く前に何か食べる？(Taihen datta ne. Hoteru ni iku mae ni nanika taberu?) [That was tough. Want to eat something before going to the hotel?]";
+              break;
+            default:
+              nextDialog = "さあ、東京観光を始めましょう！(Sā, Tokyo kankō wo hajimemashō!) [Now, let's start our Tokyo tour!]";
+              break;
+          }
+          
+          this.displayDialog(nextDialog, speaker);
         }
-        
-        this.displayDialog(nextDialog, speaker);
       }
     });
   }
@@ -742,6 +800,9 @@ export default class VNScene extends BaseScene {
     
     // Add character manager state
     state.characterState = this.characterManager.serialize();
+    
+    // Add dialog manager state
+    state.dialogState = this.dialogManager.serialize();
     
     // Add scene-specific state
     return {
@@ -771,6 +832,11 @@ export default class VNScene extends BaseScene {
       // Restore character manager state
       if (state.characterState) {
         this.characterManager.deserialize(state.characterState);
+      }
+      
+      // Restore dialog manager state
+      if (state.dialogState) {
+        this.dialogManager.deserialize(state.dialogState);
       }
       
       // Update UI elements to match state

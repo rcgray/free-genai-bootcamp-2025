@@ -63,6 +63,9 @@
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── src
+│   │   ├── data
+│   │   │   └── conversations
+│   │   │       └── train_platform.ts
 │   │   ├── hmr-test.ts
 │   │   ├── index.ts
 │   │   ├── scenes
@@ -76,6 +79,8 @@
 │   │       ├── AssetManager.ts
 │   │       ├── Character.ts
 │   │       ├── CharacterManager.ts
+│   │       ├── Dialog.ts
+│   │       ├── DialogManager.ts
 │   │       ├── DialogSystem.ts
 │   │       ├── DialogSystemTests.ts
 │   │       ├── GameStateManager.ts
@@ -96,4 +101,4 @@
 ├── tests
 └── uv.lock
 
-26 directories, 71 files
+28 directories, 74 files
