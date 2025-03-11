@@ -26,6 +26,7 @@ export default class VNScene extends BaseScene {
   private choiceButtons: Phaser.GameObjects.Text[] = [];
   private titleButton?: Phaser.GameObjects.Text;
   private studyButton?: Phaser.GameObjects.Text;
+  private difficultyButton?: Phaser.GameObjects.Text;
   
   // Character management
   private characterManager: CharacterManager;
@@ -37,7 +38,7 @@ export default class VNScene extends BaseScene {
   private currentDialog: string = '';
   private currentSpeaker: string = '';
   private isDialogComplete: boolean = false;
-  private dialogSpeed: number = 50; // ms per character
+  private dialogSpeed: number = 30; // ms per character
   private dialogTimer?: Phaser.Time.TimerEvent;
   private displayedTextLength: number = 0;
   
@@ -48,6 +49,9 @@ export default class VNScene extends BaseScene {
   private readonly DEPTH_BACKGROUND: number = 0;
   private readonly DEPTH_CHARACTER: number = 10;
   private readonly DEPTH_UI: number = 100; // Increased to ensure UI is always on top
+  
+  // Difficulty level setting
+  private difficultyLevel: 'beginner' | 'intermediate' | 'advanced' = 'beginner';
   
   /**
    * Constructor for the VNScene class
@@ -141,6 +145,7 @@ export default class VNScene extends BaseScene {
     this.createNextIndicator();
     this.createChoiceContainer();
     this.createTitleButton();
+    this.createDifficultyButton();
     
     // Set the dialog manager's scene reference and character manager
     this.dialogManager.setScene(this);
@@ -167,26 +172,119 @@ export default class VNScene extends BaseScene {
     this.dialogManager.setCallbacks({
       onDialogDisplay: (dialog: Dialog) => {
         console.log(`Dialog display callback triggered: ${dialog.japaneseText}`);
+        
+        // Format dialog text based on difficulty level
+        const formattedText = this.formatDialogForDifficulty(dialog);
+        
         // Display dialog
         if (dialog.characterId === '') {
           // Narration has no speaker
-          this.displayDialog(dialog.japaneseText, '');
+          this.displayDialog(formattedText, '');
         } else {
           // Character dialog
-          this.displayDialog(dialog.japaneseText, dialog.characterId);
+          this.displayDialog(formattedText, dialog.characterId);
         }
       },
       onDialogComplete: () => {
         console.log('Conversation complete');
-        // Handle end of conversation
+        // Handle end of conversation - navigate to next location
+        this.handleConversationComplete();
       },
       onShowChoices: (responses: PlayerResponse[]) => {
         console.log(`Show choices callback triggered: ${responses.length} choices`);
-        // Convert to simple string array for existing method
-        const choiceTexts = responses.map(response => response.japaneseText);
-        this.showChoices(choiceTexts);
+        
+        // Format choices based on difficulty level
+        const formattedChoices = responses.map(response => 
+          this.formatChoiceForDifficulty(response)
+        );
+        
+        this.showChoices(formattedChoices);
       }
     });
+  }
+  
+  /**
+   * Format dialog text based on the current difficulty level
+   */
+  private formatDialogForDifficulty(dialog: Dialog): string {
+    switch (this.difficultyLevel) {
+      case 'beginner':
+        // Show Japanese text, romaji, and English translation
+        return `${dialog.japaneseText}\n(${dialog.romaji})\n[${dialog.englishText}]`;
+      
+      case 'intermediate':
+        // Show Japanese text and romaji only
+        return `${dialog.japaneseText}\n(${dialog.romaji})`;
+      
+      case 'advanced':
+        // Show only Japanese text
+        return dialog.japaneseText;
+      
+      default:
+        return dialog.japaneseText;
+    }
+  }
+  
+  /**
+   * Format choice text based on the current difficulty level
+   */
+  private formatChoiceForDifficulty(response: PlayerResponse): string {
+    switch (this.difficultyLevel) {
+      case 'beginner':
+        // Show Japanese text, romaji, and English translation for choices too
+        return `${response.japaneseText}\n(${response.romaji})\n[${response.englishText}]`;
+      
+      case 'intermediate':
+        // Show Japanese text and romaji only
+        return `${response.japaneseText}\n(${response.romaji})`;
+      
+      case 'advanced':
+        // Show only Japanese text
+        return response.japaneseText;
+      
+      default:
+        return response.japaneseText;
+    }
+  }
+  
+  /**
+   * Handle the end of a conversation by navigating to the next location
+   */
+  private handleConversationComplete(): void {
+    console.log(`Conversation at ${this.currentLocation} complete, determining next location`);
+    
+    // For now, we'll implement a simple linear progression through locations
+    const locationSequence = [
+      'train_platform',
+      'inside_train',
+      'outside_restaurant',
+      'inside_restaurant',
+      'park_lawn',
+      'park_bench',
+      'outside_mall',
+      'clothing_store',
+      'hotel_lobby'
+    ];
+    
+    // Find the current location in the sequence
+    const currentIndex = locationSequence.indexOf(this.currentLocation);
+    
+    if (currentIndex === -1 || currentIndex === locationSequence.length - 1) {
+      // If we're at the end or location not found, go to title screen
+      console.log('Reached end of story, returning to title screen');
+      this.transitionTo('TitleScene');
+      return;
+    }
+    
+    // Get the next location
+    const nextLocation = locationSequence[currentIndex + 1];
+    console.log(`Transitioning to next location: ${nextLocation}`);
+    
+    // Update the background to the new location
+    this.setBackground(nextLocation);
+    
+    // Start the conversation for this location
+    this.dialogManager.startConversationByLocation(nextLocation);
   }
   
   /**
@@ -376,6 +474,86 @@ export default class VNScene extends BaseScene {
   }
   
   /**
+   * Create a button to select difficulty level
+   */
+  private createDifficultyButton(): void {
+    // Position in the top right corner
+    const x = this.cameras.main.width - 20;
+    const y = 20;
+    
+    const buttonText = `Difficulty: ${this.capitalizeFirstLetter(this.difficultyLevel)}`;
+    
+    this.difficultyButton = this.add.text(
+      x,
+      y,
+      buttonText,
+      {
+        fontFamily: 'Arial',
+        fontSize: '18px',
+        color: '#ffffff',
+        backgroundColor: '#1e5a5a',
+        padding: { left: 10, right: 10, top: 5, bottom: 5 }
+      }
+    );
+    
+    this.difficultyButton.setOrigin(1, 0); // Align to top right
+    this.difficultyButton.setInteractive({ useHandCursor: true });
+    this.difficultyButton.setDepth(this.DEPTH_UI);
+    
+    // Add hover effect
+    this.difficultyButton.on('pointerover', () => {
+      if (this.difficultyButton) {
+        this.difficultyButton.setStyle({ color: '#ffff00' });
+      }
+    });
+    
+    this.difficultyButton.on('pointerout', () => {
+      if (this.difficultyButton) {
+        this.difficultyButton.setStyle({ color: '#ffffff' });
+      }
+    });
+    
+    // Handle click event - cycle through difficulty levels
+    this.difficultyButton.on('pointerdown', () => {
+      this.cycleDifficultyLevel();
+      
+      // Update button text
+      if (this.difficultyButton) {
+        this.difficultyButton.setText(`Difficulty: ${this.capitalizeFirstLetter(this.difficultyLevel)}`);
+      }
+      
+      // Refresh current dialog if needed
+      if (this.dialogText && this.currentDialog) {
+        const currentDialog = this.dialogManager.getCurrentDialog();
+        if (currentDialog) {
+          const formattedText = this.formatDialogForDifficulty(currentDialog);
+          this.dialogText.setText(formattedText);
+          this.currentDialog = formattedText;
+        }
+      }
+    });
+  }
+  
+  /**
+   * Cycle through difficulty levels
+   */
+  private cycleDifficultyLevel(): void {
+    switch (this.difficultyLevel) {
+      case 'beginner':
+        this.difficultyLevel = 'intermediate';
+        break;
+      case 'intermediate':
+        this.difficultyLevel = 'advanced';
+        break;
+      case 'advanced':
+        this.difficultyLevel = 'beginner';
+        break;
+    }
+    
+    console.log(`Difficulty level changed to: ${this.difficultyLevel}`);
+  }
+  
+  /**
    * Set up input handlers for advancing dialog and making choices
    */
   private setupInputHandlers(): void {
@@ -430,6 +608,7 @@ export default class VNScene extends BaseScene {
     return targets.some(target => 
       (target === this.titleButton) || 
       (target === this.studyButton) ||
+      (target === this.difficultyButton) ||
       this.choiceButtons.includes(target as Phaser.GameObjects.Text)
     );
   }
@@ -541,8 +720,19 @@ export default class VNScene extends BaseScene {
       this.dialogTimer.remove();
     }
     
-    // Display the full text
-    this.dialogText.setText(this.currentDialog);
+    // Get the current dialog from the DialogManager for proper formatting
+    const currentDialog = this.dialogManager.getCurrentDialog();
+    
+    // Display the full text with proper formatting based on difficulty level
+    if (currentDialog) {
+      const formattedText = this.formatDialogForDifficulty(currentDialog);
+      this.dialogText.setText(formattedText);
+      this.currentDialog = formattedText;
+    } else {
+      // Fallback to the stored dialog text if DialogManager doesn't have it
+      this.dialogText.setText(this.currentDialog);
+    }
+    
     console.log(`Completing dialog text: ${this.currentDialog}`);
     this.isDialogComplete = true;
     
@@ -878,7 +1068,8 @@ export default class VNScene extends BaseScene {
       currentSpeaker: this.currentSpeaker,
       isDialogComplete: this.isDialogComplete,
       displayedTextLength: this.displayedTextLength,
-      currentLocation: this.currentLocation
+      currentLocation: this.currentLocation,
+      difficultyLevel: this.difficultyLevel
     };
   }
   
@@ -895,6 +1086,7 @@ export default class VNScene extends BaseScene {
       this.isDialogComplete = state.isDialogComplete || false;
       this.displayedTextLength = state.displayedTextLength || 0;
       this.currentLocation = state.currentLocation || 'train_platform';
+      this.difficultyLevel = state.difficultyLevel || 'beginner';
       
       // Restore character manager state
       if (state.characterState) {
@@ -931,8 +1123,12 @@ export default class VNScene extends BaseScene {
     }
     
     if (this.background) {
+      console.log(`Setting background to ${locationKey}`);
       this.background.setTexture(locationKey);
+      
+      // Update the current location
       this.currentLocation = locationKey;
+      console.log(`Current location updated to: ${this.currentLocation}`);
     }
   }
 }

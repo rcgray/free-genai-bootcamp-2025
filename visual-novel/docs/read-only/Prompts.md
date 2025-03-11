@@ -826,5 +826,89 @@ We don't need to update the `docs/Action-Plan.md` file to reflect the completion
 Let's move on to the next phase of our FIP.
 ---
 
+Before we begin building, be sure be very familiar with the current code (especially VNScene.ts, @VNScene.ts  the scene for the main Visual Novel experience), where much of this may have been done already). If we can do it better writing from scratch, we can replace what we have, but there may be systems that we can leverage that already exist, and in any case we will have to create our final system in this scene.
 
 ---
+
+Yes, it is best for us to move carefully, so please examine and think deeply about anything you think is necessary to ensure a smooth implementation and integration into the VNScene
+
+---
+
+Please update the `docs/features/Dialog-System.md` file with your findings and any other appopriate updates to the FIP, and let's get to implementing!
+
+---
+
+The updates look good - here are a few edits for features we can skip for now (which need to be marked "[~]" to indicate "intentionally skipped/postponed"). Mark these in the FIP and let's start implementing!!
+
+```
+### Phase 2: Dialog Box UI Component
+
+- Enhance existing dialog box Phaser game object:
+  - [ ] Improve styling and visual design consistency
+- Improve text display mechanics:
+  - [ ] Add support for text pauses and variable speed
+- Enhance interaction controls:
+  - [ ] Keyboard shortcuts for all dialog actions
+  - [ ] Auto-advance option
+- Update dialog box positioning:
+  - [ ] More responsive sizing for different screen resolutions
+
+### Phase 5: Integration with Game System
+
+- Enhance dialog-character system integration:
+  - [ ] Add more nuanced character animations and expressions
+- Implement structured scene transitions:
+  - [ ] Transitions based on dialog data and conversation structure
+```
+
+ ---
+
+ Please update (and always update) the FIP in the `docs/features/Dialog-System.md` file to update what you've worked on, since that is the plan you should be following very closely.
+
+---
+
+Whenever updating the FIP, please be sure to update higher level items as complete if all items below them are complete or intentionally skipped/postponed.
+
+---
+
+This is a good start. Looking at the sample conversation data you created in `phaser_game/src/data/conversations.ts`, could we go and make similar data files for the rest of the scenes in the game?  These not only serve for testing, but they also give us our "fallback" content in the case that the LLM fails to generate appropriate content.
+
+---
+
+Please consult the `docs/Game-Design.md` file for the list of scenes in the game as well as the avaiable characters. I see content in some of these scenes that involve characters that do not exist in our game.  Additionally, the hotel scene is meant to be experienced by the player alone as a conclusion to the adventure.
+
+---
+
+let's add a waitress character (please update the Game Design document as well, she only needs a default expression).  So the inside restaurant we can keep, the "staff" should indeed be changed to shopkeeper, and you see the edits needed in the hotel scene. but yes let's make the appropriate edits.
+
+---
+
+[Feedback] A lot of time is routinely wasted in having the agent try to figure out what directory it is in. It runs commands from its directory that fail, then `pwd`s and just stumbles around moronically.  It seems like pwd is a pretty important piece of data that shouldn't take up to many tokens if it could be included in the system prompt, and it would greatly improve dev experience.
+
+---
+
+Let's fix a few bugs in our current VN Scene following our recent edits.  First, whenever the dialog is advanced, the character reanimates into the scene. This also has the effect of the character appearing OVER the dialog.  It may be fixed simply by not reanimating the character when the dialog is advanced, but it may also hint at a deeper issue, because the dialog should always be the most forward object in the scene.
+
+in the preload() function, could we be a little more concise in how we are loading our assets?  Right now we are loading everything explicitly, where the intent of the folders was to allow for flexibility - for instance, everything in the `assets/images/backgrounds` folder is a background for some location in the game, and everything in the `assets/images/characters/kaori` folder is a character sprite for Kaori that indicates her available expressions. It would be nice to have the freedom to add/remove assets without having to update the preload() function and instead have it simply work dynamically. This is not only a better pattern (where the images in the folder are the Source of Truth), but it would make for more concise code.
+
+---
+
+the text no longer appears in the dialog window (nor does the character name), and the dialog cannot be advanced through mouse click
+
+---
+
+without changing the code (since we depend on markers like "kaori" for asset names), can we have the display of the name capitalize the first letter of the name?  this can be done programmatically so that any name (takashi, shopkeeper) would automatically get its first letter capitalized when displayed in the name box
+
+---
+
+This looks good.  For now could we set it to "beginner" by default so we can also observe the behavior of the furigana, romagi, and english (even though we're still working on them)? Also, let's integrate the dialog manager with the VN scene so that we can progress through the locations and actually see the full game (with our test/fallback content) front to back!
+
+---
+
+We are not alwys seeing consistent "word wrap" behavior in the dialog box for the Japanese text (and only the Japanese text - romaji and english are always wrapped correctly). My guess for this is that Japanese does not include spaces in the same way that English does, so longer text doesn't know where to break and wrap. We can do this manually via a pre-determined max line length of 43 characters (including punctuation), where the Japanese text should wrap. If doing this manually, we also don't want to break up multi-character words in the middle of the word, so the break should be either on the 44th character in a line or,in the case that the 43rd & 44th characters are part of the same word, the beginning of that word to prevent it from being broken.
+
+Is there a reasonably easy way to do this?  What other dependencies might we need?  If we can't do it precisely (i.e., we can't tell exactly when it is a multi), let's fall back on the following design instead:
+
+If the 43rd and 44th characters are both kanji, go back to the previous kana character (hiragana or katakana) and break there.
+
+
