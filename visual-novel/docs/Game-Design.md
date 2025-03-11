@@ -101,11 +101,14 @@ These are the locations that you will visit, traveling from one to the next. Whe
         - I like: 好きです (Suki desu)
         - I want to try: 食べてみたい (Tabete mitai)
     - 2.2 Inside Restaurant [Image: `locations/inside_restaurant.png`]
-      - Characters: [Kaori]
+      - Characters: [Kaori, Waitress]
       - Order a ramen dish
       - Pay for the meal, no tipping
       - **Dialog Example**:
         ```
+        Waitress: [Default] いらっしゃいませ！(Irasshaimase!)
+        [Translation: Welcome!]
+        
         Kaori: [Thinking] ラーメンを注文しましょう。(Rāmen wo chūmon shimashō.)
         [Translation: Let's order ramen.]
         
@@ -113,22 +116,27 @@ These are the locations that you will visit, traveling from one to the next. Whe
         1. 醤油ラーメンをください。(Shōyu rāmen wo kudasai.) [Soy sauce ramen, please.]
         2. 何がおすすめですか？(Nani ga osusume desu ka?) [What do you recommend?]
         3. メニューを見せてください。(Menyū wo misete kudasai.) [Please show me the menu.]
+        
+        Waitress: [Default] かしこまりました。(Kashikomarimashita.)
+        [Translation: Certainly, understood.]
         ```
       - **Learning Points**:
         - Please give me: をください (wo kudasai)
         - What do you recommend: 何がおすすめですか (Nani ga osusume desu ka)
         - Menu: メニュー (Menyū)
+        - Certainly: かしこまりました (Kashikomarimashita)
   - Conversational Objectives:
     - Describing dishes and tastes (e.g., This ramen is good, this ramen is bad)
     - Having likes and dislikes (e.g., I don't like spicy food, I like sweet food)
     - Ordering food (e.g., I'd like a ramen, I'd like a cola)
+    - Interacting with service staff (e.g., Asking for recommendations, placing an order)
     - Paying for the meal (e.g., I'll pay for the meal, I'll pay for the ramen)
     - Tipping culture (e.g., No tipping, tipping is not customary in Japan)
   - Transition:
     - After eating, Kaori suggests visiting a park (3.1 Park Lawn) to relax and meet up with her friends.
   - **Technical Implementation**:
     - Background images: outside_restaurant.png, inside_restaurant.png
-    - Character positions: Kaori left side in outside scene, right side in inside scene
+    - Character positions: Kaori left side in outside scene, Kaori right side and Waitress left side in inside scene
     - Audio: Restaurant ambience, eating sounds
 
 ### 3. Park
@@ -188,7 +196,7 @@ These are the locations that you will visit, traveling from one to the next. Whe
   - Overview: After the park, you and Kaori go shopping at a nearby mall.
   - Events:
     - 4.1 Outside Mall [Image: `locations/outside_mall.png`]
-      - Characters: [Kaori, Shopkeeper]
+      - Characters: [Kaori]
       - Go inside the mall to get out of the rain
       - **Dialog Example**:
         ```
@@ -262,6 +270,7 @@ These are the locations that you will visit, traveling from one to the next. Whe
         - Tomorrow: 明日 (Ashita)
   - Conversational Objectives:
     - Farewell (e.g., Goodbye, See you tomorrow)
+    - Self-reflection on the day's experiences
   - Transition:
     - The game ends.
   - **Technical Implementation**:
@@ -320,6 +329,20 @@ These are the locations that you will visit, traveling from one to the next. Whe
     - "何かお手伝いできますか？" (Can I help you with anything?)
     - "ありがとうございました！" (Thank you very much!)
 
+### Waitress
+  - Description:
+    - The waitress works at the ramen restaurant.
+    - She is polite and efficient, providing excellent service.
+    - She is a native Japanese woman who speaks in professional, service-oriented Japanese.
+  - Expression States:
+    - Default [Image: `characters/waitress/default.png`]
+  - Voice: Female, polite, formal
+  - Personality: Professional, attentive, courteous
+  - Key Phrases:
+    - "いらっしゃいませ！" (Welcome!)
+    - "ご注文はお決まりですか？" (Have you decided on your order?)
+    - "かしこまりました。" (Certainly, understood.)
+
 ## Required Assets
 
 ### Backgrounds
@@ -343,6 +366,8 @@ These are the locations that you will visit, traveling from one to the next. Whe
    - Default (`characters/takashi/default.png`)
 3. Shopkeeper
    - Default (`characters/shopkeeper/default.png`)
+4. Waitress
+   - Default (`characters/waitress/default.png`)
 
 ### Audio
 1. Ambient Sounds

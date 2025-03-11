@@ -15,6 +15,15 @@ import {
 } from './Dialog';
 import { CharacterManager } from './CharacterManager';
 import { StudyPhraseData } from '../scenes/StudyScene';
+import trainPlatformConversation from '../data/conversations/train_platform';
+import insideTrainConversation from '../data/conversations/inside_train';
+import outsideRestaurantConversation from '../data/conversations/outside_restaurant';
+import insideRestaurantConversation from '../data/conversations/inside_restaurant';
+import parkLawnConversation from '../data/conversations/park_lawn';
+import parkBenchConversation from '../data/conversations/park_bench';
+import outsideMallConversation from '../data/conversations/outside_mall';
+import clothingStoreConversation from '../data/conversations/clothing_store';
+import hotelLobbyConversation from '../data/conversations/hotel_lobby';
 
 /**
  * Serialized dialog state for the manager
@@ -48,12 +57,17 @@ export class DialogManager {
   private onDialogComplete?: () => void;
   private onShowChoices?: (responses: PlayerResponse[]) => void;
   
-  /**
-   * Constructor for the DialogManager class
-   */
   constructor() {
-    // Make the dialog manager globally accessible for debugging
-    (window as any).dialogManager = this;
+    // Register available conversations
+    this.registerConversation(trainPlatformConversation);
+    this.registerConversation(insideTrainConversation);
+    this.registerConversation(outsideRestaurantConversation);
+    this.registerConversation(insideRestaurantConversation);
+    this.registerConversation(parkLawnConversation);
+    this.registerConversation(parkBenchConversation);
+    this.registerConversation(outsideMallConversation);
+    this.registerConversation(clothingStoreConversation);
+    this.registerConversation(hotelLobbyConversation);
   }
   
   /**
@@ -87,92 +101,59 @@ export class DialogManager {
   }
   
   /**
-   * Load a conversation
-   * @param conversation - Conversation data to load
-   * @returns DialogResult indicating success or failure
+   * Register a conversation with the manager
    */
-  loadConversation(conversation: Conversation): DialogResult {
-    try {
-      // Validate conversation data
-      if (!conversation.id || !conversation.dialogs || !conversation.dialogs.length) {
-        return {
-          success: false,
-          message: `Invalid conversation data: missing id or dialogs`
-        };
-      }
-      
-      // Store the conversation
-      this.conversations.set(conversation.id, conversation);
-      
-      // Initialize conversation state if it doesn't exist
-      if (!this.conversationStates.has(conversation.id)) {
-        this.conversationStates.set(conversation.id, {
-          currentDialogIndex: 0,
-          playerChoices: {}
-        });
-      }
-      
-      return {
-        success: true,
-        message: `Conversation ${conversation.id} loaded successfully`
-      };
-    } catch (error) {
-      console.error('Error loading conversation:', error);
-      return {
-        success: false,
-        message: `Error loading conversation: ${error}`
-      };
-    }
+  registerConversation(conversation: Conversation): void {
+    this.conversations.set(conversation.id, conversation);
   }
   
   /**
-   * Start a conversation
-   * @param conversationId - ID of the conversation to start
-   * @returns DialogResult indicating success or failure
+   * Start a conversation by location ID
    */
-  startConversation(conversationId: string): DialogResult {
-    try {
-      const conversation = this.conversations.get(conversationId);
-      
-      if (!conversation) {
-        return {
-          success: false,
-          message: `Conversation ${conversationId} not found`
-        };
+  startConversationByLocation(locationId: string): boolean {
+    // Find the first conversation that matches this location
+    for (const conversation of this.conversations.values()) {
+      if (conversation.locationId === locationId) {
+        return this.startConversation(conversation.id);
       }
-      
-      // Set as current conversation
-      this.currentConversationId = conversationId;
-      
-      // Get or initialize conversation state
-      const state = this.conversationStates.get(conversationId) || {
-        currentDialogIndex: 0,
-        playerChoices: {}
-      };
-      
-      // Reset to beginning if requested
-      state.currentDialogIndex = 0;
-      
-      // Display the first dialog
-      this.displayCurrentDialog();
-      
-      // Set background if specified
-      if (conversation.background && this.scene) {
-        // This will be handled by the scene itself
-        // The scene should listen for background changes
-      }
-      
-      return {
-        success: true,
-        message: `Conversation ${conversationId} started successfully`
-      };
-    } catch (error) {
-      console.error('Error starting conversation:', error);
-      return {
-        success: false,
-        message: `Error starting conversation: ${error}`
-      };
     }
+    console.warn(`No conversation found for location: ${locationId}`);
+    return false;
+  }
+  
+  /**
+   * Start a conversation by its ID
+   */
+  startConversation(conversationId: string): boolean {
+    const conversation = this.conversations.get(conversationId);
+    if (!conversation) {
+      console.warn(`Conversation not found: ${conversationId}`);
+      return false;
+    }
+    
+    // Reset dialog index and set as current
+    conversation.currentDialogIndex = 0;
+    this.currentConversationId = conversationId;
+    
+    // Get or initialize conversation state
+    const state = this.conversationStates.get(conversationId) || {
+      currentDialogIndex: 0,
+      playerChoices: {}
+    };
+    
+    // Reset to beginning if requested
+    state.currentDialogIndex = 0;
+    
+    // Display the first dialog
+    this.displayCurrentDialog();
+    
+    // Set background if specified
+    if (conversation.background && this.scene) {
+      // This will be handled by the scene itself
+      // The scene should listen for background changes
+    }
+    
+    return true;
   }
   
   /**
