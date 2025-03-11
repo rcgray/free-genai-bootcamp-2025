@@ -57,6 +57,9 @@ export class DialogManager {
   private onDialogComplete?: () => void;
   private onShowChoices?: (responses: PlayerResponse[]) => void;
   
+  // Track the currently shown characters to prevent unnecessary reanimation
+  private shownCharacters: Set<string> = new Set();
+  
   constructor() {
     // Register available conversations
     this.registerConversation(trainPlatformConversation);
@@ -105,6 +108,14 @@ export class DialogManager {
    */
   registerConversation(conversation: Conversation): void {
     this.conversations.set(conversation.id, conversation);
+    
+    // Initialize the conversation state if it doesn't exist
+    if (!this.conversationStates.has(conversation.id)) {
+      this.conversationStates.set(conversation.id, {
+        currentDialogIndex: 0,
+        playerChoices: {}
+      });
+    }
   }
   
   /**
@@ -125,6 +136,8 @@ export class DialogManager {
    * Start a conversation by its ID
    */
   startConversation(conversationId: string): boolean {
+    console.log(`Starting conversation: ${conversationId}`);
+    
     const conversation = this.conversations.get(conversationId);
     if (!conversation) {
       console.warn(`Conversation not found: ${conversationId}`);
@@ -132,26 +145,26 @@ export class DialogManager {
     }
     
     // Reset dialog index and set as current
-    conversation.currentDialogIndex = 0;
     this.currentConversationId = conversationId;
     
     // Get or initialize conversation state
-    const state = this.conversationStates.get(conversationId) || {
-      currentDialogIndex: 0,
-      playerChoices: {}
-    };
+    let state = this.conversationStates.get(conversationId);
+    if (!state) {
+      state = {
+        currentDialogIndex: 0,
+        playerChoices: {}
+      };
+      this.conversationStates.set(conversationId, state);
+    }
     
-    // Reset to beginning if requested
+    // Reset to beginning 
     state.currentDialogIndex = 0;
+    
+    // Clear shown characters when starting a new conversation
+    this.shownCharacters.clear();
     
     // Display the first dialog
     this.displayCurrentDialog();
-    
-    // Set background if specified
-    if (conversation.background && this.scene) {
-      // This will be handled by the scene itself
-      // The scene should listen for background changes
-    }
     
     return true;
   }
@@ -162,6 +175,7 @@ export class DialogManager {
    */
   displayCurrentDialog(): DialogResult {
     if (!this.currentConversationId) {
+      console.error('No active conversation');
       return {
         success: false,
         message: 'No active conversation'
@@ -170,6 +184,7 @@ export class DialogManager {
     
     const conversation = this.conversations.get(this.currentConversationId);
     if (!conversation) {
+      console.error(`Current conversation ${this.currentConversationId} not found`);
       return {
         success: false,
         message: `Current conversation ${this.currentConversationId} not found`
@@ -178,6 +193,7 @@ export class DialogManager {
     
     const state = this.conversationStates.get(this.currentConversationId);
     if (!state) {
+      console.error(`State for conversation ${this.currentConversationId} not found`);
       return {
         success: false,
         message: `State for conversation ${this.currentConversationId} not found`
@@ -185,6 +201,7 @@ export class DialogManager {
     }
     
     if (state.currentDialogIndex >= conversation.dialogs.length) {
+      console.warn(`End of conversation reached`);
       return {
         success: false,
         message: `End of conversation reached`
@@ -193,21 +210,44 @@ export class DialogManager {
     
     // Get the current dialog
     const currentDialog = conversation.dialogs[state.currentDialogIndex];
+    console.log(`Displaying dialog: ${currentDialog.id} - ${currentDialog.japaneseText}`);
     
     // Update character display if this is character dialog (not narration)
     if (currentDialog.characterId && this.characterManager) {
-      // Show the character with specified emotion and position
       const position = currentDialog.position || 'center';
-      this.characterManager.show(
-        currentDialog.characterId,
-        position,
-        currentDialog.emotion
-      );
+      const characterId = currentDialog.characterId;
+      
+      console.log(`Character dialog from: ${characterId}, position: ${position}, emotion: ${currentDialog.emotion || 'default'}`);
+      
+      try {
+        // Check if this character is already shown
+        if (this.shownCharacters.has(characterId)) {
+          console.log(`Character ${characterId} is already shown, updating emotion/position`);
+          // Only update emotion and position without triggering a full show animation
+          if (currentDialog.emotion) {
+            this.characterManager.setEmotion(characterId, currentDialog.emotion);
+          }
+          if (position) {
+            this.characterManager.setPosition(characterId, position);
+          }
+        } else {
+          console.log(`Character ${characterId} not shown yet, showing with full animation`);
+          // First time showing this character, show with full animation
+          this.characterManager.show(characterId, position, currentDialog.emotion);
+          // Track that this character is now shown
+          this.shownCharacters.add(characterId);
+        }
+      } catch (error) {
+        console.error(`Error updating character: ${error}`);
+      }
     }
     
     // Call the display dialog callback
     if (this.onDialogDisplay) {
+      console.log('Calling onDialogDisplay callback');
       this.onDialogDisplay(currentDialog);
+    } else {
+      console.warn('No onDialogDisplay callback registered');
     }
     
     return {
@@ -221,7 +261,10 @@ export class DialogManager {
    * @returns DialogResult indicating success or failure
    */
   advanceDialog(): DialogResult {
+    console.log('Advancing dialog');
+    
     if (!this.currentConversationId) {
+      console.error('No active conversation');
       return {
         success: false,
         message: 'No active conversation'
@@ -230,6 +273,7 @@ export class DialogManager {
     
     const conversation = this.conversations.get(this.currentConversationId);
     if (!conversation) {
+      console.error(`Current conversation ${this.currentConversationId} not found`);
       return {
         success: false,
         message: `Current conversation ${this.currentConversationId} not found`
@@ -238,6 +282,7 @@ export class DialogManager {
     
     const state = this.conversationStates.get(this.currentConversationId);
     if (!state) {
+      console.error(`State for conversation ${this.currentConversationId} not found`);
       return {
         success: false,
         message: `State for conversation ${this.currentConversationId} not found`
@@ -249,8 +294,11 @@ export class DialogManager {
     
     // If the current dialog has choices, show them
     if (currentDialog.playerResponses && currentDialog.playerResponses.length > 0) {
+      console.log(`Dialog has ${currentDialog.playerResponses.length} choices, showing choices`);
       if (this.onShowChoices) {
         this.onShowChoices(currentDialog.playerResponses);
+      } else {
+        console.warn('No onShowChoices callback registered');
       }
       
       return {
@@ -262,11 +310,15 @@ export class DialogManager {
     
     // No choices, advance to next dialog
     state.currentDialogIndex++;
+    console.log(`Advanced to dialog index: ${state.currentDialogIndex}`);
     
     // Check if we've reached the end of the conversation
     if (state.currentDialogIndex >= conversation.dialogs.length) {
+      console.log('End of conversation reached');
       if (this.onDialogComplete) {
         this.onDialogComplete();
+      } else {
+        console.warn('No onDialogComplete callback registered');
       }
       
       return {
@@ -285,7 +337,10 @@ export class DialogManager {
    * @returns DialogResult indicating success or failure
    */
   selectChoice(responseId: string): DialogResult {
+    console.log(`Selecting choice: ${responseId}`);
+    
     if (!this.currentConversationId) {
+      console.error('No active conversation');
       return {
         success: false,
         message: 'No active conversation'
@@ -294,6 +349,7 @@ export class DialogManager {
     
     const conversation = this.conversations.get(this.currentConversationId);
     if (!conversation) {
+      console.error(`Current conversation ${this.currentConversationId} not found`);
       return {
         success: false,
         message: `Current conversation ${this.currentConversationId} not found`
@@ -302,6 +358,7 @@ export class DialogManager {
     
     const state = this.conversationStates.get(this.currentConversationId);
     if (!state) {
+      console.error(`State for conversation ${this.currentConversationId} not found`);
       return {
         success: false,
         message: `State for conversation ${this.currentConversationId} not found`
@@ -316,11 +373,15 @@ export class DialogManager {
     
     // Advance to the next dialog
     state.currentDialogIndex++;
+    console.log(`Advanced to dialog index: ${state.currentDialogIndex} after choice selection`);
     
     // Check if we've reached the end of the conversation
     if (state.currentDialogIndex >= conversation.dialogs.length) {
+      console.log('End of conversation reached after choice selection');
       if (this.onDialogComplete) {
         this.onDialogComplete();
+      } else {
+        console.warn('No onDialogComplete callback registered');
       }
       
       return {

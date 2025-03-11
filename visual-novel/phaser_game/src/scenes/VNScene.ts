@@ -47,7 +47,7 @@ export default class VNScene extends BaseScene {
   // Z-index depths for layering
   private readonly DEPTH_BACKGROUND: number = 0;
   private readonly DEPTH_CHARACTER: number = 10;
-  private readonly DEPTH_UI: number = 20;
+  private readonly DEPTH_UI: number = 100; // Increased to ensure UI is always on top
   
   /**
    * Constructor for the VNScene class
@@ -69,29 +69,55 @@ export default class VNScene extends BaseScene {
     // Call the parent preload method to display loading text
     super.preload();
     
-    // Load background images for the train station location
-    this.load.image('train_platform', 'assets/images/backgrounds/train_platform.png');
-    this.load.image('inside_train', 'assets/images/backgrounds/inside_train.png');
-    this.load.image('outside_restaurant', 'assets/images/backgrounds/outside_restaurant.png');
-    this.load.image('inside_restaurant', 'assets/images/backgrounds/inside_restaurant.png');
-    this.load.image('park_lawn', 'assets/images/backgrounds/park_lawn.png');
-    this.load.image('park_bench', 'assets/images/backgrounds/park_bench.png');
-    this.load.image('outside_mall', 'assets/images/backgrounds/outside_mall.png');
-    this.load.image('clothing_store', 'assets/images/backgrounds/clothing_store.png');
-    this.load.image('hotel_lobby', 'assets/images/backgrounds/hotel_lobby.png');
+    // Dynamically load background images
+    this.loadBackgrounds();
     
-    // Load character images
-    // Kaori
-    this.load.image('kaori_default', 'assets/images/characters/kaori/default.png');
-    this.load.image('kaori_worried', 'assets/images/characters/kaori/worried.png');
-    this.load.image('kaori_surprised', 'assets/images/characters/kaori/surprised.png');
-    this.load.image('kaori_thinking', 'assets/images/characters/kaori/thinking.png');
+    // Dynamically load character images
+    this.loadCharacters();
+  }
+  
+  /**
+   * Dynamically load all background images from the assets/images/backgrounds directory
+   */
+  private loadBackgrounds(): void {
+    const backgroundPaths = [
+      'train_platform',
+      'inside_train',
+      'outside_restaurant',
+      'inside_restaurant',
+      'park_lawn',
+      'park_bench',
+      'outside_mall',
+      'clothing_store',
+      'hotel_lobby'
+    ];
     
-    // Takashi
-    this.load.image('takashi_default', 'assets/images/characters/takashi/default.png');
+    // Load each background
+    backgroundPaths.forEach(bg => {
+      this.load.image(bg, `assets/images/backgrounds/${bg}.png`);
+    });
+  }
+  
+  /**
+   * Dynamically load all character images from the assets/images/characters directory
+   */
+  private loadCharacters(): void {
+    // Define character expressions based on the game design
+    const characterExpressions = {
+      'kaori': ['default', 'worried', 'surprised', 'thinking'],
+      'takashi': ['default'],
+      'shopkeeper': ['default'],
+      'waitress': ['default']
+    };
     
-    // Shopkeeper
-    this.load.image('shopkeeper_default', 'assets/images/characters/shopkeeper/default.png');
+    // Load each character with their expressions
+    Object.entries(characterExpressions).forEach(([character, expressions]) => {
+      expressions.forEach(expression => {
+        const spriteKey = `${character}_${expression}`;
+        const imagePath = `assets/images/characters/${character}/${expression}.png`;
+        this.load.image(spriteKey, imagePath);
+      });
+    });
   }
   
   /**
@@ -106,27 +132,32 @@ export default class VNScene extends BaseScene {
     // Set the character manager's scene reference
     this.characterManager.setScene(this);
     
-    // Set the dialog manager's scene reference and character manager
-    this.dialogManager.setScene(this);
-    this.dialogManager.setCharacterManager(this.characterManager);
-    this.setupDialogManagerCallbacks();
+    // Set the character manager's depth value
+    this.characterManager.setCharacterDepth(this.DEPTH_CHARACTER);
     
-    // Display Kaori character (middle layer)
-    this.characterManager.show('kaori', 'center');
-    
-    // Set up the UI elements (highest layer)
+    // Set up the UI elements (highest layer) - creating these before setting dialog manager callbacks
     this.createDialogBox();
     this.createNameBox();
     this.createNextIndicator();
     this.createChoiceContainer();
     this.createTitleButton();
     
+    // Set the dialog manager's scene reference and character manager
+    this.dialogManager.setScene(this);
+    this.dialogManager.setCharacterManager(this.characterManager);
+    this.setupDialogManagerCallbacks();
+    
     // Set up input handling
     this.setupInputHandlers();
     
-    // Load and start the train platform conversation
-    this.dialogManager.loadConversation(trainPlatformConversation);
-    this.dialogManager.startConversation(trainPlatformConversation.id);
+    // Display Kaori character (middle layer) after dialog manager setup
+    this.characterManager.show('kaori', 'center');
+    
+    // Start the train platform conversation
+    setTimeout(() => {
+      console.log('Starting initial conversation after a short delay');
+      this.dialogManager.startConversation(trainPlatformConversation.id);
+    }, 100); // Short delay to ensure everything is ready
   }
   
   /**
@@ -135,6 +166,7 @@ export default class VNScene extends BaseScene {
   private setupDialogManagerCallbacks(): void {
     this.dialogManager.setCallbacks({
       onDialogDisplay: (dialog: Dialog) => {
+        console.log(`Dialog display callback triggered: ${dialog.japaneseText}`);
         // Display dialog
         if (dialog.characterId === '') {
           // Narration has no speaker
@@ -149,6 +181,7 @@ export default class VNScene extends BaseScene {
         // Handle end of conversation
       },
       onShowChoices: (responses: PlayerResponse[]) => {
+        console.log(`Show choices callback triggered: ${responses.length} choices`);
         // Convert to simple string array for existing method
         const choiceTexts = responses.map(response => response.japaneseText);
         this.showChoices(choiceTexts);
@@ -205,7 +238,7 @@ export default class VNScene extends BaseScene {
     this.dialogText = this.add.text(
       x - width / 2 + 20,
       y - height / 2 + 20,
-      '',
+      'Loading dialog...',  // Initial text to ensure it's visible
       {
         fontFamily: 'Arial',
         fontSize: '24px',
@@ -214,6 +247,16 @@ export default class VNScene extends BaseScene {
       }
     );
     this.dialogText.setDepth(this.DEPTH_UI);
+    
+    // Add click event to the dialog box
+    this.dialogBox.on('pointerdown', () => {
+      console.log('Dialog box clicked directly');
+      if (this.isDialogComplete) {
+        this.dialogManager.advanceDialog();
+      } else {
+        this.completeDialog();
+      }
+    });
   }
   
   /**
@@ -235,7 +278,7 @@ export default class VNScene extends BaseScene {
     this.nameText = this.add.text(
       x,
       y,
-      '',
+      'Character',  // Initial text to ensure it's visible
       {
         fontFamily: 'Arial',
         fontSize: '20px',
@@ -336,17 +379,23 @@ export default class VNScene extends BaseScene {
    * Set up input handlers for advancing dialog and making choices
    */
   private setupInputHandlers(): void {
-    // Click/tap to advance dialog
+    // Click/tap anywhere on the scene to advance dialog
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      // Debug log to check if click event is firing
+      console.log('Pointer down detected at', pointer.x, pointer.y);
+      
       // Ignore if clicking on a choice button or title button
       if (this.isClickingInteractive(pointer)) {
+        console.log('Clicked on interactive element, ignoring');
         return;
       }
       
       if (this.isDialogComplete) {
+        console.log('Dialog complete, advancing to next dialog');
         // If dialog is complete, advance to next dialog using DialogManager
         this.dialogManager.advanceDialog();
       } else {
+        console.log('Dialog not complete, completing it immediately');
         // If dialog is still typing, complete it immediately
         this.completeDialog();
       }
@@ -354,9 +403,12 @@ export default class VNScene extends BaseScene {
     
     // Keyboard input for advancing dialog
     this.input.keyboard?.on('keydown-SPACE', () => {
+      console.log('Space key pressed');
       if (this.isDialogComplete) {
+        console.log('Dialog complete, advancing to next dialog');
         this.dialogManager.advanceDialog();
       } else {
+        console.log('Dialog not complete, completing it immediately');
         this.completeDialog();
       }
     });
@@ -367,6 +419,14 @@ export default class VNScene extends BaseScene {
    */
   private isClickingInteractive(pointer: Phaser.Input.Pointer): boolean {
     const targets = this.input.hitTestPointer(pointer);
+    console.log('Hit test targets:', targets.map(t => t.type));
+    
+    // Always proceed with dialog advancement if clicking on the dialog box itself
+    if (targets.some(target => target === this.dialogBox)) {
+      console.log('Clicked on dialog box, proceeding with dialog advancement');
+      return false;
+    }
+    
     return targets.some(target => 
       (target === this.titleButton) || 
       (target === this.studyButton) ||
@@ -378,7 +438,12 @@ export default class VNScene extends BaseScene {
    * Display dialog text with a typewriter effect
    */
   private displayDialog(text: string, speaker: string): void {
-    if (!this.dialogText || !this.nameText) return;
+    if (!this.dialogText || !this.nameText) {
+      console.error('Dialog text or name text not initialized');
+      return;
+    }
+    
+    console.log(`Displaying dialog: "${text}" from speaker: "${speaker}"`);
     
     // Stop any existing dialog timer
     if (this.dialogTimer) {
@@ -397,8 +462,10 @@ export default class VNScene extends BaseScene {
     this.isDialogComplete = false;
     this.displayedTextLength = 0;
     
-    // Set the speaker name
-    this.nameText.setText(speaker);
+    // Set the speaker name with capitalized first letter
+    const displayName = this.capitalizeFirstLetter(speaker);
+    this.nameText.setText(displayName);
+    this.nameText.setAlpha(1); // Ensure name is visible
     
     // Show/hide the name box based on whether there's a speaker
     if (this.nameBox) {
@@ -408,7 +475,11 @@ export default class VNScene extends BaseScene {
     // Clear the dialog text
     this.dialogText.setText('');
     
-    // Hide the next indicator
+    // Make sure dialog box and text are visible
+    if (this.dialogBox) this.dialogBox.setAlpha(0.7);
+    this.dialogText.setAlpha(1);
+    
+    // Hide the next indicator until dialog is complete
     if (this.nextIndicator) {
       this.nextIndicator.setAlpha(0);
     }
@@ -423,17 +494,31 @@ export default class VNScene extends BaseScene {
   }
   
   /**
+   * Utility function to capitalize the first letter of a string
+   */
+  private capitalizeFirstLetter(str: string): string {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+  
+  /**
    * Update the dialog text for the typewriter effect
    */
   private updateDialogText(): void {
-    if (!this.dialogText) return;
+    if (!this.dialogText) {
+      console.error('Dialog text not initialized');
+      return;
+    }
     
     this.displayedTextLength++;
-    this.dialogText.setText(this.currentDialog.substring(0, this.displayedTextLength));
+    const currentText = this.currentDialog.substring(0, this.displayedTextLength);
+    this.dialogText.setText(currentText);
+    console.log(`Updating dialog text: ${currentText}`);
     
     // Check if dialog is complete
     if (this.displayedTextLength >= this.currentDialog.length) {
       this.isDialogComplete = true;
+      console.log('Dialog display complete');
       
       // Show the next indicator
       if (this.nextIndicator) {
@@ -443,6 +528,31 @@ export default class VNScene extends BaseScene {
       // Add the study button
       this.addStudyButton();
     }
+  }
+  
+  /**
+   * Complete the current dialog immediately
+   */
+  private completeDialog(): void {
+    if (!this.dialogText || this.isDialogComplete) return;
+    
+    // Stop the dialog timer
+    if (this.dialogTimer) {
+      this.dialogTimer.remove();
+    }
+    
+    // Display the full text
+    this.dialogText.setText(this.currentDialog);
+    console.log(`Completing dialog text: ${this.currentDialog}`);
+    this.isDialogComplete = true;
+    
+    // Show the next indicator
+    if (this.nextIndicator) {
+      this.nextIndicator.setAlpha(1);
+    }
+    
+    // Add the study button
+    this.addStudyButton();
   }
   
   /**
@@ -561,49 +671,6 @@ export default class VNScene extends BaseScene {
     this.scene.pause();
     
     console.log('VNScene paused, StudyScene launched');
-  }
-  
-  /**
-   * Complete the current dialog immediately
-   */
-  private completeDialog(): void {
-    if (!this.dialogText || this.isDialogComplete) return;
-    
-    // Stop the dialog timer
-    if (this.dialogTimer) {
-      this.dialogTimer.remove();
-    }
-    
-    // Display the full text
-    this.dialogText.setText(this.currentDialog);
-    this.isDialogComplete = true;
-    
-    // Show the next indicator
-    if (this.nextIndicator) {
-      this.nextIndicator.setAlpha(1);
-    }
-    
-    // Add the study button
-    this.addStudyButton();
-  }
-  
-  /**
-   * Display character sprite on screen
-   * @deprecated Use characterManager.show() instead
-   */
-  private displayCharacter(_id: string, spriteKey: string, position: 'left' | 'center' | 'right'): void {
-    console.warn('displayCharacter is deprecated, use characterManager.show() instead');
-    
-    // Convert old position format to CharacterPosition type
-    const characterPosition = position as CharacterPosition;
-    
-    // Extract emotion from spriteKey (e.g., kaori_default -> default)
-    const parts = spriteKey.split('_');
-    const characterId = parts[0];
-    const emotion = parts.length > 1 ? parts[1] : 'default';
-    
-    // Use the character manager to show the character
-    this.characterManager.show(characterId, characterPosition, emotion);
   }
   
   /**
@@ -769,7 +836,7 @@ export default class VNScene extends BaseScene {
           // Fallback to original method if DialogManager doesn't have current dialog
           // Display new dialog based on choice
           let nextDialog = '';
-          let speaker = 'Kaori';
+          let speaker = 'kaori'; // Use lowercase for internal references
           
           switch (choiceIndex) {
             case 0:
@@ -845,7 +912,9 @@ export default class VNScene extends BaseScene {
       }
       
       if (this.nameText && this.currentSpeaker) {
-        this.nameText.setText(this.currentSpeaker);
+        // Use capitalized name for display
+        const displayName = this.capitalizeFirstLetter(this.currentSpeaker);
+        this.nameText.setText(displayName);
       }
       
       // Update background
