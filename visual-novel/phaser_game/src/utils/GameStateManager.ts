@@ -1,5 +1,6 @@
 import { StatefulScene } from './StatefulScene';
 import { SerializedCharacterState } from './CharacterManager';
+import { dialogSystem } from './DialogSystem';
 
 /**
  * Interface representing the complete game state.
@@ -15,6 +16,8 @@ export interface GameState {
   timestamp: number;
   /** Character state */
   characterState?: SerializedCharacterState;
+  /** Dialog system state */
+  dialogSystemState?: any;
 }
 
 /**
@@ -99,12 +102,38 @@ export class GameStateManager {
       // Capture scene states
       const sceneStates = this.captureSceneStates();
       
+      // Capture global state
+      const globalState = this.captureGlobalState();
+      
+      // Capture character state if available
+      const characterManager = (window as any).characterManager;
+      let characterState = undefined;
+      if (characterManager) {
+        try {
+          characterState = characterManager.serialize();
+          console.log('📝 Character state serialized', characterState);
+        } catch (e) {
+          console.error('Failed to serialize character state:', e);
+        }
+      }
+      
+      // Capture dialog system state
+      let dialogSystemState = undefined;
+      try {
+        dialogSystemState = dialogSystem.serialize();
+        console.log('📝 Dialog system state serialized', dialogSystemState);
+      } catch (e) {
+        console.error('Failed to serialize dialog system state:', e);
+      }
+      
       // Create the state object
       const state: GameState = {
         currentScene,
-        globalState: this.captureGlobalState(),
+        globalState,
         sceneStates,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        characterState: characterState,
+        dialogSystemState: dialogSystemState
       };
       
       // Validate the state
@@ -122,7 +151,9 @@ export class GameStateManager {
         currentScene: 'TitleScene', // Always fall back to TitleScene
         globalState: {},
         sceneStates: {},
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        characterState: undefined,
+        dialogSystemState: undefined
       };
     }
   }
@@ -240,6 +271,30 @@ export class GameStateManager {
         
         // Mark as successful even if we're still in the process of restoring
         console.log('✅ Game state restoration process started (via title scene)');
+        
+        // Restore character state if available
+        if (state.characterState) {
+          const characterManager = (window as any).characterManager;
+          if (characterManager) {
+            try {
+              characterManager.deserialize(state.characterState);
+              console.log('📝 Character state deserialized');
+            } catch (e) {
+              console.error('Failed to deserialize character state:', e);
+            }
+          }
+        }
+        
+        // Restore dialog system state if available
+        if (state.dialogSystemState) {
+          try {
+            dialogSystem.deserialize(state.dialogSystemState);
+            console.log('📝 Dialog system state deserialized');
+          } catch (e) {
+            console.error('Failed to deserialize dialog system state:', e);
+          }
+        }
+        
         return;
       } catch (e) {
         console.error('Error starting title scene:', e);

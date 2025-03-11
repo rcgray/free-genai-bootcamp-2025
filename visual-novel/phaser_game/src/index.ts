@@ -476,7 +476,7 @@ if (savedHmrState && targetScene !== 'TitleScene') {
 // Set up HMR
 if (import.meta.hot) {
   // Clean up the old game instance when the module is about to be replaced
-  import.meta.hot.dispose((data: Record<string, any>) => {
+  import.meta.hot.dispose((_data: Record<string, any>) => {
     console.log('🧹 Cleaning up old game instance...');
     
     // Save the current state before disposing
@@ -529,7 +529,7 @@ if (import.meta.hot) {
   });
 
   // Handle HMR updates
-  import.meta.hot.accept((newModule) => {
+  import.meta.hot.accept((_newModule) => {
     console.log('🔄 HMR update detected');
     // State restoration now handled by attemptAutoRestore
   });

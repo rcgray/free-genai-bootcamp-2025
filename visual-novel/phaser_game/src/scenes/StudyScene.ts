@@ -230,18 +230,18 @@ export default class StudyScene extends BaseScene {
   }
   
   /**
-   * Override serializeState to throw an error since StudyScene should never be serialized
-   * StudyScene is designed as ephemeral and its state should never be preserved
+   * Serialize scene state - intentionally throws error
+   * StudyScene is designed to be ephemeral and should never be serialized
    */
   serializeState(): any {
     throw new Error('StudyScene.serializeState() should never be called - StudyScene is ephemeral');
   }
   
   /**
-   * Override deserializeState to throw an error since StudyScene should never be restored
-   * StudyScene is designed as ephemeral and should be recreated fresh each time
+   * Deserialize scene state - intentionally throws error
+   * StudyScene is designed to be ephemeral and should never be restored
    */
-  deserializeState(state: any): void {
+  deserializeState(_state: any): void {
     throw new Error('StudyScene.deserializeState() should never be called - StudyScene is ephemeral');
   }
 }

@@ -545,7 +545,7 @@ export default class VNScene extends BaseScene {
    * Display character sprite on screen
    * @deprecated Use characterManager.show() instead
    */
-  private displayCharacter(id: string, spriteKey: string, position: 'left' | 'center' | 'right'): void {
+  private displayCharacter(_id: string, spriteKey: string, position: 'left' | 'center' | 'right'): void {
     console.warn('displayCharacter is deprecated, use characterManager.show() instead');
     
     // Convert old position format to CharacterPosition type

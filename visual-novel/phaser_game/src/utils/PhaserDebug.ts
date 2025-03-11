@@ -17,7 +17,7 @@ export function debugGameInstance(game: Phaser.Game): void {
       config: {
         width: game.config.width,
         height: game.config.height,
-        type: game.config.type,
+        type: (game.config as any).type,
         parent: game.config.parent
       }
     });
@@ -35,8 +35,8 @@ export function debugGameInstance(game: Phaser.Game): void {
         type: game.renderer.type,
         width: game.renderer.width,
         height: game.renderer.height,
-        resolution: game.renderer.resolution,
-        'context exists': !!game.renderer.gl
+        resolution: (game.renderer as any).resolution,
+        'context exists': !!(game.renderer as any).gl
       });
     } else {
       console.warn('❌ Renderer not initialized');
@@ -83,7 +83,7 @@ export function debugSceneManager(sceneManager: Phaser.Scenes.SceneManager): voi
             'Visible': isVisible,
             'Systems initialized': !!scene.sys,
             'Events initialized': scene.sys ? !!scene.sys.events : false,
-            'Input initialized': scene.sys ? !!scene.sys.input : false
+            'Input initialized': scene.sys ? !!(scene.sys as any).input : false
           });
         } else {
           console.log(`Scene #${index}: null or undefined`);

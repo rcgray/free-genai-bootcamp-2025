@@ -76,7 +76,10 @@
 │   │       ├── AssetManager.ts
 │   │       ├── Character.ts
 │   │       ├── CharacterManager.ts
+│   │       ├── DialogSystem.ts
+│   │       ├── DialogSystemTests.ts
 │   │       ├── GameStateManager.ts
+│   │       ├── MockDialogData.ts
 │   │       ├── PhaserDebug.ts
 │   │       └── StatefulScene.ts
 │   ├── tsconfig.json
@@ -93,4 +96,4 @@
 ├── tests
 └── uv.lock
 
-26 directories, 68 files
+26 directories, 71 files

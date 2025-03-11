@@ -59,12 +59,18 @@ export class CharacterManager {
     }
   };
   
+  // Default z-index depth for characters
+  private characterDepth: number = 10;
+  
   /**
    * Constructor for the CharacterManager class
    */
   constructor() {
     // Initialize with default character configurations
     this.initializeDefaultCharacters();
+    
+    // Make the character manager globally accessible for test purposes
+    (window as any).characterManager = this;
   }
   
   /**
@@ -116,36 +122,64 @@ export class CharacterManager {
   }
   
   /**
-   * Show a character in the current scene
-   * @param id - Character ID
-   * @param position - Position to display the character (optional if character has a saved position)
-   * @param emotion - Emotion to display (defaults to the character's default emotion)
-   * @returns Whether the character was successfully shown
+   * Set the depth value for all characters managed by this instance
+   * @param depth The z-index depth value for characters
+   */
+  public setCharacterDepth(depth: number): void {
+    this.characterDepth = depth;
+    
+    // Update active characters by rehiding/reshowing them
+    // We can't directly set depth on Character objects
+    this.refreshCharacterDepth();
+  }
+  
+  /**
+   * Refresh the depth of all active characters
+   * This recreates the sprites with the current depth value
+   */
+  private refreshCharacterDepth(): void {
+    // Only proceed if we have a valid scene
+    if (!this.scene) return;
+    
+    const scene = this.scene; // Store in local variable to satisfy TypeScript
+    
+    // Get currently active characters
+    const activeIds = [...this.activeCharacters];
+    
+    // Hide all characters (removes sprites)
+    activeIds.forEach(id => this.hide(id));
+    
+    // Re-show all characters (creates new sprites with current depth)
+    activeIds.forEach(id => {
+      const character = this.getCharacter(id);
+      if (character) {
+        character.display(scene, this.characterDepth);
+        this.activeCharacters.add(id);
+      }
+    });
+  }
+  
+  /**
+   * Show a character at the specified position and with the specified emotion
+   * @param id The ID of the character to show
+   * @param position Optional position to place the character (defaults to character's current position)
+   * @param emotion Optional emotion to display (defaults to character's current emotion)
+   * @returns True if the character was successfully shown, false otherwise
    */
   show(id: string, position?: CharacterPosition, emotion?: string): boolean {
-    const character = this.characters.get(id);
-    if (!character || !this.scene) {
-      console.error(`Cannot show character ${id}: Character not found or no scene set`);
-      return false;
-    }
+    const character = this.getCharacter(id);
+    if (!character || !this.scene) return false;
     
-    // Only update position if explicitly provided, otherwise use the character's current position
-    // This allows position to persist even when character is hidden
-    if (position) {
-      character.setPosition(position, false);
-    }
+    // Set position and emotion if provided
+    if (position) character.setPosition(position);
+    if (emotion) character.setEmotion(emotion);
     
-    // Set emotion (if provided) and position
-    if (emotion) {
-      character.setEmotion(emotion, false);
-    }
+    // Display character with proper depth
+    character.display(this.scene, this.characterDepth);
     
-    // Display the character
-    const depthOffset = this.activeCharacters.size; // Layer characters based on display order
-    character.display(this.scene, depthOffset);
-    
-    // Mark as active
+    // Add to active characters
     this.activeCharacters.add(id);
+    
     return true;
   }
   
@@ -232,7 +266,7 @@ export class CharacterManager {
     this.activeCharacters.clear();
     
     // Display each character
-    activeCharacterIds.forEach((id, index) => {
+    activeCharacterIds.forEach((id, _index) => {
       const character = this.characters.get(id);
       if (character) {
         // Use current emotion and position
