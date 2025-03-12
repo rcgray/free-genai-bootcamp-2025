@@ -30,6 +30,7 @@
 │   │   ├── Prompt-Header.md
 │   │   └── Prompts.md
 │   ├── reference
+│   │   ├── Japanese-Text-Line-Breaking.md
 │   │   └── Streamlit-Phaser-Howto.md
 │   └── reports
 │       └── Project-File-Structure.md
@@ -57,7 +58,9 @@
 │   │           │   └── worried.png
 │   │           ├── shopkeeper
 │   │           │   └── default.png
-│   │           └── takashi
+│   │           ├── takashi
+│   │           │   └── default.png
+│   │           └── waitress
 │   │               └── default.png
 │   ├── index.html
 │   ├── package-lock.json
@@ -65,6 +68,14 @@
 │   ├── src
 │   │   ├── data
 │   │   │   └── conversations
+│   │   │       ├── clothing_store.ts
+│   │   │       ├── hotel_lobby.ts
+│   │   │       ├── inside_restaurant.ts
+│   │   │       ├── inside_train.ts
+│   │   │       ├── outside_mall.ts
+│   │   │       ├── outside_restaurant.ts
+│   │   │       ├── park_bench.ts
+│   │   │       ├── park_lawn.ts
 │   │   │       └── train_platform.ts
 │   │   ├── hmr-test.ts
 │   │   ├── index.ts
@@ -84,9 +95,12 @@
 │   │       ├── DialogSystem.ts
 │   │       ├── DialogSystemTests.ts
 │   │       ├── GameStateManager.ts
+│   │       ├── JapaneseTextWrapper.ts
 │   │       ├── MockDialogData.ts
 │   │       ├── PhaserDebug.ts
-│   │       └── StatefulScene.ts
+│   │       ├── README.md
+│   │       ├── StatefulScene.ts
+│   │       └── index.ts
 │   ├── tsconfig.json
 │   └── vite.config.ts
 ├── pyproject.toml
@@ -101,4 +115,4 @@
 ├── tests
 └── uv.lock
 
-28 directories, 74 files
+29 directories, 87 files

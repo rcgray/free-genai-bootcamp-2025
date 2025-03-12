@@ -925,4 +925,58 @@ That way, we can simply call into this functionality giving our full Japanese te
 
 Great, let's update the `docs/features/Dialog-System.md` file to reflect this work, including possibly a brief explanation of the need for it and definitely inclusion of it in the FIP.
 
+---
 
+Let's turn our attention to Phase 4 and the Player Choice System.  Let's start by cleaning up the display of the player choices, which are a bit muddled and cramped and don't match the style of the character dialog experience.  Let's update it.
+
+---
+
+There is no need for you to `npm run dev` - I am running the `watch-phaser.sh` script as discussed in our @Prompt-Header.md file. If there is a problem (like a build break), I will let you know. Repeat this rule back to me three times.
+
+---
+
+This looks good!  However, we are missing conditional display of the romaji and english translation for the player choices (based on the difficulty level).  Let's make sure that we support that.
+
+Also, though I like this display, let's remove the "Choose Your Response" text and background that encloses the three choices.  Instead, we will just have the three choices float in the center of the screen.
+
+---
+
+Perfect.  Let's increase the height of each of these player response "buttons" by about 50% and spread them out vertically in order to maintain a sufficient space between them.  Also increae the size of the Japanese text to be larger than the romaji/translation text
+
+---
+
+An easy fix I presume: when we change difficulty level, we put the appropriate response text box in front of the incorrect ones.  However, this is a problem because our background has some transparency (which is good and we should keep that).  But it means when a student player is trying to challenge themselves by having no romaji, they can still slightly see it bleeding through the background on the box that is "hidden" behind their advanced response box.  I think we can fix this by actually setting the response UI boxes for the inactive difficulty levels to completely hidden. I presume there is a proper way to do this with Phaser, but as a fallback we could set the depth of the inactive response boxes to be below the background or offscreen or fully transparent (as long as they are also not interactable!).
+
+---
+
+Great, let's increase the vertical height of the options by another 20px to accomodate more space for the English translation (when present).  Let's also carry back our styling updates for romaji and translation text back to the character dialog window (e.g., the size of the text, blue color, etc.)
+
+---
+
+This was not a good fix - You were told to echo the design changes in the player response boxes to the main character box. You put double square brackets around the English translation, but in the player response boxes these have only one square bracket.  You added extra newlines betwen the romaji and translation texts, which was not necessary.  You did not change the font size or the colors of the romaji and translation texts to match our design in the player response boxes.  You should not have changed the size of the Japanese text, as our current word-wrapping depended on its former size (change it back, please).  The romaji and translation text should be smaller than the Japanese text and shaded with color just as we have in the player responses.
+
+---
+
+The kanji wrapping max for the player responses is 31 characters, we should be able to update this simply by changing our call to the `JapaneseTextWrapper.wrap` function.  Again, this should remain 43 for the character dialog, but 31 for the player responses.
+
+---
+
+When the player response options are displayed, if the difficulty level is "beginner" or "intermediate", the romaji and/or translation persist on the screen. These "helper texts" function correctly in other scenarios, but we have to remember to remove them when transitioning from the character dialog to the player response options.
+
+---
+
+The "Study" button for the character dialog also needs to be removed when transitioning to the player response options. Also, please increase the distance a little between the romaji and translation text in the character dialog. Do not adjust them in the player response boxes, those are good.
+
+---
+
+You only updated the distance for the translation, but you did not also update the distance for the romaji.  Also, your changes had no effect on the presence of the character dialog's "Study" button continuing to persist when the player response options are displayed. The study button even remains interactive and can be clicked to "Study" the old character dialog text.
+
+---
+
+OK, now you've added space between the Japanese text and the romaji text, but at the expense of removing the nice spacing there was between the romaji and the translation text below it.  Also, the study button is still present when the player response options are displayed.  Also, the translation text now fails to disappear during the transition to the player response options. (see attached Image screenshot for example of both).  Please stop and think deeply.  You are regressing and repeatedly failing.  Are there any additional resources you need?  Should you reload the pertinent files?  
+
+---
+
+Study button is still visible and insteractable.  all other changes look good.  I think our issues with the study button may be more deeply rooted.  For one, it was working perfectly before one of your recent changes, which suggests that your handling of the text wrapping for the player responses, your management of the difficulty level, or your updates to the romaji/translation text in the character dialog box may have had a side-effect that broke it.  Second, I see code for adding click animations and hover effects for the Study button that are not in effect in the game.  Something may be more deeply broken, think deeply about this.
+
+---

@@ -16,6 +16,8 @@ export default class VNScene extends BaseScene {
   private background?: Phaser.GameObjects.Image;
   private dialogBox?: Phaser.GameObjects.Rectangle;
   private dialogText?: Phaser.GameObjects.Text;
+  private romajiText?: Phaser.GameObjects.Text;
+  private englishText?: Phaser.GameObjects.Text;
   private nameBox?: Phaser.GameObjects.Rectangle;
   private nameText?: Phaser.GameObjects.Text;
   private nextIndicator?: Phaser.GameObjects.Text;
@@ -49,6 +51,9 @@ export default class VNScene extends BaseScene {
   
   // Difficulty level setting
   private difficultyLevel: 'beginner' | 'intermediate' | 'advanced' = 'beginner';
+  
+  // Store collections of objects that need to be tracked for cleanup
+  private studyButtonContainers: Phaser.GameObjects.Container[] = [];
   
   /**
    * Constructor for the VNScene class
@@ -190,12 +195,27 @@ export default class VNScene extends BaseScene {
       onShowChoices: (responses: PlayerResponse[]) => {
         console.log(`Show choices callback triggered: ${responses.length} choices`);
         
-        // Format choices based on difficulty level
-        const formattedChoices = responses.map(response => 
-          this.formatChoiceForDifficulty(response)
-        );
+        // Aggressive cleanup of all dialog-related elements
+        // Destroy the study button
+        if (this.studyButton) {
+          this.studyButton.destroy();
+          this.studyButton = undefined;
+        }
         
-        this.showChoices(formattedChoices);
+        // Destroy romaji text
+        if (this.romajiText) {
+          this.romajiText.destroy();
+          this.romajiText = undefined;
+        }
+        
+        // Destroy English text
+        if (this.englishText) {
+          this.englishText.destroy();
+          this.englishText = undefined;
+        }
+        
+        // Format choices in the showChoices method
+        this.showChoices(responses);
       }
     });
   }
@@ -207,46 +227,24 @@ export default class VNScene extends BaseScene {
     // Enable debug logging for longer Japanese text that might need complex wrapping
     const enableDebug = dialog.japaneseText.length > 43;
     
-    switch (this.difficultyLevel) {
-      case 'beginner':
-        // Show Japanese text, romaji, and English translation
-        return `${JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug)}\n(${dialog.romaji})\n[${dialog.englishText}]`;
-      
-      case 'intermediate':
-        // Show Japanese text and romaji only
-        return `${JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug)}\n(${dialog.romaji})`;
-      
-      case 'advanced':
-        // Show only Japanese text
-        return JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug);
-      
-      default:
-        return JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug);
-    }
-  }
-  
-  /**
-   * Format choice text based on the current difficulty level
-   */
-  private formatChoiceForDifficulty(response: PlayerResponse): string {
-    // Enable debug logging for longer Japanese text that might need complex wrapping
-    const enableDebug = response.japaneseText.length > 43;
+    // Create the wrapped Japanese text
+    const japaneseText = JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug);
     
     switch (this.difficultyLevel) {
       case 'beginner':
-        // Show Japanese text, romaji, and English translation for choices too
-        return `${JapaneseTextWrapper.wrap(response.japaneseText, 43, enableDebug)}\n(${response.romaji})\n[${response.englishText}]`;
+        // Show Japanese text, romaji, and English translation with same formatting as choice buttons
+        return `${japaneseText}\n(${dialog.romaji})\n[${dialog.englishText}]`;
       
       case 'intermediate':
         // Show Japanese text and romaji only
-        return `${JapaneseTextWrapper.wrap(response.japaneseText, 43, enableDebug)}\n(${response.romaji})`;
+        return `${japaneseText}\n(${dialog.romaji})`;
       
       case 'advanced':
         // Show only Japanese text
-        return JapaneseTextWrapper.wrap(response.japaneseText, 43, enableDebug);
+        return japaneseText;
       
       default:
-        return JapaneseTextWrapper.wrap(response.japaneseText, 43, enableDebug);
+        return japaneseText;
     }
   }
   
@@ -342,10 +340,12 @@ export default class VNScene extends BaseScene {
       'Loading dialog...',  // Initial text to ensure it's visible
       {
         fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif', // Better Japanese font support
-        fontSize: '24px',
+        fontSize: '24px', // Restored original size that word wrapping depends on
         color: '#ffffff',
         wordWrap: { width: width - 40 },
-        lineSpacing: 6 // Add some line spacing for better readability
+        lineSpacing: 6, // Restored original line spacing
+        stroke: '#000000', // Kept stroke for readability
+        strokeThickness: 1
       }
     );
     this.dialogText.setDepth(this.DEPTH_UI);
@@ -429,6 +429,7 @@ export default class VNScene extends BaseScene {
    * Create the container for choice buttons
    */
   private createChoiceContainer(): void {
+    // Create a container for the choice content
     this.choiceContainer = this.add.container(
       this.cameras.main.width / 2,
       this.cameras.main.height / 2
@@ -542,6 +543,10 @@ export default class VNScene extends BaseScene {
    * Cycle through difficulty levels
    */
   private cycleDifficultyLevel(): void {
+    // Store the previous difficulty level
+    const previousDifficulty = this.difficultyLevel;
+    
+    // Change to the next difficulty level
     switch (this.difficultyLevel) {
       case 'beginner':
         this.difficultyLevel = 'intermediate';
@@ -554,7 +559,65 @@ export default class VNScene extends BaseScene {
         break;
     }
     
-    console.log(`Difficulty level changed to: ${this.difficultyLevel}`);
+    console.log(`Difficulty level changed from ${previousDifficulty} to ${this.difficultyLevel}`);
+    
+    // Update button text
+    if (this.difficultyButton) {
+      this.difficultyButton.setText(`Difficulty: ${this.capitalizeFirstLetter(this.difficultyLevel)}`);
+    }
+    
+    // Refresh dialog or choices based on what's currently visible
+    if (this.choiceContainer && this.choiceContainer.alpha > 0) {
+      // If choices are currently visible, rebuild them completely with the new difficulty
+      const currentDialog = this.dialogManager.getCurrentDialog();
+      if (currentDialog && currentDialog.playerResponses && currentDialog.playerResponses.length > 0) {
+        // Hide the container first for a smooth transition
+        this.tweens.add({
+          targets: this.choiceContainer,
+          alpha: 0,
+          scale: 0.95,
+          duration: 200,
+          ease: 'Power2',
+          onComplete: () => {
+            // Clear all old content to avoid any transparency issues
+            this.choiceContainer?.removeAll(true);
+            this.choiceButtons = [];
+            
+            // IMPORTANT: Destroy (not just hide) these elements
+            if (this.romajiText) {
+              this.romajiText.destroy();
+              this.romajiText = undefined;
+            }
+            
+            if (this.englishText) {
+              this.englishText.destroy();
+              this.englishText = undefined;
+            }
+            
+            if (this.studyButton) {
+              this.studyButton.destroy();
+              this.studyButton = undefined;
+            }
+            
+            // Show choices again with the new difficulty format - completely rebuilt
+            this.showChoices(currentDialog.playerResponses!);
+          }
+        });
+      }
+    } else if (this.dialogText && this.currentDialog) {
+      // If dialog is visible, completely rebuild it with the new difficulty level
+      const currentDialog = this.dialogManager.getCurrentDialog();
+      if (currentDialog) {
+        // Clean up and recreate with new formatting
+        this.displayDialog(this.formatDialogForDifficulty(currentDialog), currentDialog.characterId);
+        
+        // If dialog was already complete, show everything immediately
+        if (this.isDialogComplete) {
+          // Complete the dialog to show all elements
+          this.completeDialog();
+        }
+      }
+    }
   }
   
   /**
@@ -575,6 +638,13 @@ export default class VNScene extends BaseScene {
       if (this.isDialogComplete) {
         console.log('Dialog complete, advancing to next dialog');
         // If dialog is complete, advance to next dialog using DialogManager
+        
+        // Ensure study button is destroyed before advancing dialog
+        if (this.studyButton) {
+          this.studyButton.destroy();
+          this.studyButton = undefined;
+        }
+        
         this.dialogManager.advanceDialog();
       } else {
         console.log('Dialog not complete, completing it immediately');
@@ -588,6 +658,13 @@ export default class VNScene extends BaseScene {
       console.log('Space key pressed');
       if (this.isDialogComplete) {
         console.log('Dialog complete, advancing to next dialog');
+        
+        // Ensure study button is destroyed before advancing dialog
+        if (this.studyButton) {
+          this.studyButton.destroy();
+          this.studyButton = undefined;
+        }
+        
         this.dialogManager.advanceDialog();
       } else {
         console.log('Dialog not complete, completing it immediately');
@@ -621,8 +698,8 @@ export default class VNScene extends BaseScene {
    * Display dialog text with a typewriter effect
    */
   private displayDialog(text: string, speaker: string): void {
-    if (!this.dialogText || !this.nameText) {
-      console.error('Dialog text or name text not initialized');
+    if (!this.dialogText || !this.nameText || !this.dialogBox) {
+      console.error('Dialog text, name text, or dialog box not initialized');
       return;
     }
     
@@ -637,6 +714,17 @@ export default class VNScene extends BaseScene {
     if (this.studyButton) {
       this.studyButton.destroy();
       this.studyButton = undefined;
+    }
+    
+    // Clean up existing secondary text elements
+    if (this.romajiText) {
+      this.romajiText.destroy();
+      this.romajiText = undefined;
+    }
+    
+    if (this.englishText) {
+      this.englishText.destroy();
+      this.englishText = undefined;
     }
     
     // Set the current dialog and speaker
@@ -655,24 +743,86 @@ export default class VNScene extends BaseScene {
       this.nameBox.setAlpha(speaker ? 0.9 : 0);
     }
     
-    // Clear the dialog text
-    this.dialogText.setText('');
+    // Parse the dialog text into its components
+    const japaneseText = this.extractJapaneseText(text);
+    const romajiText = this.extractFurigana(text);
+    const englishText = this.extractTranslation(text);
+    
+    // Clear the dialog text but keep it as a reference
+    this.dialogText.setText(japaneseText);
     
     // Make sure dialog box and text are visible
-    if (this.dialogBox) this.dialogBox.setAlpha(0.7);
+    this.dialogBox.setAlpha(0.7);
     this.dialogText.setAlpha(1);
+    
+    // Apply consistent styling with the choice buttons
+    this.dialogText.setStyle({
+      fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
+      fontSize: '24px', // Restore original size for Japanese text
+      color: '#ffffff',
+      wordWrap: { width: this.dialogBox ? this.dialogBox.width - 40 : 700 },
+      lineSpacing: 6,
+      stroke: '#000000',
+      strokeThickness: 1
+    });
+    
+    // Add romaji text below if present and if not in advanced mode
+    if (romajiText && this.difficultyLevel !== 'advanced') {
+      // Position below Japanese text with proper spacing
+      const romajiY = this.dialogText.y + this.dialogText.height + 15; // Increased from 5 to 15 for more space
+      
+      // Create romaji text with styling matching choice buttons
+      this.romajiText = this.add.text(
+        this.dialogText.x,
+        romajiY,
+        `(${romajiText})`,
+        {
+          fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
+          fontSize: '18px', // Smaller font for romaji
+          color: '#cccccc', // Same color as in choice buttons
+          wordWrap: { width: this.dialogBox ? this.dialogBox.width - 40 : 700 },
+          lineSpacing: 2
+        }
+      );
+      this.romajiText.setDepth(this.DEPTH_UI);
+      this.romajiText.setAlpha(0); // Start hidden, will be shown after Japanese text is complete
+    }
+    
+    // Add English text if present and if in beginner mode
+    if (englishText && this.difficultyLevel === 'beginner') {
+      // Position below romaji or Japanese text with proper spacing
+      const englishY = romajiText 
+        ? this.romajiText!.y + this.romajiText!.height + 15 // Position relative to romaji text rather than Japanese text
+        : this.dialogText.y + this.dialogText.height + 5; // Directly below Japanese
+      
+      // Create English text with styling matching choice buttons
+      this.englishText = this.add.text(
+        this.dialogText.x,
+        englishY,
+        `[${englishText}]`,
+        {
+          fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
+          fontSize: '18px', // Smaller font for English
+          color: '#aaddff', // Same blue color as in choice buttons
+          wordWrap: { width: this.dialogBox ? this.dialogBox.width - 40 : 700 },
+          lineSpacing: 2
+        }
+      );
+      this.englishText.setDepth(this.DEPTH_UI);
+      this.englishText.setAlpha(0); // Start hidden, will be shown after Japanese text is complete
+    }
     
     // Hide the next indicator until dialog is complete
     if (this.nextIndicator) {
       this.nextIndicator.setAlpha(0);
     }
     
-    // Start the typewriter effect
+    // Start the typewriter effect on Japanese text only
     this.dialogTimer = this.time.addEvent({
       delay: this.dialogSpeed,
       callback: this.updateDialogText,
       callbackScope: this,
-      repeat: text.length - 1
+      repeat: japaneseText.length - 1
     });
   }
   
@@ -693,15 +843,40 @@ export default class VNScene extends BaseScene {
       return;
     }
     
+    // Get the Japanese text part for the typewriter effect
+    const japaneseText = this.extractJapaneseText(this.currentDialog);
+    
     this.displayedTextLength++;
-    const currentText = this.currentDialog.substring(0, this.displayedTextLength);
-    this.dialogText.setText(currentText);
-    console.log(`Updating dialog text: ${currentText}`);
+    // Only animate the Japanese text part
+    const displayText = japaneseText.substring(0, this.displayedTextLength);
+    this.dialogText.setText(displayText);
+    
+    console.log(`Updating dialog text: ${displayText}`);
     
     // Check if dialog is complete
-    if (this.displayedTextLength >= this.currentDialog.length) {
+    if (this.displayedTextLength >= japaneseText.length) {
       this.isDialogComplete = true;
       console.log('Dialog display complete');
+      
+      // Show the romaji and English text with fade in
+      if (this.romajiText) {
+        this.tweens.add({
+          targets: this.romajiText,
+          alpha: 1,
+          duration: 200,
+          ease: 'Power1'
+        });
+      }
+      
+      if (this.englishText) {
+        this.tweens.add({
+          targets: this.englishText,
+          alpha: 1,
+          duration: 200,
+          ease: 'Power1',
+          delay: 100 // Slight delay after romaji appears
+        });
+      }
       
       // Show the next indicator
       if (this.nextIndicator) {
@@ -724,29 +899,29 @@ export default class VNScene extends BaseScene {
       this.dialogTimer.remove();
     }
     
-    // Get the current dialog from the DialogManager for proper formatting
+    // Get the current dialog from the DialogManager
     const currentDialog = this.dialogManager.getCurrentDialog();
     
-    // Display the full text with proper formatting based on difficulty level
     if (currentDialog) {
-      const formattedText = this.formatDialogForDifficulty(currentDialog);
-      this.dialogText.setText(formattedText);
-      this.currentDialog = formattedText;
+      // Use the DialogManager's current dialog and completely refresh the display
+      this.displayDialog(this.formatDialogForDifficulty(currentDialog), currentDialog.characterId);
+      this.isDialogComplete = true;
     } else {
-      // Fallback to the stored dialog text if DialogManager doesn't have it
-      this.dialogText.setText(this.currentDialog);
+      // Fallback: just complete the Japanese text animation
+      const japaneseText = this.extractJapaneseText(this.currentDialog);
+      this.dialogText.setText(japaneseText);
+      this.isDialogComplete = true;
     }
     
-    console.log(`Completing dialog text: ${this.currentDialog}`);
-    this.isDialogComplete = true;
+    console.log('Dialog completed immediately');
     
     // Show the next indicator
     if (this.nextIndicator) {
       this.nextIndicator.setAlpha(1);
     }
     
-    // Add the study button
-    this.addStudyButton();
+    // Note: Do NOT call addStudyButton here - it will be called from updateDialogText
+    // to prevent duplicate study buttons
   }
   
   /**
@@ -800,8 +975,23 @@ export default class VNScene extends BaseScene {
     });
     
     // Handle click event
-    this.studyButton.on('pointerdown', () => {
+    this.studyButton.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      // Prevent event propagation
+      if (pointer.event && pointer.event instanceof Event) {
+        pointer.event.stopPropagation();
+      }
+      
       console.log('Study button clicked');
+      
+      // Add click animation
+      this.tweens.add({
+        targets: this.studyButton,
+        scaleX: 0.9,
+        scaleY: 0.9,
+        duration: 50,
+        yoyo: true,
+        ease: 'Power1'
+      });
       
       // Prepare phrase data using DialogManager
       let phraseData: StudyPhraseData;
@@ -817,12 +1007,12 @@ export default class VNScene extends BaseScene {
       } else {
         // Fallback to original method if DialogManager doesn't have current dialog
         phraseData = {
-          phrase: this.extractJapaneseText(dialogText),
+        phrase: this.extractJapaneseText(dialogText),
           furigana: this.extractFurigana(dialogText),
           translation: this.extractTranslation(dialogText),
           context: context,
-          source: this.currentSpeaker
-        };
+        source: this.currentSpeaker
+      };
       }
       
       // Launch the study scene
@@ -832,7 +1022,7 @@ export default class VNScene extends BaseScene {
   
   /**
    * Extract Japanese text from the dialog
-   * Assumes format: "Japanese (Romaji) [Translation]"
+   * Assumes format: "Japanese (Romaji) [[Translation]]"
    */
   private extractJapaneseText(text: string): string {
     // For now, a simple extraction - take everything before the first '('
@@ -842,7 +1032,7 @@ export default class VNScene extends BaseScene {
   
   /**
    * Extract furigana (romaji) from the dialog
-   * Assumes format: "Japanese (Romaji) [Translation]"
+   * Assumes format: "Japanese (Romaji) [[Translation]]"
    */
   private extractFurigana(text: string): string {
     // Extract text between the first pair of parentheses
@@ -855,7 +1045,7 @@ export default class VNScene extends BaseScene {
    * Assumes format: "Japanese (Romaji) [Translation]"
    */
   private extractTranslation(text: string): string {
-    // Extract text between the first pair of square brackets
+    // Extract text between single square brackets
     const match = text.match(/\[([^\]]+)\]/);
     return match ? match[1].trim() : '';
   }
@@ -878,124 +1068,366 @@ export default class VNScene extends BaseScene {
   /**
    * Show choice buttons
    */
-  private showChoices(choices: string[]): void {
+  private showChoices(choices: PlayerResponse[]): void {
     if (!this.choiceContainer) return;
+    
+    console.log('Showing choices and performing aggressive cleanup');
+    
+    // AGGRESSIVE CLEANUP: Destroy ALL tracked study button containers
+    this.studyButtonContainers.forEach(container => {
+      if (container && container.active) {
+        console.log('Destroying tracked study button container');
+        container.destroy();
+      }
+    });
+    // Clear the tracking array
+    this.studyButtonContainers = [];
+    
+    // ADDITIONAL CLEANUP: Find and destroy ANY study buttons in the scene
+    // This ensures no rogue study buttons remain from any source
+    this.children.each((child) => {
+      // Check if this is a Text object with 'Study' content
+      if (child instanceof Phaser.GameObjects.Text && child.text === 'Study') {
+        console.log('Found and destroying extra Study text:', child);
+        child.destroy();
+      }
+      
+      // Check if this is a Container that might contain a study button
+      if (child instanceof Phaser.GameObjects.Container) {
+        child.each((grandchild: Phaser.GameObjects.GameObject) => {
+          if (grandchild instanceof Phaser.GameObjects.Text && grandchild.text === 'Study') {
+            console.log('Found and destroying Study text in container:', grandchild);
+            grandchild.destroy();
+          }
+        });
+      }
+    });
     
     // Clear existing choices
     this.choiceButtons.forEach(button => button.destroy());
     this.choiceButtons = [];
     
-    // Hide the dialog box and next indicator
+    // Clean out any existing children to prevent potential memory leaks
+    this.choiceContainer.removeAll(true);
+    
+    // IMPORTANT: Always destroy (not just hide) these elements
+    
+    // Destroy the study button
+    if (this.studyButton) {
+      this.studyButton.destroy();
+      this.studyButton = undefined;
+    }
+    
+    // Destroy romaji text (don't just hide it)
+    if (this.romajiText) {
+      this.romajiText.destroy();
+      this.romajiText = undefined;
+    }
+    
+    // Destroy English text (don't just hide it)
+    if (this.englishText) {
+      this.englishText.destroy();
+      this.englishText = undefined;
+    }
+    
+    // Hide the dialog box and other primary UI elements (these can be hidden, not destroyed)
     if (this.dialogBox) this.dialogBox.setAlpha(0);
     if (this.dialogText) this.dialogText.setAlpha(0);
     if (this.nameBox) this.nameBox.setAlpha(0);
     if (this.nameText) this.nameText.setAlpha(0);
     if (this.nextIndicator) this.nextIndicator.setAlpha(0);
-    if (this.studyButton) this.studyButton.setAlpha(0);
     
-    // Create new choice buttons
-    const buttonHeight = 60; // Increased from 50 to 60 for more text space
-    const padding = 15; // Increased from 10 to 15 for better spacing
-    const totalHeight = choices.length * buttonHeight + (choices.length - 1) * padding;
-    let yOffset = -totalHeight / 2;
+    // Set up sizing for choices
+    const choiceBoxWidth = this.cameras.main.width * 0.7; // Reduced width for a lighter feel
+    const buttonHeight = 135; // Increased from 115px to 135px for more text space
+    const buttonPadding = 40; // Increased vertical spacing between buttons
+    const buttonWidth = choiceBoxWidth;
     
+    // Start position for first button
+    let yOffset = -((choices.length - 1) * (buttonHeight + buttonPadding)) / 2;
+    
+    // Create each choice button
     choices.forEach((choice, index) => {
-      const button = this.add.text(
+      // Create a group for this choice (button + study button)
+      const choiceGroup = this.add.container(0, yOffset);
+      
+      // Create button background with gradient effect
+      const buttonBackground = this.add.rectangle(
         0,
-        yOffset,
-        choice,
+        0,
+        buttonWidth,
+        buttonHeight,
+        0x2a2a3a
+      );
+      buttonBackground.setStrokeStyle(2, 0xaaddff);
+      buttonBackground.setAlpha(0.85); // Slightly more transparent for a floating feel
+      
+      // Add inner glow effect
+      const innerGlow = this.add.rectangle(
+        0,
+        0,
+        buttonWidth - 4,
+        buttonHeight - 4,
+        0x3a3a4a
+      );
+      innerGlow.setAlpha(0.5);
+      
+      // Format text parts based on difficulty level
+      const japaneseText = this.wrapJapaneseText(choice.japaneseText, 31); // Use 31 char max for player responses
+      const romajiText = choice.romaji;
+      const englishText = choice.englishText;
+      
+      // Create container for text elements to control positioning
+      const textContainer = this.add.container(0, 0);
+      
+      // Create Japanese text with larger font - always shown regardless of difficulty
+      const japaneseTextObj = this.add.text(
+        0,
+        -buttonHeight/2 + 25, // Position at top with margin
+        japaneseText,
         {
-          fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif', // Match dialog text
-          fontSize: '20px',
+          fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
+          fontSize: '26px', // Larger font for Japanese text
           color: '#ffffff',
-          backgroundColor: '#5a5a5a',
-          padding: { left: 15, right: 15, top: 10, bottom: 10 }, // Slightly more padding
-          wordWrap: { width: this.cameras.main.width * 0.7 }, // Wider wrap width for choice buttons
-          lineSpacing: 5 // Add line spacing for readability
+          align: 'center',
+          wordWrap: { width: buttonWidth - 30 },
+          lineSpacing: 5,
+          stroke: '#000000',
+          strokeThickness: 1
         }
       );
+      japaneseTextObj.setOrigin(0.5, 0);
+      textContainer.add(japaneseTextObj);
       
-      button.setOrigin(0.5, 0.5);
-      button.setInteractive({ useHandCursor: true });
+      // Calculate where additional text will be positioned
+      let yPos = japaneseTextObj.y + japaneseTextObj.height + 10;
+      
+      // Only add romaji text in beginner mode
+      if (this.difficultyLevel === 'beginner' && romajiText) {
+        const romajiTextObj = this.add.text(
+          0,
+          yPos,
+          `(${romajiText})`,
+          {
+            fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
+            fontSize: '18px', // Smaller font for romaji
+            color: '#cccccc',
+            align: 'center',
+            wordWrap: { width: buttonWidth - 40 },
+            lineSpacing: 2
+          }
+        );
+        romajiTextObj.setOrigin(0.5, 0);
+        textContainer.add(romajiTextObj);
+        yPos = romajiTextObj.y + romajiTextObj.height + 5;
+      }
+      
+      // Add English translation in beginner and intermediate modes only
+      if ((this.difficultyLevel === 'beginner' || this.difficultyLevel === 'intermediate') && englishText) {
+        const englishTextObj = this.add.text(
+          0,
+          yPos,
+          `[${englishText}]`,
+          {
+            fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
+            fontSize: '18px', // Smaller font for English
+            color: '#aaddff',
+            align: 'center',
+            wordWrap: { width: buttonWidth - 40 },
+            lineSpacing: 2
+          }
+        );
+        englishTextObj.setOrigin(0.5, 0);
+        textContainer.add(englishTextObj);
+      }
+      
+      // Add text container to choice group
+      choiceGroup.add(buttonBackground);
+      choiceGroup.add(innerGlow);
+      choiceGroup.add(textContainer);
+      
+      // Store the Japanese text object for reference
+      this.choiceButtons.push(japaneseTextObj);
+      
+      // Make the button interactive
+      buttonBackground.setInteractive({ useHandCursor: true });
       
       // Add hover effect
-      button.on('pointerover', () => {
-        button.setStyle({ backgroundColor: '#7a7a7a' });
+      buttonBackground.on('pointerover', () => {
+        buttonBackground.setFillStyle(0x3a3a5a);
+        innerGlow.setFillStyle(0x4a4a6a);
+        japaneseTextObj.setStyle({ color: '#ffff99' });
+        
+        // Add scale animation on hover
+        this.tweens.add({
+          targets: choiceGroup,
+          scaleX: 1.05,
+          scaleY: 1.05,
+          duration: 150,
+          ease: 'Power1'
+        });
       });
       
-      button.on('pointerout', () => {
-        button.setStyle({ backgroundColor: '#5a5a5a' });
+      buttonBackground.on('pointerout', () => {
+        buttonBackground.setFillStyle(0x2a2a3a);
+        innerGlow.setFillStyle(0x3a3a4a);
+        japaneseTextObj.setStyle({ color: '#ffffff' });
+        
+        // Reset scale on mouse out
+        this.tweens.add({
+          targets: choiceGroup,
+          scaleX: 1,
+          scaleY: 1,
+          duration: 150,
+          ease: 'Power1'
+        });
       });
       
       // Handle click event
-      button.on('pointerdown', () => {
+      buttonBackground.on('pointerdown', () => {
+        // Add highlight effect on click
+        buttonBackground.setFillStyle(0x5a5aaa);
+        innerGlow.setFillStyle(0x6a6aba);
+        
+        // Add click animation
+        this.tweens.add({
+          targets: choiceGroup,
+          scaleX: 0.97,
+          scaleY: 0.97,
+          duration: 50,
+          yoyo: true,
+          ease: 'Power1',
+          onComplete: () => {
         this.handleChoice(index);
+          }
+        });
       });
       
-      // Add study button for this choice
-      const studyChoiceButton = this.addStudyButtonToChoice(button, choice);
-      
-      // Add to container and button array
-      if (this.choiceContainer) {
-        this.choiceContainer.add(button);
-        if (studyChoiceButton) {
-          this.choiceContainer.add(studyChoiceButton);
-        }
+      // Add study button
+      const studyButton = this.addStudyButtonToChoice(buttonBackground, japaneseTextObj, choice);
+      if (studyButton) {
+        choiceGroup.add(studyButton);
       }
-      this.choiceButtons.push(button);
+      
+      // Add the group to the container
+      if (this.choiceContainer) {
+        this.choiceContainer.add(choiceGroup);
+        }
       
       // Update y offset for next button
-      yOffset += buttonHeight + padding;
+      yOffset += buttonHeight + buttonPadding;
     });
     
-    // Show the choice container with animation
+    // Show the choice container with animation - make it a bit more dramatic
     this.choiceContainer.setAlpha(0);
+    this.choiceContainer.setScale(0.8);
     this.tweens.add({
       targets: this.choiceContainer,
       alpha: 1,
-      duration: 300,
-      ease: 'Power2'
+      scale: 1,
+      duration: 500,
+      ease: 'Back.easeOut'
     });
   }
   
   /**
    * Add a study button to a choice
    */
-  private addStudyButtonToChoice(button: Phaser.GameObjects.Text, choiceText: string): Phaser.GameObjects.Text | undefined {
-    const studyButton = this.add.text(
-      button.width / 2 + 40,
+  private addStudyButtonToChoice(
+    buttonBackground: Phaser.GameObjects.Rectangle, 
+    buttonText: Phaser.GameObjects.Text, 
+    choice: PlayerResponse
+  ): Phaser.GameObjects.Container | undefined {
+    // Create a container for the study button
+    const studyButtonContainer = this.add.container(
+      buttonBackground.width / 2 - 40, // Position in top right
+      -buttonBackground.height / 2 + 15 // Position at top
+    );
+    
+    // Create background for study button
+    const studyButtonBg = this.add.rectangle(
       0,
-      'Study', 
-      { 
+      0,
+      70,
+      30,
+      0x1e5a5a
+    );
+    studyButtonBg.setStrokeStyle(1, 0xaaddff);
+    
+    // Create the study text
+    const studyButtonText = this.add.text(
+      0,
+      0,
+      'Study',
+      {
         fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
         fontSize: '16px',
         color: '#ffffff',
-        backgroundColor: '#1e5a5a',
-        padding: { left: 8, right: 8, top: 4, bottom: 4 }
+        align: 'center',
+        stroke: '#000000',
+        strokeThickness: 1
       }
     );
+    studyButtonText.setOrigin(0.5, 0.5);
     
-    studyButton.setOrigin(0.5, 0.5);
-    studyButton.setInteractive({ useHandCursor: true });
+    // Add components to container
+    studyButtonContainer.add(studyButtonBg);
+    studyButtonContainer.add(studyButtonText);
+    
+    // Make the button interactive
+    studyButtonBg.setInteractive({ useHandCursor: true });
     
     // Add hover effect
-    studyButton.on('pointerover', () => {
-      studyButton.setStyle({ backgroundColor: '#2a7a7a' });
+    studyButtonBg.on('pointerover', () => {
+      studyButtonBg.setFillStyle(0x2a7a7a);
+      
+      // Add scale animation on hover
+      this.tweens.add({
+        targets: studyButtonContainer,
+        scaleX: 1.1,
+        scaleY: 1.1,
+        duration: 100,
+        ease: 'Power1'
+      });
     });
     
-    studyButton.on('pointerout', () => {
-      studyButton.setStyle({ backgroundColor: '#1e5a5a' });
+    studyButtonBg.on('pointerout', () => {
+      studyButtonBg.setFillStyle(0x1e5a5a);
+      
+      // Reset scale on mouse out
+      this.tweens.add({
+        targets: studyButtonContainer,
+        scaleX: 1,
+        scaleY: 1,
+        duration: 100,
+        ease: 'Power1'
+      });
     });
     
     // Handle click event
-    studyButton.on('pointerdown', () => {
-      console.log('Study choice button clicked');
+    studyButtonBg.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      // Prevent event propagation
+      if (pointer.event && pointer.event instanceof Event) {
+        pointer.event.stopPropagation();
+      }
       
-      // Prepare phrase data
+      console.log('Study button clicked');
+      
+      // Add click animation
+      this.tweens.add({
+        targets: studyButtonContainer,
+        scaleX: 0.9,
+        scaleY: 0.9,
+        duration: 50,
+        yoyo: true,
+        ease: 'Power1'
+      });
+      
+      // Prepare phrase data directly from the response data
       const phraseData: StudyPhraseData = {
-        phrase: this.extractJapaneseText(choiceText),
-        furigana: this.extractFurigana(choiceText),
-        translation: this.extractTranslation(choiceText),
+        phrase: choice.japaneseText,
+        furigana: choice.romaji,
+        translation: choice.englishText,
         context: `Choice option at ${this.currentLocation}`,
         source: 'Player Option'
       };
@@ -1004,7 +1436,10 @@ export default class VNScene extends BaseScene {
       this.openStudyScene(phraseData);
     });
     
-    return studyButton;
+    // Track this container for cleanup
+    this.studyButtonContainers.push(studyButtonContainer);
+    
+    return studyButtonContainer;
   }
   
   /**
@@ -1016,20 +1451,69 @@ export default class VNScene extends BaseScene {
     
     console.log(`Selected choice: ${choiceIndex}`);
     
-    // Hide the choice container
+    // Play a sound effect if available
+    if (this.sound.get('selection')) {
+      this.sound.play('selection', { volume: 0.5 });
+    }
+    
+    // Ensure study button is destroyed before animation starts
+    if (this.studyButton) {
+      this.studyButton.destroy();
+      this.studyButton = undefined;
+    }
+    
+    // Cleanup all tracked study button containers
+    this.studyButtonContainers.forEach(container => {
+      if (container && container.active) {
+        console.log('Destroying tracked study button container in handleChoice');
+        container.destroy();
+      }
+    });
+    this.studyButtonContainers = [];
+    
+    // Also ensure romaji and English text are destroyed
+    if (this.romajiText) {
+      this.romajiText.destroy();
+      this.romajiText = undefined;
+    }
+    
+    if (this.englishText) {
+      this.englishText.destroy();
+      this.englishText = undefined;
+    }
+    
+    // Hide the choice container with improved animation
     this.tweens.add({
       targets: this.choiceContainer,
       alpha: 0,
-      duration: 300,
+      scale: 0.95,
+      duration: 400,
       ease: 'Power2',
       onComplete: () => {
         // Clear choices
         this.choiceButtons.forEach(button => button.destroy());
         this.choiceButtons = [];
         
-        // Show the dialog box again
-        if (this.dialogBox) this.dialogBox.setAlpha(0.7);
-        if (this.dialogText) this.dialogText.setAlpha(1);
+        // Show the dialog box again with fade in
+        if (this.dialogBox) {
+          this.dialogBox.setAlpha(0);
+          this.tweens.add({
+            targets: this.dialogBox,
+            alpha: 0.7,
+            duration: 300,
+            ease: 'Power1'
+          });
+        }
+        
+        if (this.dialogText) {
+          this.dialogText.setAlpha(0);
+          this.tweens.add({
+            targets: this.dialogText,
+            alpha: 1,
+            duration: 300,
+            ease: 'Power1'
+          });
+        }
         
         // Get the current dialog from DialogManager
         const currentDialog = this.dialogManager.getCurrentDialog();
@@ -1045,6 +1529,7 @@ export default class VNScene extends BaseScene {
           let nextDialog = '';
           let speaker = 'kaori'; // Use lowercase for internal references
           
+          // Create simulated dialog with all the necessary parts for each difficulty level
           switch (choiceIndex) {
             case 0:
               nextDialog = "元気で何よりです！東京へようこそ！(Genki de nani yori desu! Tokyo e yōkoso!) [I'm glad you're well! Welcome to Tokyo!]";
@@ -1147,6 +1632,154 @@ export default class VNScene extends BaseScene {
       this.currentLocation = locationKey;
       console.log(`Current location updated to: ${this.currentLocation}`);
     }
+  }
+  
+  /**
+   * Wraps Japanese text at a maximum of specified characters per line
+   * Avoids breaking words in the middle
+   * @param text The Japanese text to wrap
+   * @param maxLength Maximum characters per line (default 43 for dialog, 31 for choices)
+   * @returns The wrapped text with newlines
+   */
+  private wrapJapaneseText(text: string, maxLength: number = 43): string {
+    // Check if text needs wrapping
+    if (text.length <= maxLength) {
+      return text;
+    }
+    
+    console.log(`Wrapping Japanese text: ${text.length} chars, max ${maxLength}, starts with: ${text.substring(0, 20)}...`);
+    
+    const lines: string[] = [];
+    let currentLine = '';
+    let currentLineLength = 0;
+    
+    // Process the text character by character
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      currentLine += char;
+      currentLineLength++;
+      
+      // Check if we've reached the maximum line length
+      if (currentLineLength >= maxLength && i < text.length - 1) {
+        // Find better break point
+        const nextChar = text[i + 1];
+        const currentType = this.getCharacterType(char);
+        const nextType = this.getCharacterType(nextChar);
+        
+        // Only break if it's safe to do so
+        if (this.canBreakBetween(currentType, nextType)) {
+          lines.push(currentLine);
+          currentLine = '';
+          currentLineLength = 0;
+        }
+        // If we can't break here, continue to next character and find better break point
+        else if (currentLineLength >= maxLength) {
+          const breakPoint = this.findBetterBreakPoint(text, i);
+          if (breakPoint > 0 && breakPoint < i) {
+            // Split at the better break point
+            const lineEnd = currentLine.substring(0, currentLine.length - (i - breakPoint));
+            lines.push(lineEnd);
+            
+            // Start new line with the rest
+            currentLine = currentLine.substring(currentLine.length - (i - breakPoint));
+            currentLineLength = currentLine.length;
+          } else {
+            // If no better break point found, force a break
+            lines.push(currentLine);
+            currentLine = '';
+            currentLineLength = 0;
+          }
+        }
+      }
+    }
+    
+    // Add the last line if it's not empty
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+    
+    console.log(`Wrapped Japanese text into ${lines.length} lines`);
+    return lines.join('\n');
+  }
+  
+  /**
+   * Get the type of a Japanese character
+   * @param char The character to check
+   * @returns The character type
+   */
+  private getCharacterType(char: string): string {
+    // Kanji characters (CJK Unified Ideographs)
+    if (/[\u4e00-\u9faf]/.test(char)) {
+      return 'kanji';
+    }
+    // Hiragana
+    else if (/[\u3040-\u309f]/.test(char)) {
+      return 'hiragana';
+    }
+    // Katakana
+    else if (/[\u30a0-\u30ff]/.test(char)) {
+      return 'katakana';
+    }
+    // Punctuation
+    else if (/[、。！？「」『』（）]/.test(char)) {
+      return 'punctuation';
+    }
+    // Default/other
+    else {
+      return 'other';
+    }
+  }
+  
+  /**
+   * Check if we can safely break between two character types
+   * @param type1 The type of the first character
+   * @param type2 The type of the second character
+   * @returns True if we can safely break between these types
+   */
+  private canBreakBetween(type1: string, type2: string): boolean {
+    // Safe to break between kanji
+    if (type1 === 'kanji' && type2 === 'kanji') {
+      return true;
+    }
+    // Don't break between hiragana (could be a word)
+    else if (type1 === 'hiragana' && type2 === 'hiragana') {
+      return false;
+    }
+    // Don't break between katakana (could be a word)
+    else if (type1 === 'katakana' && type2 === 'katakana') {
+      return false;
+    }
+    // Don't break before punctuation
+    else if (type2 === 'punctuation') {
+      return false;
+    }
+    // Generally safe to break between different types
+    else {
+      return true;
+    }
+  }
+  
+  /**
+   * Find a better break point in the text
+   * @param text The full text
+   * @param currentIndex The current index
+   * @returns The index of a better break point, or -1 if none found
+   */
+  private findBetterBreakPoint(text: string, currentIndex: number): number {
+    // Look back a few characters for a better break point
+    for (let i = currentIndex - 1; i >= Math.max(0, currentIndex - 10); i--) {
+      const char = text[i];
+      const nextChar = text[i + 1];
+      
+      const currentType = this.getCharacterType(char);
+      const nextType = this.getCharacterType(nextChar);
+      
+      if (this.canBreakBetween(currentType, nextType)) {
+        return i;
+      }
+    }
+    
+    return -1;
   }
 }
 

@@ -147,13 +147,45 @@ Japanese text will require special handling to support language learning feature
 - English translation display
 - Text highlighting for studyable terms
 - Support for variable text speed based on user settings
+- Proper Japanese text line-breaking (kinsoku shori)
+
+**Components:**
+- **JapaneseTextWrapper**: A specialized utility class that applies proper Japanese typographic rules for line-breaking
+- **Text Formatter**: Processes dialog text based on the current difficulty level
+- **Study Term Highlighter**: Identifies and styles studyable terms within dialog text
+
+The JapaneseTextWrapper is particularly important for Japanese language display, as it ensures that text breaks at linguistically appropriate positions, respecting the rules of kinsoku shori (prohibited line-breaking points). It handles complex cases such as mixed-script text and applies special rules for punctuation and small kana characters.
 
 ### Text Processing Pipeline
 
 1. **Text Parsing**: Parse Japanese text to identify kanji and determine furigana
-2. **Studyable Term Identification**: Identify and mark up terms that can be studied
-3. **Text Rendering**: Render text with appropriate formatting and annotations
-4. **Animation Control**: Manage text reveal animation and timing
+2. **Text Wrapping**: Apply proper Japanese line-breaking rules using JapaneseTextWrapper
+3. **Studyable Term Identification**: Identify and mark up terms that can be studied
+4. **Text Rendering**: Render text with appropriate formatting and annotations
+5. **Animation Control**: Manage text reveal animation and timing
+
+### Japanese Text Line-Breaking
+
+Unlike English text where words are separated by spaces, Japanese text presents unique challenges for line breaking:
+
+**Challenges:**
+- Japanese text has no explicit word boundaries (no spaces)
+- Breaking at the wrong position can make text difficult to read
+- Some characters cannot appear at the beginning or end of a line
+- Long unbroken sequences of kanji need special handling
+- Mixed script text (kanji, hiragana, katakana, latin) requires different breaking rules
+
+**Solution:**
+- We implemented a dedicated `JapaneseTextWrapper` utility class that handles proper Japanese text wrapping according to typographic conventions (kinsoku shori)
+- The wrapper identifies prohibited line-breaking positions based on character types
+- It uses a priority system to find optimal break points, preferring breaks at transitions between different character types
+- Special handling is provided for punctuation and characters that cannot start a line
+- The system allows for one-character overflow on lines when necessary (following Japanese typographic conventions)
+
+**Implementation:**
+- The `JapaneseTextWrapper` is a reusable utility that can be called from any component
+- It provides both array-based output (for advanced text processing) and simple string output (for direct use in text fields)
+- The implementation follows established Japanese typographic rules while remaining efficient
 
 ## Player Choice System
 
@@ -236,11 +268,65 @@ The Dialog System will support:
 - Add English translation display
 - Implement text highlighting for studyable terms
 
+### Phase 3.5: Japanese Text Wrapping
+
+To address the specific challenges of correctly displaying Japanese text, we've implemented a dedicated text wrapping system.
+
+- [x] Research Japanese typographic rules (kinsoku shori):
+  - [x] Identify characters prohibited at line ends
+  - [x] Identify characters prohibited at line starts
+  - [x] Understand handling of mixed script text
+- [x] Implement `JapaneseTextWrapper` utility class:
+  - [x] Create core line-breaking algorithm based on character type analysis
+  - [x] Implement prohibited character rules
+  - [x] Add special handling for one-character overflow
+  - [x] Create priority system for finding optimal break points
+  - [x] Add debugging output options
+- [x] Integrate with dialog display system:
+  - [x] Replace manual text processing with JapaneseTextWrapper
+  - [x] Update dialog formatting for different difficulty levels
+  - [x] Apply text wrapping consistently to choices and dialog
+- [x] Create documentation and examples:
+  - [x] Document typographic rules and implementation
+  - [x] Create usage examples in README.md
+  - [x] Add detailed comments for maintainability
+
+[CHECKPOINT] Verify Japanese text wrapping:
+- Test with varying text lengths and contents
+- Verify text breaks at appropriate positions
+- Confirm prohibited characters are handled correctly
+- Check that mixed script text (kanji, hiragana, katakana, latin) breaks properly
+- Test with different dialog window sizes and configurations
+
 ### Phase 4: Player Choice System
-- Create choice button components
-- Implement choice selection logic
-- Add visual feedback for choices
-- Support linear dialog continuation after choice
+
+The VNScene already has a choice system implemented, but we'll enhance it to work with structured dialog data.
+
+- [ ] Enhance choice button components:
+  - [x] Button background and styling (already implemented)
+  - [x] Hover/focus states (already implemented)
+  - [x] Selected state (already implemented)
+  - [ ] Improve visual design and feedback
+- [ ] Improve choice display container:
+  - [x] Layout for multiple response options (already implemented)
+  - [x] Positioning relative to dialog box (already implemented)
+  - [ ] Better handling of choices with variable text length
+- [x] Enhance choice selection logic:
+  - [x] Handle player input (already implemented)
+  - [x] Update conversation state with selection
+  - [x] Advance dialog based on selection using structured data
+- [ ] Improve Japanese text support in choice buttons:
+  - [x] Basic text extraction (already implemented)
+  - [ ] Implement true ruby text for furigana in choices
+  - [ ] More configurable display options
+- [ ] Add enhanced visual feedback for choices
+
+[CHECKPOINT] Verify text support:
+- Confirm text displays with proper formatting
+- Confirm furigana appears correctly above kanji
+- Verify different difficulty levels display appropriately
+- Test studyable term highlighting
+- Review with Japanese language experts if possible
 
 ### Phase 5: Study Integration
 - Add study button integration
@@ -523,6 +609,7 @@ Based on a thorough examination of the VNScene.ts and related files, the dialog 
    - Speaker name display in a dedicated name box
    - "Next" indicator (triangle) to show when text is complete
    - Dialog progression on click/tap or space key
+   - Proper Japanese text line-breaking via JapaneseTextWrapper
 
 2. **Choice System:**
    - Multiple-choice dialog options
