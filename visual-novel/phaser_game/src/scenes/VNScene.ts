@@ -789,7 +789,7 @@ export default class VNScene extends BaseScene {
     }
     
     // Add English text if present and if in beginner mode
-    if (englishText && this.difficultyLevel === 'beginner') {
+    if (this.difficultyLevel === 'beginner' && englishText) {
       // Position below romaji or Japanese text with proper spacing
       const englishY = romajiText 
         ? this.romajiText!.y + this.romajiText!.height + 15 // Position relative to romaji text rather than Japanese text
@@ -1202,8 +1202,8 @@ export default class VNScene extends BaseScene {
       // Calculate where additional text will be positioned
       let yPos = japaneseTextObj.y + japaneseTextObj.height + 10;
       
-      // Only add romaji text in beginner mode
-      if (this.difficultyLevel === 'beginner' && romajiText) {
+      // Add romaji text in beginner and intermediate modes
+      if ((this.difficultyLevel === 'beginner' || this.difficultyLevel === 'intermediate') && romajiText) {
         const romajiTextObj = this.add.text(
           0,
           yPos,
@@ -1222,8 +1222,8 @@ export default class VNScene extends BaseScene {
         yPos = romajiTextObj.y + romajiTextObj.height + 5;
       }
       
-      // Add English translation in beginner and intermediate modes only
-      if ((this.difficultyLevel === 'beginner' || this.difficultyLevel === 'intermediate') && englishText) {
+      // Add English translation in beginner mode only
+      if (this.difficultyLevel === 'beginner' && englishText) {
         const englishTextObj = this.add.text(
           0,
           yPos,
@@ -1525,27 +1525,27 @@ export default class VNScene extends BaseScene {
           }
         } else {
           // Fallback to original method if DialogManager doesn't have current dialog
-          // Display new dialog based on choice
-          let nextDialog = '';
+        // Display new dialog based on choice
+        let nextDialog = '';
           let speaker = 'kaori'; // Use lowercase for internal references
-          
+        
           // Create simulated dialog with all the necessary parts for each difficulty level
-          switch (choiceIndex) {
-            case 0:
-              nextDialog = "元気で何よりです！東京へようこそ！(Genki de nani yori desu! Tokyo e yōkoso!) [I'm glad you're well! Welcome to Tokyo!]";
-              break;
-            case 1:
-              nextDialog = "私も会えて嬉しいよ！東京を案内するのが楽しみ！(Watashi mo aete ureshii yo! Tokyo wo annai suru no ga tanoshimi!) [I'm also happy to see you! I'm looking forward to showing you around Tokyo!]";
-              break;
-            case 2:
-              nextDialog = "大変だったね。ホテルに行く前に何か食べる？(Taihen datta ne. Hoteru ni iku mae ni nanika taberu?) [That was tough. Want to eat something before going to the hotel?]";
-              break;
-            default:
-              nextDialog = "さあ、東京観光を始めましょう！(Sā, Tokyo kankō wo hajimemashō!) [Now, let's start our Tokyo tour!]";
-              break;
-          }
-          
-          this.displayDialog(nextDialog, speaker);
+        switch (choiceIndex) {
+          case 0:
+            nextDialog = "元気で何よりです！東京へようこそ！(Genki de nani yori desu! Tokyo e yōkoso!) [I'm glad you're well! Welcome to Tokyo!]";
+            break;
+          case 1:
+            nextDialog = "私も会えて嬉しいよ！東京を案内するのが楽しみ！(Watashi mo aete ureshii yo! Tokyo wo annai suru no ga tanoshimi!) [I'm also happy to see you! I'm looking forward to showing you around Tokyo!]";
+            break;
+          case 2:
+            nextDialog = "大変だったね。ホテルに行く前に何か食べる？(Taihen datta ne. Hoteru ni iku mae ni nanika taberu?) [That was tough. Want to eat something before going to the hotel?]";
+            break;
+          default:
+            nextDialog = "さあ、東京観光を始めましょう！(Sā, Tokyo kankō wo hajimemashō!) [Now, let's start our Tokyo tour!]";
+            break;
+        }
+        
+        this.displayDialog(nextDialog, speaker);
         }
       }
     });

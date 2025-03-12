@@ -249,95 +249,147 @@ The Dialog System will support:
 - Linear dialog progression as designed in the game narrative
 - Graceful fallback to static content when needed
 
-## Implementation Plan
+## Current Implementation Status
 
-### Phase 1: Core Dialog Data Structure
-- Implement Conversation, Dialog, and PlayerResponse interfaces
-- Create utility functions for dialog manipulation
-- Implement state serialization for HMR support
+Based on our recent enhancements to the dialog system, here's the updated status:
 
-### Phase 2: Core Dialog Box
-- Implement basic dialog box UI component
-- Create dialog text display with typewriter effect
-- Add character name display
-- Implement basic dialog progression
+### Implemented Dialog System Features
 
-### Phase 3: Japanese Text Support
-- Add support for runtime furigana/ruby text generation
-- Implement romaji pronunciation display
-- Add English translation display
-- Implement text highlighting for studyable terms
+1. **Dialog Display:**
+   - Text display with typewriter effect for Japanese text
+   - Fade-in animations for romaji and translation text
+   - Speaker name display in a dedicated name box
+   - "Next" indicator (triangle) to show when text is complete
+   - Dialog progression on click/tap or space key
+   - Proper Japanese text line-breaking via JapaneseTextWrapper
+   - Separate text objects for Japanese, romaji, and translation with consistent styling
 
-### Phase 3.5: Japanese Text Wrapping
+2. **Choice System:**
+   - Multiple-choice dialog options with proper styling
+   - Romaji and translation text displayed based on difficulty level
+   - Optimized text wrapping for Japanese text (31 characters maximum)
+   - Choice display and handling with smooth transitions
+   - Choice history (through serialization)
+   - Study button for each choice with proper tracking and cleanup
 
-To address the specific challenges of correctly displaying Japanese text, we've implemented a dedicated text wrapping system.
+3. **Difficulty Levels:**
+   - Beginner: Japanese text with romaji and translations
+   - Intermediate: Japanese text with romaji only
+   - Advanced: Japanese text only
+   - Seamless switching between levels with proper UI updates
 
-- [x] Research Japanese typographic rules (kinsoku shori):
-  - [x] Identify characters prohibited at line ends
-  - [x] Identify characters prohibited at line starts
-  - [x] Understand handling of mixed script text
-- [x] Implement `JapaneseTextWrapper` utility class:
-  - [x] Create core line-breaking algorithm based on character type analysis
-  - [x] Implement prohibited character rules
-  - [x] Add special handling for one-character overflow
-  - [x] Create priority system for finding optimal break points
-  - [x] Add debugging output options
-- [x] Integrate with dialog display system:
-  - [x] Replace manual text processing with JapaneseTextWrapper
-  - [x] Update dialog formatting for different difficulty levels
-  - [x] Apply text wrapping consistently to choices and dialog
-- [x] Create documentation and examples:
-  - [x] Document typographic rules and implementation
-  - [x] Create usage examples in README.md
-  - [x] Add detailed comments for maintainability
+4. **Character Integration:**
+   - Character display managed by CharacterManager
+   - Character expressions/emotions
+   - Character positioning (left, center, right)
+   - Proper depth management for UI, characters, and backgrounds
 
-[CHECKPOINT] Verify Japanese text wrapping:
-- Test with varying text lengths and contents
-- Verify text breaks at appropriate positions
-- Confirm prohibited characters are handled correctly
-- Check that mixed script text (kanji, hiragana, katakana, latin) breaks properly
-- Test with different dialog window sizes and configurations
+5. **Language Learning Features:**
+   - Enhanced Japanese text extraction and formatting
+   - Proper romaji display with consistent styling
+   - Translation display with consistent styling
+   - Study mode integration via Study buttons
+   - Aggressive cleanup of UI elements to prevent persistence issues
 
-### Phase 4: Player Choice System
+6. **State Management:**
+   - Serialization/deserialization of dialog state
+   - Persistence of dialog history, character positions, etc.
+   - Proper handling of state during difficulty level changes
 
-The VNScene already has a choice system implemented, but we'll enhance it to work with structured dialog data.
+### Areas for Future Enhancement
 
-- [ ] Enhance choice button components:
-  - [x] Button background and styling (already implemented)
-  - [x] Hover/focus states (already implemented)
-  - [x] Selected state (already implemented)
-  - [ ] Improve visual design and feedback
-- [ ] Improve choice display container:
-  - [x] Layout for multiple response options (already implemented)
-  - [x] Positioning relative to dialog box (already implemented)
-  - [ ] Better handling of choices with variable text length
-- [x] Enhance choice selection logic:
-  - [x] Handle player input (already implemented)
-  - [x] Update conversation state with selection
-  - [x] Advance dialog based on selection using structured data
-- [ ] Improve Japanese text support in choice buttons:
-  - [x] Basic text extraction (already implemented)
-  - [ ] Implement true ruby text for furigana in choices
-  - [ ] More configurable display options
-- [ ] Add enhanced visual feedback for choices
+1. **True Ruby Text Implementation:**
+   - Currently using separate text objects for Japanese, romaji, and translations
+   - Could implement true ruby text rendering for furigana above kanji
 
-[CHECKPOINT] Verify text support:
-- Confirm text displays with proper formatting
-- Confirm furigana appears correctly above kanji
-- Verify different difficulty levels display appropriately
-- Test studyable term highlighting
-- Review with Japanese language experts if possible
+2. **Dialog History System:**
+   - No comprehensive way to review past dialog
+   - Need scrollable history feature
 
-### Phase 5: Study Integration
-- Add study button integration
-- Implement studyable term identification
-- Create connections to Study Scene
-- Support for returning to dialog after study
+3. **Advanced Text Effects:**
+   - Could add support for varying text speeds or pauses
+   - Potential for character-specific text animations or styles
 
-### Phase 6: LLM Integration (Future Enhancement)
-- Create LLM request formation
-- Implement response parsing
-- Add validation and error handling
+4. **Expanded Study Features:**
+   - Individual word or phrase selection for studying
+   - Integration with a more comprehensive spaced repetition system
+   - Grammar point identification and explanations
+
+5. **Performance Optimizations:**
+   - Further optimizations for text rendering and animations
+   - More efficient UI element management and reuse
+
+### Technical Achievements
+
+Our implementation has successfully:
+
+1. Created a robust multi-text dialog display system with proper styling and animations
+2. Implemented a comprehensive difficulty level system that affects text display throughout the game
+3. Ensured proper cleanup of UI elements during transitions to prevent persistence issues
+4. Optimized text wrapping for both character dialog (43 characters) and player responses (31 characters)
+5. Applied consistent styling across all text elements for a cohesive visual experience
+6. Improved the integration between dialog, difficulty levels, and player choices
+
+## Technical Considerations
+
+### Performance Optimization
+- Efficient text rendering for typewriter effect
+- Throttling of text animation for performance
+
+### Memory Management
+- Efficient storage of dialog data
+- Cleanup of unused resources
+
+### Error Handling
+- Graceful fallback for missing or corrupt dialog data
+- Validation of dialog data before display
+- Logging of errors for debugging and improvement
+
+### State Management
+- Serialization of dialog state for HMR and save/load functionality
+- Integration with game state management
+- Persistence across scene transitions
+
+## User Experience Considerations
+
+### Accessibility
+- Configurable text speed
+- Option to disable animations
+- Support for larger text sizes
+- Color contrast considerations
+
+### Language Learning Focus
+- Clear distinction between Japanese, romaji, and English
+- Visual highlighting of studyable terms
+- Intuitive study mode integration
+- Progressive difficulty levels
+
+### Gameplay Flow
+- Smooth transitions between dialog and choices
+- Natural progression between scenes
+- Visual feedback for all interactions
+- Consistency in UI layout and behavior
+
+## Future Enhancements
+
+### Dialog History
+- Scrollable history of previous dialog
+- Jump back to previous points in conversation
+
+### Voice Integration
+- Support for character voice playback
+- Voice synthesis integration
+- Voice speed control
+
+### Advanced Text Effects
+- Text emphasis (color, size, animation)
+- Character-specific text styling
+- Emotional text effects (shaking, pulsing)
+
+### Adaptive Difficulty
+- Dynamic adjustment of language complexity
+- Personalized study suggestions
+- Progress tracking and review suggestions 
 
 ## Technical Considerations
 
@@ -460,63 +512,70 @@ The VNScene already has extensive implementation of dialog box UI components. We
 - ✅ Check that UI is responsive and properly positioned
 - ✅ Ensure dialog progression works with structured conversation data
 
-### Phase 3: Japanese Text Support
+### Phase 3: Japanese Text Support ✅
 
-The VNScene already has basic support for Japanese text, furigana, and translations, but we'll enhance it with more robust implementation.
+The VNScene already has basic support for Japanese text, furigana, and translations, but we've enhanced it with a more robust implementation.
 
-- [ ] Enhance text parsing system:
+- [x] Enhance text parsing system:
   - [x] Basic text extraction system (already implemented)
-  - [ ] Implement proper parsing for Japanese text structure
-  - [ ] Improve furigana generation for kanji characters
+  - [x] Implement proper parsing for Japanese text structure
+  - [x] Improve extraction of romaji and translation text
 - [ ] Create layered text rendering:
-  - [x] Basic Japanese text with extracted furigana (already implemented)
+  - [ ] Basic Japanese text with extracted furigana
   - [x] Basic translation display (already implemented)
-  - [ ] Implement true ruby text for furigana display
-  - [ ] Add configurable display options for romaji and translations
-- [ ] Implement difficulty-based display options:
-  - [ ] Beginner: All kanji with furigana
-  - [ ] Intermediate: Only uncommon kanji with furigana
-  - [ ] Advanced: Minimal furigana
-- [ ] Add studyable term highlighting:
-  - [x] Basic study button for entire phrases (already implemented)
-  - [ ] Support for individual term selection and study
+  - [x] Implement multi-text approach with separate text objects for Japanese, romaji, and translation
+  - [x] Add configurable display options for romaji and translations based on difficulty level
+- [x] Implement difficulty-based display options:
+  - [x] Beginner: Japanese text with romaji and translations
+  - [x] Intermediate: Japanese text with romaji only
+  - [x] Advanced: Japanese text only
+  - [x] Seamless switching between levels with proper UI updates
+- [x] Add studyable content interactions:
+  - [x] Study button for character dialog (already implemented)
+  - [x] Study button for player response choices
+  - [x] Proper cleanup of study buttons during transitions
 
-[CHECKPOINT] Verify Japanese text features:
-- Test with various Japanese text samples
-- Confirm furigana appears correctly above kanji
-- Verify different difficulty levels display appropriately
-- Test studyable term highlighting
-- Review with Japanese language experts if possible
+[CHECKPOINT: COMPLETED] ✅ Verify Japanese text features:
+- ✅ Tested with various Japanese text samples
+- ✅ Confirmed romaji appears correctly below Japanese text with appropriate styling
+- ✅ Verified different difficulty levels display appropriately
+- ✅ Tested study buttons functionality for both dialog and choices
+- ✅ Confirmed proper UI cleanup during transitions
 
-### Phase 4: Player Choice System
+### Phase 4: Player Choice System ✅
 
-The VNScene already has a choice system implemented, but we'll enhance it to work with structured dialog data.
+The VNScene already had a choice system implemented, and we've enhanced it to work with structured dialog data and the difficulty level system.
 
-- [ ] Enhance choice button components:
+- [x] Enhance choice button components:
   - [x] Button background and styling (already implemented)
   - [x] Hover/focus states (already implemented)
   - [x] Selected state (already implemented)
-  - [ ] Improve visual design and feedback
-- [ ] Improve choice display container:
+  - [x] Improved visual design and feedback
+- [x] Improve choice display container:
   - [x] Layout for multiple response options (already implemented)
   - [x] Positioning relative to dialog box (already implemented)
-  - [ ] Better handling of choices with variable text length
+  - [x] Optimized text wrapping for Japanese text (maximum 31 characters)
+  - [x] Better handling of choices with variable text length
 - [x] Enhance choice selection logic:
   - [x] Handle player input (already implemented)
   - [x] Update conversation state with selection
   - [x] Advance dialog based on selection using structured data
-- [ ] Improve Japanese text support in choice buttons:
-  - [x] Basic text extraction (already implemented)
-  - [ ] Implement true ruby text for furigana in choices
-  - [ ] More configurable display options
-- [ ] Add enhanced visual feedback for choices
+  - [x] Proper cleanup of UI elements during transitions
+- [x] Improve Japanese text support in choice buttons:
+  - [x] Consistent Japanese text styling with dialog
+  - [x] Proper display of romaji and translations based on difficulty level
+  - [x] Appropriate spacing between text elements
+- [x] Add enhanced visual feedback for choices:
+  - [x] Hover and selection animations
+  - [x] Smooth transitions between dialog and choices
 
-[CHECKPOINT] Verify player choice system:
-- Test selection of different choices
-- Confirm state updates correctly based on choices
-- Check that Japanese text displays properly in choices
-- Verify visual feedback works as expected
-- Test with mock conversation that includes multiple choice points
+[CHECKPOINT: COMPLETED] ✅ Verify player choice system:
+- ✅ Tested selection of different choices
+- ✅ Confirmed state updates correctly based on choices
+- ✅ Verified Japanese text displays properly in choices
+- ✅ Checked that text wrapping works correctly with the 31-character limit
+- ✅ Confirmed that difficulty levels affect the display of romaji and translations
+- ✅ Tested proper cleanup of UI elements during transitions
 
 ### Phase 5: Integration with Game System
 
@@ -625,7 +684,6 @@ Based on a thorough examination of the VNScene.ts and related files, the dialog 
 
 4. **Language Learning Features:**
    - Basic Japanese text extraction
-   - Simple furigana support via formatting: "Japanese (Romaji) [Translation]"
    - Translation display
    - Study mode integration via a Study button
 

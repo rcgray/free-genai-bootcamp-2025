@@ -532,18 +532,19 @@ The game will support different difficulty levels that affect the Japanese conte
   - Simple phrases and basic grammar
   - All kanji have furigana
   - Romaji available for all text
-  - More detailed explanations in Study Scene
+  - English translation available for all text
 
 - **Intermediate**:
   - More complex sentences and grammar
   - Furigana only for uncommon kanji
-  - Romaji available on request
+  - Romaji available, but no English translation
   - Moderate explanations in Study Scene
 
 - **Advanced**:
   - Natural Japanese dialog
   - Minimal furigana
   - No automatic romaji (available in Study Scene)
+  - No English translation
   - Brief explanations focusing on nuance
 
 ### Study Features

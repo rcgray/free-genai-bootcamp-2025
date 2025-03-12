@@ -980,3 +980,11 @@ OK, now you've added space between the Japanese text and the romaji text, but at
 Study button is still visible and insteractable.  all other changes look good.  I think our issues with the study button may be more deeply rooted.  For one, it was working perfectly before one of your recent changes, which suggests that your handling of the text wrapping for the player responses, your management of the difficulty level, or your updates to the romaji/translation text in the character dialog box may have had a side-effect that broke it.  Second, I see code for adding click animations and hover effects for the Study button that are not in effect in the game.  Something may be more deeply broken, think deeply about this.
 
 ---
+
+Great work, we fixed it!  Now let's update our intermediate level to show the romaji instead of the translation text. It should be a simple, straightforward change.  We currently show the english translation for intermediate level, but this is supposed to be romaji instead.  Applies to the character dialogs and the player response options.
+
+---
+
+Finally, let's update the `docs/features/Dialog-System.md` file to reflect everything we've completed so far, and let's update the FIP if there were additional items that we discovered along the way.
+
+---
