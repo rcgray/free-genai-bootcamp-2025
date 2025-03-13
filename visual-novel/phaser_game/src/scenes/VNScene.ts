@@ -176,15 +176,15 @@ export default class VNScene extends BaseScene {
         console.log(`Dialog display callback triggered: ${dialog.japaneseText}`);
         
         // Format dialog text based on difficulty level
-        const formattedText = this.formatDialogForDifficulty(dialog);
+        const formattedDialog = this.formatDialogForDifficulty(dialog);
         
         // Display dialog
         if (dialog.characterId === '') {
           // Narration has no speaker
-          this.displayDialog(formattedText, '');
+          this.displayDialog(formattedDialog, '');
         } else {
           // Character dialog
-          this.displayDialog(formattedText, dialog.characterId);
+          this.displayDialog(formattedDialog, dialog.characterId);
         }
       },
       onDialogComplete: () => {
@@ -223,29 +223,18 @@ export default class VNScene extends BaseScene {
   /**
    * Format dialog text based on the current difficulty level
    */
-  private formatDialogForDifficulty(dialog: Dialog): string {
+  private formatDialogForDifficulty(dialog: Dialog): Dialog {
     // Enable debug logging for longer Japanese text that might need complex wrapping
     const enableDebug = dialog.japaneseText.length > 43;
     
     // Create the wrapped Japanese text
-    const japaneseText = JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug);
+    const wrappedJapanese = JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug);
     
-    switch (this.difficultyLevel) {
-      case 'beginner':
-        // Show Japanese text, romaji, and English translation with same formatting as choice buttons
-        return `${japaneseText}\n(${dialog.romaji})\n[${dialog.englishText}]`;
-      
-      case 'intermediate':
-        // Show Japanese text and romaji only
-        return `${japaneseText}\n(${dialog.romaji})`;
-      
-      case 'advanced':
-        // Show only Japanese text
-        return japaneseText;
-      
-      default:
-        return japaneseText;
-    }
+    // Return a new Dialog object with the wrapped text
+    return {
+      ...dialog,
+      japaneseText: wrappedJapanese
+    };
   }
   
   /**
@@ -531,9 +520,9 @@ export default class VNScene extends BaseScene {
       if (this.dialogText && this.currentDialog) {
         const currentDialog = this.dialogManager.getCurrentDialog();
         if (currentDialog) {
-          const formattedText = this.formatDialogForDifficulty(currentDialog);
-          this.dialogText.setText(formattedText);
-          this.currentDialog = formattedText;
+          const formattedDialog = this.formatDialogForDifficulty(currentDialog);
+          this.dialogText.setText(formattedDialog.japaneseText);
+          this.currentDialog = formattedDialog.japaneseText;
         }
       }
     });
@@ -695,15 +684,15 @@ export default class VNScene extends BaseScene {
   }
   
   /**
-   * Display dialog text with a typewriter effect
+   * Display a dialog from a specific speaker
    */
-  private displayDialog(text: string, speaker: string): void {
+  private displayDialog(dialog: Dialog, speaker: string): void {
     if (!this.dialogText || !this.nameText || !this.dialogBox) {
       console.error('Dialog text, name text, or dialog box not initialized');
-      return;
+      throw new Error('Dialog UI components not initialized');
     }
     
-    console.log(`Displaying dialog: "${text}" from speaker: "${speaker}"`);
+    console.log(`Displaying dialog: "${dialog.japaneseText}" from speaker: "${speaker}"`);
     
     // Stop any existing dialog timer
     if (this.dialogTimer) {
@@ -728,7 +717,7 @@ export default class VNScene extends BaseScene {
     }
     
     // Set the current dialog and speaker
-    this.currentDialog = text;
+    this.currentDialog = dialog.japaneseText;
     this.currentSpeaker = speaker;
     this.isDialogComplete = false;
     this.displayedTextLength = 0;
@@ -743,13 +732,8 @@ export default class VNScene extends BaseScene {
       this.nameBox.setAlpha(speaker ? 0.9 : 0);
     }
     
-    // Parse the dialog text into its components
-    const japaneseText = this.extractJapaneseText(text);
-    const romajiText = this.extractFurigana(text);
-    const englishText = this.extractTranslation(text);
-    
     // Clear the dialog text but keep it as a reference
-    this.dialogText.setText(japaneseText);
+    this.dialogText.setText(dialog.japaneseText);
     
     // Make sure dialog box and text are visible
     this.dialogBox.setAlpha(0.7);
@@ -767,7 +751,7 @@ export default class VNScene extends BaseScene {
     });
     
     // Add romaji text below if present and if not in advanced mode
-    if (romajiText && this.difficultyLevel !== 'advanced') {
+    if (dialog.romaji && this.difficultyLevel !== 'advanced') {
       // Position below Japanese text with proper spacing
       const romajiY = this.dialogText.y + this.dialogText.height + 15; // Increased from 5 to 15 for more space
       
@@ -775,7 +759,7 @@ export default class VNScene extends BaseScene {
       this.romajiText = this.add.text(
         this.dialogText.x,
         romajiY,
-        `(${romajiText})`,
+        `(${dialog.romaji})`,
         {
           fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
           fontSize: '18px', // Smaller font for romaji
@@ -789,17 +773,17 @@ export default class VNScene extends BaseScene {
     }
     
     // Add English text if present and if in beginner mode
-    if (this.difficultyLevel === 'beginner' && englishText) {
+    if (this.difficultyLevel === 'beginner' && dialog.englishText) {
       // Position below romaji or Japanese text with proper spacing
-      const englishY = romajiText 
-        ? this.romajiText!.y + this.romajiText!.height + 15 // Position relative to romaji text rather than Japanese text
+      const englishY = dialog.romaji 
+        ? this.romajiText!.y + this.romajiText!.height + 15 // Position relative to romaji text
         : this.dialogText.y + this.dialogText.height + 5; // Directly below Japanese
       
       // Create English text with styling matching choice buttons
       this.englishText = this.add.text(
         this.dialogText.x,
         englishY,
-        `[${englishText}]`,
+        `[${dialog.englishText}]`,
         {
           fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
           fontSize: '18px', // Smaller font for English
@@ -822,7 +806,7 @@ export default class VNScene extends BaseScene {
       delay: this.dialogSpeed,
       callback: this.updateDialogText,
       callbackScope: this,
-      repeat: japaneseText.length - 1
+      repeat: dialog.japaneseText.length - 1
     });
   }
   
@@ -835,47 +819,30 @@ export default class VNScene extends BaseScene {
   }
   
   /**
-   * Update the dialog text for the typewriter effect
+   * Update the dialog text with the typewriter effect
    */
   private updateDialogText(): void {
-    if (!this.dialogText) {
-      console.error('Dialog text not initialized');
-      return;
+    if (!this.dialogText) return;
+    
+    // Increment the displayed text length
+    this.displayedTextLength++;
+    
+    if (this.displayedTextLength <= this.currentDialog.length) {
+      // Get the substring of text to display
+      const textToShow = this.currentDialog.substring(0, this.displayedTextLength);
+      this.dialogText.setText(textToShow);
     }
     
-    // Get the Japanese text part for the typewriter effect
-    const japaneseText = this.extractJapaneseText(this.currentDialog);
-    
-    this.displayedTextLength++;
-    // Only animate the Japanese text part
-    const displayText = japaneseText.substring(0, this.displayedTextLength);
-    this.dialogText.setText(displayText);
-    
-    console.log(`Updating dialog text: ${displayText}`);
-    
-    // Check if dialog is complete
-    if (this.displayedTextLength >= japaneseText.length) {
-      this.isDialogComplete = true;
-      console.log('Dialog display complete');
-      
-      // Show the romaji and English text with fade in
+    // When we reach the end of the Japanese text, show the additional elements with a slight delay
+    if (this.displayedTextLength >= this.currentDialog.length) {
+      // Show romaji with a slight delay
       if (this.romajiText) {
-        this.tweens.add({
-          targets: this.romajiText,
-          alpha: 1,
-          duration: 200,
-          ease: 'Power1'
-        });
+        this.romajiText.setAlpha(1);
       }
       
+      // Show English after romaji
       if (this.englishText) {
-        this.tweens.add({
-          targets: this.englishText,
-          alpha: 1,
-          duration: 200,
-          ease: 'Power1',
-          delay: 100 // Slight delay after romaji appears
-        });
+        this.englishText.setAlpha(1);
       }
       
       // Show the next indicator
@@ -883,7 +850,10 @@ export default class VNScene extends BaseScene {
         this.nextIndicator.setAlpha(1);
       }
       
-      // Add the study button
+      // Mark dialog as complete
+      this.isDialogComplete = true;
+      
+      // Add study button
       this.addStudyButton();
     }
   }
@@ -892,162 +862,99 @@ export default class VNScene extends BaseScene {
    * Complete the current dialog immediately
    */
   private completeDialog(): void {
-    if (!this.dialogText || this.isDialogComplete) return;
+    if (!this.dialogText) return;
     
-    // Stop the dialog timer
+    // Stop the typewriter timer
     if (this.dialogTimer) {
       this.dialogTimer.remove();
     }
     
-    // Get the current dialog from the DialogManager
-    const currentDialog = this.dialogManager.getCurrentDialog();
+    // Show the complete Japanese text
+    this.dialogText.setText(this.currentDialog);
     
-    if (currentDialog) {
-      // Use the DialogManager's current dialog and completely refresh the display
-      this.displayDialog(this.formatDialogForDifficulty(currentDialog), currentDialog.characterId);
-      this.isDialogComplete = true;
-    } else {
-      // Fallback: just complete the Japanese text animation
-      const japaneseText = this.extractJapaneseText(this.currentDialog);
-      this.dialogText.setText(japaneseText);
-      this.isDialogComplete = true;
+    // Show the romaji text if it exists
+    if (this.romajiText) {
+      this.romajiText.setAlpha(1);
     }
     
-    console.log('Dialog completed immediately');
+    // Show the English text if it exists
+    if (this.englishText) {
+      this.englishText.setAlpha(1);
+    }
     
     // Show the next indicator
     if (this.nextIndicator) {
       this.nextIndicator.setAlpha(1);
     }
     
-    // Note: Do NOT call addStudyButton here - it will be called from updateDialogText
-    // to prevent duplicate study buttons
+    // Mark as complete
+    this.isDialogComplete = true;
+    
+    // Add study button
+    this.addStudyButton();
   }
   
   /**
-   * Add a study button next to the dialog
+   * Add a study button to the current dialog
    */
   private addStudyButton(): void {
-    if (!this.dialogBox || !this.dialogText) return;
+    // Only add the study button if it doesn't already exist
+    if (this.studyButton || !this.dialogBox) return;
     
-    // Only add study button if we have actual dialog
-    if (this.currentDialog.trim() === '') return;
-    
-    // Get the current dialog text
-    const dialogText = this.currentDialog;
-    
-    // Get current dialog from DialogManager for proper study data
+    // Get the current dialog from the dialog manager
     const currentDialog = this.dialogManager.getCurrentDialog();
-    let context = `Currently at ${this.currentLocation}`;
-    if (currentDialog && currentDialog.characterId) {
-      context += `, spoken by ${currentDialog.characterId}`;
-    }
+    if (!currentDialog) return;
     
-    // Create the study button with text rather than emoji for better cross-platform support
+    // Create the study button
+    const studyButtonX = this.dialogBox.x + this.dialogBox.width - 80;
+    const studyButtonY = this.dialogBox.y - 30;
+    
     this.studyButton = this.add.text(
-      this.dialogBox.x + this.dialogBox.width / 2 - 80,
-      this.dialogBox.y - this.dialogBox.height / 2 - 10,
-      'Study', 
-      { 
+      studyButtonX,
+      studyButtonY,
+      'Study',
+      {
         fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
-        fontSize: '20px',
+        fontSize: '18px',
         color: '#ffffff',
-        backgroundColor: '#1e5a5a',
-        padding: { left: 10, right: 10, top: 5, bottom: 5 }
+        backgroundColor: '#4466aa',
+        padding: {
+          x: 10,
+          y: 5
+        }
       }
     );
     
-    this.studyButton.setOrigin(0.5, 0.5);
+    this.studyButton.setDepth(this.DEPTH_UI + 1);
     this.studyButton.setInteractive({ useHandCursor: true });
-    this.studyButton.setDepth(this.DEPTH_UI);
     
     // Add hover effect
     this.studyButton.on('pointerover', () => {
       if (this.studyButton) {
-        this.studyButton.setStyle({ backgroundColor: '#2a7a7a' });
+        this.studyButton.setStyle({ color: '#ffff99', backgroundColor: '#5577bb' });
       }
     });
     
     this.studyButton.on('pointerout', () => {
       if (this.studyButton) {
-        this.studyButton.setStyle({ backgroundColor: '#1e5a5a' });
+        this.studyButton.setStyle({ color: '#ffffff', backgroundColor: '#4466aa' });
       }
     });
     
-    // Handle click event
-    this.studyButton.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-      // Prevent event propagation
-      if (pointer.event && pointer.event instanceof Event) {
-        pointer.event.stopPropagation();
-      }
-      
-      console.log('Study button clicked');
-      
-      // Add click animation
-      this.tweens.add({
-        targets: this.studyButton,
-        scaleX: 0.9,
-        scaleY: 0.9,
-        duration: 50,
-        yoyo: true,
-        ease: 'Power1'
-      });
-      
-      // Prepare phrase data using DialogManager
-      let phraseData: StudyPhraseData;
-      
+    // Add click handler
+    this.studyButton.on('pointerdown', () => {
       if (currentDialog) {
-        phraseData = {
+        const studyData = {
           phrase: currentDialog.japaneseText,
           furigana: currentDialog.romaji,
           translation: currentDialog.englishText,
-          context: context,
+          context: `${this.currentLocation}`,
           source: currentDialog.characterId || 'Narration'
         };
-      } else {
-        // Fallback to original method if DialogManager doesn't have current dialog
-        phraseData = {
-        phrase: this.extractJapaneseText(dialogText),
-          furigana: this.extractFurigana(dialogText),
-          translation: this.extractTranslation(dialogText),
-          context: context,
-        source: this.currentSpeaker
-      };
+        
+        this.openStudyScene(studyData);
       }
-      
-      // Launch the study scene
-      this.openStudyScene(phraseData);
     });
-  }
-  
-  /**
-   * Extract Japanese text from the dialog
-   * Assumes format: "Japanese (Romaji) [[Translation]]"
-   */
-  private extractJapaneseText(text: string): string {
-    // For now, a simple extraction - take everything before the first '('
-    const match = text.match(/^([^(]+)/);
-    return match ? match[1].trim() : text;
-  }
-  
-  /**
-   * Extract furigana (romaji) from the dialog
-   * Assumes format: "Japanese (Romaji) [[Translation]]"
-   */
-  private extractFurigana(text: string): string {
-    // Extract text between the first pair of parentheses
-    const match = text.match(/\(([^)]+)\)/);
-    return match ? match[1].trim() : '';
-  }
-  
-  /**
-   * Extract translation from the dialog
-   * Assumes format: "Japanese (Romaji) [Translation]"
-   */
-  private extractTranslation(text: string): string {
-    // Extract text between single square brackets
-    const match = text.match(/\[([^\]]+)\]/);
-    return match ? match[1].trim() : '';
   }
   
   /**
@@ -1172,10 +1079,8 @@ export default class VNScene extends BaseScene {
       );
       innerGlow.setAlpha(0.5);
       
-      // Format text parts based on difficulty level
+      // Format Japanese text with proper wrapping
       const japaneseText = this.wrapJapaneseText(choice.japaneseText, 31); // Use 31 char max for player responses
-      const romajiText = choice.romaji;
-      const englishText = choice.englishText;
       
       // Create container for text elements to control positioning
       const textContainer = this.add.container(0, 0);
@@ -1203,11 +1108,11 @@ export default class VNScene extends BaseScene {
       let yPos = japaneseTextObj.y + japaneseTextObj.height + 10;
       
       // Add romaji text in beginner and intermediate modes
-      if ((this.difficultyLevel === 'beginner' || this.difficultyLevel === 'intermediate') && romajiText) {
+      if ((this.difficultyLevel === 'beginner' || this.difficultyLevel === 'intermediate') && choice.romaji) {
         const romajiTextObj = this.add.text(
           0,
           yPos,
-          `(${romajiText})`,
+          `(${choice.romaji})`,
           {
             fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
             fontSize: '18px', // Smaller font for romaji
@@ -1223,11 +1128,11 @@ export default class VNScene extends BaseScene {
       }
       
       // Add English translation in beginner mode only
-      if (this.difficultyLevel === 'beginner' && englishText) {
+      if (this.difficultyLevel === 'beginner' && choice.englishText) {
         const englishTextObj = this.add.text(
           0,
           yPos,
-          `[${englishText}]`,
+          `[${choice.englishText}]`,
           {
             fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
             fontSize: '18px', // Smaller font for English
@@ -1298,7 +1203,7 @@ export default class VNScene extends BaseScene {
           yoyo: true,
           ease: 'Power1',
           onComplete: () => {
-        this.handleChoice(index);
+            this.handleChoice(index);
           }
         });
       });
@@ -1312,7 +1217,7 @@ export default class VNScene extends BaseScene {
       // Add the group to the container
       if (this.choiceContainer) {
         this.choiceContainer.add(choiceGroup);
-        }
+      }
       
       // Update y offset for next button
       yOffset += buttonHeight + buttonPadding;
@@ -1523,29 +1428,6 @@ export default class VNScene extends BaseScene {
           if (selectedResponse) {
             this.dialogManager.selectChoice(selectedResponse.id);
           }
-        } else {
-          // Fallback to original method if DialogManager doesn't have current dialog
-        // Display new dialog based on choice
-        let nextDialog = '';
-          let speaker = 'kaori'; // Use lowercase for internal references
-        
-          // Create simulated dialog with all the necessary parts for each difficulty level
-        switch (choiceIndex) {
-          case 0:
-            nextDialog = "元気で何よりです！東京へようこそ！(Genki de nani yori desu! Tokyo e yōkoso!) [I'm glad you're well! Welcome to Tokyo!]";
-            break;
-          case 1:
-            nextDialog = "私も会えて嬉しいよ！東京を案内するのが楽しみ！(Watashi mo aete ureshii yo! Tokyo wo annai suru no ga tanoshimi!) [I'm also happy to see you! I'm looking forward to showing you around Tokyo!]";
-            break;
-          case 2:
-            nextDialog = "大変だったね。ホテルに行く前に何か食べる？(Taihen datta ne. Hoteru ni iku mae ni nanika taberu?) [That was tough. Want to eat something before going to the hotel?]";
-            break;
-          default:
-            nextDialog = "さあ、東京観光を始めましょう！(Sā, Tokyo kankō wo hajimemashō!) [Now, let's start our Tokyo tour!]";
-            break;
-        }
-        
-        this.displayDialog(nextDialog, speaker);
         }
       }
     });

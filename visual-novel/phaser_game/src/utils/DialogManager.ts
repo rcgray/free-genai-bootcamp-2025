@@ -417,65 +417,13 @@ export class DialogManager {
   }
   
   /**
-   * Create study data from dialog text
-   * @param text - Text to create study data from
-   * @param context - Context information for the study data
-   * @returns Study phrase data
-   */
-  createStudyData(text: string, context: string): StudyPhraseData {
-    // Extract Japanese, furigana, and translation
-    const japaneseText = this.extractJapaneseText(text);
-    const furigana = this.extractFurigana(text);
-    const translation = this.extractTranslation(text);
-    
-    return {
-      phrase: japaneseText,
-      furigana: furigana,
-      translation: translation,
-      context: context,
-      source: context
-    };
-  }
-  
-  /**
-   * Extract Japanese text from the dialog
-   * Assumes format: "Japanese (Romaji) [Translation]"
-   */
-  private extractJapaneseText(text: string): string {
-    // For now, a simple extraction - take everything before the first '('
-    const match = text.match(/^([^(]+)/);
-    return match ? match[1].trim() : text;
-  }
-  
-  /**
-   * Extract furigana (romaji) from the dialog
-   * Assumes format: "Japanese (Romaji) [Translation]"
-   */
-  private extractFurigana(text: string): string {
-    // Extract text between the first pair of parentheses
-    const match = text.match(/\(([^)]+)\)/);
-    return match ? match[1].trim() : '';
-  }
-  
-  /**
-   * Extract translation from the dialog
-   * Assumes format: "Japanese (Romaji) [Translation]"
-   */
-  private extractTranslation(text: string): string {
-    // Extract text between the first pair of square brackets
-    const match = text.match(/\[([^\]]+)\]/);
-    return match ? match[1].trim() : '';
-  }
-  
-  /**
-   * Serialize the manager state for saving/loading
-   * @returns Serialized dialog manager state
+   * Serialize the dialog manager state
    */
   serialize(): SerializedDialogState {
+    // Convert the maps to plain objects for serialization
     const conversationStates: Record<string, ConversationState> = {};
-    
-    this.conversationStates.forEach((state, id) => {
-      conversationStates[id] = state;
+    this.conversationStates.forEach((state, key) => {
+      conversationStates[key] = state;
     });
     
     return {
@@ -485,25 +433,18 @@ export class DialogManager {
   }
   
   /**
-   * Deserialize and apply previously serialized state
-   * @param state - Serialized dialog manager state
+   * Deserialize the dialog manager state
    */
   deserialize(state: SerializedDialogState): void {
-    // Restore conversation states
-    if (state.conversations) {
-      this.conversationStates.clear();
-      
-      Object.entries(state.conversations).forEach(([id, conversationState]) => {
-        this.conversationStates.set(id, conversationState);
-      });
-    }
-    
-    // Restore current conversation
+    // Restore the current conversation
     this.currentConversationId = state.currentConversationId;
     
-    // If there's an active conversation, display the current dialog
-    if (this.currentConversationId) {
-      this.displayCurrentDialog();
-    }
+    // Clear existing conversation states
+    this.conversationStates.clear();
+    
+    // Restore conversation states
+    Object.entries(state.conversations).forEach(([key, value]) => {
+      this.conversationStates.set(key, value);
+    });
   }
 } 

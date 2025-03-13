@@ -23,6 +23,7 @@
 │   ├── Technical-Spec.md
 │   ├── features
 │   │   ├── Dialog-System.md
+│   │   ├── Furigana-Ruby-Text.md
 │   │   ├── Phaser-Rewrite.md
 │   │   ├── Scene-Specific-Reloading.md
 │   │   └── Study-Scene.md
@@ -87,7 +88,11 @@
 │   │   │   ├── StudyScene.ts
 │   │   │   ├── TestScene.ts
 │   │   │   ├── TitleScene.ts
-│   │   │   └── VNScene.ts
+│   │   │   ├── VNScene.ts
+│   │   │   ├── backup
+│   │   │   └── temp
+│   │   │       └── refactored_dialog_methods.ts
+│   │   ├── types
 │   │   └── utils
 │   │       ├── AssetManager.ts
 │   │       ├── Character.ts
@@ -117,4 +122,4 @@
 ├── tests
 └── uv.lock
 
-29 directories, 89 files
+32 directories, 91 files
