@@ -167,10 +167,33 @@
 ### 3.2 Dialog System
 - [ ] Create dialog data structure
 - [ ] Implement text display with Japanese support
-- [ ] Add Ruby furigana support for Kanji
 - [ ] Add text animation effects (typewriter)
 - [~] Create dialog history system
 - [ ] Implement basic choice system
+
+### 3.2.1 Furigana Ruby Text Implementation
+- [x] Create specification document for Furigana Ruby Text feature
+- [ ] Implement FuriganaRenderer utility class
+  - [ ] Create kanji detection system
+  - [ ] Implement reading mapping functionality
+  - [ ] Build composite text rendering system
+  - [ ] Add difficulty level filtering
+- [ ] Integrate with VNScene dialog display
+  - [ ] Update character dialog rendering
+  - [ ] Update player choice rendering
+  - [ ] Ensure compatibility with text animations
+- [ ] Test and optimize performance
+  - [ ] Test with various Japanese text samples
+  - [ ] Optimize rendering for smooth performance
+  - [ ] Polish visual appearance and positioning
+
+**[CHECKPOINT: Furigana Implementation]**
+*Verification Steps:*
+1. Verify furigana displays correctly above kanji in character dialog
+2. Test furigana in player response options
+3. Verify compatibility with text animation effects
+4. Test different difficulty levels show appropriate furigana
+5. Verify performance remains smooth with multiple dialog entries
 
 ### 3.3 Game Flow
 - [ ] Create game state management
