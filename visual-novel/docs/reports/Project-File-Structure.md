@@ -4,6 +4,7 @@
 ├── .env.example
 ├── .gitignore
 ├── .streamlit
+├── .windsurfrules
 ├── README.md
 ├── app
 │   ├── api
@@ -13,6 +14,7 @@
 │   └── utils
 │       └── __init__.py
 ├── dev
+│   └── Screenshot 2025-03-10 164123.png
 ├── docs
 │   ├── Action-Plan.md
 │   ├── Game-Design.md
@@ -115,4 +117,4 @@
 ├── tests
 └── uv.lock
 
-29 directories, 87 files
+29 directories, 89 files

@@ -1,14 +1,3 @@
-# Prompt Notes
-
-Here are some notes to consider as part of every prompt as we develop our project. They cover preferences for communication, tool use, project structure, and other topics relevant to nearly all of the communciation between the AI agent and the human developer.
-
-For the human developer, this is intended to be a project- AND machine-specific file separate from `.cursorrules` that:
-
-1. Allows us to add new items when mistakes are discovered in communicating with the AI or when particular dev decisions (such as division of labor among components) need to be made.
-2. Allows for machine-specific directions (e.g., conda environments on Windows and python venv on MacOS).
-
-This file differs from .cursorrules in that it is meant to be constructed over the life of a project through the course of discovering project-specific preferences and choices. Some critical prompt rules (that don't seem to be sufficiently affected by .cursorrules) are also repeated as well.
-
 ## General Guidelines
 - DO NOT DO ANYTHING OTHER THAN WHAT WAS REQUESTED IN THE PROMPT. You may be given access to an "Action-Plan.md" file, which is a list of completed tasks as well as those ahead of us. Access to this file or a request to update a particular section of it is not license to continue on to the next task. Just because a file is called "Action Plan" does not mean that those actions are all meant for you to complete.
 - Always stop at [CHECKPOINT] instructions in any Action Plan (Project-Setup.md, Action-Plan.md, feature spec action plan, etc.). These are designed for the human developer to verify that the AI is on track to complete the project. Do not perform any actions beyond those requested in the checkpoint instructions, and do not continue on to the next task until the human developer has verified that the current task is complete.

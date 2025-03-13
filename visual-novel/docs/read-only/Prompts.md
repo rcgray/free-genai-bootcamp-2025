@@ -988,3 +988,19 @@ Great work, we fixed it!  Now let's update our intermediate level to show the ro
 Finally, let's update the `docs/features/Dialog-System.md` file to reflect everything we've completed so far, and let's update the FIP if there were additional items that we discovered along the way.
 
 ---
+
+# Switched to Windsurf: New chat (Agent, claude-3.7-sonnet)
+
+---
+
+We are building a Japanese learning app in the form of a visual novel game using Phaser and Streamlit.
+
+(Project File Structure: @Project-File-Structure.md - Please remember this Project File Structure for determining where to find files in our project, what folders exist, etc.)
+(Technical Specification: @Technical-Spec.md - Please remember this Technical Specification for understanding the technical details of the project.)
+(Game Design: @Game-Design.md - Please remember this Game Design for understanding the design of the game, the locations, characters, events, etc.)
+(Game LLM Prompts: @Game-LLM-Prompts.md - Please remember this Game LLM Prompts for understanding the prompts we will give to the LLM for generating game content.)
+(Action Plan: @Action-Plan.md - Please remember this Action Plan for understanding the plan for building the project, identifying previously completed work, identifying the current phase and upcoming [CHECKPOINT].)
+
+Our current phase is 3.2 Dialog System. Please review the `docs/features/Dialog-System.md` file (@Dialog-System.md), ESPECIALLY the FIP section at the bottom for a comprehensive set of steps to be taken for implementing this feature. We have almost completed implementing it, but our next feature is to add furigana ruby text above the kanji in the Japanese text in both the character dialogs and the player selection dialogs.
+
+---
