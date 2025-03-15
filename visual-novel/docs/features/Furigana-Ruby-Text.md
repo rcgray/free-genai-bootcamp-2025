@@ -17,8 +17,8 @@ This document outlines the design, functionality, and implementation details of 
 5. **Animation Compatibility**: Furigana must work with our existing typewriter text animation effects.
 6. **Difficulty Level Integration**: The display of furigana should respect the player's chosen difficulty level:
    - Beginner: Show furigana for all kanji
-   - Intermediate: Show furigana for less common kanji only
-   - Advanced: Show no furigana
+   - Intermediate: Show furigana for all kanji
+   - Advanced: Show furigana for less common kanji only
 
 ### Technical Requirements
 
@@ -57,6 +57,23 @@ A key challenge in implementing furigana is determining which characters are kan
    - Support compound kanji words with shared readings
    - Add support for custom/non-standard readings
 
+### Romaji Parsing Approach
+
+Since our dialog data already includes romaji pronunciation for the entire text, we'll use this to determine readings for kanji characters:
+
+1. **Character-type identification**: Identify which characters in the Japanese text are kanji using Unicode ranges
+2. **Character-to-romaji alignment**: Create an alignment algorithm that matches each character in the Japanese text with its corresponding section in the romaji string
+3. **Extraction of kanji readings**: For each identified kanji character, extract its corresponding romaji segment
+4. **Furigana generation**: Use these extracted readings to generate furigana text
+
+This approach leverages our existing dialog data structure and removes the immediate need for external kanji dictionaries, as we already have the correct readings provided in the dialog data. The alignment between Japanese text and romaji will need to account for:
+
+- Different character counts (multiple romaji characters often represent a single Japanese character)
+- Multiple kanji compounds (where a sequence of kanji shares a single reading)
+- Mixed script text (combinations of kanji, hiragana, and katakana)
+
+For initial implementation, we will use a simplified alignment based on character types, with refinements as needed to handle edge cases.
+
 ## Implementation Approach
 
 ### FuriganaRenderer Utility
@@ -73,7 +90,7 @@ interface FuriganaOptions {
   baseTextStyle: Phaser.Types.GameObjects.Text.TextStyle;
   rubyTextStyle?: Phaser.Types.GameObjects.Text.TextStyle;
   rubyOffset?: number;
-  onlyCommonKanji?: boolean; // For intermediate difficulty
+  onlyCommonKanji?: boolean; // For different difficulty levels
 }
 
 interface KanjiWithReading {
@@ -168,12 +185,12 @@ The FuriganaRenderer will be integrated with our Dialog System by:
 
 The current implementation status of the Furigana Ruby Text feature is:
 
-- [ ] Phase 1: Core FuriganaRenderer Implementation
-  - [ ] Create FuriganaRenderer class
-  - [ ] Implement kanji detection
-  - [ ] Implement reading mapping
-  - [ ] Create rendering system
-  - [ ] Implement difficulty filtering
+- [x] Phase 1: Core FuriganaRenderer Implementation
+  - [x] Create FuriganaRenderer class
+  - [x] Implement kanji detection
+  - [x] Implement reading mapping
+  - [x] Create rendering system
+  - [x] Implement difficulty filtering
 
 - [ ] Phase 2: Dialog System Integration  
   - [ ] Modify character dialog display

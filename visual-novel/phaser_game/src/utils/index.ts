@@ -15,6 +15,8 @@ export { DialogSystem } from './DialogSystem';
 
 // Japanese text handling
 export { JapaneseTextWrapper } from './JapaneseTextWrapper';
+export { FuriganaRenderer } from './FuriganaRenderer';
+export type { FuriganaOptions, KanjiWithReading } from './FuriganaRenderer';
 
 // Game management
 export { GameStateManager } from './GameStateManager';

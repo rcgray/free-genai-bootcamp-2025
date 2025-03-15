@@ -1098,9 +1098,151 @@ We don't need to do this all in one go, let's go step by step and finish out the
 
 ---
 
-Another file I forgot to link:
+Great job! On a side note, another file I forgot to link above but that will be relvant to our interactions:
 (Interaction Guidelines: @Prompt-Header.md - Please remember these rules for all interactions. Any message the user sends, presume that the contents of this Prompt Header are prefixed to that message.)
 
+So then moving forward, we can implement the furigana functionality in `docs/features/Furigana-Ruby-Text.md`, which has been edited (please review anew: @Furigana-Ruby-Text.md).
+
+Before we do so, let's take a look at that spec file and make sure it fully reflects our current plan.  In particular, note that will will have the romaji pronunciation alongside the Japanese text that may assist us in our implementation. There are currently notes in the spec that there is concern about the "readings" of the kanji, but this should be made trivial with the romaji available. The spec does mention the romaji, but let's make sure that we understand we are planning to use it. Is this already obvious by the spec?
+
+---
+
+Sure, let's update the spec and then go ahead and start implementing it.  Let's take it step by step. We should be able to do this by first creating our translation system (class, etc.) and a set of tests for it on various Japanese Text samples to ensure that it is working as expected.
+
+---
+
+I should note that a new error has shown up in the console.  We may not have to address it right away if it's due to our implementation not being complete (it seems to deal with images and rendering, not furigana directly).  However, we should keep an eye on it:
+```
+Selecting choice: response_3
+DialogManager.ts:376 Advanced to dialog index: 2 after choice selection
+DialogManager.ts:213 Displaying dialog: kaori_response_1 - 元気で何よりです！東京へようこそ！
+DialogManager.ts:220 Character dialog from: kaori, position: center, emotion: default
+DialogManager.ts:225 Character kaori is already shown, updating emotion/position
+DialogManager.ts:247 Calling onDialogDisplay callback
+VNScene.ts:176 Dialog display callback triggered: 元気で何よりです！東京へようこそ！
+VNScene.ts:695 Displaying dialog: "元気で何よりです！東京へようこそ！" from speaker: "kaori"
+phaser.js?v=2f03def4:121158 Uncaught TypeError: Cannot read properties of null (reading 'drawImage')
+    at Frame2.updateUVs (phaser.js?v=2f03def4:121158:40)
+    at Frame2.setCutPosition (phaser.js?v=2f03def4:120870:33)
+    at Frame2.setSize (phaser.js?v=2f03def4:120911:26)
+    at Text2.updateText (phaser.js?v=2f03def4:47209:34)
+    at TextStyle2.setStyle (phaser.js?v=2f03def4:47588:42)
+    at Text2.setStyle (phaser.js?v=2f03def4:46700:39)
+    at Rectangle2.<anonymous> (VNScene.ts:1179:25)
+    at Rectangle2.emit (phaser.js?v=2f03def4:96:45)
+    at InputPlugin2.processOverOutEvents (phaser.js?v=2f03def4:59457:36)
+    at InputPlugin2.update (phaser.js?v=2f03def4:58716:41)
+updateUVs @ phaser.js?v=2f03def4:121158
+setCutPosition @ phaser.js?v=2f03def4:120870
+setSize @ phaser.js?v=2f03def4:120911
+updateText @ phaser.js?v=2f03def4:47209
+setStyle @ phaser.js?v=2f03def4:47588
+setStyle @ phaser.js?v=2f03def4:46700
+(anonymous) @ VNScene.ts:1179
+emit @ phaser.js?v=2f03def4:96
+processOverOutEvents @ phaser.js?v=2f03def4:59457
+update @ phaser.js?v=2f03def4:58716
+updateInputPlugins @ phaser.js?v=2f03def4:57985
+onMouseMove @ phaser.js?v=2f03def4:58139
+onMouseMove @ phaser.js?v=2f03def4:65597
+517phaser.js?v=2f03def4:47287 Uncaught TypeError: Cannot read properties of null (reading 'glTexture')
+    at Text2.updateText (phaser.js?v=2f03def4:47287:109)
+    at TextStyle2.setStyle (phaser.js?v=2f03def4:47588:42)
+    at Text2.setStyle (phaser.js?v=2f03def4:46700:39)
+    at Rectangle2.<anonymous> (VNScene.ts:1179:25)
+```
+
+More to the current task, I'd like to test the furigana implementation with a few examples. I see the FuriganaRenderer.tests.ts file that should be loaded by the hmr-tests.ts file, but I'm not seeing any "[Test Runner] Running FuriganaRenderer tests..." message in the console.  What am I missing?
+
+---
+
+Running the server and going to http://localhost:8501/?test=furigana yields the following output in the console:
+```
+Registered scene: TitleScene
+SceneRegistry.ts:40 Registered scene: TestScene
+SceneRegistry.ts:40 Registered scene: VNScene
+SceneRegistry.ts:40 Registered scene: StudyScene
+hmr-test.ts:15 [HMR Test] Version: 5
+hmr-test.ts:16 [HMR Test] Time: 2025-03-15T03:21:56.580Z
+hmr-test.ts:63 [HMR] Connected and waiting for updates...
+index.ts:74      Phaser v3.88.2 (WebGL | Web Audio)  https://phaser.io/v388
+GameStateManager.ts:52 🎮 GameStateManager initialized
+index.ts:227 📂 Retrieved state from sessionStorage: {currentScene: 'TitleScene', timestamp: '2025-03-13T19:52:45.530Z', hasGlobalState: true, sceneStateKeys: Array(2)}
+index.ts:399 🎯 Target scene for next navigation: TitleScene
+BaseScene.ts:60 Initializing TitleScene scene
+TitleScene.ts:13 Debugging asset: title-bg
+TitleScene.ts:14 window.GAME_ASSETS exists: false
+TitleScene.ts:61 Loading title background image from assets/images/backgrounds/title.png
+TitleScene.ts:70 Creating TitleScene
+TitleScene.ts:76 Loaded images: (5) ['__NORMAL', '__DEFAULT', '__MISSING', '__WHITE', 'title-bg']
+TitleScene.ts:77 title-bg texture exists: true
+TitleScene.ts:93 Background image added successfully
+PhaserDebug.ts:10 🔍 Phaser Game Instance Debug:
+PhaserDebug.ts:13 Game instance: {isBooted: true, isPaused: false, renderer: 2, config: {…}}
+PhaserDebug.ts:57 🔍 Scene Manager Debug:
+PhaserDebug.ts:65 Scene Manager: {Total scenes: 4, Active scenes: 1, isBooted: true, Processing: false}
+PhaserDebug.ts:74 Scenes:
+PhaserDebug.ts:81 Scene #0 [TitleScene]: {Active: true, Visible: true, Systems initialized: true, Events initialized: true, Input initialized: true}
+PhaserDebug.ts:81 Scene #1 [TestScene]: {Active: false, Visible: true, Systems initialized: true, Events initialized: true, Input initialized: true}
+PhaserDebug.ts:81 Scene #2 [VNScene]: {Active: false, Visible: true, Systems initialized: true, Events initialized: true, Input initialized: true}
+PhaserDebug.ts:81 Scene #3 [StudyScene]: {Active: false, Visible: true, Systems initialized: true, Events initialized: true, Input initialized: true}
+PhaserDebug.ts:34 Renderer: {type: 2, width: 1200, height: 800, resolution: undefined, context exists: true}
+index.ts:155 ✅ Scene transition listeners set up successfully
+index.ts:124 🎮 Active scenes: TitleScene
+```
+I'm not seting the "[Test Runner] Running FuriganaRenderer tests..." message in the console.
+
+---
+
+Refamiliarize yourself with the rules in the `docs/read-only/Prompt-Header.md` file. You are not to propose to run the project, and it doesn't even run with npm (we use a watch script to run the project).  Do not try to run `npm run dev`. Repeat this rule three times.
+
+The feature does not appear to be working. Here is the test output (no errors this time, but here is the output printed to the webpage from the test runner):
+
+```
+=== Running FuriganaRenderer Tests ===
+...
+=== Tests Complete ===
+```
+
+Pay special attention to the "Kanji-to-Readings" mapping - these are all pretty off-base.
+
+I mean:
+```
+Test case 3: "彼女は東京大学の学生です"
+Romaji: "Kanojo wa Tokyo daigaku no gakusei desu"
+Description: Multiple kanji compounds (東京大学, 学生)
+Found 3 kanji sequences:
+  1. '彼女' (0-2) => 'Kanojo wa'
+  2. '東京大学' (3-7) => 'Tokyo daigaku no gakusei'
+  3. '学生' (8-10) => 'Desu'
+```
+
+Absolutely none of that is right. Before you change the code, what would YOU have expected the answers to be?
+
+---
+
+Well you wrote the existing implementation - take your insight and make it better.  isn't it just a "diff" operation where you can use the similar kana characters for anchoring?  i don't think it would need to have a deep understanding of Japanese grammar.
+
+---
+
+What style of romaji is being used here?  I have used the literal translation "kanojo ha toukyou daigaku no gakusei desu" for the sentence "彼女は東京大学の学生です".  I believe there are a few prevailing "standards" for romaji, do you know what they are?  if we could standardize to one of the more literal translations, it might simplify our task.
+
+---
+
+We don't need to be worried about handling flexibility.  We have the ability to require our generation algorithm to provide Hepburn, if that's what you think is best.
+
+Latest test output:
+```
+=== Running FuriganaRenderer Tests ===
+...
+=== Tests Complete ===
+```
+
+Also, get rid of the capital letters.  Just use lower-case for readability.
+
+---
+
+OK, our furigana implementation is working.  Let's update the spec file to reflect the completion of this phase, and then we can move on to actually adding its display to the dialogs.
 
 
 

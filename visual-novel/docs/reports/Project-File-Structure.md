@@ -88,10 +88,7 @@
 │   │   │   ├── StudyScene.ts
 │   │   │   ├── TestScene.ts
 │   │   │   ├── TitleScene.ts
-│   │   │   ├── VNScene.ts
-│   │   │   ├── backup
-│   │   │   └── temp
-│   │   │       └── refactored_dialog_methods.ts
+│   │   │   └── VNScene.ts
 │   │   ├── types
 │   │   └── utils
 │   │       ├── AssetManager.ts
@@ -101,6 +98,7 @@
 │   │       ├── DialogManager.ts
 │   │       ├── DialogSystem.ts
 │   │       ├── DialogSystemTests.ts
+│   │       ├── FuriganaRenderer.ts
 │   │       ├── GameStateManager.ts
 │   │       ├── JapaneseTextWrapper.ts
 │   │       ├── MockDialogData.ts
@@ -108,6 +106,8 @@
 │   │       ├── README.md
 │   │       ├── StatefulScene.ts
 │   │       └── index.ts
+│   ├── tests
+│   │   └── FuriganaRenderer.test.ts
 │   ├── tsconfig.json
 │   └── vite.config.ts
 ├── pyproject.toml
@@ -122,4 +122,4 @@
 ├── tests
 └── uv.lock
 
-32 directories, 91 files
+31 directories, 92 files
