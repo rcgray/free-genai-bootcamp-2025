@@ -303,4 +303,36 @@ export class Character {
       this.sprite.setOrigin(0.5, 1.0);
     }
   }
+
+  /**
+   * Get the character's sprite
+   * @returns The character's sprite or undefined if not displayed
+   */
+  getSprite(): Phaser.GameObjects.Sprite | undefined {
+    return this.sprite;
+  }
+
+  /**
+   * Update the position of the character's sprite based on current position
+   * @param scene - Phaser scene to update the sprite in
+   * @param animate - Whether to animate the position change
+   */
+  updateSpritePosition(scene: Phaser.Scene, animate: boolean = true): void {
+    if (!this.sprite) return;
+    
+    const x = scene.cameras.main.width * this.POSITION_OFFSETS[this.currentPosition];
+    
+    if (animate) {
+      // Animate to new position
+      scene.tweens.add({
+        targets: this.sprite,
+        x: x,
+        duration: 500,
+        ease: 'Power2'
+      });
+    } else {
+      // Set position immediately
+      this.sprite.setX(x);
+    }
+  }
 } 

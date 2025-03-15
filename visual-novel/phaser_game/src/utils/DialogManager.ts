@@ -119,6 +119,15 @@ export class DialogManager {
   }
   
   /**
+   * Get a conversation by its ID
+   * @param conversationId - ID of the conversation to retrieve
+   * @returns The conversation object or undefined if not found
+   */
+  getConversation(conversationId: string): Conversation | undefined {
+    return this.conversations.get(conversationId);
+  }
+  
+  /**
    * Start a conversation by location ID
    */
   startConversationByLocation(locationId: string): boolean {
@@ -162,6 +171,15 @@ export class DialogManager {
     
     // Clear shown characters when starting a new conversation
     this.shownCharacters.clear();
+    
+    // Check the characters array to determine if we should hide all characters
+    if (this.characterManager && conversation.characters !== undefined) {
+      // If the conversation explicitly defines an empty characters array, hide all characters
+      if (conversation.characters.length === 0) {
+        console.log(`Starting conversation ${conversationId} with no characters - hiding all characters`);
+        this.characterManager.hideAll();
+      }
+    }
     
     // Display the first dialog
     this.displayCurrentDialog();

@@ -157,9 +157,6 @@ export default class VNScene extends BaseScene {
     // Set up input handling
     this.setupInputHandlers();
     
-    // Display Kaori character (middle layer) after dialog manager setup
-    this.characterManager.show('kaori', 'center');
-    
     // Start the train platform conversation
     setTimeout(() => {
       console.log('Starting initial conversation after a short delay');
@@ -212,6 +209,11 @@ export default class VNScene extends BaseScene {
         if (this.englishText) {
           this.englishText.destroy();
           this.englishText = undefined;
+        }
+        
+        // Explicitly hide the next indicator (continue button)
+        if (this.nextIndicator) {
+          this.nextIndicator.setAlpha(0);
         }
         
         // Format choices in the showChoices method
@@ -269,6 +271,10 @@ export default class VNScene extends BaseScene {
     // Get the next location
     const nextLocation = locationSequence[currentIndex + 1];
     console.log(`Transitioning to next location: ${nextLocation}`);
+    
+    // Hide all characters from the previous scene
+    console.log('Hiding all characters from previous scene');
+    this.characterManager.hideAll();
     
     // Update the background to the new location
     this.setBackground(nextLocation);
@@ -697,6 +703,7 @@ export default class VNScene extends BaseScene {
     // Stop any existing dialog timer
     if (this.dialogTimer) {
       this.dialogTimer.remove();
+      this.dialogTimer = undefined; // Make sure to clear the reference
     }
     
     // Remove any existing study button
@@ -720,7 +727,7 @@ export default class VNScene extends BaseScene {
     this.currentDialog = dialog.japaneseText;
     this.currentSpeaker = speaker;
     this.isDialogComplete = false;
-    this.displayedTextLength = 0;
+    this.displayedTextLength = 0; // Reset this to 0 for each new dialog
     
     // Set the speaker name with capitalized first letter
     const displayName = this.capitalizeFirstLetter(speaker);
@@ -732,8 +739,8 @@ export default class VNScene extends BaseScene {
       this.nameBox.setAlpha(speaker ? 0.9 : 0);
     }
     
-    // Clear the dialog text but keep it as a reference
-    this.dialogText.setText(dialog.japaneseText);
+    // Clear the dialog text to start fresh
+    this.dialogText.setText('');
     
     // Make sure dialog box and text are visible
     this.dialogBox.setAlpha(0.7);
@@ -802,11 +809,12 @@ export default class VNScene extends BaseScene {
     }
     
     // Start the typewriter effect on Japanese text only
+    const dialogLength = dialog.japaneseText.length;
     this.dialogTimer = this.time.addEvent({
       delay: this.dialogSpeed,
       callback: this.updateDialogText,
       callbackScope: this,
-      repeat: dialog.japaneseText.length - 1
+      repeat: dialogLength > 0 ? dialogLength - 1 : 0 // Make sure repeat is at least 0
     });
   }
   

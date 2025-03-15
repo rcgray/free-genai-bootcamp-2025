@@ -23,6 +23,7 @@
 │   ├── Technical-Spec.md
 │   ├── features
 │   │   ├── Dialog-System.md
+│   │   ├── Furigana-Integration-Plan.md
 │   │   ├── Furigana-Ruby-Text.md
 │   │   ├── Phaser-Rewrite.md
 │   │   ├── Scene-Specific-Reloading.md
@@ -122,4 +123,4 @@
 ├── tests
 └── uv.lock
 
-31 directories, 92 files
+31 directories, 93 files

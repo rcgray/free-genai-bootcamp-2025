@@ -56,6 +56,14 @@ export class CharacterManager {
       emotions: {
         default: { id: 'default', spriteKey: 'shopkeeper_default', displayName: 'Shopkeeper' }
       }
+    },
+    waitress: {
+      id: 'waitress',
+      name: 'Waitress',
+      defaultEmotion: 'default',
+      emotions: {
+        default: { id: 'default', spriteKey: 'waitress_default', displayName: 'Waitress' }
+      }
     }
   };
   
@@ -170,7 +178,62 @@ export class CharacterManager {
     const character = this.getCharacter(id);
     if (!character || !this.scene) return false;
     
-    // Set position and emotion if provided
+    // Get the current location and conversation from the scene if available
+    let currentLocation = '';
+    let allowedCharacters: string[] | undefined;
+    
+    if ((this.scene as any).currentLocation) {
+      currentLocation = (this.scene as any).currentLocation;
+      
+      // Get the current conversation (for allowed characters list)
+      if ((this.scene as any).dialogManager) {
+        const dialogManager = (this.scene as any).dialogManager;
+        const currentConversationId = dialogManager.currentConversationId;
+        
+        if (currentConversationId) {
+          const conversation = dialogManager.getConversation(currentConversationId);
+          if (conversation && conversation.characters) {
+            allowedCharacters = conversation.characters;
+            
+            // If this character is not in the allowed list for this conversation, don't show it
+            if (allowedCharacters && allowedCharacters.length > 0 && !allowedCharacters.includes(id)) {
+              console.log(`Character ${id} is not allowed in conversation ${currentConversationId}, not showing`);
+              return false;
+            } else if (allowedCharacters && allowedCharacters.length === 0) {
+              // If the conversation explicitly defines an empty characters array, don't show any characters
+              console.log(`Conversation ${currentConversationId} specifies no characters should be shown`);
+              return false;
+            }
+          }
+        }
+      }
+    }
+    
+    // If no position is specified, use the character's current position
+    const requestedPosition = position || character.getCurrentPosition() || 'center';
+    
+    // Check if we need to reposition characters for a multi-character scene
+    const activeCharacterIds = [...this.activeCharacters];
+    
+    // If this is a new character being added and there's already at least one character active
+    if (!this.activeCharacters.has(id) && activeCharacterIds.length > 0) {
+      // Check if the requested position is already occupied by another character
+      const existingCharacterAtPosition = this.findCharacterInPosition(requestedPosition);
+      
+      if (existingCharacterAtPosition && existingCharacterAtPosition.id !== id) {
+        console.log(`Position ${requestedPosition} already occupied by ${existingCharacterAtPosition.id}, redistributing characters`);
+        
+        // If position was explicitly specified, we'll arrange other characters around this one
+        if (position) {
+          this.distributeCharactersAroundPosition(id, position, [...activeCharacterIds]);
+        } else {
+          // Otherwise, just distribute all characters including this one
+          this.distributeCharacters([...activeCharacterIds, id]);
+        }
+      }
+    }
+    
+    // Set position and emotion if provided (will override any adjustments made above)
     if (position) character.setPosition(position);
     if (emotion) character.setEmotion(emotion);
     
@@ -181,6 +244,104 @@ export class CharacterManager {
     this.activeCharacters.add(id);
     
     return true;
+  }
+  
+  /**
+   * Distribute all characters evenly on screen based on the number of characters
+   * @param characterIds Array of character IDs to distribute
+   */
+  private distributeCharacters(characterIds: string[]): void {
+    if (!this.scene) return;
+    
+    const positions: CharacterPosition[] = ['left', 'center', 'right'] as CharacterPosition[];
+    
+    // Special case for two characters: place them on left and right
+    if (characterIds.length === 2) {
+      const char1 = this.getCharacter(characterIds[0]);
+      const char2 = this.getCharacter(characterIds[1]);
+      
+      if (char1) char1.setPosition('left');
+      if (char2) char2.setPosition('right');
+      
+      // Update displayed characters
+      if (char1 && this.activeCharacters.has(characterIds[0]) && char1.getSprite()) {
+        char1.updateSpritePosition(this.scene);
+      }
+      if (char2 && this.activeCharacters.has(characterIds[1]) && char2.getSprite()) {
+        char2.updateSpritePosition(this.scene);
+      }
+      return;
+    }
+    
+    // For three or more characters, distribute them evenly
+    characterIds.forEach((id, index) => {
+      const character = this.getCharacter(id);
+      if (character) {
+        // Use modulo to cycle through the available positions
+        // This ensures we use all positions even if we have more than 3 characters
+        const position = positions[index % positions.length];
+        character.setPosition(position);
+        
+        // Update sprite position if character is displayed
+        if (this.activeCharacters.has(id) && character.getSprite()) {
+          character.updateSpritePosition(this.scene!);
+        }
+      }
+    });
+  }
+  
+  /**
+   * Distribute other characters around a character in a specific position
+   * @param centralCharId The ID of the character that should maintain its position
+   * @param centralPosition The position that should be maintained
+   * @param otherCharacterIds Array of other character IDs to distribute
+   */
+  private distributeCharactersAroundPosition(centralCharId: string, centralPosition: CharacterPosition, otherCharacterIds: string[]): void {
+    if (!this.scene) return;
+    
+    // First, set the central character's position
+    const centralChar = this.getCharacter(centralCharId);
+    if (centralChar) {
+      centralChar.setPosition(centralPosition);
+    }
+    
+    // Get positions that are still available
+    const availablePositions: CharacterPosition[] = (['left', 'center', 'right'] as CharacterPosition[]).filter(
+      pos => pos !== centralPosition
+    );
+    
+    // Distribute other characters into available positions
+    otherCharacterIds.forEach((id, index) => {
+      // Skip the central character
+      if (id === centralCharId) return;
+      
+      const character = this.getCharacter(id);
+      if (character) {
+        // Use modulo to cycle through available positions
+        const position = availablePositions[index % availablePositions.length];
+        character.setPosition(position);
+        
+        // Update sprite position if character is displayed
+        if (this.activeCharacters.has(id) && character.getSprite()) {
+          character.updateSpritePosition(this.scene!);
+        }
+      }
+    });
+  }
+  
+  /**
+   * Find a character that is currently positioned at the specified position
+   * @param position The position to check for
+   * @returns An object with the character id and the character, or undefined if no character is at that position
+   */
+  private findCharacterInPosition(position: CharacterPosition): { id: string, character: Character } | undefined {
+    for (const id of this.activeCharacters) {
+      const character = this.getCharacter(id);
+      if (character && character.getCurrentPosition() === position) {
+        return { id, character };
+      }
+    }
+    return undefined;
   }
   
   /**

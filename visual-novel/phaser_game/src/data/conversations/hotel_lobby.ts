@@ -329,7 +329,7 @@ const hotelLobbyConversation: Conversation = {
     }
   ],
   background: 'hotel_lobby',
-  characters: [], // No characters in this scene
+  characters: [], // Explicitly empty array - no characters in this scene
   currentDialogIndex: 0
 };
 

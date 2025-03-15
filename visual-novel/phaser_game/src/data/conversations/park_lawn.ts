@@ -241,7 +241,7 @@ const parkLawnConversation: Conversation = {
     }
   ],
   background: 'park_lawn',
-  characters: ['kaori'],
+  characters: ['kaori', 'takashi'],
   currentDialogIndex: 0
 };
 
