@@ -249,7 +249,7 @@ const outsideMallConversation: Conversation = {
     {
       id: 'kaori_popular',
       characterId: 'kaori',
-      emotion: 'happy',
+      emotion: 'default',
       position: 'left',
       japaneseText: '人気の商品は、手ぬぐい、扇子、和柄の小物、陶器などですね。あと、日本のお菓子も外国人観光客に人気があります。東京ばな奈とか。',
       romaji: 'Ninki no shōhin wa, tenugui, sensu, wagara no komono, tōki nado desu ne. Ato, Nihon no okashi mo gaikokujin kankōkyaku ni ninki ga arimasu. Tokyo Banana toka.',

@@ -26,7 +26,7 @@ const parkLawnConversation: Conversation = {
     {
       id: 'kaori_park_greeting',
       characterId: 'kaori',
-      emotion: 'happy',
+      emotion: 'default',
       position: 'center',
       japaneseText: 'この公園は四季折々の景色が楽しめますよ。今は春なので、桜がきれいに咲いています。',
       romaji: 'Kono kōen wa shiki oriori no keshiki ga tanoshimemasu yo. Ima wa haru nanode, sakura ga kirei ni saite imasu.',

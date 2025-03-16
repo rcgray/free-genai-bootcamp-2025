@@ -104,7 +104,7 @@ const insideRestaurantConversation: Conversation = {
     {
       id: 'kaori_menu',
       characterId: 'kaori',
-      emotion: 'happy',
+      emotion: 'default',
       position: 'left',
       japaneseText: 'メニューを見てみましょう。何が食べたいですか？',
       romaji: 'Menyū o mite mimashou. Nani ga tabetai desu ka?',

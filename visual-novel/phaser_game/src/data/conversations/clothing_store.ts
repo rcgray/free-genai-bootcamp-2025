@@ -111,7 +111,7 @@ const clothingStoreConversation: Conversation = {
     {
       id: 'shopkeeper_recommend',
       characterId: 'shopkeeper',
-      emotion: 'happy',
+      emotion: 'default',
       position: 'right',
       japaneseText: 'もちろん！こちらの浴衣はいかがですか？夏祭りなどに着るのにぴったりです。または、この和柄のTシャツも人気がありますよ。',
       romaji: 'Mochiron! Kochira no yukata wa ikaga desu ka? Natsu-matsuri nado ni kiru no ni pittari desu. Mata wa, kono wagara no T-shatsu mo ninki ga arimasu yo.',
