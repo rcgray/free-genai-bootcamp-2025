@@ -35,6 +35,7 @@ export interface Dialog {
   englishText: string;          // English translation
   playerResponses?: PlayerResponse[]; // Optional player choices
   studyableTerms?: StudyableTerm[]; // Terms that can be studied from this dialog
+  _wrappedLineCount?: number;   // Internal metadata: number of lines after wrapping
 }
 
 /**

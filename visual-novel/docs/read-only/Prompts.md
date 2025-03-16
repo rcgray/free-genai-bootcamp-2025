@@ -1322,6 +1322,59 @@ Perhaps someething we deleted from the previous dialog (in order to make it disa
 
 ---
 
+Fixed! Next issue - the "continue" button (blinking triangle) should disappear during player selection dialogs. Right now it remains visible even though the character dialog has been removed and the player selection dialog has been displayed.
+
+---
+
+Fixed! Next issue:
+
+When the Japanese text is multiple lines, the romaji needs to be printed lower to make room for the extra lines. We know how many lines there are because we manually handle the line breaks for the Japanese text. We simply need to start the printing of the characters a distance down based on the extra vertical space the Japanese text takes up. See screenshot (green arrow) where the text overlaps.
+
+---
+
+It almost works, but it is sometimes putting in too many extra lines of space.  Here is a sample of the console log:
+```
+Displaying dialog: kaori_nature - 日本人は自然との調和を大切にします。四季を通じて自然を楽しむ文化があります。「わび・さび」という美学もあります。
+DialogManager.ts:238 Character dialog from: kaori, position: center, emotion: default
+DialogManager.ts:243 Character kaori is already shown, updating emotion/position
+DialogManager.ts:265 Calling onDialogDisplay callback
+VNScene.ts:173 Dialog display callback triggered: 日本人は自然との調和を大切にします。四季を通じて自然を楽しむ文化があります。「わび・さび」という美学もあります。
+JapaneseTextWrapper.ts:39 Wrapping Japanese text (56 characters): 日本人は自然との調和を大切にします。四季...
+JapaneseTextWrapper.ts:62 Line break at position: 43
+JapaneseTextWrapper.ts:67 Wrapped into 2 lines
+VNScene.ts:716 Displaying dialog: "日本人は自然との調和を大切にします。四季を通じて自然を楽しむ文化があります。「わび・さ
+び」という美学もあります。" from speaker: "kaori"
+VNScene.ts:1691 Wrapping Japanese text: 57 chars, max 43, starts with: 日本人は自然との調和を大切にします。四季...
+VNScene.ts:1742 Wrapped Japanese text into 2 lines
+VNScene.ts:799 Japanese text has 3 lines. Positioning romaji at Y: 681 (base: 590, extra height: 76)
+```
+As you can see, everything works up to the last line.  We correctly identify that "Wrapped Japanese text into 2 lines" but then when position romaji we declare that "Japanese text has 3 lines..."
+
+Note that this is not always the case. Our very first time this happens we handle it correctly.  From an earlier scene:
+```
+Starting conversation: outside_restaurant_food
+DialogManager.ts:231 Displaying dialog: restaurant_narration - カオリさんと一緒にレストランに到着しました。看板には「和食処 さくら」と書いてあります。
+DialogManager.ts:265 Calling onDialogDisplay callback
+VNScene.ts:173 Dialog display callback triggered: カオリさんと一緒にレストランに到着しました。看板には「和食処 さくら」と書いてあります。
+JapaneseTextWrapper.ts:39 Wrapping Japanese text (44 characters): カオリさんと一緒にレストランに到着しまし...
+JapaneseTextWrapper.ts:92 Allowing one character overflow for punctuation or prohibited line-start: 。
+JapaneseTextWrapper.ts:62 Line break at position: 44
+JapaneseTextWrapper.ts:67 Wrapped into 1 lines
+VNScene.ts:716 Displaying dialog: "カオリさんと一緒にレストランに到着しました。看板には「和食処 さくら」と書いてあります。" from speaker: ""
+VNScene.ts:1691 Wrapping Japanese text: 44 chars, max 43, starts with: カオリさんと一緒にレストランに到着しまし...
+VNScene.ts:1742 Wrapped Japanese text into 2 lines
+VNScene.ts:799 Japanese text has 2 lines. Positioning romaji at Y: 643 (base: 590, extra height: 38)
+```
+This text places the romaji correctly.
+
+Adding a few more notes, since our last attempt failed and we had to reset to this checkpoint:
+
+- Note that the Japanese Text does not contain any newlines prior to our processing it, so there is no need to account for them.
+- Oddly, we already do this perfectly in the player selection dialogs when the Japanese text covers multiple lines.
+- Note that in the VNScene.ts file, dialog.japaneseText is already wrapped in the formatDialogForDifficulty() function.
+- Note that dialog.japaneseText (already wrapped) is copied to this.currentDialog in the displayDialog() function prior to figuring out the romaji position, so why are we calling wrapJapaneseText() again?
+
+---
 
 
 

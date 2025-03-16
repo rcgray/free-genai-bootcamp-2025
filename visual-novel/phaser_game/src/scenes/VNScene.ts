@@ -232,10 +232,17 @@ export default class VNScene extends BaseScene {
     // Create the wrapped Japanese text
     const wrappedJapanese = JapaneseTextWrapper.wrap(dialog.japaneseText, 43, enableDebug);
     
-    // Return a new Dialog object with the wrapped text
+    // Debug log to verify the wrapping
+    const originalLength = dialog.japaneseText.length;
+    const wrappedLength = wrappedJapanese.length;
+    const lineCount = (wrappedJapanese.match(/\n/g) || []).length + 1;
+    console.log(`formatDialogForDifficulty: Original length ${originalLength}, wrapped length ${wrappedLength}, newlines ${lineCount-1}, total lines ${lineCount}`);
+    
+    // Return a new Dialog object with the wrapped text and metadata for positioning
     return {
       ...dialog,
-      japaneseText: wrappedJapanese
+      japaneseText: wrappedJapanese,
+      _wrappedLineCount: lineCount // Add a metadata property to track line count
     };
   }
   
@@ -774,8 +781,31 @@ export default class VNScene extends BaseScene {
     
     // Add romaji text below if present and if not in advanced mode
     if (dialog.romaji && this.difficultyLevel !== 'advanced') {
-      // Position below Japanese text with proper spacing
-      const romajiY = this.dialogText.y + this.dialogText.height + 15; // Increased from 5 to 15 for more space
+      // IMPORTANT: The dialog.japaneseText is already wrapped by formatDialogForDifficulty()
+      // so we should directly count newlines in it rather than double-wrapping
+      
+      // Count the number of lines by using our stored _wrappedLineCount, or fall back to counting newlines
+      const lineCount = dialog._wrappedLineCount || (dialog.japaneseText.match(/\n/g) || []).length + 1;
+      
+      // Log what we found for debugging
+      console.log(`Using stored line count: ${dialog._wrappedLineCount}, total lines: ${lineCount}`);
+      
+      // Calculate the proper Y position based on the number of lines
+      // Account for the line height and spacing
+      const lineHeight = 32; // Slightly increased from 30 to provide more room
+      const lineSpacing = 6; // From the lineSpacing setting in dialogText.setStyle
+      
+      // Calculate extra height needed for multi-line text
+      // Formula: If more than 1 line, add height for each additional line
+      const extraHeight = lineCount > 1 ? (lineCount - 1) * (lineHeight + lineSpacing) : 0;
+      
+      // Position below Japanese text with proper spacing for multi-line text
+      const baseY = this.dialogText.y + this.dialogText.height;
+      const padding = 15; // Padding between Japanese and romaji
+      const romajiY = baseY + extraHeight + padding;
+      
+      // Log for debugging
+      console.log(`Japanese text has ${lineCount} lines from direct count. Positioning romaji at Y: ${romajiY} (base: ${baseY}, extra height: ${extraHeight})`);
       
       // Create romaji text with styling matching choice buttons
       this.romajiText = this.add.text(
@@ -785,7 +815,7 @@ export default class VNScene extends BaseScene {
         {
           fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
           fontSize: '18px', // Smaller font for romaji
-          color: '#cccccc', // Same color as in choice buttons
+          color: '#cccccc',
           wordWrap: { width: this.dialogBox ? this.dialogBox.width - 40 : 700 },
           lineSpacing: 2
         }
@@ -797,9 +827,30 @@ export default class VNScene extends BaseScene {
     // Add English text if present and if in beginner mode
     if (this.difficultyLevel === 'beginner' && dialog.englishText) {
       // Position below romaji or Japanese text with proper spacing
-      const englishY = dialog.romaji 
-        ? this.romajiText!.y + this.romajiText!.height + 15 // Position relative to romaji text
-        : this.dialogText.y + this.dialogText.height + 5; // Directly below Japanese
+      let englishY;
+      
+      if (dialog.romaji) {
+        // If romaji is displayed, position English text relative to romaji
+        englishY = this.romajiText!.y + this.romajiText!.height + 15;
+      } else {
+        // If no romaji, position directly below Japanese text with proper spacing for multi-line text
+        // Count lines directly from the already-wrapped text or use stored line count
+        const lineCount = dialog._wrappedLineCount || (dialog.japaneseText.match(/\n/g) || []).length + 1;
+        
+        const lineHeight = 32; // Same as used for romaji positioning
+        const lineSpacing = 6;
+        
+        // Calculate extra height needed for multi-line text
+        const extraHeight = lineCount > 1 ? (lineCount - 1) * (lineHeight + lineSpacing) : 0;
+        
+        // Position below Japanese text with proper spacing
+        const baseY = this.dialogText.y + this.dialogText.height;
+        const padding = 15; // Padding between Japanese and English
+        englishY = baseY + extraHeight + padding;
+        
+        // Log for debugging
+        console.log(`No romaji shown. Japanese text has ${lineCount} lines from direct count. Positioning English at Y: ${englishY} (base: ${baseY}, extra height: ${extraHeight})`);
+      }
       
       // Create English text with styling matching choice buttons
       this.englishText = this.add.text(
@@ -809,7 +860,7 @@ export default class VNScene extends BaseScene {
         {
           fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
           fontSize: '18px', // Smaller font for English
-          color: '#aaddff', // Same blue color as in choice buttons
+          color: '#aaddff',
           wordWrap: { width: this.dialogBox ? this.dialogBox.width - 40 : 700 },
           lineSpacing: 2
         }
@@ -829,6 +880,11 @@ export default class VNScene extends BaseScene {
     
     // Start the typewriter effect on Japanese text only
     const dialogLength = dialog.japaneseText.length;
+    
+    // Debug log to verify if the text contains newlines
+    const newlineCount = (dialog.japaneseText.match(/\n/g) || []).length;
+    console.log(`Starting typewriter effect for text with ${newlineCount} newlines, length: ${dialogLength}`);
+    
     this.dialogTimer = this.time.addEvent({
       delay: this.dialogSpeed,
       callback: this.updateDialogText,
