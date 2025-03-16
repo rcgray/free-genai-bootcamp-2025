@@ -245,6 +245,28 @@ export default class VNScene extends BaseScene {
   private handleConversationComplete(): void {
     console.log(`Conversation at ${this.currentLocation} complete, determining next location`);
     
+    // Clean up any study button
+    if (this.studyButton) {
+      this.studyButton.removeAllListeners();
+      this.studyButton.destroy();
+      this.studyButton = undefined;
+    }
+    
+    // Clean up tracked study button containers
+    this.studyButtonContainers.forEach(container => {
+      if (container && container.active) {
+        // Remove all event listeners first
+        container.getAll().forEach(child => {
+          if (child instanceof Phaser.GameObjects.Rectangle || 
+              child instanceof Phaser.GameObjects.Text) {
+            child.removeAllListeners();
+          }
+        });
+        container.destroy();
+      }
+    });
+    this.studyButtonContainers = [];
+    
     // For now, we'll implement a simple linear progression through locations
     const locationSequence = [
       'train_platform',
@@ -407,17 +429,10 @@ export default class VNScene extends BaseScene {
     );
     this.nextIndicator.setOrigin(0.5, 0.5);
     this.nextIndicator.setAlpha(0);
+    this.nextIndicator.setVisible(false); // Initially invisible
     this.nextIndicator.setDepth(this.DEPTH_UI);
     
-    // Add a pulsing animation
-    this.tweens.add({
-      targets: this.nextIndicator,
-      alpha: 1,
-      duration: 500,
-      ease: 'Power2',
-      yoyo: true,
-      repeat: -1
-    });
+    // We'll start the animation when needed, not at creation time
   }
   
   /**
@@ -806,6 +821,10 @@ export default class VNScene extends BaseScene {
     // Hide the next indicator until dialog is complete
     if (this.nextIndicator) {
       this.nextIndicator.setAlpha(0);
+      this.nextIndicator.setVisible(false);
+      
+      // Stop any existing tweens on the indicator
+      this.tweens.killTweensOf(this.nextIndicator);
     }
     
     // Start the typewriter effect on Japanese text only
@@ -856,6 +875,19 @@ export default class VNScene extends BaseScene {
       // Show the next indicator
       if (this.nextIndicator) {
         this.nextIndicator.setAlpha(1);
+        this.nextIndicator.setVisible(true);
+        
+        // Restart the pulsing animation if it was stopped
+        if (!this.tweens.getTweensOf(this.nextIndicator).length) {
+          this.tweens.add({
+            targets: this.nextIndicator,
+            alpha: { from: 0.5, to: 1 },
+            duration: 500,
+            ease: 'Power2',
+            yoyo: true,
+            repeat: -1
+          });
+        }
       }
       
       // Mark dialog as complete
@@ -893,6 +925,26 @@ export default class VNScene extends BaseScene {
     // Show the next indicator
     if (this.nextIndicator) {
       this.nextIndicator.setAlpha(1);
+      this.nextIndicator.setVisible(true);
+      
+      // Restart the pulsing animation if it was stopped
+      if (!this.tweens.getTweensOf(this.nextIndicator).length) {
+        this.tweens.add({
+          targets: this.nextIndicator,
+          alpha: { from: 0.5, to: 1 },
+          duration: 500,
+          ease: 'Power2',
+          yoyo: true,
+          repeat: -1
+        });
+      }
+    }
+    
+    // Clean up any existing study button to avoid duplicates
+    if (this.studyButton) {
+      this.studyButton.removeAllListeners();
+      this.studyButton.destroy();
+      this.studyButton = undefined;
     }
     
     // Mark as complete
@@ -988,9 +1040,25 @@ export default class VNScene extends BaseScene {
     
     console.log('Showing choices and performing aggressive cleanup');
     
-    // AGGRESSIVE CLEANUP: Destroy ALL tracked study button containers
+    // Hide the next indicator (continue button) since we're showing choices
+    if (this.nextIndicator) {
+      // Stop any tweens on the next indicator
+      this.tweens.killTweensOf(this.nextIndicator);
+      // Hide the indicator
+      this.nextIndicator.setVisible(false);
+      this.nextIndicator.setAlpha(0);
+    }
+    
+    // AGGRESSIVE CLEANUP: First remove all event listeners, then destroy objects
     this.studyButtonContainers.forEach(container => {
       if (container && container.active) {
+        // Remove all event listeners first
+        container.getAll().forEach(child => {
+          if (child instanceof Phaser.GameObjects.Rectangle || 
+              child instanceof Phaser.GameObjects.Text) {
+            child.removeAllListeners();
+          }
+        });
         console.log('Destroying tracked study button container');
         container.destroy();
       }
@@ -1003,12 +1071,23 @@ export default class VNScene extends BaseScene {
     this.children.each((child) => {
       // Check if this is a Text object with 'Study' content
       if (child instanceof Phaser.GameObjects.Text && child.text === 'Study') {
+        // Remove all event listeners first
+        child.removeAllListeners();
         console.log('Found and destroying extra Study text:', child);
         child.destroy();
       }
       
       // Check if this is a Container that might contain a study button
       if (child instanceof Phaser.GameObjects.Container) {
+        // Remove all listeners first
+        child.getAll().forEach(nestedChild => {
+          if (nestedChild instanceof Phaser.GameObjects.Rectangle || 
+              nestedChild instanceof Phaser.GameObjects.Text) {
+            nestedChild.removeAllListeners();
+          }
+        });
+        
+        // Also check for and destroy any Study text in this container
         child.each((grandchild: Phaser.GameObjects.GameObject) => {
           if (grandchild instanceof Phaser.GameObjects.Text && grandchild.text === 'Study') {
             console.log('Found and destroying Study text in container:', grandchild);
@@ -1375,9 +1454,36 @@ export default class VNScene extends BaseScene {
       this.studyButton = undefined;
     }
     
+    // Remove all event listeners from choice buttons before destroying them
+    if (this.choiceContainer && this.choiceContainer.active) {
+      // Get all interactive objects within the choice container
+      this.choiceContainer.getAll().forEach(child => {
+        if (child instanceof Phaser.GameObjects.Rectangle || 
+            child instanceof Phaser.GameObjects.Text) {
+          // Remove all event listeners
+          child.removeAllListeners();
+        } else if (child instanceof Phaser.GameObjects.Container) {
+          // For nested containers, remove listeners from their children too
+          child.getAll().forEach(nestedChild => {
+            if (nestedChild instanceof Phaser.GameObjects.Rectangle || 
+                nestedChild instanceof Phaser.GameObjects.Text) {
+              nestedChild.removeAllListeners();
+            }
+          });
+        }
+      });
+    }
+    
     // Cleanup all tracked study button containers
     this.studyButtonContainers.forEach(container => {
       if (container && container.active) {
+        // Remove all event listeners first
+        container.getAll().forEach(child => {
+          if (child instanceof Phaser.GameObjects.Rectangle || 
+              child instanceof Phaser.GameObjects.Text) {
+            child.removeAllListeners();
+          }
+        });
         console.log('Destroying tracked study button container in handleChoice');
         container.destroy();
       }
@@ -1427,6 +1533,10 @@ export default class VNScene extends BaseScene {
             ease: 'Power1'
           });
         }
+        
+        // Restore the next indicator (continue button) when returning to regular dialog
+        // We'll only show it after the dialog is fully displayed (when the text animation completes)
+        // This will happen in the displayDialog or completeDialog methods
         
         // Get the current dialog from DialogManager
         const currentDialog = this.dialogManager.getCurrentDialog();
