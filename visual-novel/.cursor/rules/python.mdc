@@ -1,0 +1,42 @@
+---
+description: Python development
+globs: 
+alwaysApply: false
+---
+
+# Your rule content
+
+- Include a "🐍" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate you have read this file.
+
+## Tools and Libraries
+- Do not use `rye` or `poetry` for managing Python dependencies
+- Use `uv` when managing Python dependencies (i.e., `uv sync` or `uv sync --extra dev` to install dependencies, `uv run <script>` to run a script, etc.)
+- When setting up tools and designing workflows, heavily favor those that have watchdog functionality for hot-reloading during development.
+- Use `ruff` for linting and formatting (includes black and isort functionality)
+- Use `mypy` for type checking
+- Use `pytest` for testing
+
+## General Python Recommendations
+- Use type hints in all Python code
+- Follow PEP 8 style guidelines
+- Keep functions focused and small
+- Document all public functions and classes
+- Write tests for new functionality
+- Use meaningful variable and function names
+- Handle errors gracefully with proper logging
+- Use pathlib for file operations
+- Use f-strings for string formatting
+- Follow the principle of least surprise
+
+## Streamlit Best Practices
+- Use st.cache_data for data loading operations
+- Use st.cache_resource for resource-heavy operations
+- Organize UI elements logically with st.columns and st.tabs
+- Use appropriate Streamlit components for data types
+- Keep the app state manageable with session_state
+- Handle file uploads securely
+- Show appropriate progress indicators
+- Provide clear user feedback
+- Use st.spinner for long operations
+- Implement proper error handling with st.error
+

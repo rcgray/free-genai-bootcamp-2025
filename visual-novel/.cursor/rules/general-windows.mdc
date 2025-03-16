@@ -1,0 +1,14 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+# Your rule content
+
+- This is a Windows 10 development machine running WSL.
+- Include a "🖥️" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate you have read this file.
+
+## Command Line Interface
+- We are using a conda environment called `vn`. Please remember to activate this environment anytime a new terminal is instantiated for this project. This ensures that the proper development environment is set for this machine for this project. include activating that environment in your commands.
+- If a tool is needed that is not typically a tool in the ecosystem of our project's development stack (i.e., not a pip package in a Python project nor an npm package in a JavaScript/Typescript project), recommend installing new command line utilities with `sudo apt install`.
