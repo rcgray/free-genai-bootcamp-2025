@@ -165,11 +165,11 @@
 6. ✅ Test the character system using the Character Test Scene
 
 ### 3.2 Dialog System
-- [ ] Create dialog data structure
-- [ ] Implement text display with Japanese support
-- [ ] Add text animation effects (typewriter)
+- [x] Create dialog data structure
+- [x] Implement text display with Japanese support
+- [x] Add text animation effects (typewriter)
 - [~] Create dialog history system
-- [ ] Implement basic choice system
+- [x] Implement basic choice system
 
 ### 3.2.1 Furigana Ruby Text Implementation
 - [x] Create specification document for Furigana Ruby Text feature
@@ -178,24 +178,14 @@
   - [x] Implement reading mapping functionality
   - [x] Build composite text rendering system
   - [x] Add difficulty level filtering
-- [ ] Integrate with VNScene dialog display
-  - [ ] Update character dialog rendering
-  - [ ] Update player choice rendering
-  - [ ] Ensure compatibility with text animations
-- [ ] Test and optimize performance
-  - [ ] Test with various Japanese text samples
-  - [ ] Optimize rendering for smooth performance
-  - [ ] Polish visual appearance and positioning
-
-**[CHECKPOINT: Furigana Implementation]**
-*Verification Steps:*
-1. ✅ Verify furigana alignment algorithm correctly identifies kanji readings
-2. ✅ Test furigana display with various Japanese text patterns
-3. ✅ Verify proper handling of mixed text (kanji, hiragana, katakana)
-4. [ ] Verify furigana displays correctly above kanji in character dialog
-5. [ ] Test furigana in player response options
-6. [ ] Test different difficulty levels show appropriate furigana
-7. [ ] Verify performance remains smooth with multiple dialog entries
+- [~] Integrate with VNScene dialog display
+  - [~] Update character dialog rendering
+  - [~] Update player choice rendering
+  - [~] Ensure compatibility with text animations
+- [~] Test and optimize performance
+  - [~] Test with various Japanese text samples
+  - [~] Optimize rendering for smooth performance
+  - [~] Polish visual appearance and positioning
 
 ### 3.3 Game Flow
 - [ ] Create game state management

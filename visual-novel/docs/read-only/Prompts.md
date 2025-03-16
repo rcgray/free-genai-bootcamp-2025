@@ -1244,6 +1244,89 @@ Also, get rid of the capital letters.  Just use lower-case for readability.
 
 OK, our furigana implementation is working.  Let's update the spec file to reflect the completion of this phase, and then we can move on to actually adding its display to the dialogs.
 
+---
+
+# Attempts to integrate furigana into the dialog system have failed.  We are keeping our furigana generation code, but for now not adding it to the dialog system visually
+
+# New chat (Agent, claude-3.7-sonnet-thinking)
+
+---
+
+[Agent][Longer Context]
+We are building a Japanese learning app in the form of a visual novel game using Phaser and Streamlit.
+
+(Interaction Guidelines: @Prompt-Header.md - Please remember these rules for all interactions. Any message the user sends, presume that the contents of this Prompt Header are prefixed to that message.)
+(Project File Structure: @Project-File-Structure.md - Please remember this Project File Structure for determining where to find files in our project, what folders exist, etc.)
+(Technical Specification: @Technical-Spec.md - Please remember this Technical Specification for understanding the technical details of the project.)
+(Game Design: @Game-Design.md - Please remember this Game Design for understanding the design of the game, the locations, characters, events, etc.)
+(Game LLM Prompts: @Game-LLM-Prompts.md - Please remember this Game LLM Prompts for understanding the prompts we will give to the LLM for generating game content.)
+(Action Plan: @Action-Plan.md - Please remember this Action Plan for understanding the plan for building the project, identifying previously completed work, identifying the current phase and upcoming [CHECKPOINT].)
+
+*DO NOT RUN `npm run dev` - I will run the app and let you know if there are any issues.*
+
+Our current phase is 3.3. Before we get to that, let's do a little bit of small adjustments and bug fixing:
+
+- When the game loads, Kaori (Default) is visibly displayed in a center position.  We should not show her by default.
+- Only the FIRST dialog following a player selection does the typewriter effect.  All others just appear in full.  Somewhere we are forgetting to reinitialize the typewriter effect each time a new dialog is displayed.
+- The "continue" button should disappear during player selection dialogs.
+- The "waitress" character never displays in her scene during her dialog (the shopkeeper DOES display properly, though).
+
+---
+
+OK great! Next issue:
+- We have an uncaught error in the console when the game loads Kaori's second dialog (after the first player selection). Here is a selection of the console output:
+```
+Advancing dialog
+DialogManager.ts:315 Dialog has 3 choices, showing choices
+VNScene.ts:193 Show choices callback triggered: 3 choices
+VNScene.ts:989 Showing choices and performing aggressive cleanup
+VNScene.ts:625 Pointer down detected at 788 675
+VNScene.ts:676 Hit test targets: []
+VNScene.ts:634 Dialog complete, advancing to next dialog
+DialogManager.ts:282 Advancing dialog
+DialogManager.ts:315 Dialog has 3 choices, showing choices
+VNScene.ts:193 Show choices callback triggered: 3 choices
+VNScene.ts:989 Showing choices and performing aggressive cleanup
+3VNScene.ts:994 Destroying tracked study button container
+VNScene.ts:625 Pointer down detected at 659 560
+VNScene.ts:676 Hit test targets: ['Rectangle']
+VNScene.ts:634 Dialog complete, advancing to next dialog
+DialogManager.ts:282 Advancing dialog
+DialogManager.ts:315 Dialog has 3 choices, showing choices
+VNScene.ts:193 Show choices callback triggered: 3 choices
+VNScene.ts:989 Showing choices and performing aggressive cleanup
+3VNScene.ts:994 Destroying tracked study button container
+VNScene.ts:1365 Selected choice: 2
+3VNScene.ts:1381 Destroying tracked study button container in handleChoice
+DialogManager.ts:358 Selecting choice: response_3
+DialogManager.ts:394 Advanced to dialog index: 2 after choice selection
+DialogManager.ts:231 Displaying dialog: kaori_response_1 - 元気で何よりです！東京へようこそ！
+DialogManager.ts:238 Character dialog from: kaori, position: center, emotion: default
+DialogManager.ts:243 Character kaori is already shown, updating emotion/position
+DialogManager.ts:265 Calling onDialogDisplay callback
+VNScene.ts:173 Dialog display callback triggered: 元気で何よりです！東京へようこそ！
+VNScene.ts:701 Displaying dialog: "元気で何よりです！東京へようこそ！" from speaker: "kaori"
+phaser.js:214974  Uncaught TypeError: Cannot read properties of null (reading 'drawImage')
+    at Frame2.updateUVs (phaser.js:214974:28)
+    at Frame2.setCutPosition (phaser.js:214593:21)
+    at Frame2.setSize (phaser.js:214636:14)
+    at Text2.updateText (phaser.js:82683:24)
+    at TextStyle2.setStyle (phaser.js:83632:32)
+    at Text2.setStyle (phaser.js:82074:27)
+    at Rectangle2.<anonymous> (VNScene.ts:1187:25)
+    at Rectangle2.emit (phaser.js:199:35)
+    at InputPlugin2.processOverOutEvents (phaser.js:105716:28)
+    at InputPlugin2.update (phaser.js:104576:35)
+```
+Perhaps someething we deleted from the previous dialog (in order to make it disappear when the player selection dialog is displayed) is being referenced here?  Perhaps it is in our "aggressive cleanup"?
+
+---
+
+
+
+
+- The "continue" button should disappear during player selection dialogs.
+- The "waitress" character never displays in her scene during her dialog (the shopkeeper DOES display properly, though).
 
 
 
