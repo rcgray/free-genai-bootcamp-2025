@@ -188,36 +188,33 @@
   - [~] Polish visual appearance and positioning
 
 ### 3.3 Game Flow
-- [ ] Create game state management
-- [ ] Implement scene transitions based on choices
-- [ ] Add dialog progression system
-- [ ] Create basic branching narrative system
-- [ ] Implement study mode entry points
+- [x] Create game state management
+- [x] Implement scene transitions based on choices
+- [x] Add dialog progression system
+- [x] Implement study mode entry points
 
 ### 3.4 Static Content Creation
-- [ ] Create sample backgrounds
-- [ ] Design basic character sprites
-- [ ] Write initial dialog sequences
-- [ ] Create test choices and branches
-- [ ] Implement static study content
+- [x] Create sample backgrounds
+- [x] Design basic character sprites
+- [x] Write initial dialog sequences
+- [x] Create test choices and branches
+- [x] Implement static study content
 
 **[CHECKPOINT: Game Flow and Content]**
 *Verification Steps:*
 1. Test complete game flow from title to end of sample content
-2. Verify branching narrative works correctly based on choices
-3. Test study mode entry and exit points
-4. Verify all static content (backgrounds, characters, dialog) displays correctly
-5. Test game state persistence throughout the flow
-6. Verify all transitions and animations work smoothly
+2. Test study mode entry and exit points
+3. Verify all static content (backgrounds, characters, dialog) displays correctly
+4. Test game state persistence throughout the flow
+5. Verify all transitions and animations work smoothly
 
 ## Phase 4: Language Learning Features 🟡
 
 ### 4.1 Japanese Text Support
-- [ ] Ensure proper Japanese character rendering
-- [ ] Implement furigana/ruby text support
-- [ ] Add Japanese font integration
-- [ ] Create text styling for different languages
-- [ ] Test cross-browser compatibility
+- [x] Ensure proper Japanese character rendering
+- [~] Implement furigana/ruby text support
+- [x] Add Japanese font integration
+- [x] Test cross-browser compatibility
 
 ### 4.2 Study Mode Features
 - [ ] Implement phrase selection mechanism

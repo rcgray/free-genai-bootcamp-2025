@@ -130,38 +130,45 @@ export default class VNScene extends BaseScene {
    * Create the scene elements
    */
   create(): void {
-    console.log('Creating VNScene');
+    console.log('VNScene create() method called');
     
-    // Set up the background (lowest layer)
+    // Set up core UI and interactions
     this.createBackground();
-    
-    // Set the character manager's scene reference
-    this.characterManager.setScene(this);
-    
-    // Set the character manager's depth value
-    this.characterManager.setCharacterDepth(this.DEPTH_CHARACTER);
-    
-    // Set up the UI elements (highest layer) - creating these before setting dialog manager callbacks
     this.createDialogBox();
     this.createNameBox();
     this.createNextIndicator();
     this.createChoiceContainer();
     this.createTitleButton();
     this.createDifficultyButton();
+    this.setupInputHandlers();
     
-    // Set the dialog manager's scene reference and character manager
+    // Initialize character manager
+    this.characterManager = new CharacterManager();
+    this.characterManager.setScene(this);
+    this.characterManager.setCharacterDepth(this.DEPTH_CHARACTER);
+    
+    // Initialize dialog manager with our dialog data
+    this.dialogManager = new DialogManager();
     this.dialogManager.setScene(this);
     this.dialogManager.setCharacterManager(this.characterManager);
     this.setupDialogManagerCallbacks();
     
-    // Set up input handling
-    this.setupInputHandlers();
+    // Register for scene-specific reloading
+    this.registry.set('stateful_scene_' + this.scene.key, true);
+    
+    // Add a pink circle at (1050, 550) for debugging position
+    //const debugCircle = this.add.circle(1050, 550, 10, 0xff00ff);
+    //debugCircle.setAlpha(0.8);
+    //debugCircle.setDepth(this.DEPTH_UI + 20); // Make sure it's on top
     
     // Start the train platform conversation
     setTimeout(() => {
       console.log('Starting initial conversation after a short delay');
       this.dialogManager.startConversation(trainPlatformConversation.id);
     }, 100); // Short delay to ensure everything is ready
+    
+    // Debug initial state
+    console.log('[SB1] create() complete - dialog box exists:', !!this.dialogBox, 'study button exists:', !!this.studyButton);
   }
   
   /**
@@ -192,12 +199,7 @@ export default class VNScene extends BaseScene {
       onShowChoices: (responses: PlayerResponse[]) => {
         console.log(`Show choices callback triggered: ${responses.length} choices`);
         
-        // Aggressive cleanup of all dialog-related elements
-        // Destroy the study button
-        if (this.studyButton) {
-          this.studyButton.destroy();
-          this.studyButton = undefined;
-        }
+        // Clean up dialog-related elements BUT preserve the study button
         
         // Destroy romaji text
         if (this.romajiText) {
@@ -216,7 +218,9 @@ export default class VNScene extends BaseScene {
           this.nextIndicator.setAlpha(0);
         }
         
-        // Format choices in the showChoices method
+        // Note: We specifically do NOT destroy the study button here
+        
+        // Display the player choices
         this.showChoices(responses);
       }
     });
@@ -645,6 +649,7 @@ export default class VNScene extends BaseScene {
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       // Debug log to check if click event is firing
       console.log('Pointer down detected at', pointer.x, pointer.y);
+      console.log('[SB1] pointerdown - Current study button:', this.studyButton);
       
       // Ignore if clicking on a choice button or title button
       if (this.isClickingInteractive(pointer)) {
@@ -654,14 +659,9 @@ export default class VNScene extends BaseScene {
       
       if (this.isDialogComplete) {
         console.log('Dialog complete, advancing to next dialog');
-        // If dialog is complete, advance to next dialog using DialogManager
+        console.log('[SB1] pointerdown - Dialog complete, study button before advancing:', this.studyButton);
         
-        // Ensure study button is destroyed before advancing dialog
-        if (this.studyButton) {
-          this.studyButton.destroy();
-          this.studyButton = undefined;
-        }
-        
+        // The study button will be destroyed in displayDialog when next dialog is shown
         this.dialogManager.advanceDialog();
       } else {
         console.log('Dialog not complete, completing it immediately');
@@ -676,12 +676,7 @@ export default class VNScene extends BaseScene {
       if (this.isDialogComplete) {
         console.log('Dialog complete, advancing to next dialog');
         
-        // Ensure study button is destroyed before advancing dialog
-        if (this.studyButton) {
-          this.studyButton.destroy();
-          this.studyButton = undefined;
-        }
-        
+        // The study button will be destroyed in displayDialog when next dialog is shown
         this.dialogManager.advanceDialog();
       } else {
         console.log('Dialog not complete, completing it immediately');
@@ -730,8 +725,11 @@ export default class VNScene extends BaseScene {
     
     // Remove any existing study button
     if (this.studyButton) {
+      console.log('[SB1] displayDialog() - destroying existing study button:', this.studyButton);
       this.studyButton.destroy();
       this.studyButton = undefined;
+    } else {
+      console.log('[SB1] displayDialog() - no existing study button to destroy');
     }
     
     // Clean up existing secondary text elements
@@ -918,6 +916,8 @@ export default class VNScene extends BaseScene {
     
     // When we reach the end of the Japanese text, show the additional elements with a slight delay
     if (this.displayedTextLength >= this.currentDialog.length) {
+      console.log('[SB1] updateDialogText() - reached end of text, length:', this.currentDialog.length);
+      
       // Show romaji with a slight delay
       if (this.romajiText) {
         this.romajiText.setAlpha(1);
@@ -948,8 +948,20 @@ export default class VNScene extends BaseScene {
       
       // Mark dialog as complete
       this.isDialogComplete = true;
+      console.log('[SB1] Dialog marked as complete, isDialogComplete:', this.isDialogComplete);
+      
+      // Clean up any existing study button first
+      if (this.studyButton) {
+        console.log('[SB1] updateDialogText() - cleaning up existing study button:', this.studyButton);
+        this.studyButton.removeAllListeners();
+        this.studyButton.destroy();
+        this.studyButton = undefined;
+      } else {
+        console.log('[SB1] updateDialogText() - no existing study button to clean up');
+      }
       
       // Add study button
+      console.log('[SB1] updateDialogText() - calling addStudyButton()');
       this.addStudyButton();
     }
   }
@@ -958,10 +970,12 @@ export default class VNScene extends BaseScene {
    * Complete the current dialog immediately
    */
   private completeDialog(): void {
+    console.log('[SB1] completeDialog() called');
     if (!this.dialogText) return;
     
     // Stop the typewriter timer
     if (this.dialogTimer) {
+      console.log('[SB1] completeDialog() - stopping dialog timer');
       this.dialogTimer.remove();
     }
     
@@ -998,15 +1012,20 @@ export default class VNScene extends BaseScene {
     
     // Clean up any existing study button to avoid duplicates
     if (this.studyButton) {
+      console.log('[SB1] completeDialog() - cleaning up existing study button:', this.studyButton);
       this.studyButton.removeAllListeners();
       this.studyButton.destroy();
       this.studyButton = undefined;
+    } else {
+      console.log('[SB1] completeDialog() - no existing study button to clean up');
     }
     
     // Mark as complete
     this.isDialogComplete = true;
+    console.log('[SB1] completeDialog() - isDialogComplete set to true');
     
     // Add study button
+    console.log('[SB1] completeDialog() - calling addStudyButton()');
     this.addStudyButton();
   }
   
@@ -1014,16 +1033,31 @@ export default class VNScene extends BaseScene {
    * Add a study button to the current dialog
    */
   private addStudyButton(): void {
+    console.log('[SB1] addStudyButton() called');
+    
     // Only add the study button if it doesn't already exist
-    if (this.studyButton || !this.dialogBox) return;
+    if (this.studyButton || !this.dialogBox) {
+      console.log('[SB1] addStudyButton() early return - studyButton exists:', !!this.studyButton, 'dialogBox exists:', !!this.dialogBox);
+      return;
+    }
+    
+    console.log('[SB1] dialogBox visibility - visible:', this.dialogBox.visible, 'alpha:', this.dialogBox.alpha);
+    console.log('[SB1] dialogBox position and size - x:', this.dialogBox.x, 'y:', this.dialogBox.y, 
+                'width:', this.dialogBox.width, 'height:', this.dialogBox.height);
     
     // Get the current dialog from the dialog manager
     const currentDialog = this.dialogManager.getCurrentDialog();
-    if (!currentDialog) return;
+    if (!currentDialog) {
+      console.log('[SB1] addStudyButton() early return - no current dialog');
+      return;
+    }
     
-    // Create the study button
-    const studyButtonX = this.dialogBox.x + this.dialogBox.width - 80;
-    const studyButtonY = this.dialogBox.y - 30;
+    // Position the study button at the same location as the pink debug dot (1050, 550)
+    // Calculate this position based on the dialog box position
+    const studyButtonX = this.dialogBox.x + 460; // 450 pixels from left edge of dialog box
+    const studyButtonY = this.dialogBox.y - 120; // 110 pixels above top edge of dialog box
+    
+    console.log('[SB1] Creating study button at position:', studyButtonX, studyButtonY);
     
     this.studyButton = this.add.text(
       studyButtonX,
@@ -1031,33 +1065,42 @@ export default class VNScene extends BaseScene {
       'Study',
       {
         fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
-        fontSize: '18px',
+        fontSize: '16px', // Same size as choice study buttons
         color: '#ffffff',
-        backgroundColor: '#4466aa',
+        backgroundColor: '#1e5a5a', // Same GREEN color as choice study buttons
         padding: {
           x: 10,
           y: 5
-        }
+        },
+        stroke: '#000000',
+        strokeThickness: 1
       }
     );
     
-    this.studyButton.setDepth(this.DEPTH_UI + 1);
+    // Set depth to ensure visibility
+    this.studyButton.setDepth(this.DEPTH_UI + 10);
+    console.log('[SB1] Study button depth set to:', this.DEPTH_UI + 10);
     this.studyButton.setInteractive({ useHandCursor: true });
     
+    console.log('[SB1] Study button created:', this.studyButton);
+    
     // Add hover effect
+    const originalBgColor = '#1e5a5a'; // GREEN color
+    const hoverBgColor = '#2a7a7a'; // Lighter green for hover
+    
     this.studyButton.on('pointerover', () => {
       if (this.studyButton) {
-        this.studyButton.setStyle({ color: '#ffff99', backgroundColor: '#5577bb' });
+        this.studyButton.setStyle({ color: '#aaddff', backgroundColor: hoverBgColor });
       }
     });
     
     this.studyButton.on('pointerout', () => {
       if (this.studyButton) {
-        this.studyButton.setStyle({ color: '#ffffff', backgroundColor: '#4466aa' });
+        this.studyButton.setStyle({ color: '#ffffff', backgroundColor: originalBgColor });
       }
     });
     
-    // Add click handler
+    // Handle click event
     this.studyButton.on('pointerdown', () => {
       if (currentDialog) {
         const studyData = {
@@ -1092,20 +1135,25 @@ export default class VNScene extends BaseScene {
    * Show choice buttons
    */
   private showChoices(choices: PlayerResponse[]): void {
-    if (!this.choiceContainer) return;
+    // Safety check
+    if (!this.choiceContainer) {
+      console.error('Choice container not initialized');
+      return;
+    }
+
+    console.log(`[SB1] showChoices() - Showing ${choices.length} choices`);
+    console.log(`[SB1] showChoices() - Current study button:`, this.studyButton);
     
-    console.log('Showing choices and performing aggressive cleanup');
-    
-    // Hide the next indicator (continue button) since we're showing choices
-    if (this.nextIndicator) {
-      // Stop any tweens on the next indicator
-      this.tweens.killTweensOf(this.nextIndicator);
-      // Hide the indicator
-      this.nextIndicator.setVisible(false);
-      this.nextIndicator.setAlpha(0);
+    // Hide the study button completely when choices are shown
+    if (this.studyButton) {
+      console.log(`[SB1] showChoices() - Hiding study button`);
+      this.studyButton.setVisible(false);
     }
     
-    // AGGRESSIVE CLEANUP: First remove all event listeners, then destroy objects
+    // Reset containers first to clean state
+    this.choiceContainer.setVisible(true);
+    
+    // Clean up any existing study button containers (for choice buttons only)
     this.studyButtonContainers.forEach(container => {
       if (container && container.active) {
         // Remove all event listeners first
@@ -1122,37 +1170,6 @@ export default class VNScene extends BaseScene {
     // Clear the tracking array
     this.studyButtonContainers = [];
     
-    // ADDITIONAL CLEANUP: Find and destroy ANY study buttons in the scene
-    // This ensures no rogue study buttons remain from any source
-    this.children.each((child) => {
-      // Check if this is a Text object with 'Study' content
-      if (child instanceof Phaser.GameObjects.Text && child.text === 'Study') {
-        // Remove all event listeners first
-        child.removeAllListeners();
-        console.log('Found and destroying extra Study text:', child);
-        child.destroy();
-      }
-      
-      // Check if this is a Container that might contain a study button
-      if (child instanceof Phaser.GameObjects.Container) {
-        // Remove all listeners first
-        child.getAll().forEach(nestedChild => {
-          if (nestedChild instanceof Phaser.GameObjects.Rectangle || 
-              nestedChild instanceof Phaser.GameObjects.Text) {
-            nestedChild.removeAllListeners();
-          }
-        });
-        
-        // Also check for and destroy any Study text in this container
-        child.each((grandchild: Phaser.GameObjects.GameObject) => {
-          if (grandchild instanceof Phaser.GameObjects.Text && grandchild.text === 'Study') {
-            console.log('Found and destroying Study text in container:', grandchild);
-            grandchild.destroy();
-          }
-        });
-      }
-    });
-    
     // Clear existing choices
     this.choiceButtons.forEach(button => button.destroy());
     this.choiceButtons = [];
@@ -1160,32 +1177,20 @@ export default class VNScene extends BaseScene {
     // Clean out any existing children to prevent potential memory leaks
     this.choiceContainer.removeAll(true);
     
-    // IMPORTANT: Always destroy (not just hide) these elements
-    
-    // Destroy the study button
-    if (this.studyButton) {
-      this.studyButton.destroy();
-      this.studyButton = undefined;
-    }
-    
-    // Destroy romaji text (don't just hide it)
-    if (this.romajiText) {
-      this.romajiText.destroy();
-      this.romajiText = undefined;
-    }
-    
-    // Destroy English text (don't just hide it)
-    if (this.englishText) {
-      this.englishText.destroy();
-      this.englishText = undefined;
-    }
-    
-    // Hide the dialog box and other primary UI elements (these can be hidden, not destroyed)
+    // Hide the dialog box and other primary UI elements
+    // Make sure everything is completely invisible
     if (this.dialogBox) this.dialogBox.setAlpha(0);
     if (this.dialogText) this.dialogText.setAlpha(0);
     if (this.nameBox) this.nameBox.setAlpha(0);
     if (this.nameText) this.nameText.setAlpha(0);
-    if (this.nextIndicator) this.nextIndicator.setAlpha(0);
+    
+    // Make the next indicator completely invisible
+    if (this.nextIndicator) {
+      this.nextIndicator.setAlpha(0);
+      this.nextIndicator.setVisible(false);
+      // Stop any tweens on the next indicator
+      this.tweens.killTweensOf(this.nextIndicator);
+    }
     
     // Set up sizing for choices
     const choiceBoxWidth = this.cameras.main.width * 0.7; // Reduced width for a lighter feel
@@ -1498,16 +1503,20 @@ export default class VNScene extends BaseScene {
     if (!this.choiceContainer) return;
     
     console.log(`Selected choice: ${choiceIndex}`);
+    console.log('[SB1] handleChoice() - Current study button:', this.studyButton);
     
     // Play a sound effect if available
     if (this.sound.get('selection')) {
       this.sound.play('selection', { volume: 0.5 });
     }
     
-    // Ensure study button is destroyed before animation starts
+    // Instead of destroying the study button, just make it invisible until the next dialog is shown
+    // This will make the transition smoother
     if (this.studyButton) {
-      this.studyButton.destroy();
-      this.studyButton = undefined;
+      console.log('[SB1] handleChoice() - hiding study button for transition:', this.studyButton);
+      this.studyButton.setVisible(false);
+    } else {
+      console.log('[SB1] handleChoice() - no study button to hide');
     }
     
     // Remove all event listeners from choice buttons before destroying them
