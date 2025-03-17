@@ -1,7 +1,6 @@
----
-description: 
+description: Rules specific to development on Windows 10 with WSL. User will set this as their .cursorrules file on their Windows 10 + WSL development machines.
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Your rule content

@@ -1,5 +1,5 @@
 ---
-description: 
+description: Rules specific to development on Mac OS. User will set this as their .cursorrules file on their MacOS development machines.
 globs: 
 alwaysApply: true
 ---

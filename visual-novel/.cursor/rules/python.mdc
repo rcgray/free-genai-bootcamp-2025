@@ -1,5 +1,5 @@
 ---
-description: Python development
+description: Rules applying to python development. Apply whenever working with Python code or workflows.
 globs: 
 alwaysApply: false
 ---

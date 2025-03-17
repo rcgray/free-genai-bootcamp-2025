@@ -135,3 +135,6 @@ phaser_game/dist/
 
 # Development
 app/dev_main.py 
+
+# Cursor Rules - general rules are in .cursor/rules, machine-specific rules are in .cursorrules
+.cursorrules

@@ -1376,12 +1376,57 @@ Adding a few more notes, since our last attempt failed and we had to reset to th
 
 ---
 
+Great, fixed! Now let's spend some time on our standing game scenario, particularly the dialog that we have as a "fallback" or default for the game (in the case the LLM cannot provide any).
 
+---
 
-- The "continue" button should disappear during player selection dialogs.
-- The "waitress" character never displays in her scene during her dialog (the shopkeeper DOES display properly, though).
+# New chat (Agent, claude-3.7-sonnet)
 
+---
 
+[Agent]
+We are building a Japanese learning app in the form of a visual novel game using Phaser and Streamlit.
 
+(Interaction Guidelines: @Prompt-Header.md - Please remember these rules for all interactions. Any message the user sends, presume that the contents of this Prompt Header are prefixed to that message.)
+(Project File Structure: @Project-File-Structure.md - Please remember this Project File Structure for determining where to find files in our project, what folders exist, etc.)
+(Game Design: @Game-Design.md - Please remember this Game Design for understanding the design of the game, the locations, characters, events, etc.)
 
+*DO NOT RUN `npm run dev` - I will run the app and let you know if there are any issues.*
+
+Let's turn our attention to the dialog that we have as a "fallback" or default for the game (in the case the LLM cannot provide any). This dialog lives in a set of files in the `phaser_game/src/data/conversations/` directory. Our goal is to create a new file `/docs/Fallback-Dialog.md` that will serve as a workspace for fine-tuning this dialog. We should create it in such a way that it is easy to work with and that we can easily take changes we've made to this spec file and apply them to the dialog.
+
+To begin, please create this new file and add a list of the current scenes (and corresponding scene files) across which our game takes place.
+
+---
+
+Great! Next, we're going to go through these one by one and create a compact list of the full interactions for each scene.  We should have each of the character dialogs interspersed with the player choices so that we can easily read the full interaction at once like a script.  These lists should include the Japanese text, the romaji, and the English translation.  We can separate the scripts by scene so we can deep dive into them one at a time. Keep in mind that we will want for any edits we make to this rendition (in the `Fallback-Dialog.md` file) to be easily applied back to the dialog file that the game will use.
+
+---
+
+For each of the scenes (1.1 Train Platform, 1.2 Inside Train, etc.) could you include mention of which characters are in the scenes? For character dialog, you indicate the player emotional state, but could you also include their position (center, left, right?). Remember that we want to add this in a way such that it will be easy for an AI to take changes made to this file and mirror those changes in the corresponding game files
+
+---
+
+Great, then let's also number the interactions, so that we can refer to them specifically by number.  Narration, Character statements, and player responses should get a top-level enumeration, and each player response should get a sub-enumeration (which they appear to already have assigned to them). I'l given some examples from 1.1 Train Platform:
+
+- The narration "東京駅に到着しました。ホームに立っていると..." would be 1.1.1
+- Kaori's statement "元気で何よりです！東京へようこそ！" would be 1.1.4
+- Player response "ちょっと待って。お土産を買いたいんですが。" would be 1.1.6.2
+
+To be clear, Player response "ちょっと待って。お土産を買いたいんですが。" would not literally be labeled "1.1.6.2" in the file, but it could be referenced as such due to the hierarchy of the script, where Train Platform is 1.1, that set of player responses would be the 6th statement in that scene, and it is the 2nd player response in that set.
+
+Some of the numbers are already assigned, but some are not.  We should add the missing numbers so that this could be explicit for someone else reading the file.  This does not mean adding "[1.1.1]" in front of NARRATION, but merely adding "1. " before "NARRATION", "2. " before "KAORI (default, position: center):", and "3. " before "[PLAYER RESPONSE OPTIONS]", and so on.  It appears the player options already have their appropriate numbering.  However, any number annotation should only be relative to that level.
+
+---
+
+To ensure you understand this numbering system, please describe for me the following items. If an item does not exist, say that it does not exist.
+
+- 1.1.1
+- 1.1.5
+- 1.2.7.2
+- 3.1.2
+- 3.1.2.1
+- 4.4
+
+---
 

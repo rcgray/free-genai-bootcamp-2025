@@ -1,5 +1,5 @@
 ---
-description: 
+description: General rules specific to this project. Always apply.
 globs: 
 alwaysApply: true
 ---
