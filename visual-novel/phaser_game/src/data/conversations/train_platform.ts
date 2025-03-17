@@ -107,9 +107,9 @@ const trainPlatformConversation: Conversation = {
         },
         {
           id: 'hotel_response_2',
-          japaneseText: 'ちょっと待って。お土産を買いたいんですが。',
-          romaji: 'Chotto matte. Omiyage wo kaitai no desu ga.',
-          englishText: 'Wait a moment. I\'d like to buy some souvenirs.',
+          japaneseText: '荷物は自分で持てます。早く行きましょう。',
+          romaji: 'Nimotsu wa jibun de motemasu. Hayaku ikimashou.',
+          englishText: 'I can carry my luggage myself. Let\'s go quickly.',
         }
       ]
     },

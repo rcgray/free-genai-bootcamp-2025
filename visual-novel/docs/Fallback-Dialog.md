@@ -39,7 +39,7 @@ Our game follows a narrative that takes the player through various locations in 
   - Discussing the mall and shopping
   - Taking shelter from the rain
 
-- **4.2 Clothing Store** - File: `phaser_game/src/data/conversations/clothing_store.ts`
+- **4.2 Handbag Store** - File: `phaser_game/src/data/conversations/clothing_store.ts`
   - Shopping vocabulary
   - Currency exchange
   - Interactions with the shopkeeper
@@ -151,9 +151,9 @@ EN: Now, shall we go to the hotel? Shall I help with your luggage?
        RM: Hai, hoteru ni ikimashou. Arigatou.
        EN: Yes, let's go to the hotel. Thank you.
    
-    2. JP: ちょっと待って。お土産を買いたいんですが。
-       RM: Chotto matte. Omiyage wo kaitai no desu ga.
-       EN: Wait a moment. I'd like to buy some souvenirs.
+    2. JP: 荷物は自分で持てます。早く行きましょう。
+       RM: Nimotsu wa jibun de motemasu. Hayaku ikimashou.
+       EN: I can carry my luggage myself. Let's go quickly.
 
 7. KAORI (default):
 JP: わかりました。では、行きましょう！
@@ -233,9 +233,9 @@ RM: Kono resutoran wa Nihon no dentō-teki na ryōri ga taberaremasu yo. Washoku
 EN: You can eat traditional Japanese cuisine at this restaurant. Do you like Japanese food?
 
 3. [PLAYER RESPONSE OPTIONS]
-    1. JP: はい、大好きです！特に寿司や天ぷらが好きです。
-       RM: Hai, daisuki desu! Tokuni sushi ya tenpura ga suki desu.
-       EN: Yes, I love it! I especially like sushi and tempura.
+    1. JP: 少し食べたことがあります。寿司は知っていますが、他の料理はよく分かりません。
+       RM: Sukoshi tabeta koto ga arimasu. Sushi wa shitte imasu ga, hoka no ryōri wa yoku wakarimasen.
+       EN: I've eaten it a little. I know about sushi, but I don't know much about other dishes.
    
     2. JP: 実は、あまり食べたことがありません。何がおすすめですか？
        RM: Jitsu wa, amari tabeta koto ga arimasen. Nani ga osusume desu ka?
@@ -256,9 +256,9 @@ EN: Shall we go in? It might be crowded now since it's lunchtime.
        RM: Hai, hairimashou. Onaka ga sukimashita.
        EN: Yes, let's go in. I'm hungry.
    
-    2. JP: 少し待ちましょうか？混雑が落ち着くまで。
-       RM: Sukoshi machimashou ka? Konzatsu ga ochitsuku made.
-       EN: Shall we wait a bit? Until the crowd settles down.
+    2. JP: 混んでいるかもしれませんが、大丈夫です。ぜひ入りましょう。
+       RM: Konde iru kamo shiremasen ga, daijōbu desu. Zehi hairimashou.
+       EN: It might be crowded, but that's okay. Let's definitely go in.
 
 7. KAORI (default):
 JP: じゃあ、入りましょう。「いらっしゃいませ」と言われたら、「よろしくお願いします」と答えてみてください。
@@ -307,9 +307,9 @@ EN: Let's look at the menu. What would you like to eat?
        EN: What do you recommend? I'm not familiar with Japanese cuisine, so please give me some advice.
 
 7. KAORI (thinking):
-JP: そうですね。初めてなら、「和食御膳」がいいと思います。これは色々な和食が少しずつ楽しめるセットです。
-RM: Sō desu ne. Hajimete nara, "Washoku gozen" ga ii to omoimasu. Kore wa iroiro na washoku ga sukoshi zutsu tanoshimeru setto desu.
-EN: Let me see. For your first time, I think the "Japanese Set Meal" would be good. This is a set where you can enjoy various Japanese dishes in small portions.
+JP: このお店は「和食御膳」が特に美味しいですよ。さっき話した定食のなかでも最高級です。それぞれの料理が丁寧に作られています。
+RM: Kono omise wa "Washoku gozen" ga toku ni oishii desu yo. Sakki hanashita teishoku no naka demo saikō-kyū desu. Sorezore no ryōri ga teinei ni tsukurarete imasu.
+EN: This restaurant's "Japanese Set Meal" is especially delicious. It's the premium version of the set meal I mentioned earlier. Each dish is carefully prepared.
 
 8. KAORI (default):
 JP: では、注文しましょう。「すみません」と言って店員さんを呼んでみてください。
@@ -352,9 +352,9 @@ EN: You can enjoy the seasonal scenery in this park. It's spring now, so the che
        EN: What about other seasons in Japan? Which season do you like the most?
 
 4. KAORI (thinking):
-JP: 私は秋が一番好きです。紅葉がとても美しいし、気温も快適です。夏は暑すぎて、冬は寒すぎると思います。
-RM: Watashi wa aki ga ichiban suki desu. Kōyō ga totemo utsukushii shi, kion mo kaiteki desu. Natsu wa atsusugite, fuyu wa samusugiru to omoimasu.
-EN: I like autumn the most. The autumn leaves are very beautiful, and the temperature is comfortable. I think summer is too hot and winter is too cold.
+JP: 桜は確かに素晴らしいですね。でも、私個人は秋が一番好きです。紅葉がとても美しいし、気温も快適です。日本の四季はそれぞれ魅力がありますよ。
+RM: Sakura wa tashika ni subarashii desu ne. Demo, watashi kojin wa aki ga ichiban suki desu. Kōyō ga totemo utsukushii shi, kion mo kaiteki desu. Nihon no shiki wa sorezore miryoku ga arimasu yo.
+EN: Cherry blossoms are certainly wonderful. But personally, I like autumn the most. The autumn leaves are very beautiful, and the temperature is comfortable. Each of Japan's four seasons has its own charm.
 
 5. KAORI (default):
 JP: この芝生の上で少し休みませんか？日本では「花見」といって、桜の下でピクニックをする習慣があります。
@@ -371,9 +371,9 @@ EN: Shall we rest a bit on this lawn? In Japan, there's a custom called "hanami,
        EN: I want to keep walking today. Shall we explore the park more?
 
 7. KAORI (default):
-JP: 日本人は自然との調和を大切にします。四季を通じて自然を楽しむ文化があります。「わび・さび」という美学もあります。
-RM: Nihonjin wa shizen to no chōwa o taisetsu ni shimasu. Shiki o tōjite shizen o tanoshimu bunka ga arimasu. "Wabi-sabi" to iu bigaku mo arimasu.
-EN: Japanese people value harmony with nature. There is a culture of enjoying nature throughout the four seasons. There is also an aesthetic called "wabi-sabi".
+JP: 日本人は自然との調和を大切にします。四季を通じて自然を楽しむ文化があります。季節ごとの行事や食べ物も特別なんですよ。
+RM: Nihonjin wa shizen to no chōwa o taisetsu ni shimasu. Shiki o tōjite shizen o tanoshimu bunka ga arimasu. Kisetsu-goto no gyōji ya tabemono mo tokubetsu nan desu yo.
+EN: Japanese people value harmony with nature. There is a culture of enjoying nature throughout the four seasons. Seasonal events and foods are also special.
 ```
 
 ### 3.2 Park Bench
@@ -397,42 +397,43 @@ EN: It's quiet and peaceful here. It's nice that there are natural spots like th
        RM: Sō desu ne. Isogashii seikatsu no naka de kō iu jikan ga hitsuyō desu ne.
        EN: That's right. We need time like this in the midst of our busy lives.
    
-    2. JP: カオリさんは休みの日は何をするのが好きですか？
-       RM: Kaori-san wa yasumi no hi wa nani o suru no ga suki desu ka?
-       EN: What do you like to do on your days off, Kaori?
+    2. JP: 日本の都市の中でもこんな静かな場所があるのは素晴らしいですね。
+       RM: Nihon no toshi no naka demo konna shizuka na basho ga aru no wa subarashii desu ne.
+       EN: It's wonderful that there are such quiet places even within Japanese cities.
 
 4. KAORI (thinking):
-JP: 私は読書が好きです。あとは、時々写真を撮ったり、友達と買い物に行ったりします。あなたは？
-RM: Watashi wa dokusho ga suki desu. Ato wa, tokidoki shashin o tottari, tomodachi to kaimono ni ittari shimasu. Anata wa?
-EN: I like reading. Also, I sometimes take photos and go shopping with friends. How about you?
+JP: ここにいると思い出しますね。日本には「わび・さび」という美学的な概念があります。この池と古い石灯籠がそれを表していますよ。
+RM: Koko ni iru to omoidashimasu ne. Nihon ni wa "wabi-sabi" to iu bigaku-teki na gainen ga arimasu. Kono ike to furui ishi-dōrō ga sore o arawashite imasu yo.
+EN: Being here reminds me. In Japan, there's an aesthetic concept called "wabi-sabi". This pond and the old stone lanterns represent it.
 
 5. [PLAYER RESPONSE OPTIONS]
-    1. JP: 私は音楽を聴くことと、料理をすることが好きです。日本料理にも興味があります。
-       RM: Watashi wa ongaku o kiku koto to, ryōri o suru koto ga suki desu. Nihon ryōri ni mo kyōmi ga arimasu.
-       EN: I like listening to music and cooking. I'm also interested in Japanese cuisine.
+    1. JP: わび・さびとは何ですか？もう少し説明していただけますか？
+       RM: Wabi-sabi to wa nan desu ka? Mō sukoshi setsumei shite itadakemasu ka?
+       EN: What is wabi-sabi? Could you explain it a little more?
    
-    2. JP: どんな本を読むのが好きですか？おすすめの日本の作家はいますか？
-       RM: Donna hon o yomu no ga suki desu ka? Osusume no Nihon no sakka wa imasu ka?
-       EN: What kind of books do you like to read? Do you have any recommended Japanese authors?
+    2. JP: この池の美しさは独特ですね。完璧ではないけれど、魅力的です。
+       RM: Kono ike no utsukushisa wa dokutoku desu ne. Kanpeki dewa nai keredo, miryoku-teki desu.
+       EN: The beauty of this pond is unique. It's not perfect, but it's charming.
 
 6. KAORI (default):
-JP: 村上春樹が好きです。「ノルウェイの森」は有名な小説です。あとは、川端康成も古典的で素晴らしいです。
-RM: Murakami Haruki ga suki desu. "Norway no Mori" wa yūmei na shōsetsu desu. Ato wa, Kawabata Yasunari mo koten-teki de subarashii desu.
-EN: I like Haruki Murakami. "Norwegian Wood" is a famous novel. Also, Yasunari Kawabata is classic and wonderful.
+JP: わび・さびは難しい概念ですが、簡単に言うと「不完全さの美しさ」です。「わび」は質素さや簡素さを、「さび」は年月を経た物の風合いや風情を表します。
+RM: Wabi-sabi wa muzukashii gainen desu ga, kantan ni iu to "fukanzen-sa no utsukushisa" desu. "Wabi" wa shisso-sa ya kanso-sa o, "sabi" wa nengetsu o heta mono no fuai ya fūjō o arawashimasu.
+EN: Wabi-sabi is a difficult concept, but simply put, it's "the beauty of imperfection". "Wabi" represents simplicity and modesty, while "sabi" expresses the patina and elegance that comes with age.
 
-7. KAORI (default):
-JP: 日本人の日常生活について知りたいことはありますか？仕事や学校のことなど、何でも聞いてください。
-RM: Nihonjin no nichijō seikatsu ni tsuite shiritai koto wa arimasu ka? Shigoto ya gakkō no koto nado, nan demo kiite kudasai.
-EN: Is there anything you'd like to know about Japanese people's daily lives? Please feel free to ask about work, school, or anything else.
+7. KAORI (thinking):
+JP: 例えば、この古い灯籠は少し欠けていて完璧ではありませんが、それが時間の流れを感じさせ、美しいと思いませんか？新しく完璧なものより魅力的なことがあります。
+RM: Tatoeba, kono furui dōrō wa sukoshi kakete ite kanpeki dewa arimasen ga, sore ga jikan no nagare o kanjisase, utsukushii to omoimasen ka? Atarashiku kanpeki na mono yori miryoku-teki na koto ga arimasu.
+EN: For example, this old lantern is a bit chipped and not perfect, but doesn't that make you feel the passage of time, making it beautiful? Sometimes it's more appealing than something new and perfect.
 
-8. [PLAYER RESPONSE OPTIONS]
-    1. JP: 日本人の仕事の生活について教えてください。残業は本当に多いですか？
-       RM: Nihonjin no shigoto no seikatsu ni tsuite oshiete kudasai. Zangyō wa hontō ni ōi desu ka?
-       EN: Please tell me about Japanese working life. Is overtime really common?
-   
-    2. JP: 日本人は休日に何をして過ごすことが多いですか？人気のある趣味は何ですか？
-       RM: Nihonjin wa kyūjitsu ni nani o shite sugosu koto ga ōi desu ka? Ninki no aru shumi wa nan desu ka?
-       EN: What do Japanese people often do on their days off? What are popular hobbies?
+8. KAORI (default):
+JP: わび・さびは陶芸や庭園だけでなく、日本人の考え方にも影響しています。完璧を求めすぎるより、物事の自然な姿や年月による変化を受け入れる価値観です。
+RM: Wabi-sabi wa tōgei ya teien dake denaku, Nihonjin no kangaekata ni mo eikyō shite imasu. Kanpeki o motome sugiru yori, monogoto no shizen na sugata ya nengetsu ni yoru henka o ukeireru kachi-kan desu.
+EN: Wabi-sabi influences not only pottery and gardens but also Japanese thinking. Rather than seeking perfection, it's a value system that accepts the natural state of things and changes that come with time.
+
+9. KAORI (default):
+JP: このように、日本文化を理解するには、わび・さびのような美学的な概念も大切です。言葉で説明するのは難しいですが、この公園のような場所で感じることができますよ。
+RM: Kono yō ni, Nihon bunka o rikai suru ni wa, wabi-sabi no yō na bigaku-teki na gainen mo taisetsu desu. Kotoba de setsumei suru no wa muzukashii desu ga, kono kōen no yō na basho de kanjiru koto ga dekimasu yo.
+EN: As you can see, aesthetic concepts like wabi-sabi are important for understanding Japanese culture. It's difficult to explain in words, but you can feel it in places like this park.
 ```
 
 ### 4.1 Outside Mall
@@ -480,83 +481,102 @@ EN: If you're looking for souvenirs, there's a store called "Japan Tradition" on
        EN: Are there other places I should go? I want to have a typically Japanese shopping experience.
 
 7. KAORI (default):
-JP: 人気の商品は、手ぬぐい、扇子、和柄の小物、陶器などですね。あと、日本のお菓子も外国人観光客に人気があります。東京ばな奈とか。
-RM: Ninki no shōhin wa, tenugui, sensu, wagara no komono, tōki nado desu ne. Ato, Nihon no okashi mo gaikokujin kankōkyaku ni ninki ga arimasu. Tokyo Banana toka.
-EN: Popular items include tenugui (hand towels), folding fans, Japanese pattern accessories, pottery, and so on. Also, Japanese sweets are popular with foreign tourists. Things like Tokyo Banana.
+JP: 人気の商品は、手ぬぐい、扇子、和柄の小物、陶器などですね。あと、日本のお菓子も外国人観光客に人気があります。
+RM: Ninki no shōhin wa, tenugui, sensu, wagara no komono, tōki nado desu ne. Ato, Nihon no okashi mo gaikokujin kankōkyaku ni ninki ga arimasu.
+EN: Popular items include tenugui (hand towels), folding fans, Japanese pattern accessories, pottery, and so on. Also, Japanese sweets are popular with foreign tourists.
 
 8. KAORI (default):
-JP: さて、中に入りますか？それとも、まず食事をしますか？地下のフードコートもおすすめですよ。
-RM: Sate, naka ni hairimasu ka? Soretomo, mazu shokuji o shimasu ka? Chika no fūdo kōto mo osusume desu yo.
-EN: Well then, shall we go inside? Or would you like to eat first? The food court in the basement is also recommended.
+JP: さて、中に入りましょうか？モールの中は広いので、どこか特に見たいところはありますか？
+RM: Sate, naka ni hairimashou ka? Mōru no naka wa hiroi node, doko ka toku ni mitai tokoro wa arimasu ka?
+EN: Well then, shall we go inside? The mall is quite large, is there anywhere in particular you'd like to see?
 
 9. [PLAYER RESPONSE OPTIONS]
-    1. JP: まず買い物をしましょう。5階の「ジャパン・トラディション」に行きたいです。
-       RM: Mazu kaimono o shimashou. Go-kai no "Japan Tradition" ni ikitai desu.
-       EN: Let's shop first. I want to go to "Japan Tradition" on the 5th floor.
+    1. JP: まず買い物をしましょう。色々なお店を見てみたいです。
+       RM: Mazu kaimono o shimashou. Iroiro na omise o mite mitai desu.
+       EN: Let's shop first. I'd like to look around at the different stores.
    
-    2. JP: 先に食事をしたいです。フードコートがいいですね。
-       RM: Saki ni shokuji o shitai desu. Fūdo kōto ga ii desu ne.
-       EN: I'd like to eat first. The food court sounds good.
+    2. JP: 特に決まっていません。カオリさんのおすすめの場所を教えてください。
+       RM: Toku ni kimatte imasen. Kaori-san no osusume no basho o oshiete kudasai.
+       EN: I haven't decided on anything specific. Please tell me about places you recommend, Kaori.
 ```
 
-### 4.2 Clothing Store
+### 4.2 Handbag Store
 **File:** `phaser_game/src/data/conversations/clothing_store.ts`
 **Characters:** Player, Kaori, Shopkeeper
-**Scene Setting:** Modern clothing store with traditional Japanese items
+**Scene Setting:** Upscale handbag specialty store with various designs
 
 ```
 1. NARRATION:
-JP: 洋服店に入りました。店内には様々なスタイルの服が並んでいます。若い女性向けのファッションが多いようです。
-RM: Yōfukuten ni hairimashita. Tennai ni wa samazama na sutairu no fuku ga narabinde imasu. Wakai josei muke no fasshon ga ōi yō desu.
-EN: You entered a clothing store. Various styles of clothes are displayed inside. There seems to be a lot of fashion for young women.
+JP: バッグ専門店に入りました。店内には様々なデザインや素材のバッグが陳列されています。シンプルで洗練されたデザインが多いようです。
+RM: Baggu senmonten ni hairimashita. Tennai ni wa samazama na dezain ya sozai no baggu ga chinretsu sarete imasu. Shinpuru de senren sareta dezain ga ōi yō desu.
+EN: You entered a handbag specialty store. Various designs and materials of bags are displayed inside. There seem to be many simple and refined designs.
 
 2. SHOPKEEPER (default, position: right):
 JP: いらっしゃいませ！何かお探しですか？
 RM: Irasshaimase! Nanika osagashi desu ka?
 EN: Welcome! Are you looking for something?
 
-3. KAORI (default, position: left):
-JP: 友達は日本の服に興味があります。何かおすすめはありますか？
-RM: Tomodachi wa Nihon no fuku ni kyōmi ga arimasu. Nanika osusume wa arimasu ka?
-EN: My friend is interested in Japanese clothes. Do you have any recommendations?
+3. KAORI (excited, position: left):
+JP: はい、私は新しいバッグを探しています。日常使いできるシンプルなものが欲しいのですが。
+RM: Hai, watashi wa atarashii baggu o sagashite imasu. Nichijō tsukai dekiru shinpuru na mono ga hoshii no desu ga.
+EN: Yes, I'm looking for a new handbag. I want something simple that I can use for everyday purposes.
 
 4. SHOPKEEPER (default):
-JP: もちろん！こちらの浴衣はいかがですか？夏祭りなどに着るのにぴったりです。または、この和柄のTシャツも人気がありますよ。
-RM: Mochiron! Kochira no yukata wa ikaga desu ka? Natsu-matsuri nado ni kiru no ni pittari desu. Mata wa, kono wagara no T-shatsu mo ninki ga arimasu yo.
-EN: Of course! How about this yukata? It's perfect for wearing to summer festivals and such. Or, these T-shirts with Japanese patterns are also popular.
+JP: かしこまりました。こちらの商品はいかがでしょうか？日本製のレザーを使った定番デザインです。軽くて丈夫で、長く使っていただけます。こちらは黒と茶色がございます。
+RM: Kashikomarimashita. Kochira no shōhin wa ikaga deshou ka? Nihon-sei no rezā o tsukatta teiban dezain desu. Karukute jōbu de, nagaku tsukatte itadakemasu. Kochira wa kuro to chairo ga gozaimasu.
+EN: Certainly. How about this item? It's a classic design using Japanese leather. It's light, durable, and will last a long time. We have it in black and brown.
 
 5. [PLAYER RESPONSE OPTIONS]
-    1. JP: 浴衣に興味があります。試着できますか？
-       RM: Yukata ni kyōmi ga arimasu. Shichaku dekimasu ka?
-       EN: I'm interested in the yukata. Can I try it on?
+    1. JP: 黒の方が素敵だと思います。シンプルで使いやすそうですね。
+       RM: Kuro no hō ga suteki da to omoimasu. Shinpuru de tsukaiyasusō desu ne.
+       EN: I think the black one is nicer. It seems simple and easy to use.
    
-    2. JP: 和柄のTシャツを見せてください。どんなデザインがありますか？
-       RM: Wagara no T-shatsu o misete kudasai. Donna dezain ga arimasu ka?
-       EN: Please show me the T-shirts with Japanese patterns. What designs do you have?
+    2. JP: そのバッグは少し大きいですね。もっと小さいものはありますか？
+       RM: Sono baggu wa sukoshi ōkii desu ne. Motto chiisai mono wa arimasu ka?
+       EN: That bag seems a bit large. Do you have something smaller?
 
-6. SHOPKEEPER (default):
-JP: はい、こちらの浴衣は色々なサイズがございます。着方も簡単なタイプですので、外国の方でも着やすいですよ。試着室はこちらです。
-RM: Hai, kochira no yukata wa iroiro na saizu ga gozaimasu. Kikata mo kantan na taipu desu node, gaikoku no kata demo kiyasui desu yo. Shichaku-shitsu wa kochira desu.
-EN: Yes, we have this yukata in various sizes. It's an easy-to-wear type, so it's easy for foreigners to wear too. The fitting room is this way.
+6. KAORI (thinking):
+JP: そうですね、黒のほうが私には似合うかもしれません。でも、サイズも考えなくては。小さすぎると使いづらいし、大きすぎると重いですよね。
+RM: Sō desu ne, kuro no hō ga watashi ni wa niau kamo shiremasen. Demo, saizu mo kangaenakereba. Chiisasugiru to tsukai-zurai shi, ōkisugiru to omoi desu yo ne.
+EN: I see, the black one might suit me better. But I need to consider the size too. If it's too small, it'll be hard to use, and if it's too big, it'll be heavy.
 
-7. KAORI (default):
-JP: 浴衣は夏の着物の一種です。花火大会や夏祭りなどのイベントで着ることが多いです。帯の結び方も少し特別ですよ。
-RM: Yukata wa natsu no kimono no isshu desu. Hanabi taikai ya natsu-matsuri nado no ibento de kiru koto ga ōi desu. Obi no musubikata mo sukoshi tokubetsu desu yo.
-EN: A yukata is a type of summer kimono. It's often worn at events like fireworks displays and summer festivals. The way to tie the obi belt is also a bit special.
-
-8. [PLAYER RESPONSE OPTIONS]
-    1. JP: 素敵ですね！試着してみたいです。着方を教えていただけますか？
-       RM: Suteki desu ne! Shichaku shite mitai desu. Kikata o oshiete itadakemasu ka?
-       EN: That's lovely! I'd like to try it on. Could you please teach me how to wear it?
+7. [PLAYER RESPONSE OPTIONS]
+    1. JP: 中くらいのサイズがいいと思います。普段使いにちょうどいいですよ。
+       RM: Chū kurai no saizu ga ii to omoimasu. Fudan-tsukai ni chōdo ii desu yo.
+       EN: I think a medium size would be good. It's just right for everyday use.
    
-    2. JP: とても興味深いです。値段はいくらですか？
-       RM: Totemo kyōmi-bukai desu. Nedan wa ikura desu ka?
-       EN: That's very interesting. How much does it cost?
+    2. JP: 値段はいくらですか？品質と価格のバランスも大切ですね。
+       RM: Nedan wa ikura desu ka? Hinshitsu to kakaku no baransu mo taisetsu desu ne.
+       EN: How much does it cost? The balance between quality and price is important too.
 
-9. SHOPKEEPER (default):
-JP: この浴衣のセットは12,800円です。浴衣、帯、下駄がセットになっています。外国人のお客様には、税金が免除されますので、パスポートをご提示ください。
-RM: Kono yukata no setto wa ichiman-ni-sen-happyaku en desu. Yukata, obi, geta ga setto ni natte imasu. Gaikokujin no o-kyaku-sama ni wa, zeikin ga menjo saremasu node, pasupōto o go-teiji kudasai.
-EN: This yukata set is 12,800 yen. It includes the yukata, obi belt, and geta sandals. For foreign customers, tax is exempted, so please show your passport.
+8. SHOPKEEPER (default):
+JP: こちらの中サイズのバッグは18,500円です。質の高い革を使っており、手作りのため一つ一つ表情が異なります。長く使えるので、コストパフォーマンスは良いと思いますよ。
+RM: Kochira no chū saizu no baggu wa ichiman-hassen-gohyaku en desu. Shitsu no takai kawa o tsukatte ori, te-tsukuri no tame hitotsu hitotsu hyōjō ga kotonari masu. Nagaku tsukaeru node, kosuto pafōmansu wa yoi to omoimasu yo.
+EN: This medium-sized bag is 18,500 yen. It uses high-quality leather and since it's handmade, each one has a slightly different appearance. Since it will last a long time, I think the cost performance is good.
+
+9. KAORI (happy):
+JP: 黒の中サイズにします！長く使えるものを買いたかったので、ちょうどいいですね。日本の物は品質が良くて本当に素晴らしいです。
+RM: Kuro no chū saizu ni shimasu! Nagaku tsukaeru mono o kaitakatta node, chōdo ii desu ne. Nihon no mono wa hinshitsu ga yokute hontō ni subarashii desu.
+EN: I'll take the black medium size! Since I wanted something that would last a long time, this is perfect. Japanese products have such good quality, they're really wonderful.
+
+10. [PLAYER RESPONSE OPTIONS]
+    1. JP: いい選択だと思います。シンプルで上品なデザインですね。
+       RM: Ii sentaku da to omoimasu. Shinpuru de jōhin na dezain desu ne.
+       EN: I think it's a good choice. It has a simple and elegant design.
+   
+    2. JP: 素敵なバッグですね。特別な日のためのプレゼントにもいいと思います。
+       RM: Suteki na baggu desu ne. Tokubetsu na hi no tame no purezento ni mo ii to omoimasu.
+       EN: It's a lovely bag. I think it would also make a good gift for a special day.
+
+11. SHOPKEEPER (happy):
+JP: ありがとうございます。ラッピングはいかがいたしましょうか？プレゼント用や自分用で包装紙の種類も選べますよ。また、当店のポイントカードもございます。
+RM: Arigatō gozaimasu. Rappingu wa ikaga itashimashou ka? Purezento-yō ya jibun-yō de hōsō-shi no shurui mo erabemasu yo. Mata, tōten no pointo kādo mo gozaimasu.
+EN: Thank you very much. How would you like it wrapped? You can choose different types of wrapping paper for gifts or personal use. Also, we have a store point card.
+
+12. KAORI (default):
+JP: 普通の包装で大丈夫です。ポイントカードもぜひお願いします。日本のお店はサービスが本当に素晴らしいですね。
+RM: Futsū no hōsō de daijōbu desu. Pointo kādo mo zehi onegai shimasu. Nihon no omise wa sābisu ga hontō ni subarashii desu ne.
+EN: Regular wrapping is fine. I'd definitely like a point card too. Japanese stores really have wonderful service.
 ```
 
 ### 5.1 Hotel Lobby

@@ -129,27 +129,27 @@ const insideRestaurantConversation: Conversation = {
       characterId: 'kaori',
       emotion: 'thinking',
       position: 'left',
-      japaneseText: 'そうですね。初めてなら、「和食御膳」がいいと思います。これは色々な和食が少しずつ楽しめるセットです。',
-      romaji: 'Sō desu ne. Hajimete nara, "Washoku gozen" ga ii to omoimasu. Kore wa iroiro na washoku ga sukoshi zutsu tanoshimeru setto desu.',
-      englishText: 'Let me see. For your first time, I think the "Japanese Set Meal" would be good. This is a set where you can enjoy various Japanese dishes in small portions.',
+      japaneseText: 'このお店は「和食御膳」が特に美味しいですよ。さっき話した定食のなかでも最高級です。それぞれの料理が丁寧に作られています。',
+      romaji: 'Kono omise wa "Washoku gozen" ga toku ni oishii desu yo. Sakki hanashita teishoku no naka demo saikō-kyū desu. Sorezore no ryōri ga teinei ni tsukurarete imasu.',
+      englishText: 'This restaurant\'s "Japanese Set Meal" is especially delicious. It\'s the premium version of the set meal I mentioned earlier. Each dish is carefully prepared.',
       studyableTerms: [
         {
           id: 'washoku-gozen',
           japaneseText: '和食御膳',
-          startIndex: 10,
-          endIndex: 14,
+          startIndex: 5,
+          endIndex: 9,
           romaji: 'Washoku gozen',
           englishText: 'Japanese set meal (formal)',
           grammarPoints: ['Compound noun', 'Honorific term']
         },
         {
-          id: 'iroiro',
-          japaneseText: '色々',
-          startIndex: 25,
-          endIndex: 27,
-          romaji: 'Iroiro',
-          englishText: 'Various',
-          grammarPoints: ['Adverb', 'Na-adjective']
+          id: 'teinei',
+          japaneseText: '丁寧',
+          startIndex: 42,
+          endIndex: 44,
+          romaji: 'Teinei',
+          englishText: 'Careful/Polite',
+          grammarPoints: ['Na-adjective']
         }
       ],
     },

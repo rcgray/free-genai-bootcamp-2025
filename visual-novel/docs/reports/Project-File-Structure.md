@@ -1,6 +1,10 @@
 .
+├── .cursor
+│   └── rules
+│       ├── general-all.mdc
+│       ├── project.mdc
+│       └── python.mdc
 ├── .cursorignore
-├── .cursorrules
 ├── .env.example
 ├── .gitignore
 ├── .streamlit
@@ -17,10 +21,14 @@
 │   └── Screenshot 2025-03-10 164123.png
 ├── docs
 │   ├── Action-Plan.md
+│   ├── Fallback-Dialog.md
 │   ├── Game-Design.md
 │   ├── Game-LLM-Prompts.md
 │   ├── PRD.md
 │   ├── Technical-Spec.md
+│   ├── cursorrules
+│   │   ├── .cursorrules.macos
+│   │   └── .cursorrules.windows
 │   ├── features
 │   │   ├── Dialog-System.md
 │   │   ├── Furigana-Integration-Plan.md
@@ -31,8 +39,9 @@
 │   ├── read-only
 │   │   ├── Feature-Spec-Template.md
 │   │   ├── Project-Setup.md
-│   │   ├── Prompt-Header.md
-│   │   └── Prompts.md
+│   │   ├── Prompts.md
+│   │   └── archive
+│   │       └── Prompts01.md
 │   ├── reference
 │   │   ├── Japanese-Text-Line-Breaking.md
 │   │   └── Streamlit-Phaser-Howto.md
@@ -123,4 +132,4 @@
 ├── tests
 └── uv.lock
 
-31 directories, 93 files
+35 directories, 98 files

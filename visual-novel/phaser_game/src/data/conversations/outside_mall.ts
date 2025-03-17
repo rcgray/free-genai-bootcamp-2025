@@ -251,9 +251,9 @@ const outsideMallConversation: Conversation = {
       characterId: 'kaori',
       emotion: 'default',
       position: 'left',
-      japaneseText: '人気の商品は、手ぬぐい、扇子、和柄の小物、陶器などですね。あと、日本のお菓子も外国人観光客に人気があります。東京ばな奈とか。',
-      romaji: 'Ninki no shōhin wa, tenugui, sensu, wagara no komono, tōki nado desu ne. Ato, Nihon no okashi mo gaikokujin kankōkyaku ni ninki ga arimasu. Tokyo Banana toka.',
-      englishText: 'Popular items include tenugui (hand towels), folding fans, Japanese pattern accessories, pottery, and so on. Also, Japanese sweets are popular with foreign tourists. Things like Tokyo Banana.',
+      japaneseText: '人気の商品は、手ぬぐい、扇子、和柄の小物、陶器などですね。あと、日本のお菓子も外国人観光客に人気があります。',
+      romaji: 'Ninki no shōhin wa, tenugui, sensu, wagara no komono, tōki nado desu ne. Ato, Nihon no okashi mo gaikokujin kankōkyaku ni ninki ga arimasu.',
+      englishText: 'Popular items include tenugui (hand towels), folding fans, Japanese pattern accessories, pottery, and so on. Also, Japanese sweets are popular with foreign tourists.',
       studyableTerms: [
         {
           id: 'tenugui',
@@ -343,21 +343,21 @@ const outsideMallConversation: Conversation = {
       characterId: 'kaori',
       emotion: 'default',
       position: 'left',
-      japaneseText: 'さて、中に入りますか？それとも、まず食事をしますか？地下のフードコートもおすすめですよ。',
-      romaji: 'Sate, naka ni hairimasu ka? Soretomo, mazu shokuji o shimasu ka? Chika no fūdo kōto mo osusume desu yo.',
-      englishText: 'Well then, shall we go inside? Or would you like to eat first? The food court in the basement is also recommended.',
+      japaneseText: 'さて、中に入りましょうか？モールの中は広いので、どこか特に見たいところはありますか？',
+      romaji: 'Sate, naka ni hairimashou ka? Mōru no naka wa hiroi node, doko ka toku ni mitai tokoro wa arimasu ka?',
+      englishText: 'Well then, shall we go inside? The mall is quite large, is there anywhere in particular you\'d like to see?',
       playerResponses: [
         {
           id: 'response_shop',
-          japaneseText: 'まず買い物をしましょう。5階の「ジャパン・トラディション」に行きたいです。',
-          romaji: 'Mazu kaimono o shimashou. Go-kai no "Japan Tradition" ni ikitai desu.',
-          englishText: 'Let\'s shop first. I want to go to "Japan Tradition" on the 5th floor.',
+          japaneseText: 'まず買い物をしましょう。色々なお店を見てみたいです。',
+          romaji: 'Mazu kaimono o shimashou. Iroiro na omise o mite mitai desu.',
+          englishText: 'Let\'s shop first. I\'d like to look around at the different stores.',
         },
         {
           id: 'response_food',
-          japaneseText: '先に食事をしたいです。フードコートがいいですね。',
-          romaji: 'Saki ni shokuji o shitai desu. Fūdo kōto ga ii desu ne.',
-          englishText: 'I\'d like to eat first. The food court sounds good.',
+          japaneseText: '特に決まっていません。カオリさんのおすすめの場所を教えてください。',
+          romaji: 'Toku ni kimatte imasen. Kaori-san no osusume no basho o oshiete kudasai.',
+          englishText: 'I haven\'t decided on anything specific. Please tell me about places you recommend, Kaori.',
         }
       ]
     }

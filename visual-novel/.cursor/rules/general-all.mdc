@@ -28,7 +28,7 @@ alwaysApply: true
 - CREATE USER INSTRUCTION COMMANDS FROM THE ROOT OF THE PROJECT. For example, if you are going to guide the user to build a game project, don't instruct the user to run `cd phaser_game && npm run build`. Instead, set up the build command relative to the project root so that the instruction would read `npm run build` without the `cd phaser_game`. This might mean adjusting the command (in this example, `npm run --prefix phaser_game build`).
 - REFERENCE FILES FROM THE ROOT OF THE PROJECT. If you are going to move a file, it is better to run `mv subdir/subdir1/file.txt subdir/subdir2/file.txt` than to run `cd subdir && mv subdir1/file.txt subdir2/file.txt`.
 - In general, don't run `cd` in your commands. If you absolutely have to, be sure you are running `pwd` to keep track of your current location and return to the root as quickly as possible, even suffixing your command with ` && cd ..`
-- Include a "💻" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate that you understand these Command Line Interface guidelines.
+- Include a "🦾" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate that you understand these Command Line Interface guidelines.
 
 ## Coding Guidelines
 - Be agressive about failures. Fail at the point of failure immediately instead of creating workarounds. If a particular state or combination of variables could never occur, throw an exception or console log an error or whatever is appropriate.

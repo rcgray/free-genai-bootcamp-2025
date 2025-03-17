@@ -54,9 +54,9 @@ const outsideRestaurantConversation: Conversation = {
       playerResponses: [
         {
           id: 'response_like',
-          japaneseText: 'はい、大好きです！特に寿司や天ぷらが好きです。',
-          romaji: 'Hai, daisuki desu! Tokuni sushi ya tenpura ga suki desu.',
-          englishText: 'Yes, I love it! I especially like sushi and tempura.',
+          japaneseText: '少し食べたことがあります。寿司は知っていますが、他の料理はよく分かりません。',
+          romaji: 'Sukoshi tabeta koto ga arimasu. Sushi wa shitte imasu ga, hoka no ryōri wa yoku wakarimasen.',
+          englishText: 'I\'ve eaten it a little. I know about sushi, but I don\'t know much about other dishes.',
         },
         {
           id: 'response_never',
@@ -103,9 +103,9 @@ const outsideRestaurantConversation: Conversation = {
         },
         {
           id: 'response_wait',
-          japaneseText: '少し待ちましょうか？混雑が落ち着くまで。',
-          romaji: 'Sukoshi machimashou ka? Konzatsu ga ochitsuku made.',
-          englishText: 'Shall we wait a bit? Until the crowd settles down.',
+          japaneseText: '混んでいるかもしれませんが、大丈夫です。ぜひ入りましょう。',
+          romaji: 'Konde iru kamo shiremasen ga, daijōbu desu. Zehi hairimashou.',
+          englishText: 'It might be crowded, but that\'s okay. Let\'s definitely go in.',
         }
       ]
     },

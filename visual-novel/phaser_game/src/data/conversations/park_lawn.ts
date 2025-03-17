@@ -80,54 +80,45 @@ const parkLawnConversation: Conversation = {
       characterId: 'kaori',
       emotion: 'thinking',
       position: 'center',
-      japaneseText: '私は秋が一番好きです。紅葉がとても美しいし、気温も快適です。夏は暑すぎて、冬は寒すぎると思います。',
-      romaji: 'Watashi wa aki ga ichiban suki desu. Kōyō ga totemo utsukushii shi, kion mo kaiteki desu. Natsu wa atsusugite, fuyu wa samusugiru to omoimasu.',
-      englishText: 'I like autumn the most. The autumn leaves are very beautiful, and the temperature is comfortable. I think summer is too hot and winter is too cold.',
+      japaneseText: '桜は確かに素晴らしいですね。でも、私個人は秋が一番好きです。紅葉がとても美しいし、気温も快適です。日本の四季はそれぞれ魅力がありますよ。',
+      romaji: 'Sakura wa tashika ni subarashii desu ne. Demo, watashi kojin wa aki ga ichiban suki desu. Kōyō ga totemo utsukushii shi, kion mo kaiteki desu. Nihon no shiki wa sorezore miryoku ga arimasu yo.',
+      englishText: 'Cherry blossoms are certainly wonderful. But personally, I like autumn the most. The autumn leaves are very beautiful, and the temperature is comfortable. Each of Japan\'s four seasons has its own charm.',
       studyableTerms: [
+        {
+          id: 'sakura',
+          japaneseText: '桜',
+          startIndex: 0,
+          endIndex: 1,
+          romaji: 'Sakura',
+          englishText: 'Cherry blossom',
+          grammarPoints: ['Noun']
+        },
         {
           id: 'aki',
           japaneseText: '秋',
-          startIndex: 3,
-          endIndex: 4,
+          startIndex: 20,
+          endIndex: 21,
           romaji: 'Aki',
           englishText: 'Autumn/Fall',
           grammarPoints: ['Noun', 'Season']
         },
         {
-          id: 'ichiban',
-          japaneseText: '一番',
-          startIndex: 5,
-          endIndex: 7,
-          romaji: 'Ichiban',
-          englishText: 'The most/number one',
-          grammarPoints: ['Adverb', 'Superlative']
-        },
-        {
           id: 'koyo',
           japaneseText: '紅葉',
-          startIndex: 13,
-          endIndex: 15,
+          startIndex: 30,
+          endIndex: 32,
           romaji: 'Kōyō',
           englishText: 'Autumn leaves/fall foliage',
           grammarPoints: ['Noun']
         },
         {
-          id: 'natsu',
-          japaneseText: '夏',
-          startIndex: 33,
-          endIndex: 34,
-          romaji: 'Natsu',
-          englishText: 'Summer',
-          grammarPoints: ['Noun', 'Season']
-        },
-        {
-          id: 'fuyu',
-          japaneseText: '冬',
-          startIndex: 40,
-          endIndex: 41,
-          romaji: 'Fuyu',
-          englishText: 'Winter',
-          grammarPoints: ['Noun', 'Season']
+          id: 'shiki',
+          japaneseText: '四季',
+          startIndex: 50,
+          endIndex: 52,
+          romaji: 'Shiki',
+          englishText: 'Four seasons',
+          grammarPoints: ['Noun', 'Cultural term']
         }
       ],
     },
@@ -188,9 +179,9 @@ const parkLawnConversation: Conversation = {
       characterId: 'kaori',
       emotion: 'default',
       position: 'center',
-      japaneseText: '日本人は自然との調和を大切にします。四季を通じて自然を楽しむ文化があります。「わび・さび」という美学もあります。',
-      romaji: 'Nihonjin wa shizen to no chōwa o taisetsu ni shimasu. Shiki o tōjite shizen o tanoshimu bunka ga arimasu. "Wabi-sabi" to iu bigaku mo arimasu.',
-      englishText: 'Japanese people value harmony with nature. There is a culture of enjoying nature throughout the four seasons. There is also an aesthetic called "wabi-sabi".',
+      japaneseText: '日本人は自然との調和を大切にします。四季を通じて自然を楽しむ文化があります。季節ごとの行事や食べ物も特別なんですよ。',
+      romaji: 'Nihonjin wa shizen to no chōwa o taisetsu ni shimasu. Shiki o tōjite shizen o tanoshimu bunka ga arimasu. Kisetsu-goto no gyōji ya tabemono mo tokubetsu nan desu yo.',
+      englishText: 'Japanese people value harmony with nature. There is a culture of enjoying nature throughout the four seasons. Seasonal events and foods are also special.',
       studyableTerms: [
         {
           id: 'nihonjin',
@@ -220,21 +211,21 @@ const parkLawnConversation: Conversation = {
           grammarPoints: ['Noun']
         },
         {
-          id: 'wabi-sabi',
-          japaneseText: 'わび・さび',
+          id: 'kisetsu',
+          japaneseText: '季節',
           startIndex: 41,
-          endIndex: 46,
-          romaji: 'Wabi-sabi',
-          englishText: 'Japanese aesthetic centered on acceptance of imperfection',
-          grammarPoints: ['Cultural concept', 'Compound term']
+          endIndex: 43,
+          romaji: 'Kisetsu',
+          englishText: 'Season',
+          grammarPoints: ['Noun']
         },
         {
-          id: 'bigaku',
-          japaneseText: '美学',
-          startIndex: 51,
-          endIndex: 53,
-          romaji: 'Bigaku',
-          englishText: 'Aesthetics',
+          id: 'gyoji',
+          japaneseText: '行事',
+          startIndex: 46,
+          endIndex: 48,
+          romaji: 'Gyōji',
+          englishText: 'Event/Ceremony',
           grammarPoints: ['Noun']
         }
       ]
