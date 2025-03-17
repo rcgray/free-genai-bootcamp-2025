@@ -1,5 +1,10 @@
 ---
-description: General rules that should govern every interaction with the AI. Always apply.
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: 
 globs: 
 alwaysApply: true
 ---
@@ -15,6 +20,8 @@ alwaysApply: true
 ## Action Plans & Documentation Updates
 - You will always be working from a list of instructions from a file (e.g., `docs/Action-Plan.md`, `docs/features/*.md`, or earlier in the project `Project-Setup.md`). After you complete the current task, always update the steps in the file to reflect the current state of the project. If we intentionally skip a step, make sure to mark the item as `[~]` so we can track that intentional decision.
 - Always stop at [CHECKPOINT] instructions in any Action Plan (`Project-Setup.md`, `docs/Action-Plan.md`, `docs/features/*.md` feature spec action plan, etc.). These are designed for the human developer to verify that the AI is on track to complete the project. Do not perform any actions beyond those requested in the checkpoint instructions, and do not continue on to the next task until the human developer has verified that the current task is complete.
+- You may be requested to write a feature specification. Creating a specification document means ONLY creating that document, not implementing any code described in it.
+- The presence of an Action Plan or task list does NOT imply permission to implement items from it. Even if you see an incomplete item that matches the current discussion, do not implement it without explicit instruction.
 - When the user indicates that a feature is complete, double-check the `README.md` ( [README.md](mdc:README.md) ) file to ensure that the instructions are still accurate and any necessary additions have been added.
 - When editing a code file, check the description block at the beginning of the file with respect to our changes. If our code edits have changed the information in the description block or have warranted an addition to that description, please update it.
 

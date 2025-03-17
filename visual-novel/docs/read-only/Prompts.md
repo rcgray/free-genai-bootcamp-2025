@@ -172,7 +172,30 @@ Think carefully about this.  Our game screen is 1200x800, yet you are creating t
 
 This is progress, at least. The button is visible, but it should be green (not orange), and it's up against the right edge of the screen instead of associated with the top-right corner of the dialog box.  Again, I will mention that the study buttons for the player response options are working perfectly.  Maybe you should be looking at the code for those to inform how you are creating this one.  It should be the same thing, just for a different dialog box.
 
+---
+
+# New chat (Agent, claude-3.7-sonnet-thinking)
+
+---
+
+We are building a Japanese learning app in the form of a visual novel game using Phaser.
+
+(Project File Structure: @Project-File-Structure.md - Please remember this Project File Structure for determining where to find files in our project, what folders exist, etc.)
+(Game Design: @Game-Design.md - Please remember this Game Design for understanding the design of the game, the locations, characters, events, etc.)
+(Game LLM Prompts: @Game-LLM-Prompts.md - Please remember this Game LLM Prompts for understanding the prompts we will give to the LLM for generating game content.)
+(Action Plan: @Action-Plan.md - Please remember this Action Plan for understanding the plan for building the project, identifying previously completed work, identifying the current phase and upcoming [CHECKPOINT].)
+
+We are staring a new chat, so we are loading the context and rules for now with requests that will follow.Please carefully review your rules again, they are worth looking at multiple times. Echo back a summary of your rules as you understand them.
+
+---
+
+We are now on Phase 4.2. Let's continue our design of the "Study Scene" that we can reach by clicking the "Study" button in the top-right corner of any dialog. This brings up the scene in our StudyScene.ts file with the phrase/info regarding the text in the dialog from which the user clicked the "Study" button.
+
+We are not implementing anything yet, we are just coming up with our feature design, which is documented in `docs/features/Study-Scene-Layout.md`. Let's continue to discuss the design.
 
 
-We are now on Phase 4.2. Let's finish design and implementation of the "Study Scene" that we can reach by clicking the "Study" button in the top-right corner of any dialog. This brings up the scene in our StudyScene.ts file with the phrase/info regarding the text in the dialog from which the user clicked the "Study" button.
+To start, let's consider the kind of information we want to display and figure out a layout for that information. When we look at Game-LLM-Prompts.md, we can get a sense of that information.  Take one of the phrases in our "fallback" dialog script (`docs/Fallback-Dialog.md`) for testing and let's itemize the data we want to display.  Using your insight for what an English-speaking learner would want to know about a Japanese phrase, use your intuition to figure out what information is important to display.
+
+---
+
 
