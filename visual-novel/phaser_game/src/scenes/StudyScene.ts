@@ -9,6 +9,7 @@
 import BaseScene from './BaseScene';
 import sceneRegistry from './SceneRegistry';
 import { PhraseAnalysis, getTestPhrase } from '../data/study/test-phrase-data';
+import { JapaneseTextWrapper } from '../utils';
 
 export interface StudyPhraseData {
   phrase: string;         // Japanese phrase
@@ -157,22 +158,24 @@ export default class StudyScene extends BaseScene {
     // Calculate positions for header elements
     const headerY = (this.cameras.main.height - this.contentPanel!.height) / 2 + 50;
     
-    // Original Japanese phrase
+    // Original Japanese phrase - apply specialized Japanese line wrapping
+    const wrappedJapanese = JapaneseTextWrapper.wrap(this.phrase, 31);
+    
     this.phraseText = this.add.text(
       panelX,
       headerY,
-      this.phrase,
+      wrappedJapanese,
       {
         fontFamily: 'Arial',
         fontSize: '32px',
         color: '#ffffff',
         align: 'center',
-        wordWrap: { width: panelWidth * 0.8 }
+        lineSpacing: 5,
       }
     );
     this.phraseText.setOrigin(0.5, 0);
     
-    // Romaji pronunciation
+    // Romaji pronunciation - use Phaser's built-in wordWrap
     this.romajiText = this.add.text(
       panelX,
       headerY + this.phraseText.height + 20,
@@ -187,7 +190,7 @@ export default class StudyScene extends BaseScene {
     );
     this.romajiText.setOrigin(0.5, 0);
     
-    // English translation
+    // English translation - use Phaser's built-in wordWrap
     this.translationText = this.add.text(
       panelX,
       headerY + this.phraseText.height + this.romajiText.height + 40,
@@ -361,7 +364,7 @@ export default class StudyScene extends BaseScene {
       rowBg.setOrigin(0.5, 0.5);
       this.contentContainer!.add(rowBg);
       
-      // Japanese word with reading
+      // Japanese word with reading - no wrapping needed since each entry should be short
       const japaneseText = this.add.text(
         -contentWidth * 0.4,
         currentY,
