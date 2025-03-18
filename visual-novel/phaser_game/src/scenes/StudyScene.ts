@@ -102,7 +102,7 @@ export default class StudyScene extends BaseScene {
     // Create the header section with phrase information
     this.createHeaderSection();
     
-    // Create the scrollable content area
+    // Create the scrollable content area (now after header creation so we can use actual heights)
     this.createScrollableContentArea();
     
     // Create the back button
@@ -166,42 +166,45 @@ export default class StudyScene extends BaseScene {
       headerY,
       wrappedJapanese,
       {
-        fontFamily: 'Arial',
+        fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
         fontSize: '32px',
         color: '#ffffff',
         align: 'center',
         lineSpacing: 5,
+        stroke: '#000000',
+        strokeThickness: 1
       }
     );
     this.phraseText.setOrigin(0.5, 0);
     
-    // Romaji pronunciation - use Phaser's built-in wordWrap
+    // Romaji pronunciation - format with parentheses and smaller font
     this.romajiText = this.add.text(
       panelX,
-      headerY + this.phraseText.height + 20,
-      this.romaji,
+      headerY + this.phraseText.height + 15,
+      `(${this.romaji})`,
       {
-        fontFamily: 'Arial',
-        fontSize: '22px',
-        color: '#ccccff',
+        fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
+        fontSize: '18px',
+        color: '#cccccc',
         align: 'center',
-        wordWrap: { width: panelWidth * 0.8 }
+        wordWrap: { width: panelWidth * 0.8 },
+        lineSpacing: 2
       }
     );
     this.romajiText.setOrigin(0.5, 0);
     
-    // English translation - use Phaser's built-in wordWrap
+    // English translation - matching VNScene player selection style with square brackets
     this.translationText = this.add.text(
       panelX,
-      headerY + this.phraseText.height + this.romajiText.height + 40,
-      this.translation,
+      headerY + this.phraseText.height + this.romajiText.height + 25,
+      `[${this.translation}]`,
       {
-        fontFamily: 'Arial',
-        fontSize: '24px',
-        color: '#ffffff',
-        fontStyle: 'italic',
+        fontFamily: '"Hiragino Sans", "Meiryo", "Yu Gothic", "MS Gothic", sans-serif',
+        fontSize: '18px',
+        color: '#aaddff',
         align: 'center',
-        wordWrap: { width: panelWidth * 0.8 }
+        wordWrap: { width: panelWidth * 0.8 },
+        lineSpacing: 2
       }
     );
     this.translationText.setOrigin(0.5, 0);
@@ -211,16 +214,28 @@ export default class StudyScene extends BaseScene {
    * Create a container for scrollable content
    */
   private createScrollableContentArea(): void {
+    if (!this.phraseText || !this.romajiText || !this.translationText) {
+      console.error('Header text elements must be created before scrollable area');
+      return;
+    }
+    
     const panelWidth = this.contentPanel!.width;
     const panelHeight = this.contentPanel!.height;
     const panelX = this.cameras.main.width / 2;
     const panelY = this.cameras.main.height / 2;
     
-    // Calculate the top of the content area based on header height
-    const headerHeight = 200; // Approximate height of all header elements
-    const contentY = panelY - panelHeight / 2 + headerHeight;
+    // Calculate the actual header height dynamically based on text element positions and heights
+    const headerTop = (this.cameras.main.height - panelHeight) / 2 + 50; // Same as headerY in createHeaderSection
+    const headerBottom = this.translationText.y + this.translationText.height;
+    const actualHeaderHeight = headerBottom - headerTop + 40; // Add some padding
+    
+    // Calculate content area dimensions
+    const contentY = headerTop + actualHeaderHeight;
     const contentWidth = panelWidth * 0.9;
-    const contentHeight = panelHeight - headerHeight - 20;
+    const contentHeight = (panelY + panelHeight / 2) - contentY -
+      20; // Subtract padding at bottom
+    
+    console.log(`Calculated dynamic header height: ${actualHeaderHeight}px`);
     
     // Create a container for the scrollable content
     this.contentContainer = this.add.container(panelX, contentY);
@@ -844,17 +859,19 @@ export default class StudyScene extends BaseScene {
    * Check if a pointer is within the content area
    */
   private isInContentArea(pointer: Phaser.Input.Pointer): boolean {
-    if (!this.contentPanel) return false;
+    if (!this.contentPanel || !this.contentContainer) return false;
     
     const panelBounds = this.contentPanel.getBounds();
-    const headerHeight = 200; // Same as used in createScrollableContentArea
+    
+    // Use the actual contentContainer y position instead of a fixed headerHeight
+    const contentTop = this.contentContainer.y;
     
     // Create a rectangle representing just the scrollable content area
     const contentArea = new Phaser.Geom.Rectangle(
       panelBounds.x,
-      panelBounds.y + headerHeight,
+      contentTop,
       panelBounds.width,
-      panelBounds.height - headerHeight
+      panelBounds.height - (contentTop - panelBounds.y)
     );
     
     return contentArea.contains(pointer.x, pointer.y);
@@ -864,11 +881,14 @@ export default class StudyScene extends BaseScene {
    * Apply constraints to keep the scrollable content within bounds
    */
   private applyScrollConstraints(): void {
-    if (!this.contentContainer) return;
+    if (!this.contentContainer || !this.contentPanel) return;
     
-    // Get the total height of content - this will be updated as content is added
+    // Get the total height of content
     const contentHeight = this.getContentHeight();
-    const visibleHeight = this.contentPanel!.height - 250; // Height minus header and some padding
+    
+    // Calculate visible height based on actual container position
+    const panelBottom = this.cameras.main.height / 2 + this.contentPanel.height / 2 - 20; // bottom of panel minus padding
+    const visibleHeight = panelBottom - this.contentMinY;
     
     // Only allow scrolling if content is taller than visible area
     if (contentHeight > visibleHeight) {
