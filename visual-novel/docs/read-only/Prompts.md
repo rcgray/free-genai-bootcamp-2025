@@ -193,9 +193,45 @@ We are now on Phase 4.2. Let's continue our design of the "Study Scene" that we 
 
 We are not implementing anything yet, we are just coming up with our feature design, which is documented in `docs/features/Study-Scene-Layout.md`. Let's continue to discuss the design.
 
+All study sessions begin with a phrase in Japanese - we will call this the "source phrase". We will then send this phrase (along with an instruction prompt) to generate data to return based on that phrase. Then, we will display that information in the Study Scene.  At the moment, the scene does not need to be interactive, but we need to figure out what to display.
 
-To start, let's consider the kind of information we want to display and figure out a layout for that information. When we look at Game-LLM-Prompts.md, we can get a sense of that information.  Take one of the phrases in our "fallback" dialog script (`docs/Fallback-Dialog.md`) for testing and let's itemize the data we want to display.  Using your insight for what an English-speaking learner would want to know about a Japanese phrase, use your intuition to figure out what information is important to display.
+So to begin our design: If you were an English speaker wanting to learn Japanese that initiated a study session for a Japanese phrase, what are the kinds of things you would want to know about that phrase?  What are the kinds of things that we could display?
+
+For inpiration, read through our earlier brainstorming in these files:
+- `docs/Technical-Spec.md` - in the "Study Scene" section we talk about the types of data we would want to display
+- `docs/Game-LLM-Prompts.md` - Since ultimately this data will come from an LLM, earlier in the project we experimented with creating prompts that could be used to generate this data from the source phrase using an LLM.
+- `phaser_game/src/data/conversations/park_bench.ts` - This a portion of the dialog for our "fallback" dialog script (i.e., our test dialog) in which you can see there are some attempts to capture "Studyable Terms" relevant to the dialog (source phrase). Though we are not intending to use this particular data, it is still useful for our design.
+- `docs/features/Study-Scene-Layout.md` - This is our existing design for the Study Scene, but it needs to be rewritten.  It was designed by someone who did not have a firm grasp on our goals and ended up creating something too complex.  We only have one page to work with, so our design will be much simpler.
+
+Please update the `docs/features/Study-Scene-Layout.md` file with your design and insights. Let's start small - be thorough about POSSIBILIES of what kind of information we could include, but there is no need to flesh them all out yet.  We'll pare it down to reach our final design, but we would like to get a sense of the opportunities and brainstorm ideas to start.  Feel free to keep or discard any part of the existing file.
+
+After your edits, we will continue our discussion.
 
 ---
 
+This looks good.  Take a look at the existing code file for the scene in `phaser_game/src/scenes/StudyScene.ts`.  This has a few of the design elements we discussed, though you are free to discard any of it as you see fit. However, knowing what you want to keep or discard might help in our design of the spec. I think visually I agree with your design in the spec, and compared to the existing implementation I would like for it to take up the large majority of the screen (i.e., thin borders allowing the VNScene to be visible in the background) but not as much as it has currently. We want as much room as possible.
 
+We discussed Phaser support for scrollable content, and it would make sense for us to have the "Top Section" static while having the "Main Content Area" vertically scrollable. Whether we accomplish this through Phaser's native library or make use of something like `rex-ui` is up to you. While Phaser supports scrolling for say, a scrollable level, we are simply using it for UI, so determine what wouuld be most appropriate.
+
+You have also separated the information well among "Must-Have Information", "Include When Relevant", and "Optional Information". This will help us when working with the LLM - some information we will demand to have, but our system should be flexible to make other items optional in the case that the LLM does not return information for them.
+
+Erase the section on "Considerations for Different Learner Levels" - this is far too nuanced for our current scope. We will present a uniform experience to the player regardless of their level. Rather, their level will determine how often they voluntarily initiate study sessions.
+
+I've added "(NOTYET)" markers throughout the spec, following our convention in other specs for ideas that are worth keeping in mind but are not in the current scope.
+
+For our initial implementation, we will need no interactability other than being able to "Return to Game" or to (if needed) vertically scroll the "Main Content Area".
+
+Update the spec to integrate these comments and add the extremely important "Feature Implementation Plan (FIP)" section that you see exemplified in the feature spec template (`docs/read-only/Feature-Spec-Template.md`). Keep in mind that your only instruction at this moment is to read files (those specified above and any others you deem necessary) and to update the feature spec file `docs/features/Study-Scene-Layout.md`. Don't be thrown off by the checkboxes you create for the FIP and suddenly think you need to start implementing the shiny new list you just created.
+
+After your edits, we will continue our discussion.
+
+---
+
+Looking good, a few remaining edits:
+- Remove mention of furigana, we have dropped that feature in the MVP. 
+- Remove :source context" from Essential Information - we will be doing something different with referencing the previous dialog. 
+- Return the paragraph regarding "(NOTYET)" so that human readers will understand what this marking means throughout the document. 
+- Include my notes on how our separation of information groups will help us remain flexible while working with an unpredictable LLM. 
+- Include a new Phase between Phase 1 & 2 that includes creating test data (not for tests, but for developing around). This will require some work and refinement to create a good test case to implement our UI with.
+
+After your edits, we will continue our discussion.

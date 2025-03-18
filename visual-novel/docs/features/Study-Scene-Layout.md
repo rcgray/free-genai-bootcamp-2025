@@ -2,307 +2,252 @@
 
 ## Overview
 
-The Study Scene Layout is a critical component of our Japanese Language Learning Visual Novel. It provides an immersive, educational interface where players can study Japanese phrases encountered during gameplay. When players click the "Study" button on dialog text, they're transitioned to this overlay scene where they can learn detailed information about Japanese vocabulary, grammar, and cultural context.
+The Study Scene is a crucial component of our Japanese Language Learning Visual Novel. It serves as an educational overlay that appears when players click the "Study" button on dialog text. This scene provides detailed information about Japanese phrases and their linguistic elements, helping English speakers better understand and learn the language.
 
-This document outlines the design, functionality, and implementation details of the Study Scene Layout, with specific attention to information organization and visual presentation that maximizes learning effectiveness.
+This document outlines our approach to the Study Scene layout, focusing on what information would be most valuable to an English-speaking learner encountering Japanese phrases in our game.
 
-## Study Data Structure
+Note that this file serves as both a brainstorming collection and an implementation plan. Items marked with (NOTYET) are not yet planned for implementation, but we will keep these in mind for future iterations.
 
-The Study Scene will display detailed information about Japanese phrases. Based on the LLM prompt template in `Game-LLM-Prompts.md`, we'll organize the following information:
+## Core Learning Needs for English Speakers
 
-```typescript
-interface PhraseAnalysis {
-  word_breakdown: WordBreakdown[];
-  grammar_points: GrammarPoint[];
-  cultural_notes: string;
-  alternative_expressions: AlternativeExpression[];
-  example_sentences: ExampleSentence[];
-  pronunciation_tips: string;
-  common_mistakes: string;
-}
+As an English speaker learning Japanese, several key challenges need to be addressed:
 
-interface WordBreakdown {
-  word: string;              // Japanese word
-  reading: string;           // Reading in hiragana
-  romaji: string;            // Romaji pronunciation
-  part_of_speech: string;    // Noun, verb, adjective, etc.
-  meaning: string;           // English meaning
-  notes?: string;            // Optional usage notes
-}
+1. **Pronunciation and Reading**: Understanding how to read and pronounce Japanese characters
+2. **Word Identification**: Recognizing individual words within phrases/sentences
+3. **Grammar Structure**: Understanding how Japanese grammar differs from English
+4. **Cultural Context**: Learning cultural nuances that affect language usage
+5. **Usage Examples**: Seeing practical applications of phrases in different contexts
+6. **Common Pitfalls**: Avoiding typical mistakes made by English speakers
 
-interface GrammarPoint {
-  pattern: string;           // Grammar pattern
-  explanation: string;       // Explanation of the grammar
-  usage_notes: string;       // Notes on usage
-  difficulty_level: string;  // beginner, intermediate, advanced
-}
+## Information Categories
 
-interface AlternativeExpression {
-  japanese: string;          // Alternative phrase in Japanese
-  romaji: string;            // Romaji pronunciation
-  english: string;           // English translation
-  usage_context: string;     // When to use this alternative
-}
+Based on the above learning needs and our review of the LLM prompt in `Game-LLM-Prompts.md`, we've identified these potential information categories for the Study Scene:
 
-interface ExampleSentence {
-  japanese: string;          // Example sentence in Japanese
-  romaji: string;            // Romaji pronunciation
-  english: string;           // English translation
-}
-```
+### Essential Information
+- Original Japanese phrase
+- Romaji pronunciation 
+- English translation
 
-## Layout Design
+### Word Breakdown
+- Individual words identified
+- Reading in hiragana
+- Part of speech
+- English meaning
+- Usage notes
 
-The Study Scene layout will be organized into clear, visually distinct sections to help players focus on specific aspects of language learning.
+### Grammar Points
+- Key grammar patterns in the phrase
+- Simple explanation of each pattern
+- Usage examples
+- Difficulty level indication
 
-### Main Components
+### Cultural Context
+- Cultural background relevant to the phrase
+- Situational usage notes
+- Formality level explanation
+- Historical or social context
 
-1. **Header Section**
-   - Original phrase (large, centered text with furigana)
-   - Source context (who said it, where, when)
-   - Button to return to Visual Novel Scene
+### Usage Examples
+- Additional example sentences using similar patterns
+- Alternative expressions with similar meanings
+- Context for when to use alternatives
+- Register variations (casual, polite, formal)
 
-2. **Tabbed Information Panel**
-   - Tab navigation for different categories of information
-   - Content area that changes based on selected tab
-   - Scroll functionality for overflow content
+### Learning Support
+- Pronunciation tips
+- Common mistakes to avoid
+- Memory aids for challenging aspects
+- Related vocabulary
 
-3. **Word Breakdown Tab**
-   - Table-like layout showing each word in the phrase
-   - Japanese, reading, romaji, part of speech, meaning columns
-   - Visual emphasis on the selected word
+## Visual Design
 
-4. **Grammar Points Tab**
-   - Expandable sections for each grammar point
-   - Pattern, explanation, usage notes, difficulty level
-   - Visual color-coding by difficulty level
+The Study Scene should take up the large majority of the screen while allowing the VN Scene to remain visible in the background. This creates a sense of continuity while providing ample space for educational content.
 
-5. **Examples & Alternatives Tab**
-   - Example sentences with Japanese, romaji, English
-   - Alternative expressions with when to use them
-   - Audio playback buttons (future enhancement)
+### Layout Design
 
-6. **Cultural Notes Tab**
-   - Cultural context explanation
-   - Pronunciation tips
-   - Common mistakes to avoid
+After considering our target audience and technical constraints, we recommend a simplified hybrid approach:
 
-### Visual Design Elements
+1. **Top Section (Always Visible)**
+   - Original Japanese phrase
+   - Romaji pronunciation
+   - English translation
+   - "Back to Game" button
 
-1. **Color Scheme**
-   - Background: Semi-transparent dark overlay (#000000, 80% opacity)
-   - Content Panel: Dark gray (#333333)
-   - Highlights: Accent color for active tabs and important text (#4A90E2)
-   - Text: White for readability (#FFFFFF)
-   - Secondary Text: Light gray for less important information (#CCCCCC)
-   - Difficulty Levels: Beginner (Green), Intermediate (Yellow), Advanced (Red)
+2. **Main Content Area (Vertically Scrollable)**
+   - Word Breakdown section
+   - 1-2 Key Grammar Points section
+   - Brief Cultural Note (if applicable)
+   - 1-2 Example Sentences
+   - Simple Learning Tips
 
-2. **Typography**
-   - Japanese Text: Clear, readable font with good support for Japanese characters
-   - Romaji: Slightly smaller than Japanese text
-   - English: Same size as Romaji but different style
-   - Headings: Bold, slightly larger for section titles
-   - Tab Labels: Bold, centered
+The top section remains fixed while the main content area can be scrolled vertically if the content exceeds the available space. This approach places the most critical information at the top and presents supporting details in a clear, scrollable format.
 
-3. **Interactive Elements**
-   - Tabs: Clear visual feedback for hover and selected states
-   - Scroll Controls: Subtle arrows or scrollbar
-   - Back Button: Prominent positioning for easy return to game
-   - Word Selection: Highlight effect when clicking words
+### Visual Elements
+
+- **Background**: Semi-transparent dark overlay (approximately 80% opacity) allowing some visibility of the paused VN Scene behind it
+- **Content Area**: Centered panel with thin borders, taking approximately 85-90% of the screen space
+- **Typography**: Clear, readable fonts with proper sizing hierarchy:
+  - Japanese text: Larger size for focus
+  - Section headers: Bold, clearly distinct
+  - Content text: Standard size with good readability
+- **Color Scheme**: Dark background with light text for readability, accent colors for section headings
+- **Scrollbar/Indicators**: Subtle but visible scrolling indicators when content exceeds the visible area
 
 ## Visual Mockup
 
 ```
-+-------------------------------------------------+
-|                                                 |
-|  +-------------------------------------------+  |
-|  |              Original Phrase              |  |
-|  |          (with furigana if needed)        |  |
-|  +-------------------------------------------+  |
-|                                                 |
-|  +-------------------------------------------+  |
-|  | Words | Grammar | Examples | Cultural Notes |  |
-|  +-------------------------------------------+  |
-|                                                 |
-|  +-------------------------------------------+  |
-|  |                                           |  |
-|  |                                           |  |
-|  |                                           |  |
-|  |        Selected Tab Content Area          |  |
-|  |             (scrollable)                  |  |
-|  |                                           |  |
-|  |                                           |  |
-|  |                                           |  |
-|  +-------------------------------------------+  |
-|                                                 |
-|  +-------------------------------------------+  |
-|  |            Return to Game Button          |  |
-|  +-------------------------------------------+  |
-|                                                 |
-+-------------------------------------------------+
++---------------------------------------------------+
+|                                                   |
+|  +-----------------------Back to Game----------+  |
+|  |                                             |  |
+|  |  日本では電車がとても便利です。             |  |
+|  |                                             |  |
+|  |  Nihon dewa densha ga totemo benri desu.    |  |
+|  |                                             |  |
+|  |  Trains are very convenient in Japan.       |  |
+|  |                                             |  |
+|  +---------------------------------------------+  |
+|                                                   |
+|  +---------Word Breakdown----------------------+  |
+|  |                                             |  |
+|  | 日本 (にほん) - nihon - noun - Japan        |  |
+|  | では - dewa - particle - in, at             |  |
+|  | 電車 (でんしゃ) - densha - noun - train     |  |
+|  | が - ga - particle - subject marker         |  |
+|  | とても - totemo - adverb - very             |  |
+|  | 便利 (べんり) - benri - na-adj - convenient |  |
+|  | です - desu - copula - is                   |  |
+|  |                                             |  |
+|  +---------------------------------------------+  |
+|                                                   |
+|  +---------Grammar Points----------------------+  |
+|  |                                             |  |
+|  | ～では (dewa)                               |  |
+|  | - Shows location where something occurs     |  |
+|  | - Similar to で but with slight emphasis    |  |
+|  | - BEGINNER LEVEL                            |  |
+|  |                                             |  |
+|  +---------------------------------------------+  |
+|                                                   |
+|  +---------Example Sentence--------------------+  |
+|  |                                             |  |
+|  | 東京では電車が便利です。                    |  |
+|  | Tōkyō dewa densha ga benri desu.            |  |
+|  | Trains are convenient in Tokyo.             |  |
+|  |                                             |  |
+|  +---------------------------------------------+  |
+|                                                   |
+|  +---------Learning Tips-----------------------+  |
+|  |                                             |  |
+|  | • は is pronounced "wa" when used as topic  |  |
+|  | • Don't confuse が (ga) and は (wa)         |  |
+|  | • "benri" has stress on first syllable      |  |
+|  |                                             |  |
+|  +---------------------------------------------+  |
+|                                                   |
++---------------------------------------------------+
 ```
 
-## Example Phrase Analysis
+## Content Prioritization
 
-To illustrate the content that will appear in the Study Scene, let's analyze a sample phrase from our dialog:
+For each phrase, we'll need to generate appropriate information through our LLM. Since we have limited space, we'll prioritize information as follows:
 
-**Original Phrase:** 日本では電車がとても便利です。地下鉄や山手線を使うと、どこでも行けますよ。
-**Romaji:** Tokyo dewa densha ga totemo benri desu. Chikatetsu ya Yamanote-sen wo tsukau to, doko demo ikemasu yo.
-**English:** Trains are very convenient in Tokyo. If you use the subway or Yamanote Line, you can go anywhere.
+1. **Must-Have Information** (always included):
+   - Word breakdown (at least for key words)
+   - One primary grammar point
+   - At least one example sentence
+   - 1-2 learning tips
 
-### Word Breakdown
+2. **Include When Relevant**:
+   - Cultural context (when phrase has cultural significance)
+   - Alternative expressions (when there are common variations)
+   - Pronunciation tips (for challenging sounds)
+   - Formality notes (when register is important)
 
-| Word | Reading | Romaji | Part of Speech | Meaning |
-|------|---------|--------|----------------|---------|
-| 日本 | にほん | nihon | noun | Japan |
-| では | では | dewa | particle | in, at |
-| 電車 | でんしゃ | densha | noun | train |
-| が | が | ga | particle | subject marker |
-| とても | とても | totemo | adverb | very |
-| 便利 | べんり | benri | na-adjective | convenient |
-| です | です | desu | copula | is |
-| 地下鉄 | ちかてつ | chikatetsu | noun | subway |
-| や | や | ya | particle | and, or |
-| 山手線 | やまのてせん | yamanote-sen | noun | Yamanote Line (Tokyo train line) |
-| を | を | wo | particle | object marker |
-| 使う | つかう | tsukau | verb | to use |
-| と | と | to | particle | if, when |
-| どこ | どこ | doko | pronoun | where, anywhere |
-| でも | でも | demo | particle | even, also |
-| 行けます | いけます | ikemasu | verb | can go |
-| よ | よ | yo | particle | emphasis |
+3. **Optional Enhancements** (space permitting):
+   - Related vocabulary
+   - Extended grammar explanations
+   - Additional example sentences
+   - Visual aids or diagrams
 
-### Grammar Points
+This tiered approach to information categories provides important flexibility when working with LLMs, which may not always return consistent data. By clearly separating must-have content from optional elements, we can gracefully handle cases where the LLM provides incomplete or unexpected responses. Our UI will be designed to adapt to available data, maintaining a coherent learning experience even when certain information types aren't available.
 
-1. **Pattern:** 〜では
-   **Explanation:** Indicates location where something takes place
-   **Usage Notes:** Similar to 〜で but adds slight emphasis
-   **Difficulty Level:** Beginner
+## Scrolling Implementation
 
-2. **Pattern:** 〜と、〜
-   **Explanation:** "If/when A, then B" conditional pattern
-   **Usage Notes:** Expresses natural result or consequence
-   **Difficulty Level:** Beginner
+For the scrollable Main Content Area, we have two implementation options:
 
-3. **Pattern:** どこでも
-   **Explanation:** "Anywhere" - combination of どこ (where) and でも (even)
-   **Usage Notes:** Part of the ~でも grammar pattern for expressing "anywhere," "anytime," etc.
-   **Difficulty Level:** Intermediate
+1. **Native Phaser Scrolling**: Implementing scrolling using Phaser's container with masks and input handling for dragging. This approach keeps all implementation within Phaser but requires custom handling of scrolling logic.
 
-### Cultural Notes
+2. **Community Plugin**: Using a UI plugin like `rex-ui` that provides pre-built scrollable panels. This may simplify implementation but adds a dependency.
 
-The Tokyo train system is famous worldwide for its efficiency and punctuality. The Yamanote Line is one of Tokyo's most famous train lines, forming a loop around central Tokyo and connecting many major stations. Japanese people rely heavily on public transportation, especially in urban areas where owning a car can be expensive and impractical.
+Given that our needs are focused on simple vertical scrolling for UI elements (rather than game world scrolling), we recommend implementing a basic masked container with drag handling if a plugin is not already in use. This approach will be sufficient for our straightforward scrolling needs.
 
-### Example Sentences
+## Additional Features (NOTYET)
 
-1. **Japanese:** 山手線は東京の主要駅をつなぐ環状線です。
-   **Romaji:** Yamanote-sen wa Tokyo no shuyō eki o tsunagu kanjō-sen desu.
-   **English:** The Yamanote Line is a loop line connecting Tokyo's major stations.
+The following features should be considered for future enhancements but are not part of the current scope:
 
-2. **Japanese:** どこに行きたいですか？地下鉄を使えば、簡単に行けますよ。
-   **Romaji:** Doko ni ikitai desu ka? Chikatetsu o tsukaeba, kantan ni ikemasu yo.
-   **English:** Where do you want to go? If you use the subway, you can easily get there.
+1. **Audio Playback**: Adding pronunciation audio for phrases and examples 
+2. **Interactive Elements**: Allowing players to click on words for more details
+3. **Progress Tracking**: Marking phrases as "studied" or "mastered"
+4. **Related Phrases**: Suggesting similar phrases from previous encounters
+5. **Spaced Repetition**: Integrating learning science principles for review
+6. **Quiz Features**: Adding simple recall or translation exercises
+7. **Favorites**: Letting players bookmark phrases for later review
+8. **Custom Notes**: Allowing players to add their own notes to phrases
 
-### Alternative Expressions
+## Feature Implementation Plan (FIP)
 
-1. **Japanese:** 東京の交通機関はとても発達しています。
-   **Romaji:** Tokyo no kōtsū kikan wa totemo hattatsu shite imasu.
-   **English:** Tokyo's public transportation is very well-developed.
-   **Usage Context:** More formal expression, suitable for written descriptions
+### Phase 1: Basic Study Scene Structure
+- [ ] Update StudyScene.ts with the new design approach
+- [ ] Create the semi-transparent background overlay with proper sizing (85-90% of screen)
+- [ ] Implement the "Back to Game" button with proper functionality
+- [ ] Set up the basic layout structure for fixed header and scrollable content area
+- [ ] Ensure proper scene transition and state preservation between VN Scene and Study Scene
 
-2. **Japanese:** 電車に乗れば、簡単に移動できます。
-   **Romaji:** Densha ni noreba, kantan ni idō dekimasu.
-   **English:** If you take the train, you can move around easily.
-   **Usage Context:** Slightly more casual than using 使う (to use)
+### Phase 2: Test Data Creation
+- [ ] Create comprehensive test data object representing LLM analysis of a Japanese phrase
+- [ ] Include realistic content for all sections (word breakdown, grammar points, etc.)
+- [ ] Develop multiple variations of test data with different lengths/complexities
+- [ ] Create edge cases (missing optional data, long content sections, etc.)
+- [ ] Document the test data structure for reference
 
-### Pronunciation Tips
+### Phase 3: Fixed Header Implementation
+- [ ] Implement the display of the original Japanese phrase with proper formatting
+- [ ] Create the romaji pronunciation display
+- [ ] Implement the English translation display
+- [ ] Ensure proper text wrapping and positioning for all text elements
 
-- Pay attention to the particle は which is pronounced "wa" when used as a topic marker
-- In 山手線 (Yamanote-sen), the "no" in やまのて is often spoken quickly and may sound like やまんて
-- The sentence-ending particle よ (yo) should be pronounced with a slight rising intonation to express helpfulness
+### Phase 4: Scrollable Content Area
+- [ ] Implement the vertical scrolling container for the Main Content Area
+- [ ] Create section headers with consistent styling
+- [ ] Implement basic scroll indicators or scrollbar
+- [ ] Ensure proper touch/mouse input handling for scrolling
+- [ ] Test scrolling with varying content lengths
 
-### Common Mistakes
+### Phase 5: Content Sections Implementation
+- [ ] Create the Word Breakdown section with proper formatting
+- [ ] Implement the Grammar Points section with appropriate styling
+- [ ] Add the Example Sentences section with proper Japanese/romaji/English display
+- [ ] Create the Learning Tips section with clear, readable formatting
+- [ ] Ensure consistent spacing and visual hierarchy between sections
 
-- Non-native speakers often confuse the particles は (wa) and が (ga)
-- The word 便利 (benri) is often mispronounced with incorrect stress
-- Many learners struggle with the conditional と (to) pattern, mistaking it for the quotation particle
-- Forgetting to use the particle を (wo) before the verb 使う (tsukau)
+### Phase 6: Integration and Testing
+- [ ] Connect the Study Scene to receive data from the dialog system
+- [ ] Test the scene with various phrases of different lengths
+- [ ] Verify proper display of Japanese text and romaji
+- [ ] Ensure scrolling works correctly with different content lengths
+- [ ] Confirm that returning to the VN Scene works as expected
+- [ ] Verify that the scene handles window resizing appropriately
 
-## Implementation Plan
-
-### Phase 1: Basic Layout and Structure
-- [ ] Create TabPanel component for organizing content
-- [ ] Implement basic layout with header, tabs, and content area
-- [ ] Set up navigation between tabs
-- [ ] Create transition animations for tab switching
-
-### Phase 2: Content Display Components
-- [ ] Implement WordBreakdownTable component for displaying word analysis
-- [ ] Create GrammarPointCard component for grammar explanations
-- [ ] Build ExampleSentenceList for displaying example sentences
-- [ ] Develop AlternativeExpressionList component
-- [ ] Create CulturalNotes component with sections for different note types
-
-### Phase 3: Data Integration
-- [ ] Create sample data structure with phrase analysis
-- [ ] Connect components to data model
-- [ ] Implement scrolling for overflow content
-- [ ] Add highlighting and selection features for interactive elements
-
-### Phase 4: Visual Styling and Polish
-- [ ] Apply consistent color scheme
-- [ ] Implement typography standards
-- [ ] Add visual feedback for interactive elements
-- [ ] Create smooth transitions and animations
-- [ ] Ensure responsive layout for different screen sizes
-
-### Phase 5: Integration with VN Scene
-- [ ] Refine transition between VN Scene and Study Scene
-- [ ] Ensure state preservation when returning to VN Scene
-- [ ] Add HMR support for development workflow
-- [ ] Test with various phrases and dialog contexts
-
-### Phase 6: Future Enhancements (For Later)
-- [ ] Add audio playback for pronunciation
-- [ ] Implement vocabulary tracking
-- [ ] Create quiz functionality for self-testing
-- [ ] Build history feature to review previously studied phrases
-
-## Technical Considerations
-
-### Performance Optimization
-- Lazy load tabs to improve initial render time
-- Efficiently render Japanese text with furigana
-- Optimize scrolling performance for mobile devices
-
-### Memory Management
-- Clean up resources when leaving the Study Scene
-- Properly handle scene transitions to prevent memory leaks
-
-### Error Handling
-- Graceful fallback for missing phrase data
-- Handle incomplete analysis gracefully
-- Provide useful error messages for development
-
-## User Experience Considerations
-
-### Accessibility
-- Ensure sufficient color contrast
-- Support keyboard navigation
-- Allow text size adjustment
-
-### Language Learning Focus
-- Clear distinction between Japanese, romaji, and English
-- Consistent presentation of language elements
-- Progressive disclosure of complex grammar points
-
-### Gameplay Flow
-- Smooth transition between game and study mode
-- Quick return to gameplay
-- Preserving game state during study sessions
+### Phase 7: Visual Polish
+- [ ] Refine typography and text sizing for optimal readability
+- [ ] Add subtle animations for scene transitions
+- [ ] Improve visual feedback for the scrolling interaction
+- [ ] Ensure consistent visual styling with the rest of the game
+- [ ] Add final visual touches for a polished look and feel
 
 ## Conclusion
 
-The Study Scene Layout is designed to provide an immersive, educational interface for learning Japanese. By organizing information into clear, visually distinct sections and providing a rich set of language learning tools, we aim to enhance the player's understanding of Japanese vocabulary, grammar, and cultural context encountered during gameplay.
+The Study Scene represents a critical educational component of our Japanese Language Learning Visual Novel. By focusing on the specific needs of English speakers learning Japanese and presenting information in a clear, accessible format, we can create an effective learning tool that enhances the overall game experience while achieving our educational goals.
 
-The implementation will follow a phased approach, starting with the basic layout and structure, then adding content display components, data integration, visual styling, and finally integration with the Visual Novel Scene. Future enhancements will include audio playback, vocabulary tracking, and quiz functionality to further enhance the learning experience. 
+Our simplified approach prioritizes the most valuable information for learners while maintaining an uncluttered, approachable design that can be implemented efficiently and expanded upon in future iterations. 
