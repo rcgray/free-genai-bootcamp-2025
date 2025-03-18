@@ -235,3 +235,41 @@ Looking good, a few remaining edits:
 - Include a new Phase between Phase 1 & 2 that includes creating test data (not for tests, but for developing around). This will require some work and refinement to create a good test case to implement our UI with.
 
 After your edits, we will continue our discussion.
+
+---
+
+# Cursor changed its models. We no longer have access to the claude-3.7-sonnet-thinking, but just the claude-3.5-sonnet with a thinking toggle (and claude-3.5-sonnet "Max").
+
+---
+
+This looks great.  I think we are ready to implement this.
+
+---
+
+Please update the feature spec FIP to reflect the progress of the implementation.
+
+The Study Scene looks pretty good, I especially like how the scrollable content is handled. Let's make the following edits:
+
+- Remove the Test Study button (and be sure to remove other code that was written strictly to support it). We do not want to clutter our game scene with test buttons.
+- Change the "Back to Game" to simply "Back"
+- The horizontal lines that go beneath section titles are not centered in the main content area - see screenshot image attached.
+
+---
+
+the line wrapping will need to be performed manually just as we do with the main dialog box and the player selection options dialog boxes.  in the study scene, they will have a maximum limit of 31 characters
+
+---
+
+Take another look at how the dialog box and player selection options dialog boxes handle line wrapping.  We will need to do the same thing in the Study Scene. Do they also wrap the romaji or english translation... or just the Japanese phrase? Please think carefully.
+
+---
+
+Great. Can we add formatting to the romaji and english translation that makes it share in the same design as we use in the VNScene dialog boxes (i.e., smaller font size, brackets surrounding the translation text, translation text in a bluish color)?
+
+---
+
+If we find that the target phrase needed to be wrapped to an additional line, we will need to move down the top of the scrollable content area.  Right now we do not account for this, so the areas collide (see screenshot image attached).  Note that this will involve making the scrollable content area smaller in order to remain within the bounds of the scene.
+
+---
+
+A small bug: when we click the "Back" button to return to the VNScene, it also registers as a click in the VNScene, causing the dialog to advance.  How can we prevent this?

@@ -1101,7 +1101,7 @@ export default class VNScene extends BaseScene {
     });
     
     // Handle click event
-    this.studyButton.on('pointerdown', () => {
+    this.studyButton.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (currentDialog) {
         const studyData = {
           phrase: currentDialog.japaneseText,
@@ -1111,24 +1111,39 @@ export default class VNScene extends BaseScene {
           source: currentDialog.characterId || 'Narration'
         };
         
-        this.openStudyScene(studyData);
+        // Pass the pointer so we can consume the event
+        this.openStudyScene(studyData, pointer);
       }
     });
   }
   
   /**
    * Open the Study Scene with the given phrase data
+   * Make sure to prevent dialog advancement by completely disabling input
    */
-  private openStudyScene(phraseData: StudyPhraseData): void {
-    console.log('Opening Study Scene with phrase:', phraseData.phrase);
+  private openStudyScene(phraseData: StudyPhraseData, pointer?: Phaser.Input.Pointer): void {
+    // If we have a pointer, consume the event to prevent dialog advancement
+    if (pointer && pointer.event) {
+      pointer.event.stopPropagation();
+      console.log('Consuming pointer event to prevent dialog advancement');
+    }
     
-    // Launch the study scene as an overlay
-    this.scene.launch('StudyScene', phraseData);
+    // Immediately disable input to prevent any further event processing
+    this.input.enabled = false;
+    console.log('Input disabled to prevent dialog advancement');
     
-    // Pause this scene (but keep it visible in the background)
-    this.scene.pause();
-    
-    console.log('VNScene paused, StudyScene launched');
+    // Use a short delay to ensure event processing is complete before scene transition
+    this.time.delayedCall(50, () => {
+      console.log('Opening Study Scene with phrase:', phraseData.phrase);
+      
+      // Launch the study scene as an overlay
+      this.scene.launch('StudyScene', phraseData);
+      
+      // Pause this scene (but keep it visible in the background)
+      this.scene.pause();
+      
+      console.log('VNScene paused, StudyScene launched');
+    });
   }
   
   /**
@@ -1486,7 +1501,7 @@ export default class VNScene extends BaseScene {
       };
       
       // Launch the study scene
-      this.openStudyScene(phraseData);
+      this.openStudyScene(phraseData, pointer);
     });
     
     // Track this container for cleanup

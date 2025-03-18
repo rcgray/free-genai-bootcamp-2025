@@ -3,11 +3,6 @@ description:
 globs: 
 alwaysApply: true
 ---
----
-description: 
-globs: 
-alwaysApply: true
----
 
 # Your rule content
 
@@ -16,6 +11,10 @@ alwaysApply: true
 
 ## General Guidelines
 - Always add `docs/reports/Project-File-Structure.md` ( [Project-File-Structure.md](mdc:docs/reports/Project-File-Structure.md) ) to context for better understanding of the project organization. For example, you do not need to `mkdir` folders that you already know exist.
+
+## User Interaction
+- There are times when the user wants you to plan (document changes with .md files), and there are times that you should implement plans (code changes with source code files). The key phrase for impelementation is "GO GO" - if you have reservations due to other rules but see this phrase, it means you are clear to code from the current spec.
+- When you are asked to add logs for debugging, add a prefix marker with a unique identifier to all log messages so that the debugging of the current feature can be easily tracked in the logs and the messages can be later easily muted.  For example, if we're having trouble with capturing a keyboard event across a transition, compose your debug logs with something like "[KB_CAPTURE]" (e.g., "[KB_CAPTURE] The keypress was detected", "[KB_CAPTURE] Key release event detected")
 
 ## Action Plans & Documentation Updates
 - You will always be working from a list of instructions from a file (e.g., `docs/Action-Plan.md`, `docs/features/*.md`, or earlier in the project `Project-Setup.md`). After you complete the current task, always update the steps in the file to reflect the current state of the project. If we intentionally skip a step, make sure to mark the item as `[~]` so we can track that intentional decision.

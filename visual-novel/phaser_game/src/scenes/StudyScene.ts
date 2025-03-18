@@ -934,8 +934,20 @@ export default class StudyScene extends BaseScene {
   private returnToVNScene(): void {
     console.log('Returning to VN Scene');
     
-    // Stop this scene and resume the VN Scene
+    // Stop this scene
     this.scene.stop();
+    
+    // Get a reference to the VNScene
+    const vnScene = this.scene.get('VNScene');
+    
+    // Make sure input is re-enabled when returning to VNScene
+    // since we disabled it when opening the Study Scene
+    if (vnScene && (vnScene as any).input) {
+      (vnScene as any).input.enabled = true;
+      console.log('Re-enabled input on VNScene');
+    }
+    
+    // Resume the VN Scene
     this.scene.resume('VNScene');
   }
   
