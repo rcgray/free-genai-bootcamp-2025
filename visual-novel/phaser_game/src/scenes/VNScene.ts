@@ -169,6 +169,100 @@ export default class VNScene extends BaseScene {
     
     // Debug initial state
     console.log('[SB1] create() complete - dialog box exists:', !!this.dialogBox, 'study button exists:', !!this.studyButton);
+    
+    // Add a temporary test button for the Study Scene
+    this.addStudySceneTestButton();
+  }
+  
+  /**
+   * Temporary test button to launch the Study Scene with test data
+   */
+  private addStudySceneTestButton(): void {
+    const testButton = this.add.text(
+      this.cameras.main.width - 20,
+      20,
+      "Test Study Scene",
+      {
+        fontFamily: 'Arial',
+        fontSize: '16px',
+        color: '#ffffff',
+        backgroundColor: '#5a1e1e',
+        padding: { left: 10, right: 10, top: 5, bottom: 5 }
+      }
+    );
+    testButton.setOrigin(1, 0);
+    testButton.setInteractive({ useHandCursor: true });
+    
+    // Add hover effect
+    testButton.on('pointerover', () => {
+      testButton.setStyle({ color: '#ffff00' });
+    });
+    
+    testButton.on('pointerout', () => {
+      testButton.setStyle({ color: '#ffffff' });
+    });
+    
+    // Create dropdown menu for different test phrases
+    const menuOptions = ['complete', 'minimal', 'complex', 'missing'];
+    const menuItems: Phaser.GameObjects.Text[] = [];
+    
+    let selectedOption = 'complete';
+    
+    menuOptions.forEach((option, index) => {
+      const menuItem = this.add.text(
+        this.cameras.main.width - 20,
+        60 + index * 30,
+        option,
+        {
+          fontFamily: 'Arial',
+          fontSize: '14px',
+          color: '#ffffff',
+          backgroundColor: '#333333',
+          padding: { left: 10, right: 10, top: 5, bottom: 5 }
+        }
+      );
+      menuItem.setOrigin(1, 0);
+      menuItem.setInteractive({ useHandCursor: true });
+      menuItem.setVisible(false);
+      
+      menuItem.on('pointerover', () => {
+        menuItem.setStyle({ backgroundColor: '#555555' });
+      });
+      
+      menuItem.on('pointerout', () => {
+        menuItem.setStyle({ backgroundColor: '#333333' });
+      });
+      
+      menuItem.on('pointerdown', () => {
+        selectedOption = option;
+        menuItems.forEach(item => item.setVisible(false));
+        testButton.setText(`Test Study (${option})`);
+      });
+      
+      menuItems.push(menuItem);
+    });
+    
+    // Toggle dropdown visibility
+    testButton.on('pointerdown', () => {
+      const isVisible = menuItems[0].visible;
+      menuItems.forEach(item => item.setVisible(!isVisible));
+      
+      if (!isVisible) return; // Don't launch if opening the menu
+      
+      // Launch Study Scene with the selected test data
+      const studyData = {
+        phrase: "日本語の勉強をしましょう",
+        romaji: "Nihongo no benkyō o shimashō",
+        translation: "Let's study Japanese",
+        testPhraseName: selectedOption
+      };
+      
+      this.openStudyScene(studyData);
+    });
+    
+    // Add depth to ensure visibility
+    testButton.setDepth(this.DEPTH_UI + 10);
+    menuItems.forEach(item => item.setDepth(this.DEPTH_UI + 10));
   }
   
   /**
@@ -1105,7 +1199,7 @@ export default class VNScene extends BaseScene {
       if (currentDialog) {
         const studyData = {
           phrase: currentDialog.japaneseText,
-          furigana: currentDialog.romaji,
+          romaji: currentDialog.romaji,
           translation: currentDialog.englishText,
           context: `${this.currentLocation}`,
           source: currentDialog.characterId || 'Narration'
@@ -1479,7 +1573,7 @@ export default class VNScene extends BaseScene {
       // Prepare phrase data directly from the response data
       const phraseData: StudyPhraseData = {
         phrase: choice.japaneseText,
-        furigana: choice.romaji,
+        romaji: choice.romaji,
         translation: choice.englishText,
         context: `Choice option at ${this.currentLocation}`,
         source: 'Player Option'
