@@ -35,6 +35,7 @@
 │   │   ├── Furigana-Ruby-Text.md
 │   │   ├── Phaser-Rewrite.md
 │   │   ├── Scene-Specific-Reloading.md
+│   │   ├── Study-Scene-Layout.md
 │   │   └── Study-Scene.md
 │   ├── read-only
 │   │   ├── Feature-Spec-Template.md
@@ -79,17 +80,20 @@
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── src
+│   │   ├── components
 │   │   ├── data
-│   │   │   └── conversations
-│   │   │       ├── clothing_store.ts
-│   │   │       ├── hotel_lobby.ts
-│   │   │       ├── inside_restaurant.ts
-│   │   │       ├── inside_train.ts
-│   │   │       ├── outside_mall.ts
-│   │   │       ├── outside_restaurant.ts
-│   │   │       ├── park_bench.ts
-│   │   │       ├── park_lawn.ts
-│   │   │       └── train_platform.ts
+│   │   │   ├── conversations
+│   │   │   │   ├── clothing_store.ts
+│   │   │   │   ├── hotel_lobby.ts
+│   │   │   │   ├── inside_restaurant.ts
+│   │   │   │   ├── inside_train.ts
+│   │   │   │   ├── outside_mall.ts
+│   │   │   │   ├── outside_restaurant.ts
+│   │   │   │   ├── park_bench.ts
+│   │   │   │   ├── park_lawn.ts
+│   │   │   │   └── train_platform.ts
+│   │   │   └── study
+│   │   │       └── test-phrase-data.ts
 │   │   ├── hmr-test.ts
 │   │   ├── index.ts
 │   │   ├── scenes
@@ -132,4 +136,4 @@
 ├── tests
 └── uv.lock
 
-35 directories, 98 files
+37 directories, 100 files
