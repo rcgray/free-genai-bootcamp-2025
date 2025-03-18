@@ -245,7 +245,7 @@ export default class StudyScene extends BaseScene {
     this.backButton = this.add.text(
       (this.cameras.main.width - this.contentPanel!.width) / 2 + 20,
       (this.cameras.main.height - this.contentPanel!.height) / 2 + 20,
-      'Back to Game',
+      'Back',
       {
         fontFamily: 'Arial',
         fontSize: '18px',
@@ -466,36 +466,6 @@ export default class StudyScene extends BaseScene {
       this.contentContainer!.add(patternText);
       currentY += 30;
       
-      // Difficulty level with color coding
-      let difficultyColor: string;
-      switch (grammarPoint.difficulty_level.toLowerCase()) {
-        case 'beginner':
-          difficultyColor = '#4caf50'; // green
-          break;
-        case 'intermediate':
-          difficultyColor = '#ffc107'; // amber
-          break;
-        case 'advanced':
-          difficultyColor = '#f44336'; // red
-          break;
-        default:
-          difficultyColor = '#aaaaaa'; // gray
-      }
-      
-      const difficultyText = this.add.text(
-        contentWidth * 0.3,
-        currentY - 30,
-        grammarPoint.difficulty_level.toUpperCase(),
-        {
-          fontFamily: 'Arial',
-          fontSize: '14px',
-          color: difficultyColor,
-          fontStyle: 'bold'
-        }
-      );
-      difficultyText.setOrigin(0, 0);
-      this.contentContainer!.add(difficultyText);
-      
       // Explanation
       const explanationText = this.add.text(
         -contentWidth * 0.38,
@@ -529,19 +499,9 @@ export default class StudyScene extends BaseScene {
       this.contentContainer!.add(usageText);
       currentY += usageText.height + 20;
       
-      // Add separator line if not the last item
+      // Add extra spacing between grammar points
       if (index < grammarPoints.length - 1) {
-        const separator = this.add.line(
-          0,
-          currentY,
-          -contentWidth * 0.4,
-          0,
-          contentWidth * 0.4,
-          0,
-          0x555555
-        );
-        this.contentContainer!.add(separator);
-        currentY += 20;
+        currentY += 10;
       }
     });
     
@@ -607,19 +567,8 @@ export default class StudyScene extends BaseScene {
       this.contentContainer!.add(englishText);
       currentY += englishText.height + 20;
       
-      // Add separator line if not the last item
+      // Add spacing between examples
       if (index < examples.length - 1) {
-        const separator = this.add.line(
-          0,
-          currentY - 10,
-          -contentWidth * 0.4,
-          0,
-          contentWidth * 0.4,
-          0,
-          0x555555,
-          0.5
-        );
-        this.contentContainer!.add(separator);
         currentY += 10;
       }
     });
@@ -702,19 +651,8 @@ export default class StudyScene extends BaseScene {
       this.contentContainer!.add(usageText);
       currentY += usageText.height + 20;
       
-      // Add separator line if not the last item
+      // Add spacing between alternative expressions
       if (index < alternatives.length - 1) {
-        const separator = this.add.line(
-          0,
-          currentY - 10,
-          -contentWidth * 0.4,
-          0,
-          contentWidth * 0.4,
-          0,
-          0x555555,
-          0.5
-        );
-        this.contentContainer!.add(separator);
         currentY += 10;
       }
     });
@@ -769,18 +707,7 @@ export default class StudyScene extends BaseScene {
     );
     header.setOrigin(0.5, 0);
     
-    // Add a line below the header
-    const line = this.add.line(
-      0,
-      yPosition + header.height + 5,
-      -contentWidth * 0.4,
-      0,
-      contentWidth * 0.4,
-      0,
-      0xcccccc
-    );
-    
-    this.contentContainer!.add([header, line]);
+    this.contentContainer!.add(header);
   }
   
   /**

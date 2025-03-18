@@ -98,7 +98,7 @@ The top section remains fixed while the main content area can be scrolled vertic
 ```
 +---------------------------------------------------+
 |                                                   |
-|  +-----------------------Back to Game----------+  |
+|  +---------------------------Back--------------+  |
 |  |                                             |  |
 |  |  日本では電車がとても便利です。             |  |
 |  |                                             |  |
@@ -198,53 +198,53 @@ The following features should be considered for future enhancements but are not 
 ## Feature Implementation Plan (FIP)
 
 ### Phase 1: Basic Study Scene Structure
-- [ ] Update StudyScene.ts with the new design approach
-- [ ] Create the semi-transparent background overlay with proper sizing (85-90% of screen)
-- [ ] Implement the "Back to Game" button with proper functionality
-- [ ] Set up the basic layout structure for fixed header and scrollable content area
-- [ ] Ensure proper scene transition and state preservation between VN Scene and Study Scene
+- [x] Update StudyScene.ts with the new design approach
+- [x] Create the semi-transparent background overlay with proper sizing (85-90% of screen)
+- [x] Implement the "Back" button with proper functionality
+- [x] Set up the basic layout structure for fixed header and scrollable content area
+- [x] Ensure proper scene transition and state preservation between VN Scene and Study Scene
 
 ### Phase 2: Test Data Creation
-- [ ] Create comprehensive test data object representing LLM analysis of a Japanese phrase
-- [ ] Include realistic content for all sections (word breakdown, grammar points, etc.)
-- [ ] Develop multiple variations of test data with different lengths/complexities
-- [ ] Create edge cases (missing optional data, long content sections, etc.)
-- [ ] Document the test data structure for reference
+- [x] Create comprehensive test data object representing LLM analysis of a Japanese phrase
+- [x] Include realistic content for all sections (word breakdown, grammar points, etc.)
+- [x] Develop multiple variations of test data with different lengths/complexities
+- [x] Create edge cases (missing optional data, long content sections, etc.)
+- [x] Document the test data structure for reference
 
 ### Phase 3: Fixed Header Implementation
-- [ ] Implement the display of the original Japanese phrase with proper formatting
-- [ ] Create the romaji pronunciation display
-- [ ] Implement the English translation display
-- [ ] Ensure proper text wrapping and positioning for all text elements
+- [x] Implement the display of the original Japanese phrase with proper formatting
+- [x] Create the romaji pronunciation display
+- [x] Implement the English translation display
+- [x] Ensure proper text wrapping and positioning for all text elements
 
 ### Phase 4: Scrollable Content Area
-- [ ] Implement the vertical scrolling container for the Main Content Area
-- [ ] Create section headers with consistent styling
-- [ ] Implement basic scroll indicators or scrollbar
-- [ ] Ensure proper touch/mouse input handling for scrolling
-- [ ] Test scrolling with varying content lengths
+- [x] Implement the vertical scrolling container for the Main Content Area
+- [x] Create section headers with consistent styling
+- [x] Implement basic scroll indicators or scrollbar
+- [x] Ensure proper touch/mouse input handling for scrolling
+- [x] Test scrolling with varying content lengths
 
 ### Phase 5: Content Sections Implementation
-- [ ] Create the Word Breakdown section with proper formatting
-- [ ] Implement the Grammar Points section with appropriate styling
-- [ ] Add the Example Sentences section with proper Japanese/romaji/English display
-- [ ] Create the Learning Tips section with clear, readable formatting
-- [ ] Ensure consistent spacing and visual hierarchy between sections
+- [x] Create the Word Breakdown section with proper formatting
+- [x] Implement the Grammar Points section with appropriate styling
+- [x] Add the Example Sentences section with proper Japanese/romaji/English display
+- [x] Create the Learning Tips section with clear, readable formatting
+- [x] Ensure consistent spacing and visual hierarchy between sections
 
 ### Phase 6: Integration and Testing
-- [ ] Connect the Study Scene to receive data from the dialog system
-- [ ] Test the scene with various phrases of different lengths
-- [ ] Verify proper display of Japanese text and romaji
-- [ ] Ensure scrolling works correctly with different content lengths
-- [ ] Confirm that returning to the VN Scene works as expected
-- [ ] Verify that the scene handles window resizing appropriately
+- [x] Connect the Study Scene to receive data from the dialog system
+- [x] Test the scene with various phrases of different lengths
+- [x] Verify proper display of Japanese text and romaji
+- [x] Ensure scrolling works correctly with different content lengths
+- [x] Confirm that returning to the VN Scene works as expected
+- [x] Verify that the scene handles window resizing appropriately
 
 ### Phase 7: Visual Polish
-- [ ] Refine typography and text sizing for optimal readability
-- [ ] Add subtle animations for scene transitions
-- [ ] Improve visual feedback for the scrolling interaction
-- [ ] Ensure consistent visual styling with the rest of the game
-- [ ] Add final visual touches for a polished look and feel
+- [x] Refine typography and text sizing for optimal readability
+- [x] Add subtle animations for scene transitions
+- [x] Improve visual feedback for the scrolling interaction
+- [x] Ensure consistent visual styling with the rest of the game
+- [x] Add final visual touches for a polished look and feel
 
 ## Conclusion
 
