@@ -318,3 +318,44 @@ If game assets aren't loading correctly:
 3. Verify the file paths in your game code
 4. Rebuild the game with `npm --prefix phaser_game run build`
 
+## LLM Proxy Server
+
+The project includes a secure LLM proxy server that handles communication with LLM providers, protecting API keys and sensitive data.
+
+### Key Features
+
+- **Provider-agnostic design**: Works with OpenAI, Anthropic, Ollama, LM Studio, and other providers
+- **Intelligent response handling**: Automatically extracts valid JSON from responses based on your request format
+- **Secure**: API keys are stored server-side only, never exposed to clients
+- **Configurable**: Easily switch between different LLM providers by changing environment variables
+
+### Running the Proxy Server
+
+```bash
+# From project root
+cd server
+npm install
+cp .env.example .env  # Then edit .env with your API keys and settings
+npm run dev
+```
+
+### Configuration
+
+Configure the proxy server by editing the `.env` file in the `server` directory:
+
+```
+# Example for OpenAI
+LLM_API_KEY=sk-your-api-key
+LLM_API_BASE_URL=https://api.openai.com/v1
+LLM_MODEL=gpt-4
+LLM_ENDPOINT_PATH=chat/completions
+
+# For local models (LM Studio, Ollama, etc.)
+LLM_API_KEY=not-needed
+LLM_API_BASE_URL=http://localhost:1234/v1
+LLM_MODEL=mistral-7b
+LLM_ENDPOINT_PATH=chat/completions
+```
+
+See `server/README.md` for more detailed configuration options and examples.
+

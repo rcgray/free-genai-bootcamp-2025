@@ -1,154 +1,181 @@
 # LLM Proxy Server
 
-A lightweight, generic proxy server for securely communicating with LLM APIs like OpenAI. This proxy protects your API keys by keeping them server-side rather than exposing them in client-side code.
+A lightweight, generic proxy server for securely communicating with various LLM APIs (OpenAI, Anthropic, local models, etc.) without exposing API keys in client-side code.
 
 ## Features
 
-- Generic, application-agnostic API endpoint
-- Securely stores API keys on the server
-- Compatible with OpenAI and other providers using OpenAI-compatible APIs
-- **Provider-agnostic**: Switch between different LLM providers by just changing environment variables
-- Simple Express server with minimal dependencies
-- Configurable via environment variables
-- Health check endpoint with configuration information
+- Secure API key handling - keys are stored server-side only
+- Provider-agnostic design - works with OpenAI, Anthropic, Ollama, LM Studio, etc.
+- Intelligent response format handling based on client requests
+- JSON extraction for non-OpenAI models that don't follow JSON formatting standards
+- Configurable timeout and endpoint paths
+- Detailed error reporting
+- Health check endpoint for monitoring
 
 ## Setup
 
-1. Clone the repository (or navigate to this directory if already cloned)
-2. Install dependencies:
-   ```
-   npm install
-   ```
-3. Create a `.env` file by copying the example:
-   ```
-   cp .env.example .env
-   ```
-4. Edit the `.env` file to add your API key and other configuration options
+1. Clone the repository
+2. Navigate to the server directory
+3. Install dependencies:
+```
+npm install
+```
+4. Create a `.env` file based on `.env.example`:
+```
+cp .env.example .env
+```
+5. Edit the `.env` file to add your API key and configure the LLM provider
 
 ## Configuration
 
-Configure the proxy server using the following environment variables in your `.env` file:
+The server can be configured via environment variables:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| PORT | Port number for the server to listen on | 3000 |
-| LLM_API_KEY | Your API key for the LLM provider | (required) |
-| LLM_API_BASE_URL | Base URL for the API provider | https://api.openai.com/v1 |
-| LLM_MODEL | Default LLM model to use if not specified in request | gpt-4 |
-| LLM_ENDPOINT_PATH | Path to the completions endpoint (varies by provider) | chat/completions |
-| REQUEST_TIMEOUT_MS | Timeout for API requests in milliseconds | 30000 |
-| CORS_ORIGIN | CORS origin to allow requests from | * (all origins) |
+| PORT | Port to run the server on | 3000 |
+| LLM_API_KEY | API key for your LLM provider | (Required) |
+| LLM_API_BASE_URL | Base URL for your LLM provider | (Required) |
+| LLM_MODEL | Default model to use if not specified in request | (Required) |
+| LLM_ENDPOINT_PATH | Path to the completions endpoint | chat/completions |
+| REQUEST_TIMEOUT_MS | Request timeout in milliseconds | 30000 |
+| DEBUG_MODE | Enable detailed logging | true |
 
-## Provider Configuration Examples
+### Provider Configuration Examples
 
-### OpenAI
-
+#### OpenAI
 ```
-LLM_API_KEY=sk-your-openai-key
+LLM_API_KEY=sk-your-api-key
 LLM_API_BASE_URL=https://api.openai.com/v1
-LLM_ENDPOINT_PATH=chat/completions
 LLM_MODEL=gpt-4
+LLM_ENDPOINT_PATH=chat/completions
 ```
 
-### Anthropic Claude (via proxy)
-
+#### Anthropic Claude
 ```
-LLM_API_KEY=your-anthropic-key
-LLM_API_BASE_URL=https://api.anthropic.com
-LLM_ENDPOINT_PATH=v1/messages
+LLM_API_KEY=sk-ant-your-api-key
+LLM_API_BASE_URL=https://api.anthropic.com/v1
 LLM_MODEL=claude-3-opus-20240229
+LLM_ENDPOINT_PATH=messages
 ```
 
-### Ollama (Local)
-
+#### Ollama (Local)
 ```
-LLM_API_KEY=no-key-needed-for-ollama
+LLM_API_KEY=not-needed
 LLM_API_BASE_URL=http://localhost:11434/api
-LLM_ENDPOINT_PATH=chat/completions
-LLM_MODEL=llama2
+LLM_MODEL=llama3
+LLM_ENDPOINT_PATH=chat
 ```
 
-### LM Studio (Local)
-
+#### LM Studio (Local)
 ```
-LLM_API_KEY=no-key-needed-for-local
+LLM_API_KEY=not-needed
 LLM_API_BASE_URL=http://localhost:1234/v1
+LLM_MODEL=mistral-7b
 LLM_ENDPOINT_PATH=chat/completions
-LLM_MODEL=openhermes
 ```
 
 ## Running the Server
 
 ### Development Mode
-
-For development with auto-restart on file changes:
-
 ```
 npm run dev
 ```
 
 ### Production Mode
-
-For production:
-
 ```
 npm start
 ```
 
-## Usage
+## API Endpoints
 
-Once the server is running, client applications can make requests to the proxy instead of directly to the LLM provider.
+### POST /api/completions
 
-### Example Request
+Generic endpoint for getting completions from an LLM. Accepts a standard OpenAI-compatible request format.
 
-```javascript
-// Client-side code
-async function callLLM(prompt) {
-  const response = await fetch('http://localhost:3000/api/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      messages: [{ role: 'user', content: prompt }],
-      temperature: 0.7,
-      // model is optional - will use default from server config if not provided
-      model: 'gpt-3.5-turbo'
-    })
-  });
-  
-  return await response.json();
+#### Request Format
+
+```json
+{
+  "model": "gpt-4",  // Optional - will use server default if not specified
+  "messages": [{"role": "user", "content": "Your complete prompt here"}],
+  "temperature": 0.3,
+  "response_format": {"type": "json_object"}  // Controls how responses are processed
 }
 ```
 
-### Health Check
+#### Response Format Handling
 
-To check if the server is running and see configuration information:
+The proxy uses the `response_format` field to determine how to process the LLM's response:
 
-```
-GET http://localhost:3000/api/health
-```
+- `{"type": "text"}` (default) - Returns the raw text response without any processing
+- `{"type": "json_object"}` - Attempts to extract valid JSON from the response, even if embedded in markdown or other text
+- `{"type": "json_schema", "schema": {...}}` - Attempts JSON extraction and performs basic schema validation
 
-Example response:
+> **Note**: Full JSON schema validation is not yet implemented. Currently, the proxy will perform basic object validation and include a warning in the response. Full schema validation will be added in a future update.
+
+For non-OpenAI providers that don't support the `response_format` parameter, the proxy:
+1. Captures the client's format preference
+2. Removes the parameter from the request to the LLM
+3. Processes the response according to the original format preference
+
+This ensures consistent behavior across different LLM providers, even those that don't natively support `response_format`.
+
+#### Response Object
+
+The response follows the OpenAI API format with additional metadata:
+
 ```json
 {
-  "status": "ok",
-  "message": "LLM proxy server is running",
-  "config": {
-    "provider": "https://api.openai.com/v1",
-    "endpoint": "chat/completions",
-    "defaultModel": "gpt-4"
+  "id": "...",
+  "object": "chat.completion",
+  "created": 1234567890,
+  "model": "gpt-4",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"processed\": \"json content\"}",
+        "proxy_metadata": {
+          "processed_for": "json_object",
+          "json_extracted": true,
+          "schema_validation": null
+        }
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 42,
+    "completion_tokens": 73,
+    "total_tokens": 115
   }
 }
 ```
 
+The `proxy_metadata` field provides information about how the response was processed:
+- `processed_for`: The original response format requested
+- `json_extracted`: Whether JSON extraction was performed
+- `schema_validation`: Results of schema validation if requested
+
+### GET /api/health
+
+Health check endpoint that returns server status and configuration.
+
 ## Security Considerations
 
-- For production, consider adding authentication to the proxy endpoints
-- Set up CORS to only allow requests from your application domains
-- Implement rate limiting for production use
-- Consider containerization with Docker for easier deployment
+- The server is intended to be deployed within a secure network perimeter
+- Add authentication if deploying to a public environment
+- Consider implementing rate limiting for production use
+- Review CORS settings in `server.js` for your specific needs
+
+## Troubleshooting
+
+- Enable `DEBUG_MODE=true` in the `.env` file for detailed logs
+- Check for error responses from the LLM provider
+- Verify API keys and base URLs are correct
+- Ensure proper network connectivity to the LLM provider
 
 ## License
 
-ISC 
+MIT 
