@@ -207,38 +207,63 @@ Our proxy will detect the provider based on the base URL and adapt requests acco
 
 During implementation, we discovered that different LLM providers format their responses in various ways, especially when generating JSON. To maintain compatibility and ensure client code receives valid JSON, we have implemented response processing features.
 
-#### 6.1 Response Processing Options
+Our solution leverages the standard OpenAI `response_format` field that's already part of the client request. This approach provides a clean, standards-compliant way to handle JSON extraction without introducing custom parameters:
 
-For future development, we propose the following options to make the JSON extraction more flexible and configurable:
+1. When clients request `"response_format": {"type": "json_object"}`, the proxy automatically extracts valid JSON from the response, even if embedded in markdown code blocks or mixed with reasoning/thinking
+2. When clients request `"response_format": {"type": "text"}` (or don't specify a format), the proxy returns the raw text without processing
+3. For `"response_format": {"type": "json_schema", "schema": {...}}`, the proxy extracts JSON and performs basic schema validation (with a note that full schema validation will be implemented in a future update)
 
-1. **Make JSON extraction optional via request parameters**
-   - Allow clients to specify if they want raw or processed responses
-   - Add a query parameter or request header like `extract-json: true/false`
-   - This gives clients flexibility without changing the proxy's core functionality
+This approach has several advantages:
+- No new parameters or headers needed - clients already use `response_format` for OpenAI
+- Clear separation of concerns - client specifies the desired format, proxy ensures it's delivered
+- Provider-agnostic - handles differences between OpenAI and other LLMs transparently
 
-2. **Support multiple extraction strategies**
-   - Create a parameter to specify the extraction mode: `strict` (exact JSON only), `markdown` (code blocks), `thinking` (remove thinking tags), or `auto` (try all methods)
-   - This allows different applications to use the appropriate extraction strategy
+For non-OpenAI providers that don't support the `response_format` parameter, the proxy:
+1. Captures the client's format preference before forwarding the request
+2. Removes the parameter when sending to providers that don't support it
+3. Processes the response according to the client's original preference
 
-3. **Provider-specific response handling**
-   - Detect the LLM provider type and adapt response processing accordingly
-   - Different providers have different response structures (OpenAI vs. Anthropic vs. local models)
+This ensures consistent behavior regardless of the LLM provider's capabilities.
 
-4. **Add response transformation plugins**
-   - Design a plugin system for response transformations beyond just JSON extraction
-   - This would allow for format conversion, sanitization, or other transformations
+#### 6.1 Implementation of Response Processing
 
-5. **Response schema validation**
-   - Allow clients to provide a JSON schema that responses should conform to
-   - The proxy could validate and report schema violations
+The JSON extraction logic implements several strategies to handle various response formats:
 
-6. **Content type negotiation**
-   - Use HTTP content negotiation to allow clients to request specific formats
-   - Example: `Accept: application/json` could trigger automatic extraction
+1. **Thinking Tags Removal**: Removes any content between `<think>` and `</think>` tags, which some models use for reasoning
+2. **Markdown Code Block Extraction**: Identifies and extracts JSON inside markdown code blocks (```json ... ```)
+3. **Object Pattern Recognition**: As a fallback, looks for content matching a JSON object pattern ({...})
+4. **Validation**: Always validates that extracted content is valid JSON before returning
 
-7. **Metadata for processing**
-   - Add more detailed metadata about what processing was performed
-   - Include information about which extraction method worked, any sanitization applied, etc.
+The response includes metadata about processing performed:
+
+```json
+{
+  "choices": [{
+    "message": {
+      "content": "{...extracted json...}",
+      "proxy_metadata": {
+        "processed_for": "json_object",
+        "json_extracted": true,
+        "schema_validation": null
+      }
+    }
+  }]
+}
+```
+
+For schema validation, the current implementation provides basic object validation with a warning that full JSON Schema validation will be implemented in a future update.
+
+#### 6.2 Future Enhancements
+
+For future development, we've identified several opportunities to enhance response processing:
+
+1. **Full Schema Validation**: Implement complete JSON Schema validation for `json_schema` format type
+2. **Content Type Negotiation**: Support HTTP content negotiation through `Accept` headers
+3. **Transformation Plugins**: Support pluggable response transformers for more advanced use cases
+4. **Caching**: Add caching of processed responses to improve performance for repeated requests
+5. **Custom Error Messages**: Enhanced error reporting for schema validation failures
+
+The current implementation focuses on the most essential use case - extracting JSON from responses - while providing a foundation for these future enhancements.
 
 ### 7. Security Considerations
 
@@ -274,6 +299,8 @@ For future development, we propose the following options to make the JSON extrac
 - [x] Add request timeout configuration
 - [x] Improve error handling with better categorization
 - [x] Add DEBUG_MODE for detailed logging
+- [x] Implement intelligent response handling based on request's `response_format` field
+- [x] Add metadata about response processing in the response payload
 
 ### Phase 4: Integration Testing
 - [x] Start the proxy server
@@ -307,13 +334,32 @@ The proxy server should be completely generic and mirror the OpenAI API structur
      "model": "gpt-4",  // Optional - will use server default if not specified
      "messages": [{"role": "user", "content": "Your complete prompt here"}],
      "temperature": 0.3,
-     "response_format": {"type": "json_object"}  // Will be adapted for different providers
+     "response_format": {"type": "json_object"}  // Controls how responses are processed
    }
    ```
 
+   Supported `response_format` values:
+   - `{"type": "text"}` - (Default) Returns raw response without processing
+   - `{"type": "json_object"}` - Ensures valid JSON is extracted from the response
+   - `{"type": "json_schema", "schema": {...}}` - Extracts JSON and performs basic schema validation
+
 3. **Response Format**:
    - Returns the processed LLM API response with valid JSON extraction if needed
-   - Adds metadata about response processing when applicable
+   - Adds metadata about response processing in the `proxy_metadata` field:
+   ```json
+   {
+     "choices": [{
+       "message": {
+         "content": "...",
+         "proxy_metadata": {
+           "processed_for": "json_object",
+           "json_extracted": true,
+           "schema_validation": null
+         }
+       }
+     }]
+   }
+   ```
 
 ### Error Handling
 
@@ -383,11 +429,15 @@ During the implementation of the LLM Proxy Server, we gained several valuable in
 
 2. **JSON Extraction Challenges**: Many LLM providers, especially local models, may include non-JSON content in their responses, such as thinking tags, explanatory text, or markdown formatting. Our proxy now includes robust JSON extraction capabilities to handle these cases.
 
-3. **Error Handling Complexity**: The range of potential errors from LLM providers is broader than initially anticipated, requiring more sophisticated error handling and categorization.
+3. **Elegant Response Format Handling**: We found that leveraging the existing OpenAI `response_format` field provides an elegant solution for controlling JSON extraction behavior. This lets us maintain compatibility with the OpenAI API specification while adding value for clients using any LLM provider.
 
-4. **Configuration Flexibility**: The need for configuration flexibility became apparent when supporting different LLM providers, leading to additional environment variables like `LLM_ENDPOINT_PATH` and `REQUEST_TIMEOUT_MS`.
+4. **Error Handling Complexity**: The range of potential errors from LLM providers is broader than initially anticipated, requiring more sophisticated error handling and categorization.
 
-5. **Debugging Importance**: Detailed logging has proven essential for troubleshooting issues with LLM integrations, leading to the addition of a `DEBUG_MODE` option.
+5. **Configuration Flexibility**: The need for configuration flexibility became apparent when supporting different LLM providers, leading to additional environment variables like `LLM_ENDPOINT_PATH` and `REQUEST_TIMEOUT_MS`.
+
+6. **Debugging Importance**: Detailed logging has proven essential for troubleshooting issues with LLM integrations, leading to the addition of a `DEBUG_MODE` option.
+
+7. **Client-side Robustness**: While the proxy can ensure valid JSON is extracted from LLM responses, client-side code should still be designed to handle imperfect responses gracefully, particularly for optional fields that might be missing or incomplete.
 
 ## Conclusion
 

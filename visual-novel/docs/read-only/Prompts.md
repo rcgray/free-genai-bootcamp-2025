@@ -603,6 +603,63 @@ We need to make our analysis of the response from the proxy server more robust. 
 
 It works!
 
-Putting this logic in the LLM proxy is an interesting choice, where the LLM proxy is supposed to serve strictly as a mediary that accepts a prompt string and returns a response string (or error). I'm not against this, because there may be many applications for general JSON extraction from an LLM response and that could be a nice feature offered by our proxy.  However, as it stands now it's very specific to the use case of the Japanese Learning app.  Without making any changes, what would be your proposals to improve this design?  
+Putting this logic in the LLM proxy is an interesting choice, where the LLM proxy is supposed to serve strictly as a mediary that accepts a prompt string and returns a response string (or error). I'm not against this, because there may be many applications for general JSON extraction from an LLM response and that could be a nice feature offered by our proxy.  However, as it stands now it's very specific to the use case of the Japanese Learning app.  Without making any changes, what would be your proposals to improve this design?
 
+---
 
+Add these options (edit_file tool) to a new section in the feature spec `docs/features/LLM-Proxy-Server.md` (@LLM-Proxy-Server.md). Also update the spec to include any other changes based on our debugging following the initial impelementation, whether these are edits due to a change in plan or if they are new insights that would be valuable to document.
+
+---
+
+Good. Now as for how we figure out the best solution for engaging our JSON extraction, I noticed that we have a field in the request format `"response_format": {"type": "json_object"}`. This even gave us some trouble when we switched from OpenAI to LM Studio. However, could this field also serve our purposes of determining whether or not we should perform JSON extraction?
+
+What are the other valid values for `"response_format"`?
+
+---
+
+Sounds perfect, let's implement this (GO GO). Let's have the default be "text" and if the user specifies "json_object" then we perform JSON extraction. If the user specifies "json_schema" and provides a schema, we will perform that validation within the proxy server.
+
+---
+
+Our LLM returned the following response:
+```
+2025-03-19 13:19:34  [INFO] 
+[LM STUDIO SERVER] [r1-llama3.1-8b] Generated prediction:  {
+  "id": "chatcmpl-qm3fg2vjvjb3u7nqsf2c",
+  "object": "chat.completion",
+  "created": 1742415549,
+  "model": "r1-llama3.1-8b",
+  "choices": [
+    {
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "<think>\nAlright, I need to help a Japanese language teacher analyze the given phrase and provide detailed information in JSON format. The phrase is \"東京駅に到着しました。ホームに立っていると...\", which translates to \"I have arrived at Tokyo Station. I'm standing on the platform...\" \n\nFirst, I'll break down each part of the response required. The user provided a sample JSON structure, so I should follow that closely. The fields needed are phrase, romaji, translation, word_breakdown, grammar_points, example_sentences, and cultural_notes.\n\nStarting with the word breakdown: I need to identify each word in the Japanese phrase, provide their readings, romaji, part of speech, meaning, and any usage notes. Let's go through each word one by one.\n\n1. **東京駅 (Tōkyō Station)**:\n   - Reading: とうきょうえき\n   - Romaji: Tokyo Station\n   - Part of speech: Proper noun (place name)\n   - Meaning: The main railway station in Tokyo, serving as a major transportation hub.\n   - Notes: It's often referred to simply as \"Tokyo Station,\" especially when talking about arriving there.\n\n2. **に (ni)**:\n   - Reading: に\n   - Romaji: ni\n   - Part of speech: Particle indicating location or direction.\n   - Meaning: Indicates the location where the action is taking place, here denoting arrival at Tokyo Station.\n\n3. **到着しました (tōchī shimashita)**:\n   - Reading: とうちーし masu\n   - Romaji: tochi shimasita\n   - Part of speech: Verb (past tense)\n   - Meaning: To arrive, reach a destination.\n   - Notes: This verb is conjugated in past tense, indicating that the action has already happened.\n\n4. **ホーム (hōm)**:\n   - Reading: ほーむむ\n   - Romaji: home\n   - Part of speech: Noun\n   - Meaning: The platform at a railway station where trains stop.\n   - Notes: In this context, it's specifically referring to the platform area.\n\n5. **に (ni)**:\n   - Same as above; indicates direction or location.\n\n6. **立っていると (tateru shiru)**:\n   - Reading: たてるしる\n   - Romaji: tateru shiru\n   - Part of speech: Verb conjugated in present continuous form.\n   - Meaning: To be standing, to remain upright.\n   - Notes: This verb is used to describe the ongoing action of standing on the platform.\n\nNext, grammar points. The phrase uses two particles \"に\" for location and \"と\" for the subject's current state. It also uses a verb in past tense followed by a present continuous verb.\n\nCultural notes might include noting that this phrase is typical in conversations about arriving at stations, emphasizing the common usage of such phrases in daily interactions.\n\nFor example sentences, I can create one that uses the same structure but with different context, like arriving at another station and standing on the platform.\n\nI should ensure that all information is tailored to the difficulty level. Since it's a beginner level, explanations should be simple, focusing on basic grammar and vocabulary without too much cultural depth.\n\nAlso, pronunciation tips could help with tricky sounds, such as the \"o\" in \"hōm\" or the \"ta\" sound in \"tateru.\"\n\nLastly, common mistakes might include mixing up the particles or misusing the verb forms. For example, using \"到着しています (tōchī shimasite iru)\" instead of \"しました (shimashita)\" for past tense.\n\nPutting it all together, I'll structure the JSON accordingly, ensuring each field is filled with the appropriate information.\n</think>\n\n```json\n{\n  \"phrase\": \"東京駅に到着しました。ホームに立っていると...\",\n  \"romaji\": \"Tokyo Station ni tōchī shimasita. Home ni tateru shiru wa...\",\n  \"translation\": \"I have arrived at Tokyo Station. I'm standing on the platform.\",\n  \n  \"word_breakdown\": [\n    {\n      \"word\": \"東京駅\",\n      \"reading\": \"とうきょうえき\",\n      \"romaji\": \"Tokyo Station\",\n      \"part_of_speech\": \"Proper noun (place name)\",\n      \"meaning\": \"The main railway station in Tokyo, serving as a major transportation hub.\",\n      \"notes\": \"Often referred to simply as 'Tokyo Station' when discussing arrival.\"\n    },\n    {\n      \"word\": \"に\",\n      \"reading\": \"ni\",\n      \"romaji\": \"ni\",\n      \"part_of_speech\": \"Particle indicating location or direction\",\n      \"meaning\": \"Indicates the location where the action is taking place, here denoting arrival at Tokyo Station.\"\n    },\n    {\n      \"word\": \"到着しました\",\n      \"reading\": \"とうちーし masu\",\n      \"romaji\": \"tochi shimasita\",\n      \"part_of_speech\": \"Verb (past tense)\",\n      \"meaning\": \"To arrive, reach a destination.\",\n      \"notes\": \"Conjugated in past tense to indicate the action has already occurred.\"\n    },\n    {\n      \"word\": \"ホーム\",\n      \"reading\": \"ほーむむ\",\n      \"romaji\": \"home\",\n      \"part_of_speech\": \"Noun\",\n      \"meaning\": \"The platform at a railway station where trains stop.\",\n      \"notes\": \"Specifically refers to the platform area in this context.\"\n    },\n    {\n      \"word\": \"に\",\n      \"reading\": \"ni\",\n      \"romaji\": \"ni\",\n      \"part_of_speech\": \"Particle indicating location or direction\",\n      \"meaning\": \"Indicates direction or location, here referring to the platform.\"\n    },\n    {\n      \"word\": \"立っていると\",\n      \"reading\": \"たてるしる\",\n      \"romaji\": \"tateru shiru\",\n      \"part_of_speech\": \"Verb conjugated in present continuous form\",\n      \"meaning\": \"To be standing, to remain upright.\",\n      \"notes\": \"Describes the ongoing action of standing on the platform.\"\n    }\n  ],\n  \n  \"grammar_points\": [\n    {\n      \"pattern\": \"Particle usage for location and direction (ni)\",\n      \"explanation\": \"The particle 'ni' is used here to indicate the location ('Tokyo Station') where the action of arriving takes place. The second 'ni' indicates the platform, showing where the person is currently standing.\",\n      \"usage_notes\": \"Commonly used in daily conversations to specify locations and directions.\",\n      \"difficulty_level\": \"beginner\"\n    },\n    {\n      \"pattern\": \"Past tense verb conjugation (tochi shimasita)\",\n      \"explanation\": \"The verb 'tōchī shimasita' is conjugated in past tense to indicate that the action of arriving has already occurred. This is a basic structure in Japanese grammar for relating actions that have happened in the past.\",\n      \"usage_notes\": \"Essential for understanding narrative tenses in Japanese.\",\n      \"difficulty_level\": \"beginner\"\n    },\n    {\n      \"pattern\": \"Present continuous verb conjugation (tateru shiru)\",\n      \"explanation\": \"The verb 'tateru shiru' is used in the present continuous form to describe an ongoing action, such as standing on the platform. This structure is fundamental for expressing ongoing actions in Japanese.\",\n      \"usage_notes\": \"Important for understanding verb conjugations and their usage in describing current states.\",\n      \"difficulty_level\": \"intermediate\"\n    }\n  ],\n  \n  \"cultural_notes\": \"This phrase is a common expression used when discussing arrivals at stations. It highlights the routine nature of such interactions, reflecting everyday language use in Japan.\",\n  \n  \"example_sentences\": [\n    {\n      \"japanese\": \"大阪駅に到着しました。ホームに立っていると...\",\n      \"romaji\": \"Osaka Station ni tōchī shimasita. Home ni tateru shiru wa...\",\n      \"english\": \"I have arrived at Osaka Station. I'm standing on the platform.\"\n    }\n  ],\n  \n  \"alternative_expressions\": [\n    {\n      \"japanese\": \"駅に到着して、ホームを待っていると...\",\n      \"romaji\": \"Eki ni tōchī shite, home o matte iru wa...\",\n      \"english\": \"I arrived at the station and am waiting on the platform.\"\n    }\n  ],\n  \n  \"pronunciation_tips\": \"The 'o' in 'ホーム (home)' is pronounced like 'oh,' similar to English. The 'ta' sound in 'たてるしる (tateru shiru)' is like 'tah' followed by a long 'e' sound.\",\n  \n  \"common_mistakes\": \"English speakers often confuse the particles 'に (ni)' and 'と (to). It's important to use 'ni' for location and 'to' for indirect objects or subjects. Additionally, mixing up past tense and present continuous verb forms can lead to misunderstandings.\"\n}\n```"
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 642,
+    "completion_tokens": 1930,
+    "total_tokens": 2572
+  },
+  "stats": {},
+  "system_fingerprint": "r1-llama3.1-8b"
+}
+```
+
+The proxy server processed it successfully. The Phaser game threw the following error:
+```
+[LLM_SERVICE] Error parsing LLM response: Error: Alternative expression items missing required fields
+    at LLMService.validateAndProcessLLMResponse (LLMService.ts:266:19)
+    at LLMService.analyzePhraseForStudy (LLMService.ts:133:19)
+    at async StudyScene.fetchPhraseAnalysisFromLLM (StudyScene.ts:782:29)
+```
+
+We need to make our acceptance of the LLM JSON more robust. In this case, an optional field is incomplete, we should just handle this gracefully.  I propose we only actually throw an error in the case that required information is missing.  Or even better, we should just do the best we can with what we're given.
+
+---
+
+Just to make sure: we should make this robust.  Not with special cases just for alternative_expressions. If just the romaji of an alternative_expression (otherwise valid) is missing, we should handle it.  If grammar section is missing, we will simply not display a grammar section.  Are we sure that we are "doing the best with what we are given" no matter what the LLM returns to us?  they can be somewhat unpredicatble.

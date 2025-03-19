@@ -217,6 +217,19 @@ IMPORTANT GUIDELINES:
   
   /**
    * Validates and processes the LLM response
+   * 
+   * Our validation approach:
+   * 1. Required fields (phrase, romaji, translation, word_breakdown, grammar_points, example_sentences):
+   *    - Strictly validated - will throw errors if missing or incomplete
+   *    - These are essential for the Study Scene to function properly
+   * 
+   * 2. Optional fields (alternative_expressions, cultural_notes, pronunciation_tips, common_mistakes):
+   *    - Gracefully handled - will fix or provide defaults if missing or incomplete
+   *    - If arrays (like alternative_expressions) contain incomplete items, we fix them instead of rejecting
+   *    - If string fields are missing, we provide sensible defaults
+   * 
+   * This approach ensures we get the maximum value from the LLM response while maintaining
+   * a robust user experience even when the response doesn't perfectly match our expected format.
    */
   private validateAndProcessLLMResponse(responseJson: string): PhraseAnalysis {
     try {
@@ -259,13 +272,39 @@ IMPORTANT GUIDELINES:
         }
       }
       
-      // Validate alternative_expressions if present
+      // Process optional fields - fix them instead of rejecting if incomplete
+      
+      // Handle alternative_expressions if present
       if (parsed.alternative_expressions && Array.isArray(parsed.alternative_expressions)) {
-        for (const alt of parsed.alternative_expressions) {
-          if (!alt.japanese || !alt.romaji || !alt.english || !alt.usage_context) {
-            throw new Error('Alternative expression items missing required fields');
-          }
+        // Filter out any invalid alternative expressions and fix incomplete ones
+        parsed.alternative_expressions = parsed.alternative_expressions
+          .filter((alt: any) => alt && typeof alt === 'object')
+          .map((alt: any) => {
+            // Ensure all required fields exist, providing defaults if missing
+            return {
+              japanese: alt.japanese || "N/A",
+              romaji: alt.romaji || "N/A",
+              english: alt.english || "N/A",
+              usage_context: alt.usage_context || "General alternative expression"
+            };
+          });
+        
+        // Log if we had to fix any alternative expressions
+        if (parsed.alternative_expressions.some((alt: any) => 
+            alt.japanese === "N/A" || alt.romaji === "N/A" || 
+            alt.english === "N/A" || alt.usage_context === "General alternative expression")) {
+          console.warn('[LLM_SERVICE] Fixed incomplete alternative expressions in LLM response');
         }
+      }
+      
+      // Ensure other optional string fields exist with defaults if needed
+      parsed.cultural_notes = parsed.cultural_notes || "No cultural notes provided.";
+      parsed.pronunciation_tips = parsed.pronunciation_tips || "No pronunciation tips provided.";
+      parsed.common_mistakes = parsed.common_mistakes || "No common mistakes noted.";
+      
+      // If there are any empty arrays for optional fields, initialize them
+      if (parsed.alternative_expressions === undefined) {
+        parsed.alternative_expressions = [];
       }
       
       return parsed as PhraseAnalysis;
