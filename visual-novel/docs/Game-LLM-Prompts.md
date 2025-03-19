@@ -125,6 +125,57 @@ IMPORTANT GUIDELINES:
 
 For any "Dialog" that is generated, the user will have the option to select that "Dialog" to study.  This will open to a new scene that discusses the Japanese phrase in detail, including the romaji pronunciation and English translation, and a discussion of the grammar and cultural context of the phrase (if applicable).  We will already have information regarding romaji and English translation, but we will want to query the LLM with the phrase and the context of this game in order to have it generate an appropriate description.
 
+### Phrase Analysis Data Structure
+
+Based on our implementation in `test-phrase-data.ts`, the phrase analysis should have the following structure:
+
+```typescript
+interface PhraseAnalysis {
+  // The original phrase data
+  phrase: string;           // Original Japanese phrase (REQUIRED)
+  romaji: string;           // Romaji pronunciation (REQUIRED)
+  translation: string;      // English translation (REQUIRED)
+  
+  // Detailed analysis
+  word_breakdown: WordBreakdown[];  // Analysis of individual words (REQUIRED)
+  grammar_points: GrammarPoint[];   // Grammar patterns used in the phrase (REQUIRED)
+  cultural_notes?: string;          // Optional cultural context (if applicable)
+  alternative_expressions?: AlternativeExpression[];  // Optional alternative phrases
+  example_sentences: ExampleSentence[];  // Example sentences using similar patterns (REQUIRED)
+  pronunciation_tips?: string;      // Optional pronunciation guidance
+  common_mistakes?: string;         // Optional common errors to avoid
+}
+
+interface WordBreakdown {
+  word: string;             // Japanese word (REQUIRED)
+  reading: string;          // Reading in hiragana (REQUIRED)
+  romaji: string;           // Romaji pronunciation (REQUIRED)
+  part_of_speech: string;   // Part of speech (noun, verb, etc.) (REQUIRED)
+  meaning: string;          // English meaning (REQUIRED)
+  notes?: string;           // Optional usage notes
+}
+
+interface GrammarPoint {
+  pattern: string;          // Grammar pattern (REQUIRED)
+  explanation: string;      // Explanation of the pattern (REQUIRED)
+  usage_notes: string;      // Notes on usage (REQUIRED)
+  difficulty_level: string; // beginner, intermediate, or advanced (REQUIRED)
+}
+
+interface AlternativeExpression {
+  japanese: string;         // Alternative phrase in Japanese (REQUIRED)
+  romaji: string;           // Romaji pronunciation (REQUIRED)
+  english: string;          // English translation (REQUIRED)
+  usage_context: string;    // When to use this alternative (REQUIRED)
+}
+
+interface ExampleSentence {
+  japanese: string;         // Example sentence in Japanese (REQUIRED)
+  romaji: string;           // Romaji pronunciation (REQUIRED)
+  english: string;          // English translation (REQUIRED)
+}
+```
+
 ### Prompt Template for Phrase Details
 
 ```
@@ -137,51 +188,56 @@ DIFFICULTY LEVEL: {difficulty_level} // beginner, intermediate, or advanced
 Please provide the following information in JSON format:
 
 {
-  "phrase_analysis": {
-    "word_breakdown": [
-      {
-        "word": "JAPANESE_WORD",
-        "reading": "READING_IN_HIRAGANA",
-        "romaji": "ROMAJI",
-        "part_of_speech": "PART_OF_SPEECH",
-        "meaning": "MEANING",
-        "notes": "USAGE_NOTES" // optional
-      },
-      // Additional words...
-    ],
-    "grammar_points": [
-      {
-        "pattern": "GRAMMAR_PATTERN",
-        "explanation": "EXPLANATION",
-        "usage_notes": "USAGE_NOTES",
-        "difficulty_level": "DIFFICULTY_LEVEL" // beginner, intermediate, advanced
-      },
-      // Additional grammar points...
-    ],
-    "cultural_notes": "CULTURAL_CONTEXT_AND_NOTES",
-    "alternative_expressions": [
-      {
-        "japanese": "ALTERNATIVE_PHRASE",
-        "romaji": "ROMAJI",
-        "english": "ENGLISH",
-        "usage_context": "WHEN_TO_USE_THIS_ALTERNATIVE"
-      },
-      // Additional alternatives...
-    ],
-    "example_sentences": [
-      {
-        "japanese": "EXAMPLE_SENTENCE",
-        "romaji": "ROMAJI",
-        "english": "ENGLISH"
-      },
-      // Additional examples...
-    ],
-    "pronunciation_tips": "TIPS_FOR_PRONUNCIATION",
-    "common_mistakes": "COMMON_MISTAKES_TO_AVOID"
-  }
+  "phrase": "{japanese_phrase}",
+  "romaji": "ROMAJI_PRONUNCIATION",
+  "translation": "ENGLISH_TRANSLATION",
+  
+  "word_breakdown": [
+    {
+      "word": "JAPANESE_WORD",
+      "reading": "READING_IN_HIRAGANA",
+      "romaji": "ROMAJI",
+      "part_of_speech": "PART_OF_SPEECH",
+      "meaning": "MEANING",
+      "notes": "USAGE_NOTES" // optional
+    },
+    // Additional words...
+  ],
+  "grammar_points": [
+    {
+      "pattern": "GRAMMAR_PATTERN",
+      "explanation": "EXPLANATION",
+      "usage_notes": "USAGE_NOTES",
+      "difficulty_level": "DIFFICULTY_LEVEL" // beginner, intermediate, advanced
+    },
+    // Additional grammar points...
+  ],
+  "cultural_notes": "CULTURAL_CONTEXT_AND_NOTES", // optional
+  "alternative_expressions": [ // optional
+    {
+      "japanese": "ALTERNATIVE_PHRASE",
+      "romaji": "ROMAJI",
+      "english": "ENGLISH",
+      "usage_context": "WHEN_TO_USE_THIS_ALTERNATIVE"
+    },
+    // Additional alternatives...
+  ],
+  "example_sentences": [
+    {
+      "japanese": "EXAMPLE_SENTENCE",
+      "romaji": "ROMAJI",
+      "english": "ENGLISH"
+    },
+    // Additional examples...
+  ],
+  "pronunciation_tips": "TIPS_FOR_PRONUNCIATION", // optional
+  "common_mistakes": "COMMON_MISTAKES_TO_AVOID" // optional
 }
 
 IMPORTANT GUIDELINES:
+- Ensure the response strictly follows the JSON format provided
+- The phrase, romaji, translation, word_breakdown, grammar_points, and example_sentences fields are required
+- Other fields (cultural_notes, alternative_expressions, pronunciation_tips, common_mistakes) are optional
 - Tailor the explanation to the specified difficulty level
 - For beginner level, focus on basic grammar and vocabulary with simple explanations
 - For intermediate level, provide more nuanced explanations and cultural context
@@ -190,7 +246,28 @@ IMPORTANT GUIDELINES:
 - Highlight any cultural nuances or context-specific usage
 - Provide helpful pronunciation tips, especially for sounds that might be difficult for English speakers
 - Mention common mistakes that English speakers make with this phrase or grammar pattern
+- Use Hepburn romanization standard for all romaji
 ```
+
+### Response Validation Requirements
+
+When processing the LLM response, we need to validate:
+
+1. **Required Fields**:
+   - The response must include: `phrase`, `romaji`, `translation`, `word_breakdown`, `grammar_points`, and `example_sentences`
+   - Each `word_breakdown` item must include: `word`, `reading`, `romaji`, `part_of_speech`, and `meaning`
+   - Each `grammar_points` item must include: `pattern`, `explanation`, `usage_notes`, and `difficulty_level`
+   - Each `example_sentences` item must include: `japanese`, `romaji`, and `english`
+
+2. **Optional Fields**:
+   - The following fields may be present but are not required: `cultural_notes`, `alternative_expressions`, `pronunciation_tips`, and `common_mistakes`
+   - If `alternative_expressions` is present, each item must include: `japanese`, `romaji`, `english`, and `usage_context`
+
+3. **Data Types**:
+   - All array fields must be proper arrays
+   - All arrays must contain at least one item
+   - String fields must be non-empty
+   - All romaji must use the Hepburn romanization standard
 
 ### Implementation Considerations for Phrase Details
 
@@ -209,7 +286,7 @@ IMPORTANT GUIDELINES:
    - Implement batch processing for frequently studied phrases
    - Consider pre-generating analyses for key phrases
 
-4. **Error Handling** (NOTYET):
+4. **Error Handling**:
    - Provide graceful fallbacks if the LLM fails to generate a proper analysis
    - Include basic information (translation and romaji) even if detailed analysis fails
    - Log problematic phrases for manual review
@@ -262,15 +339,15 @@ When implementing the LLM integration, consider the following API-related factor
    - Monitor token usage and associated costs
    - Consider batching requests where appropriate
 
-2. **Latency Management** (NOTYET):
+2. **Latency Management**:
    - Implement asynchronous processing for LLM requests
    - Show appropriate loading indicators during generation
    - Consider pre-generating content for common scenarios
 
-3. **API Fallbacks** (NOTYET):
+3. **API Fallbacks**:
    - Design the system to work with multiple LLM providers
-   - Implement provider-specific prompt adaptations if necessary
-   - Create a provider-agnostic abstraction layer for LLM interactions
+   - Use the OpenAI library with configurable base URLs to support different endpoints
+   - Support both cloud APIs and local models through a consistent interface
 
 4. **Security and Privacy** (NOTYET):
    - Avoid sending sensitive user data to the LLM

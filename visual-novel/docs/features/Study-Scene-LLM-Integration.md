@@ -4,7 +4,7 @@
 
 The Study Scene LLM Integration is a critical feature of our Japanese Language Learning Visual Novel that enhances the educational value of the game. This feature connects our Study Scene to an LLM API to dynamically generate detailed linguistic information about Japanese phrases encountered during gameplay. When players click the "Study" button on dialog text, the system sends the phrase to an LLM, which analyses it and returns comprehensive data to populate the Study Scene with educational content.
 
-This document outlines the approach to integrating the LLM into our Study Scene, including necessary prompt refinements, API integration, and the front-end implementation for displaying the generated content.
+This document outlines the approach to integrating the LLM into our Study Scene, including necessary API integration and the front-end implementation for displaying the generated content.
 
 ## Goals
 
@@ -15,96 +15,16 @@ This document outlines the approach to integrating the LLM into our Study Scene,
 5. **Efficient Resource Usage**: Optimize API calls to balance quality of educational content with cost considerations
 6. **Provider Flexibility**: Support multiple LLM providers through a standardized interface
 
-## Prompt Design Updates
+## Prompt and Response Structure
 
-After comparing our existing LLM prompt template in `Game-LLM-Prompts.md` with the actual data structure used in `test-phrase-data.ts`, we need to make the following updates to align the prompt with our implementation:
+The prompt templates and response structure for the Study Scene LLM integration are defined in detail in the `docs/Game-LLM-Prompts.md` file. This file contains:
 
-### Current vs. Required Structure
+1. **Data Structure**: The `PhraseAnalysis` interface and related types that define the structure of the LLM response
+2. **Prompt Template**: The detailed prompt to send to the LLM for phrase analysis
+3. **Validation Requirements**: Specifications for validating the LLM response
+4. **Implementation Considerations**: Guidelines for handling errors, caching, and other implementation details
 
-| Current LLM Response Structure | Implemented Test Data Structure |
-|--------------------------------|--------------------------------|
-| `phrase_analysis.word_breakdown` | `word_breakdown` |
-| `phrase_analysis.grammar_points` | `grammar_points` |
-| `phrase_analysis.cultural_notes` | `cultural_notes` |
-| `phrase_analysis.alternative_expressions` | `alternative_expressions` |
-| `phrase_analysis.example_sentences` | `example_sentences` |
-| `phrase_analysis.pronunciation_tips` | `pronunciation_tips` |
-| `phrase_analysis.common_mistakes` | `common_mistakes` |
-
-The main difference is that our implemented structure has these properties at the top level, while the current prompt wraps them in a `phrase_analysis` object. Additionally, our test data structure includes properties for the original `phrase`, `romaji`, and `translation` at the top level.
-
-### Updated Prompt Template
-
-```
-You are a Japanese language teacher helping an English-speaking student understand a Japanese phrase from a conversation. Please analyze the following phrase and provide detailed information about it.
-
-PHRASE: {japanese_phrase}
-CONTEXT: This phrase was used in a conversation at {location_name}, where {brief_context_description}.
-DIFFICULTY LEVEL: {difficulty_level} // beginner, intermediate, or advanced
-
-Please provide the following information in JSON format:
-
-{
-  "phrase": "{japanese_phrase}",
-  "romaji": "ROMAJI_PRONUNCIATION",
-  "translation": "ENGLISH_TRANSLATION",
-  
-  "word_breakdown": [
-    {
-      "word": "JAPANESE_WORD",
-      "reading": "READING_IN_HIRAGANA",
-      "romaji": "ROMAJI",
-      "part_of_speech": "PART_OF_SPEECH",
-      "meaning": "MEANING",
-      "notes": "USAGE_NOTES" // optional
-    },
-    // Additional words...
-  ],
-  "grammar_points": [
-    {
-      "pattern": "GRAMMAR_PATTERN",
-      "explanation": "EXPLANATION",
-      "usage_notes": "USAGE_NOTES",
-      "difficulty_level": "DIFFICULTY_LEVEL" // beginner, intermediate, advanced
-    },
-    // Additional grammar points...
-  ],
-  "cultural_notes": "CULTURAL_CONTEXT_AND_NOTES", // optional
-  "alternative_expressions": [ // optional
-    {
-      "japanese": "ALTERNATIVE_PHRASE",
-      "romaji": "ROMAJI",
-      "english": "ENGLISH",
-      "usage_context": "WHEN_TO_USE_THIS_ALTERNATIVE"
-    },
-    // Additional alternatives...
-  ],
-  "example_sentences": [
-    {
-      "japanese": "EXAMPLE_SENTENCE",
-      "romaji": "ROMAJI",
-      "english": "ENGLISH"
-    },
-    // Additional examples...
-  ],
-  "pronunciation_tips": "TIPS_FOR_PRONUNCIATION", // optional
-  "common_mistakes": "COMMON_MISTAKES_TO_AVOID" // optional
-}
-
-IMPORTANT GUIDELINES:
-- Ensure the response strictly follows the JSON format provided
-- The phrase, romaji, translation, word_breakdown, grammar_points, and example_sentences fields are required
-- Other fields (cultural_notes, alternative_expressions, pronunciation_tips, common_mistakes) are optional
-- Tailor the explanation to the specified difficulty level
-- For beginner level, focus on basic grammar and vocabulary with simple explanations
-- For intermediate level, provide more nuanced explanations and cultural context
-- For advanced level, include detailed linguistic analysis and subtle usage distinctions
-- Include practical examples that reinforce the learning points
-- Highlight any cultural nuances or context-specific usage
-- Provide helpful pronunciation tips, especially for sounds that might be difficult for English speakers
-- Mention common mistakes that English speakers make with this phrase or grammar pattern
-- Use Hepburn romanization standard for all romaji
-```
+For all prompt-related details, refer to the [Phrase Details Generation](../Game-LLM-Prompts.md#phrase-details-generation) section of the Game LLM Prompts document, which is the single source of truth for our LLM prompts.
 
 ## Technical Design
 
@@ -177,10 +97,10 @@ export class LLMService {
     const { phrase, locationName, contextDescription, difficultyLevel } = request;
     
     // Constructs a detailed prompt using the template from the "Updated Prompt Template" 
-    // section above, with the request parameters (phrase, location, context, difficulty)
-    // inserted in the appropriate places. The prompt instructs the LLM to analyze the
-    // Japanese phrase and return a structured JSON response matching our PhraseAnalysis
-    // interface format with all required and optional fields.
+    // section in docs/Game-LLM-Prompts.md, with the request parameters (phrase, location, 
+    // context, difficulty) inserted in the appropriate places. The prompt instructs the 
+    // LLM to analyze the Japanese phrase and return a structured JSON response matching 
+    // our PhraseAnalysis interface format with all required and optional fields.
     return "Detailed prompt template with request parameters inserted";
   }
   
@@ -191,7 +111,7 @@ export class LLMService {
     try {
       const parsed = JSON.parse(responseJson);
       
-      // Validate required fields
+      // Validate required fields based on the requirements in Game-LLM-Prompts.md
       if (!parsed.phrase || !parsed.romaji || !parsed.translation || 
           !Array.isArray(parsed.word_breakdown) || !Array.isArray(parsed.grammar_points) || 
           !Array.isArray(parsed.example_sentences)) {
@@ -440,7 +360,7 @@ In case of API failures, the Study Scene should display:
 - [x] Compare existing LLM prompts with test-phrase-data structure
 - [x] Update prompt template to match the implemented data structure
 - [x] Define validation rules for LLM responses
-- [x] Create updated documentation in Game-LLM-Prompts.md
+- [x] Update documentation in Game-LLM-Prompts.md
 
 ### Phase 2: LLM Service Implementation
 - [ ] Create LLMService class with provider-agnostic OpenAI client
@@ -464,7 +384,7 @@ In case of API failures, the Study Scene should display:
 - [ ] Review and refine the complete implementation
 
 ### Phase 5: Documentation
-- [ ] Update Game-LLM-Prompts.md to reflect the new structure and prompt format
+- [x] Update Game-LLM-Prompts.md to reflect the new structure and prompt format
 - [ ] Document the LLMService API for future expansion
 - [ ] Create usage examples for other parts of the game that may use the LLM
 - [ ] Document environment configuration options for different LLM endpoints
