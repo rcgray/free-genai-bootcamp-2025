@@ -33,6 +33,7 @@
 │   │   ├── Dialog-System.md
 │   │   ├── Furigana-Integration-Plan.md
 │   │   ├── Furigana-Ruby-Text.md
+│   │   ├── LLM-Proxy-Server.md
 │   │   ├── Phaser-Rewrite.md
 │   │   ├── Scene-Specific-Reloading.md
 │   │   ├── Study-Scene-LLM-Integration.md
@@ -45,6 +46,8 @@
 │   │   └── archive
 │   │       └── Prompts01.md
 │   ├── reference
+│   │   ├── Client-Side-LLM-Security-Risks.md
+│   │   ├── Express-LLM-Proxy.md
 │   │   ├── Japanese-Text-Line-Breaking.md
 │   │   ├── OpenAI-Library.md
 │   │   └── Streamlit-Phaser-Howto.md
@@ -141,4 +144,4 @@
 ├── tests
 └── uv.lock
 
-38 directories, 104 files
+38 directories, 107 files
