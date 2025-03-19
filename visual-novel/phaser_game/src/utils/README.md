@@ -43,6 +43,50 @@ The wrapper implements the principles outlined in `docs/reference/Japanese-Text-
 3. Priority-based break point selection
 4. One-character overflow handling for punctuation
 
+## LLMService
+
+The `LLMService` provides integration with LLM APIs for language analysis and content generation. It supports both cloud-based OpenAI and local model instances through a consistent interface.
+
+### Usage
+
+```typescript
+// Import the service
+import { LLMService, PhraseAnalysisRequest } from '../utils';
+
+// Get the singleton instance
+const llmService = LLMService.getInstance();
+
+// Create a request
+const request: PhraseAnalysisRequest = {
+  phrase: "勉強しています",
+  locationName: "学校",
+  contextDescription: "talking about daily activities",
+  difficultyLevel: "beginner"
+};
+
+// Make an async request
+try {
+  const analysis = await llmService.analyzePhraseForStudy(request);
+  
+  // Use the analysis data
+  console.log(analysis.translation);
+  console.log(analysis.word_breakdown);
+  // etc.
+} catch (error) {
+  console.error("Failed to analyze phrase:", error);
+}
+```
+
+### Configuration
+
+The service uses environment variables from the project root `.env` file injected at build time:
+
+- `LLM_API_KEY`: Your API key for the LLM provider
+- `LLM_API_BASE_URL`: Base URL for API requests (change for local models)
+- `LLM_MODEL`: Model name to use (e.g., "gpt-4" or "llama-3-8b")
+
+See the `.env.example` file in the project root for configuration examples.
+
 ## Other Utilities
 
 - **Character**: Character model and position definitions

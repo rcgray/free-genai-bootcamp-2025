@@ -131,6 +131,9 @@ export default class TestScene extends BaseScene {
     
     // Add help text explaining console access
     this.addConsoleHelpText();
+    
+    // Create UI for LLM Study Scene integration tests
+    this.createLLMStudyTests();
   }
   
   /**
@@ -891,6 +894,105 @@ export default class TestScene extends BaseScene {
     );
     helpText.setOrigin(0.5, 0.5);
     helpText.setDepth(this.DEPTH_UI); // Set appropriate depth
+  }
+  
+  /**
+   * Create UI for LLM Study Scene integration tests
+   */
+  private createLLMStudyTests(): void {
+    const startY = 1200; // Adjust based on your layout
+    const startX = this.cameras.main.width / 2;
+    
+    // Section title
+    this.add.text(startX, startY, 'LLM Study Scene Integration Tests', {
+      fontFamily: 'Arial',
+      fontSize: '24px',
+      color: '#ffffff',
+      align: 'center'
+    }).setOrigin(0.5, 0);
+    
+    // Button to launch Study Scene with test data (offline)
+    const testDataButton = this.add.text(startX, startY + 50, 'Test with Local Data', {
+      fontFamily: 'Arial',
+      fontSize: '18px',
+      color: '#ffffff',
+      backgroundColor: '#00aa00',
+      padding: { left: 10, right: 10, top: 5, bottom: 5 }
+    }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
+    
+    testDataButton.on('pointerdown', () => {
+      this.launchStudySceneWithTestData();
+    });
+    
+    // Button to test with actual LLM
+    const llmButton = this.add.text(startX, startY + 100, 'Test with LLM', {
+      fontFamily: 'Arial',
+      fontSize: '18px',
+      color: '#ffffff',
+      backgroundColor: '#0000aa',
+      padding: { left: 10, right: 10, top: 5, bottom: 5 }
+    }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
+    
+    llmButton.on('pointerdown', () => {
+      this.launchStudySceneWithLLM();
+    });
+    
+    // Button to test error handling
+    const errorButton = this.add.text(startX, startY + 150, 'Test Error Handling', {
+      fontFamily: 'Arial',
+      fontSize: '18px',
+      color: '#ffffff',
+      backgroundColor: '#aa0000',
+      padding: { left: 10, right: 10, top: 5, bottom: 5 }
+    }).setOrigin(0.5, 0).setInteractive({ useHandCursor: true });
+    
+    errorButton.on('pointerdown', () => {
+      this.launchStudySceneWithError();
+    });
+  }
+  
+  /**
+   * Launch study scene with test data
+   */
+  private launchStudySceneWithTestData(): void {
+    this.scene.launch('StudyScene', {
+      testPhraseName: 'complete',
+      phrase: '',
+      romaji: '',
+      translation: ''
+    });
+    this.scene.pause();
+  }
+  
+  /**
+   * Launch study scene with LLM integration
+   */
+  private launchStudySceneWithLLM(): void {
+    this.scene.launch('StudyScene', {
+      phrase: '日本語を勉強するのは楽しいです。',
+      romaji: 'Nihongo o benkyō suru no wa tanoshii desu.',
+      translation: 'Studying Japanese is fun.',
+      context: 'discussing language learning',
+      source: 'Test Scene'
+    });
+    this.scene.pause();
+  }
+  
+  /**
+   * Launch study scene with simulated error
+   * This tests the error handling in the Study Scene
+   */
+  private launchStudySceneWithError(): void {
+    // Pass an invalid phrase that will cause the LLM service to fail
+    // The empty phrase should trigger validation errors
+    this.scene.launch('StudyScene', {
+      phrase: '',
+      romaji: '',
+      translation: '',
+      context: 'invalid data test',
+      source: 'Error Test'
+    });
+    this.scene.pause();
   }
 }
 

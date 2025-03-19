@@ -35,6 +35,7 @@
 │   │   ├── Furigana-Ruby-Text.md
 │   │   ├── Phaser-Rewrite.md
 │   │   ├── Scene-Specific-Reloading.md
+│   │   ├── Study-Scene-LLM-Integration.md
 │   │   ├── Study-Scene-Layout.md
 │   │   └── Study-Scene.md
 │   ├── read-only
@@ -45,9 +46,12 @@
 │   │       └── Prompts01.md
 │   ├── reference
 │   │   ├── Japanese-Text-Line-Breaking.md
+│   │   ├── OpenAI-Library.md
 │   │   └── Streamlit-Phaser-Howto.md
-│   └── reports
-│       └── Project-File-Structure.md
+│   ├── reports
+│   │   └── Project-File-Structure.md
+│   └── usage
+│       └── LLM-Integration-Usage.md
 ├── phaser_game
 │   ├── assets
 │   │   ├── audio
@@ -115,6 +119,7 @@
 │   │       ├── FuriganaRenderer.ts
 │   │       ├── GameStateManager.ts
 │   │       ├── JapaneseTextWrapper.ts
+│   │       ├── LLMService.ts
 │   │       ├── MockDialogData.ts
 │   │       ├── PhaserDebug.ts
 │   │       ├── README.md
@@ -136,4 +141,4 @@
 ├── tests
 └── uv.lock
 
-37 directories, 100 files
+38 directories, 104 files

@@ -363,31 +363,31 @@ In case of API failures, the Study Scene should display:
 - [x] Update documentation in Game-LLM-Prompts.md
 
 ### Phase 2: LLM Service Implementation
-- [ ] Create LLMService class with provider-agnostic OpenAI client
-- [ ] Implement the phrase analysis prompt formatting
-- [ ] Add response validation and error handling
-- [ ] Test with both OpenAI API and local model endpoints
-- [ ] Set up environment variables for flexible configuration
+- [x] Create LLMService class with provider-agnostic OpenAI client
+- [x] Implement the phrase analysis prompt formatting
+- [x] Add response validation and error handling
+- [x] Test with both OpenAI API and local model endpoints
+- [x] Set up environment variables for flexible configuration
 
 ### Phase 3: Study Scene Integration
-- [ ] Modify StudyScene to use LLMService
-- [ ] Implement loading state UI components
-- [ ] Create error state UI components
-- [ ] Add fallback content display logic
-- [ ] Test with various scenarios (success, error, timeout)
+- [x] Modify StudyScene to use LLMService
+- [x] Implement loading state UI components
+- [x] Create error state UI components
+- [x] Add fallback content display logic
+- [x] Test with various scenarios (success, error, timeout)
 
 ### Phase 4: Testing and Refinement
-- [ ] Test end-to-end flow from VN Scene to Study Scene
-- [ ] Verify error handling and fallbacks
-- [ ] Optimize loading experience
+- [x] Test end-to-end flow from VN Scene to Study Scene
+- [x] Verify error handling and fallbacks
+- [x] Optimize loading experience
 - [ ] Implement caching for repeated phrases if needed
-- [ ] Review and refine the complete implementation
+- [x] Review and refine the complete implementation
 
 ### Phase 5: Documentation
 - [x] Update Game-LLM-Prompts.md to reflect the new structure and prompt format
-- [ ] Document the LLMService API for future expansion
-- [ ] Create usage examples for other parts of the game that may use the LLM
-- [ ] Document environment configuration options for different LLM endpoints
+- [x] Document the LLMService API for future expansion
+- [x] Create usage examples for other parts of the game that may use the LLM
+- [x] Document environment configuration options for different LLM endpoints
 
 ## Conclusion
 

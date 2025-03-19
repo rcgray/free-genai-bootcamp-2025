@@ -346,6 +346,22 @@ Obviously, this guide was written for a general audience, so not all of the info
 
 ---
 
+Great, final edit (edit_file tool):
+
+- In the `createPhraseAnalysisPrompt()` function, just summarize the return value in a way that would be understandable by a future developer implementing this feature. This is just a spec, not a literal implementation, and the exact details of the prompt that we'll be inserting our data into might change over time.
+
+---
+
+Excellent. Just to be safe, let's go ahead and update the `docs/Game-LLM-Prompts.md` file to reflect the new data needs and prompt. That would allow us to remove the specifics from this feature spec file and simply reference the Game-LLM-Prompts.md file for the details. Doing this, we observe our rule regarding source of truth. (i.e., we don't risk having to maintain two separate sources for the same prompt details).
+
+This will of course require edits to the Study-Scene-LLM-Integration.md file as well as the Game-LLM-Prompts.md file, but it also means we can check off one of the boxes in our FIP. Let's make those changes (edit_file tool).
+
+---
+
+Nicely done, and it looks like Phase 1 of our FIP is already completed. Let's get to implementing this feature as written in @Study-Scene-LLM-Integration. GO GO! 
+
+
+
 
 
 

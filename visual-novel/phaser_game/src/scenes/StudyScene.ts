@@ -9,7 +9,7 @@
 import BaseScene from './BaseScene';
 import sceneRegistry from './SceneRegistry';
 import { PhraseAnalysis, getTestPhrase } from '../data/study/test-phrase-data';
-import { JapaneseTextWrapper } from '../utils';
+import { JapaneseTextWrapper, LLMService, PhraseAnalysisRequest } from '../utils';
 
 export interface StudyPhraseData {
   phrase: string;         // Japanese phrase
@@ -46,6 +46,11 @@ export default class StudyScene extends BaseScene {
   private lastY: number = 0;
   private contentMinY: number = 0;
   
+  // Loading animation components
+  private loadingAnimation?: Phaser.GameObjects.Text;
+  private loadingTween?: Phaser.Tweens.Tween;
+  private isLoading: boolean = false;
+  
   /**
    * Constructor for the StudyScene class
    */
@@ -73,13 +78,12 @@ export default class StudyScene extends BaseScene {
       this.phrase = this.phraseAnalysis.phrase;
       this.romaji = this.phraseAnalysis.romaji;
       this.translation = this.phraseAnalysis.translation;
-    } else if (this.phrase && this.romaji && this.translation) {
-      // In the future, this is where we would call the LLM service to get phrase analysis
-      // For now, let's use a default test phrase to demonstrate functionality
-      this.phraseAnalysis = getTestPhrase('complete');
+    } else {
+      // We'll fetch from the LLM in create()
+      this.phraseAnalysis = undefined;
     }
     
-    console.log('StudyScene initialized with phrase:', this.phrase);
+    console.log('[STUDY_SCENE] Initialized with phrase:', this.phrase);
   }
   
   /**
@@ -94,7 +98,7 @@ export default class StudyScene extends BaseScene {
    * Create the scene elements
    */
   create(): void {
-    console.log('Creating StudyScene');
+    console.log('[STUDY_SCENE] Creating StudyScene');
     
     // Create the background overlay and content panel
     this.createBackground();
@@ -112,8 +116,9 @@ export default class StudyScene extends BaseScene {
     if (this.phraseAnalysis) {
       this.addPhraseAnalysisContent(this.phraseAnalysis);
     } else {
-      // Add placeholder content if no analysis is available
-      this.addPlaceholderContent();
+      // Add loading content and fetch from LLM
+      this.addLoadingContent();
+      this.fetchPhraseAnalysisFromLLM();
     }
     
     // Set up input handlers for scrolling
@@ -754,63 +759,172 @@ export default class StudyScene extends BaseScene {
   }
   
   /**
-   * Add placeholder content for the scrollable area
-   * This will be shown if no phrase analysis is available
+   * Fetches phrase analysis from LLM service
    */
-  private addPlaceholderContent(): void {
-    if (!this.contentContainer) return;
-    
-    const contentWidth = this.contentPanel!.width * 0.9;
-    
-    // Add section headers and placeholder content
-    this.addSectionHeader("Word Breakdown", 0);
-    this.addPlaceholderText(
-      "This section will display a breakdown of individual words in the phrase, including readings, parts of speech, and meanings.",
-      60
-    );
-    
-    this.addSectionHeader("Grammar Points", 180);
-    this.addPlaceholderText(
-      "This section will explain the grammar patterns used in the phrase, with explanations and usage notes.",
-      240
-    );
-    
-    this.addSectionHeader("Example Sentences", 360);
-    this.addPlaceholderText(
-      "This section will show example sentences using similar patterns or vocabulary.",
-      420
-    );
-    
-    this.addSectionHeader("Learning Tips", 540);
-    this.addPlaceholderText(
-      "This section will provide pronunciation tips, common mistakes to avoid, and other learning aids.",
-      600
-    );
+  private async fetchPhraseAnalysisFromLLM(): Promise<void> {
+    try {
+      this.isLoading = true;
+      
+      // Get the LLM service
+      const llmService = LLMService.getInstance();
+      
+      // Prepare request data
+      const request: PhraseAnalysisRequest = {
+        phrase: this.phrase,
+        locationName: this.source || 'unknown location',
+        contextDescription: this.context || 'general conversation',
+        difficultyLevel: 'beginner' // Hardcoded for now, could come from game settings
+      };
+      
+      console.log('[STUDY_SCENE] Requesting phrase analysis from LLM:', request);
+      
+      // Fetch phrase analysis
+      this.phraseAnalysis = await llmService.analyzePhraseForStudy(request);
+      
+      // Clear loading content
+      this.clearContentContainer();
+      
+      // Add phrase analysis content
+      this.addPhraseAnalysisContent(this.phraseAnalysis);
+    } catch (error) {
+      console.error('[STUDY_SCENE] Error fetching phrase analysis:', error);
+      
+      // Clear loading content
+      this.clearContentContainer();
+      
+      // Add error content
+      this.addErrorContent(error);
+    } finally {
+      this.isLoading = false;
+      
+      // Clear any loading animations
+      if (this.loadingTween) {
+        this.loadingTween.stop();
+        this.loadingTween = undefined;
+      }
+    }
   }
   
   /**
-   * Add placeholder text to the content container
+   * Clears the content container
    */
-  private addPlaceholderText(text: string, yPosition: number): void {
+  private clearContentContainer(): void {
     if (!this.contentContainer) return;
     
-    const contentWidth = this.contentPanel!.width * 0.8;
+    // Remove all children (destroying them)
+    this.contentContainer.removeAll(true);
+  }
+  
+  /**
+   * Adds loading content while waiting for LLM
+   */
+  private addLoadingContent(): void {
+    if (!this.contentContainer) return;
     
-    const placeholder = this.add.text(
-      0,
-      yPosition,
-      text,
+    const loadingText = this.add.text(
+      0, 0,
+      'Analyzing phrase...\nPlease wait a moment.',
       {
-        fontFamily: 'Arial',
-        fontSize: '18px',
-        color: '#aaaaaa',
-        align: 'center',
-        wordWrap: { width: contentWidth }
+        fontSize: '24px',
+        color: '#ffffff',
+        align: 'center'
       }
     );
-    placeholder.setOrigin(0.5, 0);
     
-    this.contentContainer!.add(placeholder);
+    loadingText.setOrigin(0.5);
+    loadingText.setPosition(0, 100);
+    
+    this.contentContainer.add(loadingText);
+    
+    // Add loading animation dots
+    this.loadingAnimation = this.add.text(
+      0, 150,
+      '...',
+      {
+        fontSize: '32px',
+        color: '#ffffff'
+      }
+    );
+    
+    this.loadingAnimation.setOrigin(0.5);
+    this.contentContainer.add(this.loadingAnimation);
+    
+    // Animate the loading dots
+    this.loadingTween = this.tweens.add({
+      targets: this.loadingAnimation,
+      alpha: 0.2,
+      duration: 500,
+      yoyo: true,
+      repeat: -1
+    });
+  }
+  
+  /**
+   * Adds error content when LLM request fails
+   */
+  private addErrorContent(error: any): void {
+    if (!this.contentContainer) return;
+    
+    // Error message
+    const errorText = this.add.text(
+      0, 0,
+      'Sorry, there was an error analyzing this phrase.\n\nPlease try again later.',
+      {
+        fontSize: '24px',
+        color: '#ff5555',
+        align: 'center'
+      }
+    );
+    
+    errorText.setOrigin(0.5);
+    errorText.setPosition(0, 100);
+    
+    this.contentContainer.add(errorText);
+    
+    // Add a "Try Again" button
+    const tryAgainButton = this.add.text(
+      0, 180,
+      'Try Again',
+      {
+        fontSize: '20px',
+        color: '#ffffff',
+        backgroundColor: '#555555',
+        padding: {
+          left: 15,
+          right: 15,
+          top: 10,
+          bottom: 10
+        }
+      }
+    );
+    
+    tryAgainButton.setOrigin(0.5);
+    tryAgainButton.setInteractive({ useHandCursor: true });
+    
+    tryAgainButton.on('pointerdown', () => {
+      this.clearContentContainer();
+      this.addLoadingContent();
+      this.fetchPhraseAnalysisFromLLM();
+    });
+    
+    this.contentContainer.add(tryAgainButton);
+    
+    // Add a fallback content section with basic information
+    this.addSectionHeader("Basic Information", 250);
+    
+    const basicInfoText = this.add.text(
+      0, 300,
+      `Phrase: ${this.phrase}\n\nRomaji: ${this.romaji}\n\nTranslation: ${this.translation}`,
+      {
+        fontSize: '20px',
+        color: '#ffffff',
+        align: 'left'
+      }
+    );
+    
+    basicInfoText.setOrigin(0.5, 0);
+    
+    this.contentContainer.add(basicInfoText);
   }
   
   /**

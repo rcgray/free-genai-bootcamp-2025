@@ -32,4 +32,6 @@ export {
   debugScene,
   checkPropertyExists,
   monitorProperty
-} from './PhaserDebug'; 
+} from './PhaserDebug';
+
+export * from './LLMService'; 
