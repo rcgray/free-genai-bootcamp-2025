@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -8,7 +7,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [], // Remove React plugin as we don't use React in our Phaser game
   base: './',
   server: {
     port: 5173,
@@ -26,6 +25,7 @@ export default defineConfig({
       LLM_API_KEY: process.env.LLM_API_KEY || '',
       LLM_API_BASE_URL: process.env.LLM_API_BASE_URL || 'https://api.openai.com/v1',
       LLM_MODEL: process.env.LLM_MODEL || 'gpt-4',
+      LLM_PROXY_URL: process.env.LLM_PROXY_URL || 'http://localhost:3000/api',
     }
   },
   build: {

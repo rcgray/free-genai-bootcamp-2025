@@ -6,13 +6,16 @@
  * information to populate the Study Scene. The service is designed to be 
  * provider-agnostic, supporting both cloud-based and local LLM endpoints.
  * 
+ * This service now uses a secure proxy server to communicate with LLM providers,
+ * which protects API keys by keeping them server-side rather than exposing them
+ * in client-side code.
+ * 
  * TODO: Future enhancement - Implement caching for repeated phrases to reduce
  * API calls and improve performance. This would likely involve maintaining a 
  * local cache of phrase analyses keyed by the phrase text, with expiration logic
  * to refresh analyses periodically.
  */
 
-import OpenAI from 'openai';
 import { PhraseAnalysis } from '../data/study/test-phrase-data';
 
 /**
@@ -30,19 +33,14 @@ export interface PhraseAnalysisRequest {
  */
 export class LLMService {
   private static instance: LLMService;
-  private client: OpenAI;
+  private proxyUrl: string;
   
   /**
    * Private constructor - use getInstance() to get a singleton instance
    */
   private constructor() {
-    // Initialize OpenAI client with configuration from environment variables
-    this.client = new OpenAI({
-      apiKey: this.getEnvVar('LLM_API_KEY', ''),
-      baseURL: this.getEnvVar('LLM_API_BASE_URL', 'https://api.openai.com/v1'),
-      timeout: 15000, // 15 second timeout
-      maxRetries: 2
-    });
+    // Initialize with the proxy URL
+    this.proxyUrl = this.getEnvVar('LLM_PROXY_URL', 'http://localhost:3000/api');
   }
   
   /**
@@ -66,26 +64,72 @@ export class LLMService {
   }
   
   /**
+   * Check if the proxy server is available
+   * @returns Promise that resolves to true if the proxy is available
+   */
+  public async isProxyAvailable(): Promise<boolean> {
+    try {
+      const response = await fetch(`${this.proxyUrl}/health`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      return response.ok;
+    } catch (error) {
+      console.error('[LLM_SERVICE] Proxy server not available:', error);
+      return false;
+    }
+  }
+  
+  /**
    * Analyzes a Japanese phrase and returns detailed linguistic information
    * @param request - Analysis request parameters
    * @returns Promise containing phrase analysis
    */
   public async analyzePhraseForStudy(request: PhraseAnalysisRequest): Promise<PhraseAnalysis> {
     try {
+      // 1. Create the prompt - application logic stays in our app
       const prompt = this.createPhraseAnalysisPrompt(request);
       
-      const response = await this.client.chat.completions.create({
-        model: this.getEnvVar('LLM_MODEL', 'gpt-4'),
+      // 2. Prepare a standard OpenAI-compatible request body
+      const requestBody = {
+        model: this.getEnvVar('LLM_MODEL', 'gpt-4'), // Client can specify model, will be overridden by server default if not set
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.3,
         response_format: { type: 'json_object' }
+      };
+      
+      // 3. Check if proxy is available (optional - makes error messages more specific)
+      const isAvailable = await this.isProxyAvailable();
+      if (!isAvailable) {
+        throw new Error('LLM proxy server is not available. Please ensure it is running.');
+      }
+      
+      // 4. Send to generic proxy endpoint
+      console.log('[LLM_SERVICE] Sending request to proxy server');
+      const response = await fetch(`${this.proxyUrl}/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
       });
       
-      const content = response.choices[0]?.message.content;
+      if (!response.ok) {
+        throw new Error(`Proxy server error: ${response.status}`);
+      }
+      
+      // 5. Process the raw response - application logic stays in our app
+      const data = await response.json();
+      const content = data.choices[0]?.message.content;
+      
       if (!content) {
         throw new Error('Empty response from LLM');
       }
       
+      // 6. Process and validate the response - application logic stays in our app
       return this.validateAndProcessLLMResponse(content);
     } catch (error) {
       console.error('[LLM_SERVICE] Error analyzing phrase:', error);

@@ -16,6 +16,9 @@ alwaysApply: false
 - Use `mypy` for type checking
 - Use `pytest` for testing
 
+## Command Line Interface
+- We are using `uv` to manage our Python dependencies, so please configure your commands accordingly (e.g., `uv sync` or `uv sync --extra dev` to install dependencies, `uv run <script>` to run a script, `uv run pytest` to run tests, etc.).
+
 ## General Python Recommendations
 - Use type hints in all Python code
 - Follow PEP 8 style guidelines

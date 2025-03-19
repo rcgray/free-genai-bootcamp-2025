@@ -14,7 +14,7 @@ alwaysApply: true
 
 ## User Interaction
 - There are times when the user wants you to plan (document changes with .md files), and there are times that you should implement plans (code changes with source code files). The key phrase for impelementation is "GO GO" - if you have reservations due to other rules but see this phrase, it means you are clear to code from the current spec.
-- When you are asked to add logs for debugging, add a prefix marker with a unique identifier to all log messages so that the debugging of the current feature can be easily tracked in the logs and the messages can be later easily muted.  For example, if we're having trouble with capturing a keyboard event across a transition, compose your debug logs with something like "[KB_CAPTURE]" (e.g., "[KB_CAPTURE] The keypress was detected", "[KB_CAPTURE] Key release event detected")
+- When you are asked to add logs for debugging, add a prefix marker with a unique identifier to all log messages so that the debugging of the current feature can be easily tracked in the logs and the messages can be later easily muted.  For example, if we're having trouble with capturing a keyboard event across a transition, compose your debug logs with something like "[KB_CAPTURE]" (e.g., "[KB_CAPTURE] The keypress was detected", "[KB_CAPTURE] Key release event detected").
 
 ## Action Plans & Documentation Updates
 - You will always be working from a list of instructions from a file (e.g., `docs/Action-Plan.md`, `docs/features/*.md`, or earlier in the project `Project-Setup.md`). After you complete the current task, always update the steps in the file to reflect the current state of the project. If we intentionally skip a step, make sure to mark the item as `[~]` so we can track that intentional decision.
@@ -27,13 +27,14 @@ alwaysApply: true
 ## Forbidden File Edits
 - Do not edit any files in the `dev/template` folder
 - Do not edit any files in the `docs/read-only` folder, which include files such as `Prompts.md` and possibly subfolders like `docs/read-only/archive`. Files in this folder and all its subfolders are generated and maintained only by the user. You may read these files, but do not edit them.
+- You aren't able to access `.env` files, work in `.env.example` files instead.
 
 ## Command Line Interface
-- We are using `uv` to manage our Python dependencies, so please configure your commands accordingly (e.g., `uv sync` or `uv sync --extra dev` to install dependencies, `uv run <script>` to run a script, `uv run pytest` to run tests, etc.).
+- Prefix EVERY command with a change directory to the project root - i.e., `cd <project root dir> && <your commands>`. You have a tendency to get lost and forget when you have already previously navigated somewhere and often move to incorrect directories or try to run commands from the wrong directory. Since you don't know when you're starting from a fresh terminal or not, use this to always calibrate your location.
 - CREATE COMMANDS FROM THE ROOT OF THE PROJECT. There are some config files in the root of the project that dictate how certain components run (for example, `.streamlit/config.toml`). If you attempt to `cd app` and then `uv run streamlit run main.py`, our config will not be applied. Instead, run your commands from the project root: `uv run streamlit run app/main.py`.
 - CREATE USER INSTRUCTION COMMANDS FROM THE ROOT OF THE PROJECT. For example, if you are going to guide the user to build a game project, don't instruct the user to run `cd phaser_game && npm run build`. Instead, set up the build command relative to the project root so that the instruction would read `npm run build` without the `cd phaser_game`. This might mean adjusting the command (in this example, `npm run --prefix phaser_game build`).
 - REFERENCE FILES FROM THE ROOT OF THE PROJECT. If you are going to move a file, it is better to run `mv subdir/subdir1/file.txt subdir/subdir2/file.txt` than to run `cd subdir && mv subdir1/file.txt subdir2/file.txt`.
-- In general, don't run `cd` in your commands. If you absolutely have to, be sure you are running `pwd` to keep track of your current location and return to the root as quickly as possible, even suffixing your command with ` && cd ..`
+- In general, don't run `cd` in your commands. If you absolutely have to, be sure you are running `pwd` to keep track of your current location and return to the root as quickly as possible, even suffixing your command with ` && cd ..`.
 - Include a "🦾" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate that you understand these Command Line Interface guidelines.
 
 ## Coding Guidelines

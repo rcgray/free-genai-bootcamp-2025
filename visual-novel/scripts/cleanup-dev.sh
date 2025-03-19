@@ -10,6 +10,13 @@ if [ -n "$PORT_PID" ]; then
     kill -9 $PORT_PID 2>/dev/null
 fi
 
+# Kill any process using port 3000 (LLM Proxy Server)
+PROXY_PID=$(lsof -t -i:3000 2>/dev/null)
+if [ -n "$PROXY_PID" ]; then
+    echo "Killing process on port 3000 (LLM Proxy Server): $PROXY_PID"
+    kill -9 $PROXY_PID 2>/dev/null
+fi
+
 # Kill any Streamlit processes
 echo "Killing Streamlit processes..."
 # Find running Streamlit processes
@@ -33,6 +40,18 @@ if [ -n "$VITE_PIDS" ]; then
     done
 else
     echo "No Vite processes found."
+fi
+
+# Kill any Node.js processes related to the LLM proxy server
+echo "Killing LLM Proxy Server processes..."
+PROXY_PIDS=$(ps aux | grep "node.*server\.js" | grep -v grep | awk '{print $2}')
+if [ -n "$PROXY_PIDS" ]; then
+    echo "Killing LLM Proxy Server processes: $PROXY_PIDS"
+    for PID in $PROXY_PIDS; do
+        kill -9 $PID 2>/dev/null || true
+    done
+else
+    echo "No LLM Proxy Server processes found."
 fi
 
 # Give processes time to shut down

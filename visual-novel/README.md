@@ -6,7 +6,7 @@ A visual novel game designed to help English speakers learn Japanese through int
 
 - Interactive visual novel gameplay with dynamic interactions
 - Japanese language learning integrated into the gameplay
-- Dynamic dialog generation using LLM
+- Dynamic dialog generation using LLM through a secure proxy server
 - Vocabulary tracking and learning progress
 - Multiple difficulty levels for language learners
 - Streamlit-based user interface with embedded Phaser game
@@ -30,6 +30,11 @@ A visual novel game designed to help English speakers learn Japanese through int
 │   ├── package.json        # npm dependencies
 │   ├── tsconfig.json       # TypeScript configuration
 │   └── vite.config.ts      # Vite build configuration
+├── server/                 # LLM proxy server (Node.js/Express)
+│   ├── server.js           # Proxy server implementation
+│   ├── package.json        # npm dependencies for the proxy
+│   ├── .env.example        # Example environment variables for the proxy
+│   └── README.md           # Proxy server documentation
 ├── data/                   # Game data
 ├── docs/                   # Documentation
 ├── scripts/                # Build and development scripts
@@ -77,19 +82,32 @@ A visual novel game designed to help English speakers learn Japanese through int
    uv sync --extra dev  # for development dependencies
    ```
 
-4. Install Node.js dependencies:
+4. Install Node.js dependencies for the Phaser game:
    ```bash
    cd phaser_game
    npm install
    cd ..
    ```
 
-5. Create a `.env` file from the example:
+5. Install Node.js dependencies for the LLM proxy server:
    ```bash
+   cd server
+   npm install
+   cd ..
+   ```
+
+6. Create `.env` files from the examples:
+   ```bash
+   # For the main app
    cp .env.example .env
+   
+   # For the LLM proxy server (IMPORTANT!)
+   cp server/.env.example server/.env
    ```
    
-6. Edit the `.env` file to add your OpenAI API key (optional, for dynamic dialog generation).
+7. Edit the `.env` files:
+   - Edit `server/.env` to add your OpenAI API key (or other LLM provider information) for the proxy server
+   - Edit the main `.env` file if needed for other environment variables
 
 ### Building the Game
 
@@ -101,55 +119,81 @@ npm --prefix phaser_game run build
 
 ### Running the Application
 
-To run the Streamlit app with the built Phaser game:
+To run the complete application (proxy server, Phaser game, and Streamlit app):
 
 ```bash
 conda activate vn  # or your environment activation command
-uv run streamlit run app/main.py
+./scripts/start-dev-with-proxy.sh
 ```
 
 ## Development Workflow
 
-This project uses a dual development workflow to provide the best experience when working on both the Phaser game and the Streamlit app.
+This project uses several development workflows to provide the best experience when working on all components.
 
-### Option 1: Automatic Development Environment (Recommended)
+### Option 1: All-in-One Development Environment (Recommended)
 
-Run the all-in-one development script:
+Run the all-in-one development script with proxy server:
+
+```bash
+./scripts/start-dev-with-proxy.sh
+```
+
+This will:
+1. Start the LLM proxy server for secure API key handling
+2. Launch the Phaser development server with hot module replacement
+3. Launch the Streamlit app connected to both
+
+### Option 2: Without LLM Features
+
+If you don't need the LLM features during development:
 
 ```bash
 ./scripts/start-dev.sh
 ```
 
-This will:
-1. Clean up any existing development processes
-2. Launch the Phaser development server in one terminal
-3. Launch the Streamlit app in another terminal
+This will start only the Phaser game and Streamlit app without the proxy server.
 
-### Option 2: Manual Development Environment
+### Option 3: Manual Development Environment
 
-For more control, run the scripts in separate terminals in this specific order:
+For more control, run the scripts in separate terminals:
 
-Terminal 1 (Phaser - Start this FIRST):
+Terminal 1 (LLM Proxy Server):
+```bash
+cd server && npm run dev
+```
+
+This starts the proxy server on port 3000 (by default). You can test it with:
+
+```bash
+curl http://localhost:3000/api/health
+```
+
+Terminal 2 (Phaser):
 ```bash
 ./scripts/watch-phaser.sh
 ```
 
-Terminal 2 (Streamlit - Start this AFTER Phaser is running):
+This starts the Vite server for the Phaser game with hot-reloading on port 5173 (by default). You can test it by visiting `http://localhost:5173` in a browser.
+
+Terminal 3 (Streamlit):
 ```bash
 ./scripts/watch-streamlit.sh
 ```
 
+This starts the Streamlit server for the frontend with hot-reloading on port 8501 (by default). It should automatically open a browser window, or otherwise you can visiting `http://localhost:8501` in a browser.
+
+
 ### How the Development Workflow Works
 
+- The LLM proxy server securely handles API requests without exposing keys in client code
 - The Phaser game runs a Vite development server with hot module replacement (HMR)
 - The Streamlit app detects the Vite dev server and embeds it via iframe
 - Changes to Phaser game files are instantly reflected without manual refresh
 - Changes to Streamlit app files utilize Streamlit's built-in hot reloading
-- Each script now handles only its own process cleanup to avoid conflicts
 
 ### Stopping the Development Environment
 
-To stop both the Phaser and Streamlit servers:
+To stop all the development servers:
 
 ```bash
 ./scripts/cleanup-dev.sh
@@ -163,10 +207,11 @@ The project includes several utility scripts to help with development, building,
 
 ### Development Scripts
 
-- `./scripts/start-dev.sh` - One-click script to start both Phaser and Streamlit servers in development mode
+- `./scripts/start-dev-with-proxy.sh` - One-click script to start the proxy server, Phaser, and Streamlit
+- `./scripts/start-dev.sh` - Start both Phaser and Streamlit servers (without LLM proxy)
 - `./scripts/watch-phaser.sh` - Starts the Phaser development server with hot module replacement
-- `./scripts/watch-streamlit.sh` - Starts the Streamlit app in watch mode, connecting to the Phaser dev server
-- `./scripts/cleanup-dev.sh` - Stops all development servers (Phaser and Streamlit)
+- `./scripts/watch-streamlit.sh` - Starts the Streamlit app in watch mode
+- `./scripts/cleanup-dev.sh` - Stops all development servers
 
 ### Build Scripts
 
@@ -222,7 +267,29 @@ The project includes several utility scripts to help with development, building,
   npm --prefix phaser_game run preview
   ```
 
+### Node.js/Express Tools
+
+- Run the LLM proxy server:
+  ```bash
+  npm --prefix server start
+  ```
+
+- Run the proxy in development mode:
+  ```bash
+  npm --prefix server run dev
+  ```
+
 ## Troubleshooting
+
+### LLM Proxy Server Issues
+
+If the application cannot connect to the LLM API:
+
+1. Verify the proxy server is running (`npm --prefix server run dev`)
+2. Check that you've created a `server/.env` file with your API key
+3. Look for error messages in the proxy server console
+4. Try hitting the health check endpoint: http://localhost:3000/api/health
+5. If needed, restart the proxy server and the application
 
 ### Hot Module Replacement (HMR) Issues
 
