@@ -49,12 +49,11 @@ function getEndpointUrl(endpointPath) {
  */
 function adaptRequestForProvider(requestBody) {
   const baseUrl = process.env.LLM_API_BASE_URL || '';
-  const isOpenAI = baseUrl.includes('openai.com');
   
   // Create a copy of the request to modify
   const adaptedRequest = { ...requestBody };
   
-  // Extract response format preferences before potentially removing it
+  // Extract response format preferences before removing it
   const responseMetadata = {
     originalResponseFormat: adaptedRequest.response_format?.type || 'text',
     jsonSchema: adaptedRequest.response_format?.schema || null
@@ -66,16 +65,14 @@ function adaptRequestForProvider(requestBody) {
     console.warn('[LLM-PROXY] Full JSON schema validation is not yet implemented. Basic object validation will be used instead.');
   }
   
-  // Handle response_format compatibility
-  if (!isOpenAI && adaptedRequest.response_format) {
-    // For non-OpenAI providers, it's safest to remove response_format entirely
-    // Most local providers don't support it or implement it differently
+  // Remove response_format for ALL providers since support is inconsistent even among OpenAI models
+  if (adaptedRequest.response_format) {
     delete adaptedRequest.response_format;
-    console.log('[LLM-PROXY] Removed response_format for non-OpenAI provider compatibility');
+    console.log('[LLM-PROXY] Removed response_format field for provider compatibility');
   }
   
-  // Also ensure we're using the model specified in the .env file for local providers
-  // Local models might have different naming conventions than what the client expects
+  // Ensure we're using the model specified in the .env file for non-OpenAI providers
+  const isOpenAI = baseUrl.includes('openai.com');
   if (!isOpenAI && process.env.LLM_MODEL) {
     // Only override if the model has been specified in .env
     adaptedRequest.model = process.env.LLM_MODEL;
@@ -255,7 +252,7 @@ app.post('/api/completions', async (req, res) => {
           'Content-Type': 'application/json'
         },
         // Increase timeout for slow providers
-        timeout: parseInt(process.env.REQUEST_TIMEOUT_MS || 30000)
+        timeout: parseInt(process.env.REQUEST_TIMEOUT_MS || 60000)
       }
     );
     

@@ -213,17 +213,13 @@ Our solution leverages the standard OpenAI `response_format` field that's alread
 2. When clients request `"response_format": {"type": "text"}` (or don't specify a format), the proxy returns the raw text without processing
 3. For `"response_format": {"type": "json_schema", "schema": {...}}`, the proxy extracts JSON and performs basic schema validation (with a note that full schema validation will be implemented in a future update)
 
-This approach has several advantages:
-- No new parameters or headers needed - clients already use `response_format` for OpenAI
-- Clear separation of concerns - client specifies the desired format, proxy ensures it's delivered
-- Provider-agnostic - handles differences between OpenAI and other LLMs transparently
+Importantly, while we use this field to determine processing behavior, we remove it from the actual request forwarded to all LLM providers:
 
-For non-OpenAI providers that don't support the `response_format` parameter, the proxy:
-1. Captures the client's format preference before forwarding the request
-2. Removes the parameter when sending to providers that don't support it
-3. Processes the response according to the client's original preference
+1. The proxy captures the client's format preference and stores it as metadata
+2. The `response_format` parameter is then removed from requests to all providers (including OpenAI)
+3. The response is processed according to the client's original preference
 
-This ensures consistent behavior regardless of the LLM provider's capabilities.
+This approach was adopted because `response_format` support is inconsistent even among newer OpenAI models (like o1-mini, o3-mini, gpt-4o, etc.). By removing it uniformly, we provide more consistent behavior across all providers while ensuring our clients still get properly formatted JSON responses when requested.
 
 #### 6.1 Implementation of Response Processing
 

@@ -823,7 +823,7 @@ export default class StudyScene extends BaseScene {
     
     const loadingText = this.add.text(
       0, 0,
-      'Analyzing phrase...\nPlease wait a moment.',
+      'Analyzing phrase...\n\nPlease wait a moment (30-45 seconds).\n',
       {
         fontSize: '24px',
         color: '#ffffff',

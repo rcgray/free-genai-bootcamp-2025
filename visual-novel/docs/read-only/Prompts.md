@@ -689,3 +689,32 @@ Let's also move the "Reset Game" and "Character Test Scene" buttons to the botto
 We need two different sizes for the player selection dialogs in the VN Scene. Sometimes the Japanese text is long and we have to wrap it.  If we detect that the text has to be wrapped AND we are not in the advanced difficulty level, let's create the dialogs to be 50% larger vertically (and ensure that they are still equally spaced apart vertically). This makes room for the extra text across the Japanese, romaji, and the English text.
 
 ---
+
+Oops, it looks like we're still having trouble with the 'response_format' and 'json_object' ... Up until now we've been successful with a local LLM running via LM Studio, but I just ran a test against the official OpenAI:
+```
+[LLM-PROXY] Server responded with error: 400 {
+  error: {
+    message: "Invalid parameter: 'response_format' of type 'json_object' is not supported with this model.",
+    type: 'invalid_request_error',
+    param: 'response_format',
+    code: null
+  }
+}
+```
+
+---
+
+The GPT-3.5-Turbo and GPT-4 are pretty old and outdated at this point.  We can expect that we will only be using newer models from now on (which are now cheaper than the old GPT models).  things like "o1-mini", "o3-mini", "gpt-4o" and "gpt-4o-mini" are the ones we should be using. Is the support for "response_format" available in all of these models?
+
+If not, we should maybe just get rid of the "response_format" field altogether in our calls to the LLM (though it is still useful to have it in our calls to the LLM proxy) and just have the proxy return the JSON object, since we have pretty good JSON extraction written now.
+
+Does this make sense?  Having the system where the user can call the proxy with a "response_format" needs to remain, since that's how our proxy decides if we're going to return the raw text response of the LLM or perform JSON processing first.  However, since we remove the "response_format" field in the forwarded LLM calls from the proxy for Anthropic, local models, etc., maybe we should just remove them from calls to OpenAI as well, if the models from here on out don't plan to support it.
+
+---
+
+sounds great, GO GO.  be sure to update our feature spec as well @Express-LLM-Proxy.md 
+
+---
+
+
+
