@@ -1209,9 +1209,30 @@ export default class VNScene extends BaseScene {
     
     // Set up sizing for choices
     const choiceBoxWidth = this.cameras.main.width * 0.7; // Reduced width for a lighter feel
-    const buttonHeight = 135; // Increased from 115px to 135px for more text space
-    const buttonPadding = 40; // Increased vertical spacing between buttons
+    
+    // Check if any text needs wrapping and we're not in advanced mode
+    let needsLargerButtons = false;
+    if (this.difficultyLevel !== 'advanced') {
+      // Check each choice for wrapping
+      for (const choice of choices) {
+        // Format Japanese text and check if it wraps
+        const japaneseText = this.wrapJapaneseText(choice.japaneseText, 31);
+        const hasWrapping = japaneseText.includes('\n');
+        
+        if (hasWrapping) {
+          console.log('Text wrapping detected in choice:', japaneseText);
+          needsLargerButtons = true;
+          break;
+        }
+      }
+    }
+    
+    // Standard button height or 50% taller if wrapping and not in advanced mode
+    const buttonHeight = needsLargerButtons ? 205 : 135;
+    const buttonPadding = 40; // Vertical spacing between buttons
     const buttonWidth = choiceBoxWidth;
+    
+    console.log(`Using button height: ${buttonHeight}px (needsLargerButtons: ${needsLargerButtons})`);
     
     // Start position for first button
     let yOffset = -((choices.length - 1) * (buttonHeight + buttonPadding)) / 2;

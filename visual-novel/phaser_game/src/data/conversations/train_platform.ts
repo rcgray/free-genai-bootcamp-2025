@@ -26,7 +26,7 @@ const trainPlatformConversation: Conversation = {
     {
       id: 'kaori_greeting',
       characterId: 'kaori',
-      emotion: 'default',
+      emotion: 'surprised',
       position: 'center',
       japaneseText: 'こんにちは！久しぶり！元気？',
       romaji: 'Konnichiwa! Hisashiburi! Genki?',

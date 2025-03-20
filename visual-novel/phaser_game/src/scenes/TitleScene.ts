@@ -104,37 +104,9 @@ export default class TitleScene extends BaseScene {
       this.hasGradientBackground = true;
     }
     
-    // Add the title text
-    const titleText = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height * 0.3,
-      'Japanese Visual Novel',
-      {
-        fontFamily: 'Arial',
-        fontSize: '48px',
-        color: '#ffffff',
-        stroke: '#000000',
-        strokeThickness: 6
-      }
-    );
-    titleText.setOrigin(0.5, 0.5);
+    // Title text removed as it's now part of the background image
     
-    // Add the subtitle text
-    const subtitleText = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height * 0.3 + 50,
-      'Language Learning Game',
-      {
-        fontFamily: 'Arial',
-        fontSize: '24px',
-        color: '#ffffff',
-        stroke: '#000000',
-        strokeThickness: 4
-      }
-    );
-    subtitleText.setOrigin(0.5, 0.5);
-    
-    // Create the start button
+    // Create the start button with purple background and white text
     this.startButton = this.add.text(
       this.cameras.main.width / 2,
       this.cameras.main.height * 0.6,
@@ -143,20 +115,20 @@ export default class TitleScene extends BaseScene {
         fontFamily: 'Arial',
         fontSize: '32px',
         color: '#ffffff',
-        backgroundColor: '#2ecc71',
+        backgroundColor: '#ba35e8', // Purple background (RGB: 186, 53, 232)
         padding: { left: 20, right: 20, top: 10, bottom: 10 }
       }
     );
     this.startButton.setOrigin(0.5, 0.5);
     this.startButton.setInteractive({ cursor: 'pointer' });
     
-    // Add hover effect to start button
+    // Add hover effect to start button (slightly darker purple)
     this.startButton.on('pointerover', () => {
-      this.startButton?.setStyle({ backgroundColor: '#27ae60' });
+      this.startButton?.setStyle({ backgroundColor: '#9d2bc8' });
     });
     
     this.startButton.on('pointerout', () => {
-      this.startButton?.setStyle({ backgroundColor: '#2ecc71' });
+      this.startButton?.setStyle({ backgroundColor: '#ba35e8' });
     });
     
     // Add click handler to start button
@@ -164,10 +136,15 @@ export default class TitleScene extends BaseScene {
       this.transitionTo('VNScene');
     });
     
-    // Create the reset button
+    // Calculate bottom right position
+    const rightMargin = 20;
+    const bottomMargin = 20;
+    const buttonSpacing = 10;
+    
+    // Create the reset button positioned at bottom right
     this.resetButton = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height * 0.6 + 60,
+      this.cameras.main.width - rightMargin,
+      this.cameras.main.height - bottomMargin,
       'Reset Game',
       {
         fontFamily: 'Arial',
@@ -177,7 +154,7 @@ export default class TitleScene extends BaseScene {
         padding: { left: 10, right: 10, top: 5, bottom: 5 }
       }
     );
-    this.resetButton.setOrigin(0.5, 0.5);
+    this.resetButton.setOrigin(1, 1); // Bottom right anchor
     this.resetButton.setInteractive({ cursor: 'pointer' });
     
     // Add hover effect to reset button
@@ -194,10 +171,10 @@ export default class TitleScene extends BaseScene {
       this.resetGameState();
     });
     
-    // Create the test scene button
+    // Create the test scene button positioned above the reset button
     this.testButton = this.add.text(
-      this.cameras.main.width / 2,
-      this.cameras.main.height * 0.6 + 120,
+      this.cameras.main.width - rightMargin,
+      this.cameras.main.height - bottomMargin - this.resetButton.height - buttonSpacing,
       'Character Test Scene',
       {
         fontFamily: 'Arial',
@@ -207,7 +184,7 @@ export default class TitleScene extends BaseScene {
         padding: { left: 10, right: 10, top: 5, bottom: 5 }
       }
     );
-    this.testButton.setOrigin(0.5, 0.5);
+    this.testButton.setOrigin(1, 1); // Bottom right anchor
     this.testButton.setInteractive({ cursor: 'pointer' });
     
     // Add hover effect to test button

@@ -1,7 +1,7 @@
 .
 ├── .cursor
 │   └── rules
-│       ├── general-all.mdc
+│       ├── general.mdc
 │       ├── project.mdc
 │       └── python.mdc
 ├── .cursorignore
@@ -24,6 +24,7 @@
 │   ├── Fallback-Dialog.md
 │   ├── Game-Design.md
 │   ├── Game-LLM-Prompts.md
+│   ├── Image-Asset-Generation.md
 │   ├── PRD.md
 │   ├── Technical-Spec.md
 │   ├── cursorrules
@@ -40,7 +41,6 @@
 │   │   ├── Study-Scene-Layout.md
 │   │   └── Study-Scene.md
 │   ├── read-only
-│   │   ├── Feature-Spec-Template.md
 │   │   ├── Project-Setup.md
 │   │   ├── Prompts.md
 │   │   └── archive
@@ -48,13 +48,13 @@
 │   ├── reference
 │   │   ├── Client-Side-LLM-Security-Risks.md
 │   │   ├── Express-LLM-Proxy.md
+│   │   ├── Feature-Spec-Template.md
 │   │   ├── Japanese-Text-Line-Breaking.md
+│   │   ├── LLM-Integration-Usage.md
 │   │   ├── OpenAI-Library.md
 │   │   └── Streamlit-Phaser-Howto.md
-│   ├── reports
-│   │   └── Project-File-Structure.md
-│   └── usage
-│       └── LLM-Integration-Usage.md
+│   └── reports
+│       └── Project-File-Structure.md
 ├── phaser_game
 │   ├── assets
 │   │   ├── audio
@@ -74,9 +74,9 @@
 │   │       └── characters
 │   │           ├── kaori
 │   │           │   ├── default.png
+│   │           │   ├── default2.png
 │   │           │   ├── surprised.png
-│   │           │   ├── thinking.png
-│   │           │   └── worried.png
+│   │           │   └── thinking.png
 │   │           ├── shopkeeper
 │   │           │   └── default.png
 │   │           ├── takashi
@@ -137,11 +137,18 @@
 │   ├── build_game.py
 │   ├── cleanup-dev.sh
 │   ├── run_app.py
+│   ├── start-dev-with-proxy.sh
 │   ├── start-dev.sh
 │   ├── update_docs.py
 │   ├── watch-phaser.sh
 │   └── watch-streamlit.sh
+├── server
+│   ├── .env.example
+│   ├── README.md
+│   ├── package-lock.json
+│   ├── package.json
+│   └── server.js
 ├── tests
 └── uv.lock
 
-38 directories, 107 files
+38 directories, 114 files

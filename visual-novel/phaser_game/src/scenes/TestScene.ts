@@ -39,7 +39,7 @@ export default class TestScene extends BaseScene {
   // Character emotions map
   private emotionsMap: Record<string, string[]> = {
     kaori: ['default', 'worried', 'surprised', 'thinking'],
-    takashi: ['default'],
+    waitress: ['default'],
     shopkeeper: ['default']
   };
   
@@ -96,8 +96,8 @@ export default class TestScene extends BaseScene {
     this.load.image('kaori_surprised', 'assets/images/characters/kaori/surprised.png');
     this.load.image('kaori_thinking', 'assets/images/characters/kaori/thinking.png');
     
-    // Takashi
-    this.load.image('takashi_default', 'assets/images/characters/takashi/default.png');
+    // Waitress
+    this.load.image('waitress_default', 'assets/images/characters/waitress/default.png');
     
     // Shopkeeper
     this.load.image('shopkeeper_default', 'assets/images/characters/shopkeeper/default.png');
