@@ -8,7 +8,7 @@ What makes this visual novel special is the ability to explore Japanese phrases 
 
 With multiple difficulty levels from beginner to advanced, this game creates an engaging environment where language acquisition happens naturally through meaningful interactions rather than rote memorization.
 
-A visual novel game designed to help English speakers learn Japanese through interactive storytelling and gameplay, powered by a Large Language Model for dynamic dialog generation. The application uses Phaser 3 to create an immersive visual novel interface.
+A visual novel game designed to help English speakers learn Japanese through interactive storytelling and gameplay, powered by a Large Language Model for dynamic dialog generation. The application uses Streamlit as the web framework with an embedded Phaser game for the visual novel interface.
 
 ## Technical Implementation
 
@@ -22,6 +22,7 @@ The game is built using:
 To run the game with full functionality:
 1. The main game can be launched via the Vite development server
 2. The LLM proxy server must be running to enable the language learning features
+3. Streamlit provides the web interface that embeds the game
 
 The LLM integration is highly flexible, supporting:
 - **Local LLMs** through Ollama, LM Studio, or similar providers
@@ -35,11 +36,15 @@ The LLM integration is highly flexible, supporting:
 - Dynamic dialog generation using LLM through a secure proxy server
 - Vocabulary tracking and learning progress
 - Multiple difficulty levels for language learners
+- Streamlit-based user interface with embedded Phaser game
 
 ## Project Structure
 
 ```
 .
+├── app/                    # Streamlit application code
+│   ├── api/                # API integration
+│   └── main.py             # Streamlit entry point
 ├── phaser_game/            # Phaser game (TypeScript)
 │   ├── assets/             # Game assets
 │   │   ├── images/         # Image files
@@ -60,6 +65,7 @@ The LLM integration is highly flexible, supporting:
 ├── data/                   # Game data
 ├── docs/                   # Documentation
 ├── scripts/                # Build and development scripts
+├── .streamlit/             # Streamlit configuration
 ├── tests/                  # Test files
 ├── .env.example            # Example environment variables
 ├── pyproject.toml          # Python dependencies and tool configuration
@@ -68,8 +74,10 @@ The LLM integration is highly flexible, supporting:
 
 ## Prerequisites
 
+- Python 3.12 or higher
 - Node.js 16.x or higher
 - npm 8.x or higher
+- uv (for Python dependency management)
 
 ## Setup
 
@@ -81,28 +89,52 @@ The LLM integration is highly flexible, supporting:
    cd japanese-visual-novel
    ```
 
-2. Install Node.js dependencies for the Phaser game:
+2. Set up a Python environment:
+   ```bash
+   # Using conda (recommended)
+   conda create -n vn python=3.12
+   conda activate vn
+   
+   # Or using pyenv + uv venv
+   pyenv install 3.12
+   pyenv local 3.12
+   uv venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
+
+3. Install Python dependencies:
+   ```bash
+   uv sync  # for production dependencies
+   # or
+   uv sync --extra dev  # for development dependencies
+   ```
+
+4. Install Node.js dependencies for the Phaser game:
    ```bash
    cd phaser_game
    npm install
    cd ..
    ```
 
-3. Install Node.js dependencies for the LLM proxy server:
+5. Install Node.js dependencies for the LLM proxy server:
    ```bash
    cd server
    npm install
    cd ..
    ```
 
-4. Create `.env` files from the examples:
+6. Create `.env` files from the examples:
    ```bash
+   # For the main app
+   cp .env.example .env
+   
    # For the LLM proxy server (IMPORTANT!)
    cp server/.env.example server/.env
    ```
    
-5. Edit the `.env` files:
+7. Edit the `.env` files:
    - Edit `server/.env` to add your OpenAI API key (or other LLM provider information) for the proxy server
+   - Edit the main `.env` file if needed for other environment variables
 
 ### Building the Game
 
@@ -114,9 +146,10 @@ npm --prefix phaser_game run build
 
 ### Running the Application
 
-To run the complete application (proxy server and Phaser game):
+To run the complete application (proxy server, Phaser game, and Streamlit app):
 
 ```bash
+conda activate vn  # or your environment activation command
 ./scripts/start-dev-with-proxy.sh
 ```
 
@@ -135,16 +168,17 @@ Run the all-in-one development script with proxy server:
 This will:
 1. Start the LLM proxy server for secure API key handling
 2. Launch the Phaser development server with hot module replacement
+3. Launch the Streamlit app connected to both
 
 ### Option 2: Without LLM Features
 
 If you don't need the LLM features during development:
 
 ```bash
-npm --prefix phaser_game run dev
+./scripts/start-dev.sh
 ```
 
-This will start only the Phaser game without the proxy server.
+This will start only the Phaser game and Streamlit app without the proxy server.
 
 ### Option 3: Manual Development Environment
 
@@ -163,16 +197,26 @@ curl http://localhost:3000/api/health
 
 Terminal 2 (Phaser):
 ```bash
-cd phaser_game && npm run dev
+./scripts/watch-phaser.sh
 ```
 
 This starts the Vite server for the Phaser game with hot-reloading on port 5173 (by default). You can test it by visiting `http://localhost:5173` in a browser.
+
+Terminal 3 (Streamlit):
+```bash
+./scripts/watch-streamlit.sh
+```
+
+This starts the Streamlit server for the frontend with hot-reloading on port 8501 (by default). It should automatically open a browser window, or otherwise you can visiting `http://localhost:8501` in a browser.
+
 
 ### How the Development Workflow Works
 
 - The LLM proxy server securely handles API requests without exposing keys in client code
 - The Phaser game runs a Vite development server with hot module replacement (HMR)
+- The Streamlit app detects the Vite dev server and embeds it via iframe
 - Changes to Phaser game files are instantly reflected without manual refresh
+- Changes to Streamlit app files utilize Streamlit's built-in hot reloading
 
 ### Stopping the Development Environment
 
@@ -190,19 +234,48 @@ The project includes several utility scripts to help with development, building,
 
 ### Development Scripts
 
-- `./scripts/start-dev-with-proxy.sh` - One-click script to start the proxy server and Phaser
+- `./scripts/start-dev-with-proxy.sh` - One-click script to start the proxy server, Phaser, and Streamlit
+- `./scripts/start-dev.sh` - Start both Phaser and Streamlit servers (without LLM proxy)
 - `./scripts/watch-phaser.sh` - Starts the Phaser development server with hot module replacement
+- `./scripts/watch-streamlit.sh` - Starts the Streamlit app in watch mode
 - `./scripts/cleanup-dev.sh` - Stops all development servers
 
 ### Build Scripts
 
 - `./scripts/build_game.py` - Python script to build the Phaser game for production
+- `./scripts/run_app.py` - Builds the game (if needed) and runs the Streamlit app
 
 ### Maintenance Scripts
 
 - `./scripts/update_docs.py` - Updates project documentation files like Project-File-Structure.md
 
 ## Development Tools
+
+### Python Tools
+
+- Format code:
+  ```bash
+  conda activate vn
+  ruff format .
+  ```
+
+- Lint code:
+  ```bash
+  conda activate vn
+  ruff check .
+  ```
+
+- Type check:
+  ```bash
+  conda activate vn
+  mypy .
+  ```
+
+- Run tests:
+  ```bash
+  conda activate vn
+  uv run pytest
+  ```
 
 ### TypeScript/Phaser Tools
 
@@ -253,6 +326,15 @@ If changes to Phaser game files aren't automatically reflected:
 2. Try running `./scripts/cleanup-dev.sh` to kill any lingering processes
 3. Restart the development servers
 4. Try opening the Phaser dev server directly at http://localhost:5173
+
+### Streamlit Connection Issues
+
+If Streamlit cannot connect to the Phaser development server:
+
+1. Ensure the Phaser server is running first
+2. Verify the Phaser server is running on port 5173
+3. Check for any browser console errors
+4. Try running `./scripts/cleanup-dev.sh` and restart both servers
 
 ### Asset Loading Issues
 
