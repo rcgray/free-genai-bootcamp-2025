@@ -49,6 +49,8 @@ uvicorn backend.chatqna.service:app --host 0.0.0.0 --port 8888 --reload
 
 ### Docker Deployment
 
+0. If using Windows (WSL), make sure the Windows Docker Desktop is running.
+
 1. Set up environment variables:
 ```bash
 source backend/docker/set_env.sh

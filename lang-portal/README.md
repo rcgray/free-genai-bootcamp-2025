@@ -106,7 +106,7 @@ uvicorn app.main:app --reload
 
 Frontend:
 ```bash
-cd frontend
+cd frontend-react
 yarn dev
 ```
 

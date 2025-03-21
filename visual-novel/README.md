@@ -12,7 +12,7 @@ A visual novel game designed to help English speakers learn Japanese through int
 
 ## Technical Implementation
 
-This project represents a unique achievement in AI-assisted development: **every aspect of the game - including all code, artwork, game design, and dialogue - was created entirely by AI with no direct human programming or asset creation**. 
+This project represents the author's personal achievement in AI-assisted development: **every aspect of the game - including all code, artwork, game design, and dialogue - was created entirely by AI with no direct human programming or asset creation**. 
 
 The game is built using:
 - **Phaser 3** game framework for creating the interactive visual novel
