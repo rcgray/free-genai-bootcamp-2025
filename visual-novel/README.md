@@ -1,6 +1,8 @@
+# Japanese Language Learning Visual Novel
+
 ![Japanese Language Learning Visual Novel Screenshot](dev/screenshot.png)
 
-# Japanese Language Learning Visual Novel
+## Overview
 
 Experience a virtual day in Tokyo through this immersive Japanese learning experience. As an American visiting Japan for the first time, you're guided by your old friend Kaori, a native Japanese woman who shows you around the vibrant city of Tokyo. Together, you'll navigate train stations, order food at restaurants, explore parks, shop at malls, and interact with locals - all while learning conversational Japanese in context.
 
@@ -8,16 +10,16 @@ What makes this visual novel special is the ability to explore Japanese phrases 
 
 With multiple difficulty levels from beginner to advanced, this game creates an engaging environment where language acquisition happens naturally through meaningful interactions rather than rote memorization.
 
-A visual novel game designed to help English speakers learn Japanese through interactive storytelling and gameplay, powered by a Large Language Model for dynamic dialog generation. The application uses Phaser 3 to create an immersive visual novel interface.
+## AI-Generated Development
 
-## Technical Implementation
-
-This project represents the author's personal achievement in AI-assisted development: **every aspect of the game - including all code, artwork, game design, and dialogue - was created entirely by AI with no direct human programming or asset creation**. 
+This project represents the author's personal achievement in AI-assisted development: **every aspect of the game - including all code, artwork, UI, game design, story, and dialogue - was created entirely by AI without direct human programming or asset creation**.  Tools included Cursor, Claude-Sonnet-3.6/7, Stable Diffusion, ChatGPT, and others.
 
 The game is built using:
 - **Phaser 3** game framework for creating the interactive visual novel
 - **TypeScript** for type-safe code
 - **Vite** for fast development and optimized builds
+
+## Technical Implementation
 
 To run the game with full functionality:
 1. The main game can be launched via the Vite development server
@@ -35,6 +37,7 @@ The LLM integration is highly flexible, supporting:
 - Dynamic dialog generation using LLM through a secure proxy server
 - Vocabulary tracking and learning progress
 - Multiple difficulty levels for language learners
+- Hot module replacement for smooth development experience
 
 ## Project Structure
 
@@ -66,12 +69,12 @@ The LLM integration is highly flexible, supporting:
 └── README.md               # This file
 ```
 
-## Prerequisites
+## Getting Started
+
+### Prerequisites
 
 - Node.js 16.x or higher
 - npm 8.x or higher
-
-## Setup
 
 ### Installation
 

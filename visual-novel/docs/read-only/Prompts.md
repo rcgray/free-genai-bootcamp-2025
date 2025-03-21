@@ -716,5 +716,68 @@ sounds great, GO GO.  be sure to update our feature spec as well @Express-LLM-Pr
 
 ---
 
+# New chat (Agent, claude-3.7-sonnet, thinking toggled)
+# [from the monoproject root directory, one level up from `visual-novel` project]
 
+---
 
+[Longer Context]
+We are at the root of a monoproject repository, and we are preparing it for delivery. The work is complete, but we now need to organize our README files throughout the monorepo to make it easier for potential users to understand our project. This is also a deliverable for a project that will be graded as part of a course, so we will want to ensure that the README files make this grading process as easy as possible for the graders.
+
+Let's take an inventory of the README files in the monorepo:
+
+- `README.md` (@README.md)
+- Pre-week 1
+  - `genai-architecting/README.md` (@genai-architecting/README.md)
+  - `sentence-constructor/README.md` (@sentence-constructor/README.md)
+- Week 1
+  - `lang-portal/README.md` (@lang-portal/README.md)
+  - `lang-portal/frontend-react/README.md` (@lang-portal/frontend-react/README.md)
+- Week 2
+  - `listening-comp/README.md` (@listening-comp/README.md)
+  - `lang-portal/games/kanji-snake/README.md` (NYI)
+- Week 3
+  - `opea-comps/README.md` (@opea-comps/README.md)
+  - `opea-comps/backend/README.md` (@opea-comps/backend/README.md)
+- Weeks 4 & 5
+  - `visual-novel/README.md` (@visual-novel/README.md)
+  - `visual-novel/server/README.md` (@visual-novel/server/README.md)
+  - `visual-novel/phaser_game/src/utils/README.md` (@visual-novel/phaser_game/src/utils/README.md)
+
+See the `./README.md` file for a summary of the projects within the monorepo and the course work completed. Our current task will be to finalize all of these files to ensure that they are complete and accurate.
+
+For our first step: One README file is missing (NYI): `lang-portal/games/kanji-snake/README.md` - which we should add since it became a pretty significant item of work.  Let's add it, highlighting its key purpose as a sample game for our system in which games can be independently developed, using our template and libraries, and then imported into our lang-portal app to share in the learning functionality (word database, groups, etc.) offered by the platform.
+
+You have access to the project's spec documents:
+
+- `lang-portal/docs/Game-Kanji-Snake.md` (@Game-Kanji-Snake.md)
+  - This is the specification for the Kanji Snake game.
+- `lang-portal/docs/Games-Feature-Spec.md` (@Games-Feature-Spec.md)
+  - This is the specification for the functionality added to the Lang Portal that allows for the integration of new games.
+- `lang-portal/docs/Games-Harness-Spec.md` (@Game-Harness-Spec.md)
+  - This is a how-to guide for developers who want to integrate their games into the Lang Portal.
+
+You also have access to screenshots from the Kanji Snake game in the `lang-portal/games/kanji-snake/dev/` directory (@dir).
+
+Finally, you have access to the Kanji Snake game code in the `lang-portal/games/kanji-snake/` directory, where you can look through source files such as `src/scenes/MainScene.ts` (@MainScene.ts) to see the implementation of the game to get a sense of controls and user instructions.
+
+Please create a new README file `lang-portal/games/kanji-snake/README.md` for the Kanji Snake game, highlighting its key purpose as a sample game for our system in which games can be independently developed, using our template and libraries, and then imported into our lang-portal app to share in the learning functionality (word database, groups, etc.) offered by the platform. At the moment, this is your only task - to write the `lang-portal/games/kanji-snake/README.md` file.
+
+---
+
+Great, now let's turn our attention to the other README files in the monorepo. We can skip the root README file for now (we will address that at the end), and we can skip the Pre-week 1 README files as well. Let's start with the Week 1 README files.  We are looking for the following:
+
+- Consistency in the formatting of the README files.
+- Copy-editing for correctness and clarity.
+- Ensure that the files explain the purpose of the project, the technologies used, and the development process.
+- If a file has a screenshot (which you can see in the root project README file, or in the `dev/` directory of the project), please include it in the README file.
+- Ensure that the files explain how an individual can run the project, either in development or production mode.
+
+---
+
+Great, and finally, let's take a look at our root README file. The formatting is a little different on this one since it is also a homework submission for a workshop. Details regarding projects and how to run them are provided in the individual project README files. We are looking for the following:
+
+- Copy-editing for correctness and clarity. It's ok if the file is a little verbose, because we want to be thorough. It is also appropriate for it to be written as prose instead of simply as brief lists.
+- Ensure that the links to other files (sub-project README files, images, etc.) are correct.
+
+Please make your suggested edits to the root README file, and then echo back a summary of the changes you made.

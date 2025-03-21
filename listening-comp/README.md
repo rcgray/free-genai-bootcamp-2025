@@ -2,6 +2,12 @@
 
 A Streamlit-based application designed to help users learn Japanese through audio content. The tool processes Japanese audio content to create interactive learning experiences with transcriptions, translations, and AI-powered speech synthesis.
 
+![Japanese Listening Learning Tool](dev/screenshot.png)
+
+## Overview
+
+This tool helps Japanese language learners practice their listening skills by working with authentic Japanese audio content. Users can upload audio files or provide URLs to Japanese podcasts or other audio content. The application automatically transcribes the Japanese audio, provides English translations, and offers an interactive interface for studying the content.
+
 ## Features
 
 - **Audio Content Processing**: Download and process Japanese audio content from various platforms
@@ -17,6 +23,7 @@ A Streamlit-based application designed to help users learn Japanese through audi
 - Python 3.12 or higher
 - Conda or pyenv (for environment management)
 - uv (for dependency management)
+- OpenAI API key for transcription and translation services
 
 ### Development Setup
 
@@ -68,6 +75,18 @@ uv run streamlit run frontend/app.py
 
 The application will be available at `http://localhost:8501` by default.
 
+### Production Deployment
+
+For production deployment:
+
+```bash
+# Set environment variables in your production environment
+# OPENAI_API_KEY=your-api-key
+
+# Start the application
+streamlit run frontend/app.py
+```
+
 ## Project Structure
 
 ```
@@ -79,12 +98,12 @@ listening-comp/
 │   └── app.json      # TinyDB database file
 ├── frontend/         # Streamlit application
 │   └── app.py
-├── docs/            # Documentation
-│   └── PRD.md      # Product Requirements Document
-├── scripts/         # Utility scripts
-│   └── manage_db.py # Database management script
-├── tests/           # Test files
-├── pyproject.toml   # Project configuration and dependencies
+├── docs/             # Documentation
+│   └── PRD.md        # Product Requirements Document
+├── scripts/          # Utility scripts
+│   └── manage_db.py  # Database management script
+├── tests/            # Test files
+├── pyproject.toml    # Project configuration and dependencies
 └── README.md
 ```
 
@@ -172,16 +191,16 @@ The application uses TinyDB, a lightweight document-oriented database, to manage
 Audio sources are stored with the following structure:
 ```python
 {
-    "url": str,              # Source URL
-    "title": str,            # Content title
-    "source_type": str,      # Type of source (youtube, spotify, etc.)
-    "duration_seconds": float,# Duration of audio
-    "download_path": str,    # Path to downloaded audio file
-    "transcript_path": str,  # Path to transcript file (optional)
-    "translation_path": str, # Path to translation file (optional)
-    "created_at": str,      # Creation timestamp
-    "updated_at": str,      # Last update timestamp
-    "status": str          # Processing status
+    "url": str,                # Source URL
+    "title": str,              # Content title
+    "source_type": str,        # Type of source (youtube, spotify, etc.)
+    "duration_seconds": float, # Duration of audio
+    "download_path": str,      # Path to downloaded audio file
+    "transcript_path": str,    # Path to transcript file (optional)
+    "translation_path": str,   # Path to translation file (optional)
+    "created_at": str,         # Creation timestamp
+    "updated_at": str,         # Last update timestamp
+    "status": str              # Processing status
 }
 ```
 

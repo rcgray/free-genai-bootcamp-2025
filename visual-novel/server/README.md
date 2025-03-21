@@ -2,6 +2,10 @@
 
 A lightweight, generic proxy server for securely communicating with various LLM APIs (OpenAI, Anthropic, local models, etc.) without exposing API keys in client-side code.
 
+## Overview
+
+This proxy server acts as a secure intermediary between client applications and Large Language Model providers. It handles API key management, request formatting, and response processing, allowing client applications to interact with LLMs without exposing sensitive credentials. The proxy supports multiple LLM providers and offers consistent response handling regardless of the backend service used.
+
 ## Features
 
 - Secure API key handling - keys are stored server-side only
@@ -17,11 +21,11 @@ A lightweight, generic proxy server for securely communicating with various LLM 
 1. Clone the repository
 2. Navigate to the server directory
 3. Install dependencies:
-```
+```bash
 npm install
 ```
 4. Create a `.env` file based on `.env.example`:
-```
+```bash
 cp .env.example .env
 ```
 5. Edit the `.env` file to add your API key and configure the LLM provider
@@ -77,12 +81,12 @@ LLM_ENDPOINT_PATH=chat/completions
 ## Running the Server
 
 ### Development Mode
-```
+```bash
 npm run dev
 ```
 
 ### Production Mode
-```
+```bash
 npm start
 ```
 

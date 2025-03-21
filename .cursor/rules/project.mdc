@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+- Include a "📄" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate you have read this file.
+
+## Workflow
+- This is a monorepo that contains many other smaller projects as subfolders. Keep this in mind when making file paths, references, and suggesting commands (e.g., ruff format).
+

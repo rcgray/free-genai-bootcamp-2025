@@ -2,13 +2,17 @@
 
 This is a simplified implementation of a ChatQnA service that communicates with a llama.cpp server to provide LLM capabilities. It's designed to provide a backend API for our Streamlit frontend application.
 
+## Overview
+
+The ChatQnA backend service acts as a bridge between the Streamlit frontend and the llama.cpp server that runs the LLM model. It handles API requests, formats prompts for the LLM, and returns responses to the frontend in a standardized format.
+
 ## Features
 
 - Simple FastAPI-based service for chat completion
 - Docker Compose setup for easy deployment
 - Integration with local GGUF models via llama.cpp
 - Support for streaming responses
-- Compatible with our upcoming Streamlit frontend
+- Compatible with our Streamlit frontend
 
 ## Directory Structure
 
@@ -67,7 +71,7 @@ docker compose up -d
 docker compose ps
 ```
 
-## API Usage
+## API Reference
 
 ### Chat Completion Endpoint
 
@@ -127,4 +131,13 @@ This backend service is designed to be used with our Streamlit frontend applicat
 
 ## Model Configuration
 
-The service is configured to use the local GGUF model provided by the llama.cpp server. The model path is specified in the Docker Compose file and points to the root `models/` directory. 
+The service is configured to use the local GGUF model provided by the llama.cpp server. The model path is specified in the Docker Compose file and points to the root `models/` directory.
+
+## Development Guidelines
+
+When working on this backend service:
+
+1. Maintain compatibility with the OpenAI API format
+2. Ensure proper error handling for model loading failures
+3. Keep the service lightweight and focused on its core responsibility
+4. Document API changes in both code and README 

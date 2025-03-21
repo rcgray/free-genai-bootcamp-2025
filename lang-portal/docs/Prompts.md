@@ -388,36 +388,3 @@ let's look at our capture code - when we capture or "eat" a word (by hitting any
 ## --- Future Prompts ---
 
 
----
-
-# New chat (Agent, claude-3.7-sonnet, thinking toggled)
-
----
-
-We are at the root of a monoproject repository, and we are preparing it for delivery. The work is complete, but we now need to organize our README files throughout the monorepo to make it easier for potential users to understand our project. This is also a deliverable for a project that will be graded as part of a course, so we will want to ensure that the README files make this grading process as easy as possible for the graders.
-
-Let's take an inventory of the README files in the monorepo:
-
-- `./README.md`
-- Pre-week
-  - `./genai-architecting/README.md`
-  - `./sentence-constructor/README.md`
-- Week 1
-  - `lang-portal/README.md`
-  - `lang-portal/frontend-react/README.md`
-- Week 2
-  - `listening-comp/README.md`
-  - `lang-portal/games/kanji-snake/README.md` (NYI)
-- Week 3
-  - `./opea-comps/README.md`
-  - `./opea-comps/backend/README.md`
-- Weeks 4 & 5
-  - `./visual-novel/README.md`
-  - `./visual-novel/server/README.md`
-  - `./visual-novel/phaser_game/src/utils/README.md`
-
-See the `./README.md` file for a summary of the projects within the monorepo and the course work completed.
-
-One README file is missing (NYI): `lang-portal/games/kanji-snake/README.md` - which we should add since it became a pretty significant item of work.  Let's add it, highlighting its key purpose as a sample game for our system in which games can be independently developed, using our template and libraries, and then imported into our lang-portal app to share in the learning functionality (word database, groups, etc.) offered by the platform. 
-
-For `./sentence-constructor/README.md`, let's add a section called "Findings" that outlines the Testing summaries from the Markdown, YAML, and XML tests.

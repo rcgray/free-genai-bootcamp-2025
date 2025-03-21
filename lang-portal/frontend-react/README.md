@@ -5,6 +5,12 @@ A React-based single-page application (SPA) that provides:
 2. Study activity launching capabilities
 3. Learning progress tracking visualization
 
+![Japanese Learning Portal Frontend](../dev/screenshot.png)
+
+## Overview
+
+This frontend application serves as the user interface for the Japanese Learning Portal. It provides an intuitive interface for managing vocabulary, launching study activities, and tracking learning progress. The application is built with modern React practices and integrates seamlessly with the FastAPI backend.
+
 ## Tech Stack
 
 - React 18+ with TypeScript
@@ -36,6 +42,18 @@ yarn dev
 ```
 
 The application will be available at http://localhost:3000
+
+### Running in Production
+
+To build and run the application for production:
+
+```bash
+# Build the application
+yarn build
+
+# Preview the production build
+yarn preview
+```
 
 ### Available Scripts
 

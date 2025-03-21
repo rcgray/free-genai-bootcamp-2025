@@ -5,6 +5,12 @@ A web-based language learning platform that serves as:
 2. A learning record store (LRS)
 3. A unified launchpad for various learning applications
 
+![Language Learning Portal Screenshot](dev/screenshot.png)
+
+## Overview
+
+The Language Learning Portal is a comprehensive web application designed to help users learn Japanese. It provides tools for vocabulary management, tracks learning progress, and serves as a central hub for launching various educational activities and games.
+
 ## Technology Stack
 
 ### Backend
@@ -77,6 +83,43 @@ cd frontend
 yarn install
 ```
 
+### Running the Application
+
+#### Development Mode
+
+Start both backend and frontend development servers:
+
+Backend:
+```bash
+cd backend-fastapi
+uvicorn app.main:app --reload
+```
+
+Frontend:
+```bash
+cd frontend-react
+yarn dev
+```
+
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
+
+#### Production Mode
+
+Build the frontend:
+```bash
+cd frontend-react
+yarn build
+```
+
+Start the backend:
+```bash
+cd backend-fastapi
+uvicorn app.main:app
+```
+
 ### Developer Setup
 
 For development, you'll need additional dependencies:
@@ -94,21 +137,6 @@ This will install additional packages needed for development:
 - isort for import sorting
 - mypy for type checking
 - ruff for linting
-
-### Development
-
-Start both backend and frontend development servers:
-Backend:
-```bash
-cd backend-fastapi
-uvicorn app.main:app --reload
-```
-
-Frontend:
-```bash
-cd frontend-react
-yarn dev
-```
 
 ### Testing
 
@@ -164,10 +192,10 @@ lang-portal/
 │   └── tests/              # Backend tests
 ├── frontend/               # Frontend React application
 ├── games/                  # Educational games
-│   └── typing-tutor/      # Example game implementation
+│   └── kanji-snake/        # Example game implementation
 ├── shared/                 # Shared code for games
-│   ├── api-client/        # API client library
-│   └── types/             # Shared TypeScript types
+│   ├── api-client/         # API client library
+│   └── types/              # Shared TypeScript types
 ├── scripts/                # Development and utility scripts
 │   └── db/                 # Database management scripts
 │       ├── init_db.py      # Database initialization

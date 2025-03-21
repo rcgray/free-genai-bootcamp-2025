@@ -53,13 +53,52 @@ Choose the appropriate prompt based on:
 - Your specific use case requirements
 - Performance characteristics needed
 
-## Testing Results
+## Test Findings
 
-Detailed testing results are included in each prompt file's header, including:
-- Model performance ratings (✅, 🟨, ❌)
-- Processing times where available
-- Specific response characteristics
-- Known limitations or issues
+Our comprehensive testing across 9 LLMs revealed significant variations in how different models handle different prompt formats:
+
+### Cross-Format Performance Summary
+
+| Model | Markdown | YAML | XML | Notes |
+|-------|----------|------|-----|-------|
+| Claude Sonnet 3.5 | ✅ | 🟨 | 🟨 | Performs best with plaintext, adds boilerplate "friendly" wrapping to structured formats |
+| ChatGPT-4o | ✅ | 🟨→✅ | ❌ | Strong with Markdown, needed 2 attempts with YAML, rejected XML format |
+| DeepSeek V3 | ✅ | ✅ | ✅ | Consistent performer across all formats, includes concluding thoughts |
+| Microsoft Phi-4 14B | ✅ | 🟨 | 🟨 | Strong with Markdown, struggles with structured formats |
+| Qwen2.5 14B Instruct | ✅ | 🟨 | 🟨 | Similar to Phi-4, handles Markdown well but mixes in grammar analysis with structured formats |
+| Mistral Small 24B | ✨ | ✅ | 🟨→✅ | Perfect with Markdown, solid with YAML, initially parsed XML as text before giving perfect answer |
+| DeepSeek R1 | ✅ | 🟨 | ✅ | Good performer but high latency (~50s), connection issues in testing |
+| DeepSeek R1 Distill Llama 8B | 🟨 | ✨ | 🟨 | Faster than base R1 (~7s), perfect with YAML format |
+| DeepSeek R1 Distill Qwen2.5 1.5B | ❌ | ❌ | ❌ | Attempted but produced garbled/incomplete responses across all formats |
+
+### Key Findings
+
+1. **Format-Model Matching Matters**: Specific prompt formats significantly impact performance across different models:
+   - **Markdown** format is the most universally accepted, with every model (except the smallest) handling it well
+   - **YAML** proved exceptional for DeepSeek R1 Distill Llama 8B, but was challenging for others
+   - **XML** received mixed results but worked well with DeepSeek models
+
+2. **Model Size vs. Performance**: 
+   - Larger models (>13B parameters) performed consistently better across formats
+   - Mid-sized models (7-13B) showed good results with their preferred formats
+   - The smallest tested model (1.5B) failed across all formats
+
+3. **Response Patterns**:
+   - Most models added varying amounts of "boilerplate" to outputs
+   - Some models provided contextual conclusions or friendly wrappers
+   - Models often diverged in how they structured kanji analysis
+
+4. **Processing Speed**:
+   - Base DeepSeek R1 had the highest latency (~50s)
+   - Distilled models showed dramatically improved speed (~7s) with minimal quality loss
+   - The smallest model was fastest (~2-3s) but with unacceptable quality
+
+5. **Standout Performances**:
+   - Mistral Small 24B achieved perfect results with Markdown format
+   - DeepSeek R1 Distill Llama 8B achieved perfect results with YAML format
+   - DeepSeek V3 was the most consistent performer across all formats
+
+These findings highlight the importance of matching prompt format to the specific LLM architecture for optimal results. For our application, this testing allows us to implement format switching based on the detected LLM provider.
 
 ## Future Development
 
@@ -68,6 +107,7 @@ Detailed testing results are included in each prompt file's header, including:
 - Enhanced error handling
 - More comprehensive example sets
 - Performance optimization tweaks
+- Adaptive format selection based on detected model
 
 ## Integration
 

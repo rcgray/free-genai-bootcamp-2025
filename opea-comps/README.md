@@ -2,12 +2,16 @@
 
 A Streamlit-based chat application that demonstrates the use of locally stored LLM models with NVIDIA GPU acceleration, powered by llama.cpp and FastAPI. This application provides a simple interface for interacting with large language models through Intel's Open Platform for Enterprise AI (OPEA) toolchain.
 
+![OPEA Chat Application](dev/screenshot.png)
+
 ## Overview
 
 This project consists of two main components:
 
 1. **Backend Service**: A FastAPI-based service that interfaces with llama.cpp to provide LLM capabilities
 2. **Streamlit Frontend**: A user-friendly web interface for chatting with the LLM
+
+The application allows users to run powerful large language models locally on their own hardware, without requiring internet connectivity or sending data to external services. It demonstrates how to build a complete end-to-end AI chat application using open-source tools and models.
 
 ## Features
 
@@ -67,7 +71,9 @@ This project consists of two main components:
    cp /path/to/your/model/Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf models/
    ```
 
-### Starting the Backend Service
+### Running the Application
+
+#### Starting the Backend Service
 
 Run the setup script:
 ```bash
@@ -80,7 +86,7 @@ This will:
 - Start the Docker containers
 - Display the service status
 
-### Testing the Backend Service
+#### Testing the Backend Service
 
 To test that the backend service is working correctly:
 ```bash
@@ -89,7 +95,7 @@ To test that the backend service is working correctly:
 
 This will send a test query to the API and display the response.
 
-### Running the Streamlit Frontend
+#### Starting the Streamlit Frontend
 
 Once the backend service is running, you can start the Streamlit frontend:
 ```bash
@@ -116,12 +122,12 @@ http://localhost:8501
 ## Architecture
 
 ```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│                 │     │                 │     │                 │
+┌─────────────────┐     ┌─────────────────┐      ┌─────────────────┐
+│                 │     │                 │      │                 │
 │    Streamlit    │────▶│    FastAPI      │────▶│    llama.cpp    │
 │    Frontend     │◀────│    Backend      │◀────│    Server       │
-│                 │     │                 │     │                 │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
+│                 │     │                 │      │                 │
+└─────────────────┘     └─────────────────┘      └─────────────────┘
 ```
 
 ## Project Structure
