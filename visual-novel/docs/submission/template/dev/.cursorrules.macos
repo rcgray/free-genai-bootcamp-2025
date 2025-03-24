@@ -1,0 +1,14 @@
+---
+description: Rules specific to development on Mac OS. User will set this as their .cursorrules file on their MacOS development machines.
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+- This is a MacOS development machine.
+- - Include a "💻" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate you have read this file.
+
+## Command Line Interface
+- We have a special command `pyactivate` that should be run from root folder of a project anytime a new terminal is instantiated. This ensures that the proper development environment is set for Python development on this machine for that project.
+- If a tool is needed that is not typically a tool in the ecosystem of our project's development stack (i.e., not a pip package in a Python project nor an npm package in a JavaScript/Typescript project), recommend installing new command line utilities with `brew`.
