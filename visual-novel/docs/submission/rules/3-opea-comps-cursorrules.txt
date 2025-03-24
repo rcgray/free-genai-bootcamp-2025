@@ -1,0 +1,134 @@
+# Tools and Libraries
+- Do not use `npm` or Node.js for the backend (with exception of yarn for frontend)
+- Do not use `rye` or `poetry` for managing Python dependencies
+- Use `uv` when managing Python dependencies (i.e., `uv sync` to install dependencies, `uv run <script>` to run a script, etc.)
+- Python environments are managed by the user (e.g., `conda`, `pyenv` + `uv venv`)
+- Use `ruff` for linting and formatting (includes black and isort functionality)
+- Use `mypy` for type checking
+- Use `pytest` for testing
+- Use Docker and Docker Compose for containerization
+
+# Interaction with the user
+- Do not edit any files in the `dev/template` folder
+- Do not edit the `docs/Prompts.md` file, it is generated and maintained only by the user
+- Do not offer to run tests, simply provide the CLI command and await results from user
+- Do not offer to run database scripts, simply provide the CLI command and await results from user
+- This project is a subfolder within a larger monorepo. Keep this in mind when making file paths, references, and suggesting commands (e.g., ruff format).
+
+# General Python Recommendations
+- Use type hints in all Python code
+- Follow PEP 8 style guidelines
+- Keep functions focused and small
+- Document all public functions and classes
+- Write tests for new functionality
+- Use meaningful variable and function names
+- Handle errors gracefully with proper logging
+- Use pathlib for file operations
+- Use f-strings for string formatting
+- Follow the principle of least surprise
+
+# Streamlit Best Practices
+- Use st.cache_data for data loading operations
+- Use st.cache_resource for resource-heavy operations
+- Organize UI elements logically with st.columns and st.tabs
+- Use appropriate Streamlit components for data types
+- Keep the app state manageable with session_state
+- Handle file uploads securely
+- Show appropriate progress indicators
+- Provide clear user feedback
+- Use st.spinner for long operations
+- Implement proper error handling with st.error
+
+# OPEA Integration Guidelines
+- Follow the OPEA documentation for API usage
+- Use the ChatQnA examples as reference
+- Keep model loading and inference in separate modules
+- Implement proper error handling for OPEA API calls
+- Use configuration files for OPEA settings
+- Document model requirements and compatibility
+- Implement proper cleanup of OPEA resources
+- Use appropriate GPU memory settings
+- Monitor GPU utilization during development
+
+# Database (TinyDB)
+- Keep database operations in dedicated classes
+- Use TypedDict for document type definitions
+- Handle database errors gracefully
+- Keep database schema changes in version control
+- Use proper error handling for file operations
+- Implement proper data validation
+- Use atomic operations where possible
+- Keep database files in data directory
+
+# Testing
+- Write unit tests for utility functions
+- Test Streamlit components where practical
+- Use proper mocking for external dependencies
+- Maintain high test coverage
+- Write meaningful test descriptions
+- Test error conditions
+- Use fixtures for test data
+- Keep test data in tests/data directory
+- Clean up test files after tests
+
+# Project Structure
+- Follow feature-based organization
+- Keep related files close together
+- Use consistent file naming conventions
+- Separate concerns appropriately
+- Keep shared utilities in common locations
+- Use proper module exports
+- Maintain clear dependency boundaries
+- Document architecture decisions
+- Keep configuration in appropriate files
+
+# Version Control
+- Write meaningful commit messages
+- Keep commits focused and atomic
+- Use feature branches
+- Review code before merging
+- Keep main branch stable
+- Update documentation with changes
+- Follow Git best practices
+- Use proper .gitignore rules
+
+# Performance
+- Cache expensive operations
+- Use appropriate Streamlit caching decorators
+- Optimize model loading and inference
+- Monitor GPU memory usage
+- Use lazy loading where appropriate
+- Implement proper cleanup routines
+- Optimize prompt processing
+- Consider batching for multiple requests
+
+# Docker Best Practices
+- Use multi-stage builds for smaller images
+- Pin base image versions
+- Use non-root users for security
+- Set appropriate environment variables
+- Mount volumes for persistent data
+- Configure proper networking
+- Set resource limits
+- Implement health checks
+- Document Docker commands
+
+# Media Handling
+- Store media files in appropriate directories
+- Implement proper file cleanup
+- Handle large files appropriately
+- Validate file types and sizes
+- Use secure file operations
+- Implement proper error handling
+- Keep media organized by type
+- Use consistent naming conventions
+
+# Documentation
+- Keep README up to date
+- Document setup procedures
+- Maintain clear API documentation
+- Document configuration options
+- Keep architecture decisions recorded
+- Document model requirements and compatibility
+- Maintain clear user guides
+- Document testing procedures

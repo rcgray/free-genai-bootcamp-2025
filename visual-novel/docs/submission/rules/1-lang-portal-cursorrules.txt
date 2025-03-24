@@ -1,0 +1,114 @@
+# Tools and Libraries
+- Do not use `npm` or Node.js for the backend (with exception of yarn for frontend)
+- Do not use `rye` or `poetry` for managing Python dependencies
+- Use `uv` when managing Python dependencies (i.e., `uv sync` to install dependencies, `uv run <script>` to run a script, etc.)
+- Python environments are managed by the user (e.g., `conda`, `pyenv` + `uv venv`)
+- Use `ruff` for linting and formatting
+- Use `mypy` for type checking
+- Use `pytest` for testing
+- Use `black` for formatting
+- Use `isort` for sorting imports
+
+# Interaction with the user
+- Do not offer to run tests, simply provide the CLI command and await results from user
+- Do not offer to run database scripts, simply provide the CLI command and await results from user
+
+# General Recommendations
+- Use type hints in all Python code
+- Follow PEP 8 style guidelines
+- Use async/await for database operations
+- Keep functions focused and small
+- Document all public functions and classes
+- Write tests for new functionality
+- Use meaningful variable and function names
+- Handle errors gracefully with proper logging
+
+# Python/FastAPI
+- Use Pydantic models for request/response validation
+- Organize routes by feature in separate modules
+- Use dependency injection for shared resources
+- Keep route handlers thin, move business logic to services
+- Use proper HTTP status codes
+- Document API endpoints with OpenAPI comments
+- Use FastAPI background tasks for long-running operations
+- Implement proper error handling with HTTPException
+
+# SQLite/Database
+- Use parameterized queries to prevent SQL injection
+- Keep database operations in dedicated repository classes
+- Use transactions for multi-step operations
+- Create indexes for frequently queried columns
+- Use foreign key constraints
+- Handle database errors with proper rollbacks
+- Use async operations with aiosqlite
+- Keep database schema changes in version control
+
+# React/TypeScript
+- Use functional components with hooks
+- Define proper interfaces for all props
+- Use React Query for API state management
+- Keep components small and focused
+- Use proper TypeScript types instead of 'any'
+- Implement proper error boundaries
+- Use React Router for navigation
+- Follow React best practices for hooks
+
+# TailwindCSS
+- Use utility classes instead of custom CSS
+- Follow mobile-first responsive design
+- Use consistent spacing and sizing
+- Utilize Tailwind's color palette
+- Keep custom configurations in tailwind.config.js
+- Use @apply for repeated utility patterns
+- Follow component-based styling
+- Use proper responsive breakpoints
+
+# Testing
+- Write unit tests for utility functions
+- Write integration tests for API endpoints
+- Test React components in isolation
+- Use proper mocking for external dependencies
+- Maintain high test coverage
+- Write meaningful test descriptions
+- Test error conditions
+- Use fixtures for test data
+
+# State Management
+- Use React Query for server state
+- Use React Context for global UI state
+- Keep local state in components when possible
+- Implement proper loading states
+- Handle error states consistently
+- Use proper caching strategies
+- Implement optimistic updates where appropriate
+- Keep state updates atomic
+
+# Project Structure
+- Follow feature-based organization
+- Keep related files close together
+- Use consistent file naming conventions
+- Separate concerns appropriately
+- Keep shared utilities in common locations
+- Use proper module exports
+- Maintain clear dependency boundaries
+- Document architecture decisions
+
+# Version Control
+- Write meaningful commit messages
+- Keep commits focused and atomic
+- Use feature branches
+- Review code before merging
+- Keep main branch stable
+- Update documentation with changes
+- Follow Git best practices
+- Use proper .gitignore rules
+
+# Performance
+- Implement proper caching strategies
+- Use pagination for large datasets
+- Optimize database queries
+- Implement proper indexing
+- Use lazy loading where appropriate
+- Optimize bundle sizes
+- Monitor API response times
+- Use proper connection pooling

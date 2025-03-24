@@ -1,0 +1,253 @@
+[00:00] hey folks it's Andrew Brown and we are
+[00:02] taking a look at the final submissions
+[00:04] form i want to give you extra
+[00:05] instruction here just so that you have
+[00:06] the best opportunity to get the outcome
+[00:08] that you want for your final submissions
+[00:11] this form is open for a period of time
+[00:13] that is specified on the uh Geni boot
+[00:16] camp website um could you submit outside
+[00:19] the time frame of that it really depends
+[00:20] if we do another cohort or if we have
+[00:22] post boot camp support at the time of
+[00:24] this video I'm not making any of those
+[00:26] promises uh if it's open it's open if
+[00:29] it's not it's not um but make sure you
+[00:31] check those dates because if you're
+[00:32] outside that date you cannot submit um
+[00:35] and get the grade level that you might
+[00:36] want to get there are some badges that
+[00:38] you can get no matter what if you don't
+[00:40] submit I'll just issue them out but for
+[00:41] those top badges golden red squad you
+[00:44] have to fill in this final submissions
+[00:46] form um the best you can on time okay so
+[00:49] what I'm going to do is shrink my head
+[00:51] on down here and you'll notice here we
+[00:52] have final submissions form this appears
+[00:54] in its own group its own chapter and so
+[00:58] here I just want to make a point here
+[00:59] once you submit this you cannot change
+[01:01] it so if you need to put it in a draft
+[01:03] put it as a draft um but don't forget to
+[01:05] leave it in a draft some people do that
+[01:06] they'll forget to go back and submit it
+[01:08] and think it's submitted so here it says
+[01:10] unsubmitted right and you can go back
+[01:12] here give it a hard refresh make sure it
+[01:14] is submitted we'll go ahead and fill in
+[01:16] the form um I'm not actually going to
+[01:18] fill in the form but I'm going to talk
+[01:20] around these um points so that you know
+[01:23] exactly what I'm looking for so first
+[01:24] thing is GitHub URL so that will be
+[01:27] something here you know what I might
+[01:28] also put in here is just your Discord
+[01:30] handle one moment all right I'm back i'm
+[01:32] just going to give this a nice hard
+[01:33] refresh here because I do take an
+[01:35] account uh if you have um didn't put the
+[01:38] field in one second here there we go so
+[01:40] yeah if if you have been active on the
+[01:42] Discord if you're not that's fine but if
+[01:43] you have been uh I would like to um you
+[01:47] place it into here we already have it
+[01:49] somewhere else in the system but these
+[01:51] forums uh don't carry everything over we
+[01:53] have to improve our um our system so
+[01:55] it's easier to gather information one
+[01:56] place but if you can put in your discord
+[01:58] handle there because I will go cross
+[02:00] reference see if you have any activity
+[02:02] there that might give you bonus points
+[02:03] that might push you into red squad so
+[02:05] you know if you do have a discord handle
+[02:06] put it in there so that I can easily
+[02:09] find and map stuff when I'm doing
+[02:10] grading your GitHub URL I ask every week
+[02:12] for you to put this in um I'm explicitly
+[02:15] asking for this week again just because
+[02:17] um the way our system's built I only see
+[02:19] what's in the current form I have to do
+[02:20] a lot of digging to find that other
+[02:22] So I'm putting it here so you have
+[02:24] another opportunity to make sure that I
+[02:25] can quickly and easily find your
+[02:26] repository select what grade level
+[02:28] you're going for these are mapped on the
+[02:31] marketing website we didn't do like a
+[02:33] complex rubric um like we did for prior
+[02:36] boot camps the reason I didn't do that
+[02:37] was just because we are treading new
+[02:39] ground with Gen AI technology and I
+[02:41] couldn't really create a a cohesive
+[02:43] baseline and so I'm going to do
+[02:45] everything marking everything on a on on
+[02:47] a curve and so I'm going to get through
+[02:48] enough grading which I have on at not
+[02:50] for final submissions but I have for um
+[02:53] in uh for last weeks like the week five
+[02:55] or week four we week week five we didn't
+[02:58] have a submission but for week four
+[02:59] submissions I've done enough to have an
+[03:01] idea of where to uh kind of place things
+[03:03] but um tell me what you're targeting for
+[03:05] because if you're going for gold squad
+[03:06] and you're not going for red squad then
+[03:08] that's going to make my grading go a lot
+[03:09] faster and um I'm I'm not going to
+[03:11] deliberate so much um I'm just going to
+[03:13] make it easy for me to release it so
+[03:14] just tell me what level you're going for
+[03:16] you really can't get gold or red squad
+[03:18] if you do not submit this form um you
+[03:21] know so just make it clear as to what
+[03:22] you are targeting for uh tell me in
+[03:25] summary what you were not able to do so
+[03:27] what technical things that you set out
+[03:29] to achieve that you were not able to
+[03:31] achieve it doesn't matter if you weren't
+[03:33] able to do things uh uh if you have good
+[03:37] documentation and you and you've shown
+[03:40] um what you have learned through that
+[03:42] process and when I say what you have
+[03:43] learned I don't just mean generic things
+[03:46] right so a lot of folks think like oh I
+[03:48] learned what a database was or whatever
+[03:50] or like what an LM is that's not
+[03:52] valuable from a company perspective
+[03:54] that's just you learning those complete
+[03:56] elements what's valuable is the
+[03:59] technical uncertainty of not even anyone
+[04:01] at the company knows right or something
+[04:03] you can't find online um so like again
+[04:06] if you're using an ancient Greek model
+[04:08] and you download it and nobody's using
+[04:10] that model and you go out and you find
+[04:12] maybe like a fine-tuned one uh that is
+[04:14] uh that has poor documentation things
+[04:16] like that that is something that is
+[04:18] worth putting in in terms of technical
+[04:20] uncertainty but if it's something that
+[04:22] other people can figure out and just you
+[04:24] can't figure out it's not technical
+[04:25] uncertainty it's technical uncertainty
+[04:27] that you have because you don't have
+[04:29] those skills yet right uh but but a lot
+[04:31] of other people do so if it's it's very
+[04:33] common things that's just a lot of noise
+[04:35] for me that I have to kind of cut
+[04:36] through when you're writing these things
+[04:37] in just make sure it's very um to the
+[04:40] point and dry um just make it as as
+[04:43] concise and easy for me to read as
+[04:45] possible so that I can go and evaluate
+[04:47] your projects i will clone your repos i
+[04:49] will try to run them if I have the
+[04:51] technology the keys and things like that
+[04:53] and I have been running projects if if
+[04:55] folks uh have yet to see that um in the
+[04:58] the grading the grading experience there
+[05:00] um just so you know I do run these
+[05:02] things i do crawl through the code i
+[05:04] look at your commits i look at
+[05:05] everything and so what were you able to
+[05:07] achieve so these are the things that uh
+[05:09] you had technical uncertainty of and
+[05:10] that you did uh achieve um again if
+[05:14] these are things that I was able to do
+[05:17] and um everyone else is able to do and
+[05:19] they're very straightforward things
+[05:21] those aren't things worth reporting
+[05:22] right report things that are things that
+[05:26] um were very unique to to what you did
+[05:28] right if you just were more focused on
+[05:31] something else this is your opportunity
+[05:32] to put it here so you know some folks
+[05:34] you know they might not have been trying
+[05:36] to seek out and do uh very uh very
+[05:40] technically uncertain tasks they might
+[05:42] have just been trying to follow along
+[05:44] and build a cohesive project and ship it
+[05:46] and more think about like the business
+[05:47] use case that's good too um so just tell
+[05:50] me like what was your focus because some
+[05:52] folks again they you know we had one
+[05:54] student or boot camper that used ancient
+[05:56] Greek right and so they're it'd be very
+[05:58] hard for them to make a cohesive applic
+[06:00] if they could that's great but it'd be
+[06:01] very hard for them to deliver that
+[06:02] because of the technologies they chose
+[06:04] because it's more like research and
+[06:06] development and stretching it some folks
+[06:08] might say well I'm still trying to learn
+[06:09] this stuff so I'm just trying to figure
+[06:10] out how to build a cohesive application
+[06:12] and understand the business use case and
+[06:13] if it's applicable right so that could
+[06:15] be like would this work at scale um you
+[06:18] know would this actually work for this
+[06:19] real use case things like that so if you
+[06:22] if if you can't lean heavily into the
+[06:24] the research development part of it you
+[06:26] can lean heavy into the business side of
+[06:28] it and things like that right
+[06:30] considerations accommodations if there's
+[06:32] something you want to tell me uh that
+[06:34] that you want me to consider put it in
+[06:36] this box if there's accommodations like
+[06:38] you know uh you you know there was gaps
+[06:41] in stuff or there was specific
+[06:42] challenges that you had um this is your
+[06:44] opportunity to put it in that box um and
+[06:46] yeah just do your best here try not to
+[06:49] write too much um you know the size of
+[06:51] the boxes is the size of information
+[06:53] maybe you can go beyond the size of the
+[06:56] box of course but uh you know if you go
+[06:58] more than twice the size of the lines
+[07:00] here then you you might be writing a
+[07:02] little bit too much right if you want to
+[07:04] expand and have more information within
+[07:05] your um your your u your GitHub you
+[07:09] could absolutely do that but remember
+[07:10] this is for me in summary right in
+[07:13] summary and any additional information
+[07:15] is going to be found in your repo it
+[07:16] should be easily uh easy for me to find
+[07:19] okay um and uh yeah should you submit
+[07:23] this form if you have yet to receive
+[07:26] um grading at all it really is up to you
+[07:28] um I've shared in the Discord I've
+[07:31] shared in a few places that I'm grading
+[07:34] thousands of people for some weeks and
+[07:36] then um in later weeks the later weeks
+[07:38] is only hundreds right so if you get to
+[07:40] later weeks in time then you should get
+[07:42] a grade if you are very behind um you
+[07:45] you are you are at risk and so you know
+[07:48] closer to that date you know make sure
+[07:50] you get submitted no matter what but um
+[07:52] if you want to wait a little bit and see
+[07:54] if you get feedback from me it's just up
+[07:56] to you this boot camp is extremely
+[07:58] difficult it's very hard for me to pull
+[07:59] in uh TAS uh whereas in the big AIS
+[08:03] cloud project boot camp we were able to
+[08:04] bring in TAs um but this one it's mostly
+[08:07] me and then the other Andrew if I have
+[08:09] to bring them in but we're doing our
+[08:10] best to try to get feedback back for
+[08:12] everybody but anyone that does submit
+[08:15] for final submission and has all their
+[08:17] weeks filled out will get uh feedback
+[08:21] video feedback specifically right um not
+[08:23] just written text but uh yeah there you
+[08:26] go and and good luck and hopefully you
+[08:28] had a really fun time and I'm not trying
+[08:30] to stress you out too much with this
+[08:31] form but um you know that's what I'm
+[08:33] looking for in this thing and and
+[08:35] looking forward to uh seeing everyone's
+[08:37] uh final product shut out

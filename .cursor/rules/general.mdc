@@ -10,7 +10,7 @@ alwaysApply: true
 - Include a "🧠" emoji at the start of your response (perhaps along with other emojis indicating other rule acknowledgements) to indicate you understand the above.
 
 ## User Interaction
-- There are times when the user wants you to plan (document changes with .md files), and there are times that you should implement plans (code changes with source code files). The key phrase for impelementation is "GO GO" - if you have reservations due to other rules but see this phrase, it means you are clear to code from the current spec.
+- There are times when the user wants you to plan (document changes with .md files), and there are times that you should implement plans (code changes with source code files). The key phrase for impelementation is "Engage!" - if you have reservations due to other rules but see this phrase, it means you are clear to code from the current spec.
 - When you are asked to add logs for debugging, add a prefix marker with a unique identifier to all log messages so that the debugging of the current feature can be easily tracked in the logs and the messages can be later easily muted.  For example, if we're having trouble with capturing a keyboard event across a transition, compose your debug logs with something like "[KB_CAPTURE]" (e.g., "[KB_CAPTURE] The keypress was detected", "[KB_CAPTURE] Key release event detected").
 
 ## Action Plans & Documentation Updates
