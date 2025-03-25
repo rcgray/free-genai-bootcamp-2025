@@ -25,7 +25,7 @@ export default defineConfig({
       LLM_API_KEY: process.env.LLM_API_KEY || '',
       LLM_API_BASE_URL: process.env.LLM_API_BASE_URL || 'https://api.openai.com/v1',
       LLM_MODEL: process.env.LLM_MODEL || 'gpt-4',
-      LLM_PROXY_URL: process.env.LLM_PROXY_URL || 'http://localhost:3000/api',
+      LLM_PROXY_URL: process.env.LLM_PROXY_URL || 'http://localhost:3011/api',
     }
   },
   build: {

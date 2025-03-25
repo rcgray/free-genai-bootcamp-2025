@@ -22,44 +22,62 @@ The following is an overview of the submission task for the entire workshop. It 
  - Written Description: In summary, what were you not able to do?
  - Notes From Video: Focus on technical things you set out to achieve but couldn't complete. This should emphasize genuine technical uncertainty (challenges that even experienced people at a company might struggle with), not just skills you personally haven't developed yet. Good documentation of what you learned through the process is valuable. Examples might include working with poorly documented models or attempting novel approaches. Keep your response concise, focused, and to the point. Generic learning points like "I learned what a database is" aren't valuable from a company perspective.
  - Answer: 
-   - I was unable to complete a fully integrated audio synchronization feature in the podcast app where timestamps would highlight the transcript text in real-time. This presented genuine technical uncertainty around time-based media synchronization and required deeper investigation of browser media APIs than time permitted.
-   - I couldn't implement cross-platform models for the containerized LLM service due to unexpected compatibility issues between Intel OPEA and certain Japanese-specific LLMs. The technical documentation for these models lacked crucial integration details, creating uncertainty that persisted despite multiple approaches.
-   - I didn't achieve a fully autonomous conversation system in the visual novel that could adapt to unexpected player inputs while still maintaining narrative coherence. This represents an unsolved challenge that even advanced teams struggle with—balancing narrative constraints with genuine conversational flexibility.
-   - I was unable to create a multi-user collaborative learning environment as initially planned, which would have required solving complex state synchronization problems across devices while maintaining a responsive experience.
-   - I didn't have time to complete the implementation of a speech recognition system for pronunciation practice that could effectively evaluate Japanese phoneme accuracy, a technically uncertain area due to the unique challenges of Japanese pronunciation assessment.
+```
+- I was unable to complete a fully integrated audio synchronization feature in the podcast app where timestamps would highlight the transcript text in real-time and clicking the text would fast-forward to the relevant part of the audio. I have figured out the timecode syncing, but I would need to customize the Streamlit audio player or integrate another web-based player that allowed this kind of API access.
+
+- I didn't achieve fully dynamic conversation content generation in the visual novel on each run (i.e., supplied dynamically by an LLM on each playthrough) and had to stick with the "fallback" script as a static game script. I was still able to make the study info dynamically generated as a demonstration of LLM integration. In the end, this was just too ambitious in the time allowed, but I do see a path to it being possible.
+
+- I never got streaming to work on the TGI server in the OPEA project, so I had to settle for batch processing. Streaming, man... why is it so hard?
+
+- I wanted to combine all projects into a final, single project that integrated all the sub-projects - a language learning web app that served Kanji Snake and the Visual Novel as "activities" pulling from the lang-portal db, a podcast study tool, all running via a Docker/OPEA deployment. The best I could do was make Kanji Snake part of the lang-portal by creating a Lang-Portal library/template and activity import system, but the others would require some rewrites that I didn't have time for.
+
+- I never created an MCP server, which was a goal I had set as I started discovering them over the course of the workshop. It will be my next project immediately after this course concludes.
+```
 
 **In Summary, What were you able to achieve?**
 - Type: textbox
 - Written Description: In Summary, What were you able to achieve?
 - Notes From Video: Describe technical achievements that involved overcoming genuine uncertainty or challenges. Don't report common or straightforward accomplishments that most people could do. Instead, focus on unique aspects of your work that stood out. Report things that were unique to your project. Andrew mentions he looks at everything - he clones repos, runs the code, and examines commits, so be honest about your achievements.
 - Answer:
-  - I successfully implemented a vendor-agnostic LLM proxy server that seamlessly handles different response formats from disparate providers (OpenAI, Anthropic, local models). This required creating a unified interface that intelligently extracts, processes, and validates JSON content from free-form text responses—a challenge because each provider returns results in different formats and with varying levels of adherence to JSON standards.
-  - I created a hot module replacement system for Phaser 3 games, which it doesn't natively support. This involved developing a custom state persistence and restoration mechanism that could seamlessly transfer game state between reload cycles without interrupting gameplay—allowing for rapid development despite Phaser's limitations in this area.
-  - I built a flexible Japanese language model evaluation framework that systematically tested different prompt formats (Markdown, XML, YAML) across multiple models to identify optimal combinations, revealing unexpected strengths in smaller open-weight models for specific Japanese tasks.
-  - I developed a containerized text generation service using Docker and Intel OPEA that works completely offline with local GGUF models, creating a truly vendor-independent solution that maintains privacy and reduces operational costs while still providing comparable capabilities to cloud-based LLMs.
-  - I implemented an interactive language study system in the visual novel that allows contextual exploration of any text element, providing definitions, grammatical explanations, and cultural notes powered by an LLM that adapts its responses based on the learner's proficiency level.
+```
+Video Presentation (6 min):  
+
+- I successfully achieved my self-imposed goal of completing the workshop without writing a single line of code. Though very frustrating at times (as a professional developer), it forced me to rapidly grow in my prompting capabilities and my understanding of how AI agents work (and don't work).
+
+- I created a comprehensive [AI Lessons Document](https://bit.ly/4lfQNSf) that systematically catalogs the evolution of AI collaboration practices throughout the workshop. This document analyzes patterns in my full prompt and rules history to share the insights I've learned through this workshop on working effectively with AI coding agents. The full prompts and rules history are available in the repo under the `visual-novel/docs/submission/` directory.
+
+- I created a hot module replacement system for Phaser 3 games, which is not natively supported. This involved developing a custom state persistence and restoration mechanism that could seamlessly transfer game state between reload cycles without interrupting gameplay—allowing for rapid development despite Phaser's limitations in this area. In fairness, time constraints eventually prevented me from fixing this when it eventually broke, but I did have it working when I most needed it.
+
+- I developed a containerized text generation service using Docker and Intel OPEA that works completely offline with local GGUF models... AND I worked around the OPEA dependency on HuggingFace at runtime. This allows the TGI (based on llama.cpp) to operate completely self-contained and offline without any 3rd-party dependencies.
+
+- I implemented an dynamic language study system in the visual novel that allows contextual exploration of any text element, providing definitions, grammatical explanations, and cultural notes powered by an LLM - either commercial APIs or local models. The provider-agnostic LLM proxy server needed for this is certainly going to be a component of other projects I want to build that involve LLM integration (which I suspect will be most of them).
+```
 
 **Where did you put your focus?**
 - Type: textbox
 - Written Description: Some people focused more on creating a cohesive deliverable app. Others took on great technical uncertainty with very specific use cases. Some tried to just stick to the letter of instruction they best they could.
 - Notes From Video: Clearly state where you directed your efforts. Some bootcampers focused on technical challenges and R&D (like the person who worked with ancient Greek), while others prioritized building a cohesive application with good user experience. You might have focused on business use cases and practical applications ("Would this work at scale?"). Neither approach is inherently better - just be clear about your priorities. If you couldn't focus heavily on research and development, you can emphasize your business-focused approach instead.
 - Answer:
-  - I focused on creating a cohesive ecosystem of Japanese language learning applications that work together while demonstrating the practical application of generative AI across different domains. Rather than pursuing a single deep technical challenge, I built multiple interconnected tools that form a complete learning platform.
-  - My primary emphasis was on the practical business use case: providing an effective, engaging Japanese learning experience through multiple modalities (text, audio, games, immersive narratives). I approached this from a product perspective, asking "What would make this valuable to actual language learners?"
-  - I concentrated on demonstrating diverse AI applications by incorporating different AI capabilities into each component: text generation for the language portal, speech-to-text for the podcast app, image generation for the game assets, and a comprehensive LLM integration for the visual novel.
-  - I put considerable effort into developing a clean, maintainable architecture across all components, with consistent patterns, proper documentation, and thoughtful project organization to show how this would work in a production environment.
-  - I deliberately chose to explore "vibe coding" as my technical stretch goal—developing all code through AI assistance (Claude, ChatGPT, DeepSeek) with minimal direct coding—to test the boundaries of this emerging development approach and document its strengths and limitations in a real project context.
+```
+- Vibe coding! Through this workshop I experimented with Cursor, Windsurf, Cline, and Aider... as well as Claude, Chat-GPT, Perplexity, DeepSeek, Stable Diffusion, LM Studio, and about 20 local LLM models (Llama, Phi, Mistral, Qwen, Gemma, etc.).
+
+- Along with familiarizing myself with the tools, a significant focus of my efforts went into documenting my AI collaboration journey (culminating in the [AI Lessons document](https://bit.ly/4lfQNSf) mentioned above). I think this will be one of the most important skills to have in the coming years, and this constitutes my largest domain of growth throughout the workshop.
+
+- I concentrated on demonstrating diverse AI applications by incorporating different AI capabilities into each component: code generation for the language portal, speech-to-text and translation for the podcast app, image generation for the game assets, local models in the OPEA project, and LLMs as a design material for the visual novel.
+```
 
 **Considerations / Accommodations**
 - Type: textbox
 - Written Description: What do you want to tell your grader to take into consideration or for accommodation?
 - Notes From Video: This section is for anything specific you want the grader to consider or accommodate. If you experienced gaps in your learning journey or faced specific challenges, mention them here. Keep it concise - the size of the box indicates the expected length. If you need to provide more detailed information, put it in your GitHub repository where it's easy to find, and remember this section should be a summary.
 - Answer:
-  - This was my first time working extensively with many of the technologies used in this project (FastAPI, Alembic, Phaser, Docker, Streamlit, TinyDB, etc.), which presented a steep learning curve but also demonstrated my ability to quickly adapt to new tools.
-  - I intentionally took on the challenge of using AI-driven development for 100% of the code creation, writing no code manually to explore the capabilities and limitations of this approach. I've documented my prompt engineering progression in each project's documentation.
-  - Due to time constraints and the breadth of applications being developed simultaneously, some features are more polished than others. I prioritized having functional versions of all planned components rather than a single perfect application.
-  - I experienced some technical difficulties with GPU availability for local LLM testing during Week 3, which limited my ability to benchmark multiple models but pushed me to create more efficient architectures for resource-constrained environments.
-  - Much of my work involved creating proper infrastructure rather than just "making it work," which might be less visually impressive but demonstrates a production-minded approach to development that would be valuable in an enterprise setting.
+```
+- This was my first time working extensively with many of the technologies used in this project (FastAPI, Alembic, Phaser, Docker, OPEA, Vite, Streamlit, TinyDB, etc.), which presented a steep learning curve but also demonstrated my ability to quickly adapt to new tools.
+
+- Due to time constraints and the breadth of applications being developed, some features are more polished than others. I prioritized having functional versions of all planned components rather than perfect applications.
+
+- Much of my work involved creating proper infrastructure rather than just "making it work," which might be less visually impressive but demonstrates a production-minded approach to development that I prioritize in my work. This also supported my goals of working with AI agents long-term, forcing me to consider how to create maintainable systems with them and not just quick demos.
+```
 
 ## Video Transcript
 

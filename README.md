@@ -18,6 +18,7 @@ Over five weeks, I created a suite of interconnected applications designed to he
 - **Prompt engineering showcase**: This portfolio demonstrates my evolving prompt engineering techniques and practical application of AI-assisted development methodologies.
 - **Full-stack development**: Projects span frontend, backend, game development, containerization, and cloud architecture.
 - **Vibe coding explorer**: This work exemplifies the growing practice of ["vibe coding"](https://x.com/karpathy/status/1886192184808149383) (a term that emerged in the public consciousness just in the timespan of this workshop) where developers guide AI to generate complete applications with minimal direct intervention.
+- **AI Collaboration Methodology**: The comprehensive [AI Lessons Document](visual-novel/docs/submission/AI-Lessons.md) captures my journey developing effective collaboration patterns with AI tools, documenting the evolution of rules, prompt strategies, and best practices that emerged throughout the project—providing a blueprint for future AI-assisted development.
 
 The primary development environment was Cursor with Claude Sonnet 3.6/7, complemented by tools like Windsurf, Cline, Aider, ChatGPT, Perplexity, DeepSeek, and Stable Diffusion.
 
@@ -132,6 +133,7 @@ The entire project—from code to artwork, UI design, game narrative, dialogue s
 #### Key Deliverables
 - [Visual Novel Game](visual-novel/README.md)
 - [LLM Proxy Server](visual-novel/server/README.md)
+- [AI Lessons Document](visual-novel/docs/submission/AI-Lessons.md)
 
 #### Technical Achievements
 - Developed a complete visual novel with Phaser 3 and TypeScript

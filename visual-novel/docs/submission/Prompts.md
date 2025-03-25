@@ -293,3 +293,8 @@ Let's make a beautiful vase.
 
 ---
 
+We have iterated on this file a few times now, and I believe we have ended up with a great final version. Let's add mention of this to the project README file (@README.md).  It is one of the most, if not the most significant deliverable for this project, encapsulating my largest domain of growth and evidence of my greatest success in the workshop.  Be sure to provide a link to the AI-Lessons.md file relative to the root of the project: `visual-novel/docs/submission/AI-Lessons.md`.
+
+Let's also make sure that we integrate it into our final submission form (@Submission-Task.md), since it is a significant part of our workshop efforts.
+
+---
