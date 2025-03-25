@@ -291,8 +291,5 @@ Here are some objectives to consider while performing the rewrite:
 
 Let's make a beautiful vase.
 
+---
 
-
-1) Create a new file called AI-Lessons-Reorganized.md that takes the content of the AI-Lessons.md file and shapes it into a more coherent form following your suggestions.
-
-We want to shape it into a cohesive document that feels like it was written by a single author, even though it is a compilation of different sources. 
