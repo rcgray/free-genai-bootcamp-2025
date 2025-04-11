@@ -85,13 +85,6 @@ services:
       start_period: 60s
     profiles:
       - opea
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
 
   opea_comps_backend:
     build:
@@ -131,7 +124,7 @@ services:
       - opea_comps_network
     profiles:
       - opea
-      
+
   visual_novel_game:
     build:
       context: .
@@ -188,4 +181,4 @@ networks:
   opea_comps_network:
     driver: bridge
   visual_novel_network:
-    driver: bridge 
+    driver: bridge

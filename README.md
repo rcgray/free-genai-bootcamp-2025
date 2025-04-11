@@ -236,6 +236,7 @@ chmod +x docker/build-and-run.sh
 This script:
 - Builds all Docker images from source using the provided Dockerfiles
 - Starts all containers using docker-compose, activating all necessary profiles
+- Automatically enables NVIDIA GPU acceleration for OPEA Chat if supported hardware (and `nvidia-smi` command) is detected.
 - Displays URLs for accessing each application
 - Provides helpful commands for monitoring and managing containers
 

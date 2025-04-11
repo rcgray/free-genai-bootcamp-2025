@@ -681,3 +681,38 @@ Yeah, wait - there is an issue.  I also cannot `docker compose down` from my own
 
 Yes! Let's take a look at our main `README.md` file and also the individual project README.md files (`lang-portal/README.md`, `listening-comp/README.md`, `opea-comps/README.md`, `visual-novel/README.md`) to make sure we have the correct commands for running the projects using our profiles.
 
+---
+
+# New chat: MacOS (Agent, gemini-2.5-pro-exp-03-25, thinking)
+# [from the monoproject root directory, one level up from `visual-novel` project]
+
+---
+
+I have submitted a suite of programs that I built for a class, and the professor is asking that they be "containerized" (using Docker).  I'm not super familiar with Docker, but I have it installed on my Windows 10 computer with Windows Desktop on the Windows side and I have it working with WSL.  All of my projects are built in WSL.
+
+Our project (this repository) is submitted as a monorepo, where each project exists as a sub-repo. If you are able to access the web, the github repo address is: `https://github.com/rcgray/free-genai-bootcamp-2025`. Otherwise, of course, you can ccess the README.md file for the monorepo right here locally - `README.md` (@README.md).
+
+We worked together to complete this containerization project. A `docker-compose.yml` file is present in the root of the project, from which all other projects can be run. The following is a list of the sub-projects we have successfully containerized:
+
+1. (Completed) Language Learning Portal - A web application for learning Japanese, with a backend written in FastAPI (Python) and a frontend written in React (TypeScript) and TailwindCSS, managed by Vite and backed by a SQLite server via Alembic. The project It includes automated tests for the backend. The app also includes a game integrated into the frontend called Kanji Snake, written using the Phaser game engine.
+- Project Subdirectory: `lang-portal`
+- README.md: `lang-portal/README.md`
+2. (Completed) Japanese Listening App - A Python application built with Streamlit that allows the upload (from local machine) or download (via URL) Japanese audio and then have it transcribed and translated by a LLM.
+- Project Subdirectory: `listening-comp`
+- README.md: `listening-comp/README.md`
+3. (Completed) OPEA Chat - A chatbot application powered by a local LLM that already runs using Docker containers. Unfortunately I don't know exactly how this works or how to bundle all of the components into a single deliverable.
+- Project Subdirectory: `opea-comps`
+- README.md: `opea-comps/README.md`
+4. (Completed) Visual Novel - A story-driven game for learning Japanese, written in TypeScript using the Phaser game engine. It runs stand-alone in the browser, backed by a Vite development server. The project also includes an LLM Proxy server written in Node.js with Express.js that the game uses to query for LLM-based data.
+- Project Subdirectory: `visual-novel`
+- README.md: `visual-novel/README.md`
+
+I am now testing the containerized applications, using the instructions in the `README.md` file for the monoproject. I am running into some issues, so I wanted to go through it together to make sure that this is fully functional for the instructor to test.
+
+Let's start with the instructions in the `README.md` file for "Using Docker to Run All Applications". I have already cloned the repository, of course.
+
+---
+
+I saw that we deleted the NVIDIA support (since we're running on MacOS currently). However, this is still very valuable on machines with NVIDIA GPUs. Is there a way to enable this conditionally?
+
+---

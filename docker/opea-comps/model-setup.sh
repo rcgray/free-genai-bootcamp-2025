@@ -49,11 +49,11 @@ if [ "${MODEL_FILES}" -eq 0 ]; then
   echo "MODEL_FILE=Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app"
 else
   echo -e "\n✅ Found ${MODEL_FILES} GGUF model file(s) in ${MODELS_DIR}:"
-  find "${MODELS_DIR}" -name "*.gguf" -printf "   - %f (%s bytes)\n"
-  
+  find "${MODELS_DIR}" -name "*.gguf" -exec stat -f "   - %N (%z bytes)" {} +
+
   # Select the first model file for example
   EXAMPLE_MODEL=$(find "${MODELS_DIR}" -name "*.gguf" | head -n 1 | xargs basename)
-  
+
   echo -e "\nTo start OPEA Chat with one of these models, use:"
   echo "MODEL_FILE=${EXAMPLE_MODEL} docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app"
   echo ""
@@ -63,4 +63,4 @@ fi
 
 echo -e "\n======================================================================"
 echo "Model setup complete!"
-echo "======================================================================" 
+echo "======================================================================"

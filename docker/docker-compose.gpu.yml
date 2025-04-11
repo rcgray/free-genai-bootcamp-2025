@@ -1,0 +1,9 @@
+services:
+  opea_comps_tgi:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1 # Or specify the number of GPUs if more than 1
+              capabilities: [gpu]
