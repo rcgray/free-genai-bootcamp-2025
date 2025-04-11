@@ -206,10 +206,7 @@ The test doesn't require a real model file and can help diagnose setup issues be
 ```bash
 # First download a GGUF model file and place it in opea-comps/models/
 # Then run only the OPEA Chat services
-MODEL_FILE=your-model-file.gguf docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app
-
-# Or run as part of the complete monorepo stack
-MODEL_FILE=your-model-file.gguf docker compose up -d
+MODEL_FILE=your-model-file.gguf docker compose --profile opea up -d
 ```
 
 2. The application will be available at:
@@ -219,12 +216,9 @@ MODEL_FILE=your-model-file.gguf docker compose up -d
 
 3. To stop the containers:
 ```bash
-# Stop only the OPEA Chat services
-docker compose stop opea_comps_tgi opea_comps_backend opea_comps_app
-
-# Or stop all services
-docker compose down
+docker compose --profile opea down
 ```
+⚠ Note: Some environments (like certain Docker Compose versions within WSL) may require explicitly specifying profiles when stopping services via the command line. If the above command doesn't work from your terminal, try stopping containers via the Docker Desktop GUI.
 
 ### Container Details
 
@@ -250,7 +244,7 @@ You can optionally specify:
 
 Example:
 ```bash
-MODEL_FILE=your-model-file.gguf TGI_THREADS=16 docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app
+MODEL_FILE=your-model-file.gguf TGI_THREADS=16 docker compose --profile opea up -d
 ```
 
 ## Development

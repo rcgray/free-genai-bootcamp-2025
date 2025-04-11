@@ -88,10 +88,7 @@ I built a complete language learning portal featuring a FastAPI backend and Reac
 #### Running with Docker
 ```bash
 # Run only the Language Portal services
-docker compose up -d lang_portal_backend lang_portal_frontend
-
-# Or run as part of the complete monorepo stack
-docker compose up -d
+docker compose --profile lang_portal up -d
 ```
 This will start both the backend and frontend containers. The application will be available at:
 - Frontend: http://localhost:3000
@@ -122,15 +119,10 @@ This week focused on audio and image generation. I created a Streamlit applicati
 #### Running with Docker
 ```bash
 # Run only the Listening Comprehension App
-docker compose up -d listening_comp_app
-
-# Or run as part of the complete monorepo stack
-docker compose up -d
+docker compose --profile listening_comp up -d
 ```
-This will start the Streamlit application container. If using the complete stack command, the Language Portal will also be available. The applications will be available at:
+This will start the Streamlit application container. The application will be available at:
 - Streamlit Listening App: http://localhost:8501
-- Language Portal Frontend (if running complete stack): http://localhost:3000
-- Language Portal Backend API (if running complete stack): http://localhost:8000
 
 For more details, see the [Japanese Listening App README](listening-comp/README.md#docker-setup).
 
@@ -154,18 +146,12 @@ The resulting architecture provides a ChatGPT-like experience using entirely loc
 
 #### Running with Docker
 ```bash
-# First, set up the model directory
+# First, set up the model directory (if not done already)
 ./docker/opea-comps/model-setup.sh
 
-# Test your setup (recommended before downloading large models)
-./docker/opea-comps/test-setup.sh
-
-# Download a GGUF model file and place it in opea-comps/models/
+# Download a GGUF model file (if needed) and place it in opea-comps/models/
 # Then run OPEA Chat (replace with your actual model filename)
-MODEL_FILE=your-model-file.gguf docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app
-
-# Or run as part of the complete monorepo stack
-MODEL_FILE=your-model-file.gguf docker compose up -d
+MODEL_FILE=your-model-file.gguf docker compose --profile opea up -d
 ```
 
 The MODEL_FILE environment variable specifies which model file to use. This variable is:
@@ -205,10 +191,10 @@ The entire project—from code to artwork, UI design, game narrative, dialogue s
 #### Running with Docker
 ```bash
 # Run only the Visual Novel
-docker compose up -d visual_novel_game visual_novel_server
+docker compose --profile visual_novel up -d
 
 # Or run with LLM integration by providing an API key
-LLM_API_KEY=your_api_key_here docker compose up -d visual_novel_game visual_novel_server
+LLM_API_KEY=your_api_key_here docker compose --profile visual_novel up -d
 ```
 
 The application will be available at:
@@ -242,36 +228,42 @@ chmod +x docker/build-and-run.sh
 # Run the helper script to build and start all containers
 ./docker/build-and-run.sh
 ```
+⚠ Note on providing a .gguf file:
+- The first time you run the build-and-run.sh script, you will be prompted to provide a .gguf file
+- Download from HuggingFace (etc.) and place the .gguf file in the opea-comps/models directory.
+- Example: [Llama-3.2-3B-Instruct-GGUF](https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF)
 
 This script:
 - Builds all Docker images from source using the provided Dockerfiles
-- Starts all containers using docker-compose
+- Starts all containers using docker-compose, activating all necessary profiles
 - Displays URLs for accessing each application
 - Provides helpful commands for monitoring and managing containers
 
+⚠ Note on Stopping Containers: Some environments (like certain Docker Compose versions within WSL) may require explicitly specifying profiles when stopping services via the command line. If `docker compose down` doesn't work from your terminal, try `docker compose --profile <profile_name> down` for the specific project you want to stop, or stop them via the Docker Desktop GUI. The `build-and-run.sh` script uses `docker compose up -d` with all profiles, so a simple `docker compose down` *should* work after running the script, but this note is provided in case of issues.
+
 ### Running Specific Services
 
-If you want to run only specific services rather than the entire stack:
+If you want to run only specific project services rather than the entire stack:
 
 ```bash
 # Run only the Language Portal
-docker compose up -d lang_portal_backend lang_portal_frontend
+docker compose --profile lang_portal up -d
 
 # Run only the Listening Comprehension Tool
-docker compose up -d listening_comp_app
+docker compose --profile listening_comp up -d
 
 # Run only OPEA Chat (requires model file)
-MODEL_FILE=your-model-file.gguf docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app
+MODEL_FILE=your-model-file.gguf docker compose --profile opea up -d
 
 # Run only Visual Novel
-docker compose up -d visual_novel_game visual_novel_server
+docker compose --profile visual_novel up -d
 ```
 
-Currently implemented containers:
-- Language Learning Portal (frontend and backend)
-- Japanese Listening Comprehension App
-- OPEA Chat (llama.cpp TGI, backend service, and Streamlit frontend)
-- Visual Novel (Phaser game frontend and LLM proxy server)
+Currently implemented containers grouped by profile:
+- `lang_portal`: Language Learning Portal (frontend and backend)
+- `listening_comp`: Japanese Listening Comprehension App
+- `opea`: OPEA Chat (llama.cpp TGI, backend service, and Streamlit frontend)
+- `visual_novel`: Visual Novel (Phaser game frontend and LLM proxy server)
 
 As more project phases are completed, the script will be updated to include those containers as well.
 

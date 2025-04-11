@@ -18,6 +18,8 @@ services:
     restart: unless-stopped
     networks:
       - lang_portal_network
+    profiles:
+      - lang_portal
 
   lang_portal_frontend:
     build:
@@ -32,6 +34,8 @@ services:
     restart: unless-stopped
     networks:
       - lang_portal_network
+    profiles:
+      - lang_portal
 
   listening_comp_app:
     build:
@@ -52,6 +56,8 @@ services:
     restart: unless-stopped
     networks:
       - listening_comp_network
+    profiles:
+      - listening_comp
 
   opea_comps_tgi:
     # The llama.cpp TGI service requires a GGUF model file

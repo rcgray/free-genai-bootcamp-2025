@@ -234,10 +234,7 @@ The Japanese Listening App can be run using Docker for containerized deployment.
 1. From the repository root, start the application with Docker Compose:
 ```bash
 # Run only the Listening Comprehension App
-docker compose up -d listening_comp_app
-
-# Or run as part of the complete monorepo stack
-docker compose up -d
+docker compose --profile listening_comp up -d
 ```
 
 2. The application will be available at:
@@ -245,12 +242,9 @@ docker compose up -d
 
 3. To stop the container:
 ```bash
-# Stop only the Listening Comprehension App
-docker compose stop listening_comp_app
-
-# Or stop all services
-docker compose down
+docker compose --profile listening_comp down
 ```
+⚠ Note: Some environments (like certain Docker Compose versions within WSL) may require explicitly specifying profiles when stopping services via the command line. If the above command doesn't work from your terminal, try stopping containers via the Docker Desktop GUI.
 
 ### Container Details
 
@@ -277,7 +271,7 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 Or specify the API key when running the container:
 ```bash
-OPENAI_API_KEY=your_key docker compose up -d listening_comp_app
+OPENAI_API_KEY=your_key docker compose --profile listening_comp up -d
 ```
 
 For detailed Docker setup instructions, see the [Docker README](../docker/README.md).

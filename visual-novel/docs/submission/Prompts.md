@@ -595,3 +595,89 @@ The README.md file for the monorepo is missing a "#### Running with Docker" sect
 
 Have we double-checked our `./docker/build-and-run.sh` file?
 
+---
+
+# New chat (Agent, gemini-2.5-pro-exp-03-25, thinking)
+# [from the monoproject root directory, one level up from `visual-novel` project]
+
+---
+
+I have submitted a suite of programs that I built for a class, and the professor is asking that they be "containerized" (using Docker).  I'm not super familiar with Docker, but I have it installed on my Windows 10 computer with Windows Desktop on the Windows side and I have it working with WSL.  All of my projects are built in WSL.
+
+Our project (this repository) is submitted as a monorepo, where each project exists as a sub-repo. If you are able to access the web, the github repo address is: `https://github.com/rcgray/free-genai-bootcamp-2025`. Otherwise, of course, you can ccess the README.md file for the monorepo right here locally - `README.md` (@README.md).
+
+We worked together to complete this containerization project. A `docker-compose.yml` file is present in the root of the project, from which all other projects can be run. The following is a list of the sub-projects we have successfully containerized:
+
+1. (Completed) Language Learning Portal - A web application for learning Japanese, with a backend written in FastAPI (Python) and a frontend written in React (TypeScript) and TailwindCSS, managed by Vite and backed by a SQLite server via Alembic. The project It includes automated tests for the backend. The app also includes a game integrated into the frontend called Kanji Snake, written using the Phaser game engine.
+- Project Subdirectory: `lang-portal`
+- README.md: `lang-portal/README.md`
+2. (Completed) Japanese Listening App - A Python application built with Streamlit that allows the upload (from local machine) or download (via URL) Japanese audio and then have it transcribed and translated by a LLM.
+- Project Subdirectory: `listening-comp`
+- README.md: `listening-comp/README.md`
+3. (Completed) OPEA Chat - A chatbot application powered by a local LLM that already runs using Docker containers. Unfortunately I don't know exactly how this works or how to bundle all of the components into a single deliverable.
+- Project Subdirectory: `opea-comps`
+- README.md: `opea-comps/README.md`
+4. (Completed) Visual Novel - A story-driven game for learning Japanese, written in TypeScript using the Phaser game engine. It runs stand-alone in the browser, backed by a Vite development server. The project also includes an LLM Proxy server written in Node.js with Express.js that the game uses to query for LLM-based data.
+- Project Subdirectory: `visual-novel`
+- README.md: `visual-novel/README.md`
+
+I am now testing the containerized applications, using the instructions in the `README.md` file for the monoproject. I am running into some issues, so I wanted to go through it together to make sure that this is fully functional for the instructor to test.
+
+Let's start with the instructions in the `README.md` file for "Using Docker to Run All Applications". I have already cloned the repository, of course.
+
+---
+
+If there are any commands that require `sudo`, please just inform me of them and I will run them for you.  I have done so with the apt-get install command you requested, and you can continue with using the dos2unix command.
+
+---
+
+So one problem is that, from the `docker-compose.yml` file in the root of the project, we see that there are many services to start:
+
+- lang_portal_backend
+- lang_portal_frontend
+- listening_comp_app
+- opea_comps_tgi
+- opea_comps_backend
+- opea_comps_app
+- visual_novel_game
+- visual_novel_server
+
+And yet the only services we actually started with this command were:
+
+- lang_portal_backend
+- listening_comp_app
+- lang_portal_frontend
+
+As seen in the attached screenshot of Docker Desktop, only the three services above are running.
+
+---
+
+As explained in the `README.md` file for the monoproject, we should also be able to run the four PROJECTS separately:
+
+1. Language Learning Portal
+- lang_portal_backend
+- lang_portal_frontend
+2. Japanese Listening App
+- listening_comp_app
+3. OPEA Chat
+- opea_comps_tgi
+- opea_comps_backend
+- opea_comps_app
+4. Visual Novel
+- visual_novel_game
+- visual_novel_server
+
+I suspect that the themes were to group these containers to their respective projects. We still want to be able to launch projects separately, so let's make sure that any changes we make to the `docker-compose.yml` file that allows for running all the projects together still allows us to run the projects separately. Also, if we are using themes to cluster the containers according to project, let's be sure that we're doing so consistently. It is concerning that some of these had themes and some did not.
+
+---
+
+I went ahead and stopped them all manually. Please continue.
+
+---
+
+Yeah, wait - there is an issue.  I also cannot `docker compose down` from my own terminal - it seems I can only do it via the Docker Desktop GUI. Is this due perhaps to our recent changes to the `docker-compose.yml` file? We should fix this before we continue.
+
+---
+
+Yes! Let's take a look at our main `README.md` file and also the individual project README.md files (`lang-portal/README.md`, `listening-comp/README.md`, `opea-comps/README.md`, `visual-novel/README.md`) to make sure we have the correct commands for running the projects using our profiles.
+

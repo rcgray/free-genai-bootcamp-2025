@@ -135,10 +135,7 @@ The application can also be run using Docker containers for easier deployment an
 cd /path/to/free-genai-bootcamp-2025
 
 # Start only the Language Portal services
-docker compose up -d lang_portal_backend lang_portal_frontend
-
-# Or run the complete stack with all projects
-docker compose up -d
+docker compose --profile lang_portal up -d
 ```
 
 2. The application will be available at:
@@ -148,12 +145,9 @@ docker compose up -d
 
 3. To stop the containers:
 ```bash
-# Stop only the Language Portal services
-docker compose stop lang_portal_backend lang_portal_frontend
-
-# Or stop all services
-docker compose down
+docker compose --profile lang_portal down
 ```
+⚠ Note: Some environments (like certain Docker Compose versions within WSL) may require explicitly specifying profiles when stopping services via the command line. If the above command doesn't work from your terminal, try stopping containers via the Docker Desktop GUI.
 
 #### Container Details
 
@@ -294,7 +288,6 @@ Create a new migration:
 cd backend-fastapi
 alembic revision --autogenerate -m "Description of changes"
 ```
-
 Apply migrations:
 ```bash
 alembic upgrade head
@@ -421,3 +414,4 @@ The base game template provides:
 5. Add appropriate error handling
 6. Include loading states
 7. Make your game responsive
+

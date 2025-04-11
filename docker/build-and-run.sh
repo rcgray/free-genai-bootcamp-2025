@@ -59,14 +59,16 @@ docker compose build
 # Start all containers
 echo -e "\n🚀 Starting application containers..."
 if [[ "${RUN_OPEA}" == "true" ]]; then
-  echo "Starting with OPEA Chat services..."
-  MODEL_FILE="${MODEL_FILE}" docker compose up -d
+  echo "Starting all services (Language Portal, Listening App, OPEA Chat, Visual Novel)..."
+  # Activate ALL profiles
+  MODEL_FILE="${MODEL_FILE}" docker compose --profile lang_portal --profile listening_comp --profile opea --profile visual_novel up -d
 else
-  echo "Starting without OPEA Chat services..."
-  docker compose up -d lang_portal_backend lang_portal_frontend listening_comp_app visual_novel_game visual_novel_server
+  echo "Starting without OPEA Chat services (Language Portal, Listening App, Visual Novel)..."
+  # Activate lang_portal, listening_comp, and visual_novel profiles
+  docker compose --profile lang_portal --profile listening_comp --profile visual_novel up -d
 fi
 
-echo -e "\n✅ Containers are now running!"
+echo -e "\n✅ Containers should now be running or starting!"
 echo "---------------------------------------------------------------------"
 echo "Language Learning Portal:"
 echo "- Frontend: http://localhost:3000"
@@ -88,12 +90,13 @@ echo "- Game: http://localhost:8080"
 echo "- LLM Proxy Server: http://localhost:3011"
 echo "---------------------------------------------------------------------"
 
-echo -e "\nTo check container status: docker ps"
+echo -e "\nTo check container status: docker ps -a"
 echo "To view container logs: docker logs <container-name>"
 echo "To stop all containers: docker compose down"
-echo -e "\nRunning specific services:"
-echo "To run only the Language Portal: docker compose up -d lang_portal_backend lang_portal_frontend"
-echo "To run only the Listening App: docker compose up -d listening_comp_app"
-echo "To run only OPEA Chat: MODEL_FILE=<your-model-file> docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app"
-echo "To run only Visual Novel: docker compose up -d visual_novel_game visual_novel_server"
-echo "To stop specific services: docker compose stop <service-name>" 
+echo -e "\nRunning specific services (using profiles):"
+echo "To run only the Language Portal: docker compose --profile lang_portal up -d"
+echo "To run only the Listening App: docker compose --profile listening_comp up -d"
+echo "To run only OPEA Chat: MODEL_FILE=<your-model-file> docker compose --profile opea up -d"
+echo "To run only Visual Novel: docker compose --profile visual_novel up -d"
+echo "To stop specific services: docker compose stop <service-name>"
+echo "To stop all services (including profiled ones): docker compose down" 

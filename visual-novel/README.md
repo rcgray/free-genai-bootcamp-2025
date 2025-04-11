@@ -27,7 +27,7 @@ This project can be run using Docker containers for both the game and the LLM pr
 
 1. From the repository root, start both Visual Novel containers:
    ```bash
-   docker compose up -d visual_novel_game visual_novel_server
+   docker compose --profile visual_novel up -d
    ```
 
 2. Access the game at:
@@ -39,8 +39,14 @@ This project can be run using Docker containers for both the game and the LLM pr
    LLM_API_KEY=your_api_key_here \
    LLM_API_BASE_URL=https://api.openai.com/v1 \
    LLM_MODEL=o3-mini \
-   docker compose up -d visual_novel_game visual_novel_server
+   docker compose --profile visual_novel up -d
    ```
+
+4. To stop the containers:
+   ```bash
+   docker compose --profile visual_novel down
+   ```
+   ⚠ Note: Some environments (like certain Docker Compose versions within WSL) may require explicitly specifying profiles when stopping services via the command line. If the above command doesn't work from your terminal, try stopping containers via the Docker Desktop GUI.
 
 For more details on Docker configuration, see the [Docker README](../docker/README.md).
 
