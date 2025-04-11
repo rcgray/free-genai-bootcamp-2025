@@ -19,6 +19,31 @@ The game is built using:
 - **TypeScript** for type-safe code
 - **Vite** for fast development and optimized builds
 
+## Docker Setup
+
+This project can be run using Docker containers for both the game and the LLM proxy server.
+
+### Quick Start with Docker
+
+1. From the repository root, start both Visual Novel containers:
+   ```bash
+   docker compose up -d visual_novel_game visual_novel_server
+   ```
+
+2. Access the game at:
+   - Game: http://localhost:8080
+   - LLM Proxy Server: http://localhost:3011
+
+3. To configure the LLM integration, set the following environment variables before running:
+   ```bash
+   LLM_API_KEY=your_api_key_here \
+   LLM_API_BASE_URL=https://api.openai.com/v1 \
+   LLM_MODEL=o3-mini \
+   docker compose up -d visual_novel_game visual_novel_server
+   ```
+
+For more details on Docker configuration, see the [Docker README](../docker/README.md).
+
 ## Technical Implementation
 
 To run the game with full functionality:

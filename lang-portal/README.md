@@ -120,6 +120,64 @@ cd backend-fastapi
 uvicorn app.main:app
 ```
 
+### Docker Setup
+
+The application can also be run using Docker containers for easier deployment and consistent environments.
+
+#### Prerequisites
+- Docker and Docker Compose installed on your machine
+
+#### Running with Docker
+
+1. From the repository root (not the lang-portal directory), start the application with Docker Compose:
+```bash
+# Navigate to repository root if needed
+cd /path/to/free-genai-bootcamp-2025
+
+# Start only the Language Portal services
+docker compose up -d lang_portal_backend lang_portal_frontend
+
+# Or run the complete stack with all projects
+docker compose up -d
+```
+
+2. The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
+
+3. To stop the containers:
+```bash
+# Stop only the Language Portal services
+docker compose stop lang_portal_backend lang_portal_frontend
+
+# Or stop all services
+docker compose down
+```
+
+#### Container Details
+
+The application is split into two containers:
+- `lang-portal-backend`: FastAPI backend service
+- `lang-portal-frontend`: React frontend served through Nginx
+
+Both containers are configured to restart automatically unless explicitly stopped.
+
+#### Data Persistence
+
+The backend container uses a Docker volume (`lang_portal_data`) to persist the SQLite database. This ensures your data remains intact between container restarts.
+
+#### Environment Configuration
+
+The backend container uses the following environment variables:
+- `DATABASE_URL`: Path to the SQLite database
+- `API_V1_PREFIX`: Prefix for API routes
+- `ENVIRONMENT`: Deployment environment (development/production)
+- `DEBUG`: Enable/disable debug mode
+- `FRONTEND_URL`: URL of the frontend application
+
+You can customize these by editing the `docker-compose.yml` file.
+
 ### Developer Setup
 
 For development, you'll need additional dependencies:

@@ -221,3 +221,63 @@ uv run python scripts/manage_db.py reset-and-seed
 # Use custom database path
 uv run python scripts/manage_db.py reset-and-seed --db-path custom/path/db.json
 ```
+
+## Docker Setup
+
+The Japanese Listening App can be run using Docker for containerized deployment.
+
+### Prerequisites
+- Docker and Docker Compose installed on your machine
+
+### Running with Docker
+
+1. From the repository root, start the application with Docker Compose:
+```bash
+# Run only the Listening Comprehension App
+docker compose up -d listening_comp_app
+
+# Or run as part of the complete monorepo stack
+docker compose up -d
+```
+
+2. The application will be available at:
+- Streamlit App: http://localhost:8501
+
+3. To stop the container:
+```bash
+# Stop only the Listening Comprehension App
+docker compose stop listening_comp_app
+
+# Or stop all services
+docker compose down
+```
+
+### Container Details
+
+The application uses a single container that includes:
+- Python runtime with all required dependencies
+- FFmpeg for audio processing
+- Streamlit server
+- Persistent volumes for data and media files
+
+### Data Persistence
+
+The Docker setup uses two volumes for data persistence:
+- `listening_comp_data`: Stores the TinyDB database and application data
+- `listening_comp_media`: Stores downloaded audio files and transcripts
+
+This ensures your processed files and database remain intact between container restarts.
+
+### Environment Configuration
+
+To use your OpenAI API key with the containerized application, create a `.env` file in the repository root with:
+```
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+Or specify the API key when running the container:
+```bash
+OPENAI_API_KEY=your_key docker compose up -d listening_comp_app
+```
+
+For detailed Docker setup instructions, see the [Docker README](../docker/README.md).

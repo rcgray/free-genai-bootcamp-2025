@@ -68,7 +68,7 @@ The application allows users to run powerful large language models locally on th
 4. Place your GGUF model files in the `models/` directory:
    ```bash
    # Example for Meta-Llama-3.2-3B-Instruct model
-   cp /path/to/your/model/Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf models/
+   cp /path/to/your/model/your-model-file.gguf models/
    ```
 
 ### Running the Application
@@ -156,6 +156,101 @@ opea-comps/
 ├── config/             # Application configuration
 ├── tests/              # Test suite
 └── README.md           # This file
+```
+
+## Docker Setup
+
+The OPEA Chat application can be run using Docker for containerized deployment.
+
+### Prerequisites
+- Docker and Docker Compose installed on your machine
+- NVIDIA GPU with appropriate drivers (for optimal performance)
+- NVIDIA Container Toolkit installed (for GPU support)
+
+### Model Setup
+
+Before running the application, you need to download a GGUF model file:
+
+```bash
+# From the repository root, run the model setup script
+./docker/opea-comps/model-setup.sh
+```
+
+This script will:
+1. Create the necessary directory for models
+2. Create the Docker volume for model storage
+3. Provide instructions for downloading appropriate models
+4. Check if any models are already available
+
+### Testing Your Setup
+
+To verify that your Docker environment is correctly configured for OPEA Chat:
+
+```bash
+# From the repository root, run the test script
+./docker/opea-comps/test-setup.sh
+```
+
+This test script will:
+1. Check if Docker is running
+2. Verify if NVIDIA Container Toolkit is installed (for GPU acceleration)
+3. Create a docker-compose.override.yml if needed for CPU-only testing
+4. Test that the base container can run
+5. Provide next steps based on your environment
+
+The test doesn't require a real model file and can help diagnose setup issues before downloading large model files.
+
+### Running with Docker
+
+1. From the repository root, start the application with Docker Compose:
+```bash
+# First download a GGUF model file and place it in opea-comps/models/
+# Then run only the OPEA Chat services
+MODEL_FILE=your-model-file.gguf docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app
+
+# Or run as part of the complete monorepo stack
+MODEL_FILE=your-model-file.gguf docker compose up -d
+```
+
+2. The application will be available at:
+- Chat Interface: http://localhost:8502
+- Backend API: http://localhost:8888
+- TGI Service: http://localhost:8008
+
+3. To stop the containers:
+```bash
+# Stop only the OPEA Chat services
+docker compose stop opea_comps_tgi opea_comps_backend opea_comps_app
+
+# Or stop all services
+docker compose down
+```
+
+### Container Details
+
+The application uses three containers:
+- `opea_comps_tgi`: The llama.cpp server that loads and runs the language model
+- `opea_comps_backend`: The FastAPI backend service that interfaces with the TGI service
+- `opea_comps_app`: The Streamlit frontend for the chat interface
+
+### Data Persistence
+
+The Docker setup uses a volume for data persistence:
+- `opea_comps_models`: Stores the LLM model files
+
+This ensures your model files remain accessible between container restarts.
+
+### Environment Configuration
+
+You must specify the following environment variable:
+- `MODEL_FILE`: Filename of the GGUF model to use (required, no default)
+
+You can optionally specify:
+- `TGI_THREADS`: Number of CPU threads to use for inference (default: 8)
+
+Example:
+```bash
+MODEL_FILE=your-model-file.gguf TGI_THREADS=16 docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app
 ```
 
 ## Development

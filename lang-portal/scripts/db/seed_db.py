@@ -134,8 +134,18 @@ async def seed_activities(
 
 async def seed_db() -> None:
     """Main function to seed the database."""
-    # Use the correct seed directory from backend-fastapi
+    # Check both possible seed directories
     seed_dir = backend_dir / "seed"
+    if not seed_dir.exists():
+        # Try the alternate path (when running in Docker)
+        alt_seed_dir = Path("/app/backend-fastapi/seed")
+        if alt_seed_dir.exists():
+            seed_dir = alt_seed_dir
+            logger.info(f"Using alternate seed directory: {seed_dir}")
+        else:
+            logger.error(f"Could not find seed directory at {seed_dir} or {alt_seed_dir}")
+            raise FileNotFoundError(f"Seed directory not found at expected locations")
+    
     logger.info(f"Loading seed data from: {seed_dir}")
     
     # Load all seed data

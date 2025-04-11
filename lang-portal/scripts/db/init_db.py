@@ -107,12 +107,31 @@ CREATE INDEX idx_word_review_items_session_id ON word_review_items(session_id);
 async def init_db(force: bool = False) -> None:
     """Initialize the database with schema."""
     db_url = settings.DATABASE_URL
-    db_file = db_url.replace("sqlite+aiosqlite:///", "")
+    logger.info(f"Using database URL: {db_url}")
+    
+    # Extract database file path from URL
+    if db_url.startswith("sqlite+aiosqlite:///"):
+        db_file = db_url.replace("sqlite+aiosqlite:///", "")
+    else:
+        db_file = db_url.replace("sqlite:///", "")
+    
+    logger.info(f"Extracted database file path: {db_file}")
+    
+    # Resolve to absolute path if relative
+    if not os.path.isabs(db_file):
+        # If running in Docker, paths might be different
+        if os.path.exists('/app'):
+            abs_db_file = os.path.join('/app', db_file.lstrip('./'))
+        else:
+            abs_db_file = os.path.abspath(db_file)
+        logger.info(f"Resolved to absolute path: {abs_db_file}")
+        db_file = abs_db_file
     
     # Create database directory if it doesn't exist
     db_dir = os.path.dirname(db_file)
     if db_dir:
         os.makedirs(db_dir, exist_ok=True)
+        logger.info(f"Created database directory: {db_dir}")
     
     # Remove existing database if force is True
     if force and os.path.exists(db_file):

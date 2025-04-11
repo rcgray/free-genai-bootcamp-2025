@@ -1,0 +1,185 @@
+services:
+  lang_portal_backend:
+    build:
+      context: .
+      dockerfile: docker/lang-portal/Dockerfile.backend
+    image: lang-portal-backend
+    container_name: lang-portal-backend
+    volumes:
+      - lang_portal_data:/app/data
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/lang_portal.db
+      - API_V1_PREFIX=/api
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - FRONTEND_URL=http://localhost:3000
+    restart: unless-stopped
+    networks:
+      - lang_portal_network
+
+  lang_portal_frontend:
+    build:
+      context: .
+      dockerfile: docker/lang-portal/Dockerfile.frontend
+    image: lang-portal-frontend
+    container_name: lang-portal-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - lang_portal_backend
+    restart: unless-stopped
+    networks:
+      - lang_portal_network
+
+  listening_comp_app:
+    build:
+      context: .
+      dockerfile: docker/listening-comp/Dockerfile
+    image: listening-comp-app
+    container_name: listening-comp-app
+    volumes:
+      - listening_comp_data:/app/data
+      - listening_comp_media:/app/media
+    ports:
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - MAX_AUDIO_DURATION_SECONDS=${MAX_AUDIO_DURATION_SECONDS:-1800}
+      - WHISPER_MODEL=${WHISPER_MODEL:-whisper-1}
+      - GPT_MODEL=${GPT_MODEL:-gpt-4-turbo}
+    restart: unless-stopped
+    networks:
+      - listening_comp_network
+
+  opea_comps_tgi:
+    # The llama.cpp TGI service requires a GGUF model file
+    # The MODEL_FILE environment variable must be set to the filename of a valid
+    # GGUF model located in the opea-comps/models directory
+    # If MODEL_FILE is not set, the service will not start correctly
+    image: ghcr.io/ggerganov/llama.cpp:full
+    container_name: opea-comps-tgi
+    ports:
+      - "8008:8080"
+    volumes:
+      - ./opea-comps/models:/models
+    environment:
+      - MODEL_FILE=${MODEL_FILE:-dummy-model.gguf}
+      - TGI_THREADS=${TGI_THREADS:-8}
+    command: --server --model /models/${MODEL_FILE:-dummy-model.gguf} --host 0.0.0.0 --threads ${TGI_THREADS:-8}
+    restart: unless-stopped
+    networks:
+      - opea_comps_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 20s
+      retries: 3
+      start_period: 60s
+    profiles:
+      - opea
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  opea_comps_backend:
+    build:
+      context: .
+      dockerfile: opea-comps/backend/docker/Dockerfile
+    image: opea-comps-backend
+    container_name: opea-comps-backend
+    depends_on:
+      - opea_comps_tgi
+    ports:
+      - "8888:8888"
+    environment:
+      - LLM_SERVER_HOST_IP=opea_comps_tgi
+      - LLM_SERVER_PORT=8080
+      - MEGA_SERVICE_HOST_IP=opea_comps_backend
+      - MEGA_SERVICE_PORT=8888
+    restart: unless-stopped
+    networks:
+      - opea_comps_network
+    profiles:
+      - opea
+
+  opea_comps_app:
+    build:
+      context: .
+      dockerfile: docker/opea-comps/Dockerfile.app
+    image: opea-comps-app
+    container_name: opea-comps-app
+    depends_on:
+      - opea_comps_backend
+    ports:
+      - "8502:8501"
+    environment:
+      - BACKEND_URL=http://opea_comps_backend:8888
+    restart: unless-stopped
+    networks:
+      - opea_comps_network
+    profiles:
+      - opea
+      
+  visual_novel_game:
+    build:
+      context: .
+      dockerfile: docker/visual-novel/Dockerfile.game
+    image: visual-novel-game
+    container_name: visual-novel-game
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    networks:
+      - visual_novel_network
+    profiles:
+      - visual_novel
+
+  visual_novel_server:
+    build:
+      context: .
+      dockerfile: docker/visual-novel/Dockerfile.server
+    image: visual-novel-server
+    container_name: visual-novel-server
+    ports:
+      - "3011:3011"
+    environment:
+      - LLM_API_KEY=${LLM_API_KEY:-your_api_key_here}
+      - LLM_API_BASE_URL=${LLM_API_BASE_URL:-https://api.openai.com/v1}
+      - LLM_MODEL=${LLM_MODEL:-o3-mini}
+      - LLM_ENDPOINT_PATH=${LLM_ENDPOINT_PATH:-chat/completions}
+      - PORT=3011
+      - REQUEST_TIMEOUT_MS=${REQUEST_TIMEOUT_MS:-60000}
+      - DEBUG_MODE=${DEBUG_MODE:-false}
+    restart: unless-stopped
+    networks:
+      - visual_novel_network
+    profiles:
+      - visual_novel
+
+volumes:
+  lang_portal_data:
+    # This volume stores the SQLite database
+  listening_comp_data:
+    # This volume stores TinyDB files and application data
+  listening_comp_media:
+    # This volume stores audio files and transcripts
+  opea_comps_models:
+    # This volume stores LLM model files for OPEA Chat
+  visual_novel_data:
+    # This volume stores game save data and vocabulary
+
+networks:
+  lang_portal_network:
+    driver: bridge
+  listening_comp_network:
+    driver: bridge
+  opea_comps_network:
+    driver: bridge
+  visual_novel_network:
+    driver: bridge 

@@ -1,0 +1,48 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Copy only the necessary Python files for better caching
+COPY lang-portal/backend-fastapi/pyproject.toml .
+COPY lang-portal/backend-fastapi/app ./app
+COPY lang-portal/backend-fastapi/alembic.ini .
+COPY lang-portal/backend-fastapi/alembic ./alembic
+COPY lang-portal/backend-fastapi/seed ./backend-fastapi/seed
+
+# Install production dependencies
+RUN pip install --no-cache-dir -e .
+
+# Copy scripts for database initialization
+COPY lang-portal/scripts/db ./scripts/db
+
+# Create data directory
+RUN mkdir -p data
+
+# Create entrypoint script
+RUN echo '#!/bin/bash \n\
+set -e \n\
+\n\
+# Create a new database if it does not exist \n\
+if [ ! -f /app/data/lang_portal.db ]; then \n\
+    echo "Database not found, initializing..." \n\
+    python /app/scripts/db/init_db.py --force \n\
+    \n\
+    # Seed the database with initial data \n\
+    echo "Seeding database with initial data..." \n\
+    python /app/scripts/db/seed_db.py \n\
+else \n\
+    echo "Database already exists, running migrations..." \n\
+    python -m alembic upgrade head \n\
+fi \n\
+\n\
+# Execute the CMD \n\
+exec "$@"' > /app/entrypoint.sh
+
+RUN chmod +x /app/entrypoint.sh
+
+# Expose API port
+EXPOSE 8000
+
+# Run the application with the entrypoint script
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"] 

@@ -83,6 +83,22 @@ I built a complete language learning portal featuring a FastAPI backend and Reac
 - Created automated tests with 86% code coverage
 - Developed a responsive frontend with React, TailwindCSS, and Vite
 - Used AI-driven development exclusively via Cursor
+- Containerized the application with Docker for easy deployment
+
+#### Running with Docker
+```bash
+# Run only the Language Portal services
+docker compose up -d lang_portal_backend lang_portal_frontend
+
+# Or run as part of the complete monorepo stack
+docker compose up -d
+```
+This will start both the backend and frontend containers. The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
+
+For more details, see the [Language Portal README](lang-portal/README.md#docker-setup).
 
 ### Week 2: Multi-Modal Applications (02/15-02/21)
 
@@ -101,6 +117,22 @@ This week focused on audio and image generation. I created a Streamlit applicati
 - Developed a reusable game template for the Language Portal
 - Implemented Kanji Snake game using Phaser 3
 - Generated custom game art with Stable Diffusion
+- Containerized the application with Docker for easy deployment
+
+#### Running with Docker
+```bash
+# Run only the Listening Comprehension App
+docker compose up -d listening_comp_app
+
+# Or run as part of the complete monorepo stack
+docker compose up -d
+```
+This will start the Streamlit application container. If using the complete stack command, the Language Portal will also be available. The applications will be available at:
+- Streamlit Listening App: http://localhost:8501
+- Language Portal Frontend (if running complete stack): http://localhost:3000
+- Language Portal Backend API (if running complete stack): http://localhost:8000
+
+For more details, see the [Japanese Listening App README](listening-comp/README.md#docker-setup).
 
 ### Week 3: Containerization and Local LLMs (02/22-02/28)
 
@@ -119,6 +151,32 @@ The resulting architecture provides a ChatGPT-like experience using entirely loc
 - Created a vendor-agnostic architecture supporting any GGUF model for the deployment's TGI service
 - Designed a flexible system that works independently of third-party services at runtime
 - Built a responsive Streamlit chat interface with conversation history
+
+#### Running with Docker
+```bash
+# First, set up the model directory
+./docker/opea-comps/model-setup.sh
+
+# Test your setup (recommended before downloading large models)
+./docker/opea-comps/test-setup.sh
+
+# Download a GGUF model file and place it in opea-comps/models/
+# Then run OPEA Chat (replace with your actual model filename)
+MODEL_FILE=your-model-file.gguf docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app
+
+# Or run as part of the complete monorepo stack
+MODEL_FILE=your-model-file.gguf docker compose up -d
+```
+
+The MODEL_FILE environment variable specifies which model file to use. This variable is:
+- Required to run the OPEA Chat services
+- Must point to a valid .gguf model file located in the opea-comps/models directory
+- There is no default value - you must provide a model file
+
+The application will be available at:
+- Chat Interface: http://localhost:8502
+
+For more details, see the [OPEA Chat README](opea-comps/README.md#docker-setup).
 
 ### Weeks 4 & 5: Capstone Project - Visual Novel (03/01-03/07)
 
@@ -144,6 +202,21 @@ The entire project—from code to artwork, UI design, game narrative, dialogue s
 - Implemented hot module replacement for seamless development for Phaser games, which it does not natively support
 - Structured a complete narrative across multiple locations
 
+#### Running with Docker
+```bash
+# Run only the Visual Novel
+docker compose up -d visual_novel_game visual_novel_server
+
+# Or run with LLM integration by providing an API key
+LLM_API_KEY=your_api_key_here docker compose up -d visual_novel_game visual_novel_server
+```
+
+The application will be available at:
+- Game: http://localhost:8080
+- LLM Proxy Server: http://localhost:3011
+
+For more details, see the [Visual Novel README](visual-novel/README.md#docker-setup).
+
 ## Technology Stack
 
 - **Frontend**: React, TypeScript, TailwindCSS, Vite, Phaser 3
@@ -153,6 +226,54 @@ The entire project—from code to artwork, UI design, game narrative, dialogue s
 - **Containerization**: Docker, Intel OPEA
 - **Data Visualization**: Streamlit
 - **Development**: Cursor IDE, WSL, Stable Diffusion, various AI assistants
+
+## Using Docker to Run All Applications
+
+To build and run all containerized applications from scratch:
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/free-genai-bootcamp-2025.git
+cd free-genai-bootcamp-2025
+
+# Make the helper script executable (if needed)
+chmod +x docker/build-and-run.sh
+
+# Run the helper script to build and start all containers
+./docker/build-and-run.sh
+```
+
+This script:
+- Builds all Docker images from source using the provided Dockerfiles
+- Starts all containers using docker-compose
+- Displays URLs for accessing each application
+- Provides helpful commands for monitoring and managing containers
+
+### Running Specific Services
+
+If you want to run only specific services rather than the entire stack:
+
+```bash
+# Run only the Language Portal
+docker compose up -d lang_portal_backend lang_portal_frontend
+
+# Run only the Listening Comprehension Tool
+docker compose up -d listening_comp_app
+
+# Run only OPEA Chat (requires model file)
+MODEL_FILE=your-model-file.gguf docker compose up -d opea_comps_tgi opea_comps_backend opea_comps_app
+
+# Run only Visual Novel
+docker compose up -d visual_novel_game visual_novel_server
+```
+
+Currently implemented containers:
+- Language Learning Portal (frontend and backend)
+- Japanese Listening Comprehension App
+- OPEA Chat (llama.cpp TGI, backend service, and Streamlit frontend)
+- Visual Novel (Phaser game frontend and LLM proxy server)
+
+As more project phases are completed, the script will be updated to include those containers as well.
 
 ## License
 

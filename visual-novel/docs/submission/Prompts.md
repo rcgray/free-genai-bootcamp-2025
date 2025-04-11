@@ -298,3 +298,300 @@ We have iterated on this file a few times now, and I believe we have ended up wi
 Let's also make sure that we integrate it into our final submission form (@Submission-Task.md), since it is a significant part of our workshop efforts.
 
 ---
+
+# New chat (Agent, claude-3.7-sonnet, thinking)
+# [from the monoproject root directory, one level up from `visual-novel` project]
+
+---
+
+I am submitted a suite of programs that I built for a class, and the professor is asking that they be "containerized" (using Docker).  I'm not super familiar with Docker, but I have it installed on my Windows 10 computer with Windows Desktop on the Windows side and I have it working with WSL.  All of my projects are built in WSL.  Could you guide me through this process?
+
+---
+
+Our project (this repository) is submitted as a monorepo, where each project exists as a sub-repo. If you are able to access the web, the github repo address is: `https://github.com/rcgray/free-genai-bootcamp-2025`. Otherwise, of course, you can ccess the README.md file for the monorepo right here locally - `README.md` (@README.md).
+
+The following is a list of the sub-projects I would need to containerize.  I could build them all in one container, or I could build them in separate containers (which is probably more appropriate, given the whole point of containerization, but what do you think?).
+
+1. Language Learning Portal - A web application for learning Japanese, with a backend written in FastAPI (Python) and a frontend written in React (TypeScript) and TailwindCSS, managed by Vite and backed by a SQLite server via Alembic. The project It includes automated tests for the backend. The app also includes a game integrated into the frontend called Kanji Snake, written using the Phaser game engine.
+- Project Subdirectory: `lang-portal` (@lang-portal)
+- README.md: `lang-portal/README.md` (@lang-portal/README.md)
+2. Japanese Listening App - A Python application built with Streamlit that allows the upload (from local machine) or download (via URL) Japanese audio and then have it transcribed and translated by a LLM.
+- Project Subdirectory: `listening-comp` (@listening-comp)
+- README.md: `listening-comp/README.md` (@listening-comp/README.md)
+3. OPEA Chat - A chatbot application powered by a local LLM that already runs using Docker containers. Unfortunately I don't know exactly how this works or how to bundle all of the components into a single deliverable.
+- Project Subdirectory: `opea-comps` (@opea-comps)
+- README.md: `opea-comps/README.md` (@opea-comps/README.md)
+4. Visual Novel - A story-driven game for learning Japanese, written in TypeScript using the Phaser game engine. It runs stand-alone in the browser, backed by a Vite development server. The project also includes an LLM Proxy server written in Node.js with Express.js that the game uses to query for LLM-based data.
+- Project Subdirectory: `visual-novel` (@visual-novel)
+- README.md: `visual-novel/README.md` (@visual-novel/README.md)
+
+For each of these projects, I have a live instance on my development machine in which the application is successfully building and running. Each project has its own conda environment (if that helps for determining the dependencies) and its own individual README.md for setting up the project manually (listed above). I would like to make it as easy as possible for my instructor (who is versed in Docker) to run these applications, and I would even like to include some of the local files that I have in the working instances (the state of my dev databases, downloaded audio files, etc.) to allow the apps to work "right out of the box". However, I don't want to include any files that are not needed to run the apps or those where security might be a concern (e.g., API keys in .env files, etc.).
+
+What does the deliverable for these projects look like? Whatever the deliverables are, I think I would like to have them available in the repo under a new folder, called something like "docker" at the root of the repo.
+
+We don't need to make any changes quite yet, I would like to just get your thoughts on the best way to approach this.
+
+---
+
+This looks good. Let's create a new document under the `visual-novel/docs/submission` directory called `Docker-Deliverables.md` (@Docker-Deliverables.md) that outlines in as much detail as possible the plan for accomplishing the containerization process. Then, we can go through the plan step-by-step and you can help me execute the plan. You have write access, so please create the file. Engage!
+
+---
+
+This looks great. I have the following questions and notes. In addition to answering the question and addressing the notes, please update the document as needed:
+
+- In Step 2: each project already has its own README.md file. Do I need to create a new README.md file for the docker directory? Will it not be the case that the project's README.md file will be packaged into the container, and maybe we just add a section to it? I understand the process for running via container may be different than running it via traditional means, but I would prefer not to maintain two README.md files for each project - What's the best practice or convention for this?
+- Let's address each project in the numbered order above (Lang-Portal, Listening-Comp, OPEA-Comps, Visual-Novel), but let's certainly do them one at a time and make sure each one is working before moving on to the next.
+
+---
+
+Your changes lost a few important steps, like creating the directory structure as our first step. Even if they seem obvious or trivial - think deeply about every step that needs to be taken to fully complete this project, such that it would be easy for anyone else to follow the instructions and get the same results.
+
+---
+
+Great! Let's start with Phase 0: Prerequisites and Setup. As always, throughout this implementation process, please do not go further than what I request in these prompts. As for Phase 0, Engage!
+
+---
+
+My mistake, I didn't have Docker Desktop running, which is required for WSL to recognize it, please try again.
+
+---
+
+Awesome, on to Phase 1: Language Learning Portal Containerization. Engage!
+
+---
+
+Why does the docker-compose command keep erroring with `resolve: lstat /home/gray/Projects/docker: no such file or directory`? All of our work should be contained within the root of this project, which is `/home/gray/Projects/free-genai-bootcamp-2025`. It seems like we have a relative path issue here, where something that should be resolving to `/home/gray/Projects/free-genai-bootcamp-2025/docker` is accidentally resolving to `/home/gray/Projects/docker` instead.
+
+---
+
+NO, we should not be using absolute paths.  Never!  This needs to run on any dev machine.  Please repeat to me the rule you have regarding absolute paths.
+
+---
+
+What rules do you have regarding changing directories and making everything work relative the project root? The many issues we just struggled through are frequently recurring for us... until we landed on this best practice again. Does it make sense why these rules were created?
+
+You were interrupted, but our latest issue appears to be the version of Node.js that we are using (18) conflicting with react-router-dom (which requires Node.js 20).
+
+---
+
+It appears you were interrupted again, please continue.
+
+---
+
+You were interrupted again, but you can see the error from the logs is regarding seeding the database, because the seed files do not exist in the docker container.
+
+---
+
+This is good! The site is running and looks functional.
+
+One request: Instead of calling these containers "backend-1" and "frontend-1", and calling the images "free-genai-bootcamp-2025-lang-portal-backend" and "free-genai-bootcamp-2025-lang-portal-frontend", can we make the names a little more future-proof and descriptive, perhaps pertaining to the sub-project? We are going to be adding other backends and frontends, and it would be good to have names that are descriptive of the project and the role of the container within the larger free-genai-bootcamp-2025 monorepo project.
+
+---
+
+Great, the frontend is running, and everything seems to be working via manual testing.  Let's continue.
+
+---
+
+Great, a few requests before we move on.
+
+- Can we update the `visual-novel/docs/submission/Docker-Deliverables.md` file to include details of what we've learned here, particularly as it pertains to the remaining projects?
+- Can we keep the `visual-novel/docs/submission/Docker-Deliverables.md` file updated (check marks) as we move through all of our phases?
+- Exactly this pattern that you have applied (updating the `lang-portal` README.md, the main monorepo README.md, and the docker-specific README.md) is exactly what I would like to do as well for the remaining projects, as we go through them.
+
+---
+
+Two questions about how Docker works:
+- Is it always expected that Docker containers will be delivered in the form of a docker-compose.yml file that the user will need to run? I thought it could be delivered as a kind of "package" that the user can run in order to guarantee that the container will be delivered with all of the necessary dependencies and configurations to run the containerized application.
+- If not, what kind of safeguards do we have in place to ensure that we are not accidentally including any .gitignored files that exist only on my machine (but would not necessarily exist on the dev machine of the user)?
+
+---
+
+I am not interested in putting these up in the global docker hub registry, and in fact I would like to avoid relying on any third-party services... I wouldn't even be using Github if it weren't a requirement for the workshop; I self-host my own git server.
+
+It seems like a great solution is to pre-build the bundles and include them in the repo (i.e., somewhere in the `docker` directory). Then, the instructor grading the submission can simply run `docker compose up` and the containers will be started. Is that an odd approach?
+
+---
+
+ok, why don't we build that helper file and add it to our README like you suggested?
+
+---
+
+On to Phase 2: Japanese Listening App Containerization. Engage!
+
+---
+
+Great, looks like we're working! By the way, are you using the .gitignore files of the individual projects to determine how to write the dockerignore files?
+
+---
+
+I noticed we got confused a little bit about the location of the docker-compose.yml file. This also was an issue in Phase 1. I see that we have a docker-compose.yml file in the `lang-portal` directory, and now in the `listening-comp` directory, but we also have a docker-compose.yml file in the root of the project.
+
+We need to be consistent about this - we should either have a single docker-compose.yml file in the root of the project, or we should have a docker-compose.yml files in the individual project directories. (unless the one in the root is calling the project-specific docker-compose.yml files?). And in any case, we need to be sure that our README.md files are informing the user of the correct process for running the containers.  Right now the main repo README.md is saying that to run lang-portal they should run `docker compose up -d` and to run listening-comp they should run `docker compose -f docker/listening-comp/docker-compose.yml up -d`.
+
+And are we consistent in our `/docker/build-and-run.sh` file?
+
+---
+
+What about the docker-compose.yml file in the lang-portal directory?  Have you thought this completely through?
+
+---
+
+The monorepo README.md file has the same command for running the lang-portal and listening-comp containers (`docker compose up -d`). If we are going to have instructions for the specific projects individually, shouldn't we make the instructions project-specific?
+
+---
+
+There should either be a single docker-compose.yml file in the root of the project, or we should have a docker-compose.yml files in the individual project directories.  If listening-comp is launched via `docker compose up -d listening_comp_app`, then the lang-portal should be launched via `docker compose up -d lang_portal_app`. IF WE ARE USING A SINGLE DOCKER-COMPOSE.YML FILE, THEN WE NEED TO BE CONSISTENT ABOUT IT.
+
+---
+
+Thank you, I think we finally got there. Please add what we've learned from this to the `Docker-Deliverables.md` file, so we can remain consistent through the remaining two projects we need to containerize.
+
+---
+
+Reviewing the listening-comp README, it appears that it is still using a general `docker compose up -d` command.
+
+---
+
+OK great, on to Phase 3: OPEA Chat Containerization. Please re-read the `Docker-Deliverables.md` file (@Docker-Deliverables.md) if you need to be refreshed on the plan and our best practices. Engage!
+
+---
+
+In the opea_comps_tgi entry in docker-compose.yml, it appears that the model file is hard-coded. Shouldn't this be pulled from somewhere, especially since (in the README.md) it says that they should set the MODEL_FILE environment variable?
+
+Also, in the past two projects, you actually tested the solution after you wrote it, here you didn't.
+
+---
+
+I would like to remove any explicit mention of "Meta-Llama-3.2-3B-Instruct-Q6_K_L.gguf" in any of the files we've written. For instance, if a MODEL_FILE is not specified, or no model is downloaded, the app should not run.  It shouldn't require the specific filename of the model I chose and downloaded on my machine.
+
+Why in model-setup.sh did you just hallucinate the URLs for the model files out of nowhere?  Don't do things like that - if you need URLs, you can ask for them.
+
+---
+
+OK, the monorepo README.md has some steps for the OPEA Chat project "Running with Docker". Let's run through them together to make sure everything is working.
+
+---
+
+You were interrupted, please continue
+
+---
+
+You were interrupted... again. Please continue
+
+---
+
+It works! Great job.  I think we still have a few documentation items to address, please review the `Docker-Deliverables.md` file (@Docker-Deliverables.md) and make sure we have covered all of the bases.
+
+---
+
+Did you forget about checking off items in the `Docker-Deliverables.md` file?
+
+---
+
+# New chat (Agent, claude-3.7-sonnet, thinking)
+# [from the monoproject root directory, one level up from `visual-novel` project]
+
+---
+
+I have submitted a suite of programs that I built for a class, and the professor is asking that they be "containerized" (using Docker).  I'm not super familiar with Docker, but I have it installed on my Windows 10 computer with Windows Desktop on the Windows side and I have it working with WSL.  All of my projects are built in WSL.
+
+Our project (this repository) is submitted as a monorepo, where each project exists as a sub-repo. If you are able to access the web, the github repo address is: `https://github.com/rcgray/free-genai-bootcamp-2025`. Otherwise, of course, you can ccess the README.md file for the monorepo right here locally - `README.md` (@README.md).
+
+The following is a list of the sub-projects I would need to containerize:
+
+1. (Completed) Language Learning Portal - A web application for learning Japanese, with a backend written in FastAPI (Python) and a frontend written in React (TypeScript) and TailwindCSS, managed by Vite and backed by a SQLite server via Alembic. The project It includes automated tests for the backend. The app also includes a game integrated into the frontend called Kanji Snake, written using the Phaser game engine.
+- Project Subdirectory: `lang-portal` (@lang-portal)
+- README.md: `lang-portal/README.md` (@lang-portal/README.md)
+2. (Completed) Japanese Listening App - A Python application built with Streamlit that allows the upload (from local machine) or download (via URL) Japanese audio and then have it transcribed and translated by a LLM.
+- Project Subdirectory: `listening-comp` (@listening-comp)
+- README.md: `listening-comp/README.md` (@listening-comp/README.md)
+3. (Completed) OPEA Chat - A chatbot application powered by a local LLM that already runs using Docker containers. Unfortunately I don't know exactly how this works or how to bundle all of the components into a single deliverable.
+- Project Subdirectory: `opea-comps` (@opea-comps)
+- README.md: `opea-comps/README.md` (@opea-comps/README.md)
+4. (Not Started) Visual Novel - A story-driven game for learning Japanese, written in TypeScript using the Phaser game engine. It runs stand-alone in the browser, backed by a Vite development server. The project also includes an LLM Proxy server written in Node.js with Express.js that the game uses to query for LLM-based data.
+- Project Subdirectory: `visual-novel` (@visual-novel)
+- README.md: `visual-novel/README.md` (@visual-novel/README.md)
+
+For each of these projects, I have a live instance on my development machine in which the application is successfully building and running. Each project has its own conda environment (if that helps for determining the dependencies) and its own individual README.md for setting up the project manually (listed above). I would like to make it as easy as possible for my instructor (who is versed in Docker) to run these applications, and I would even like to include some of the local files that I have in the working instances (the state of my dev databases, downloaded audio files, etc.) to allow the apps to work "right out of the box". However, I don't want to include any files that are not needed to run the apps or those where security might be a concern (e.g., API keys in .env files, etc.).
+
+Important: We have a file `visual-novel/docs/submission/Docker-Deliverables.md` (@Docker-Deliverables.md) that outlines in as much detail as possible the plan for accomplishing the containerization process. Please review this document carefully, because it contains not only the steps we need to take but also our best practices we have learned along the way and pitfalls to avoid.
+
+We have successfully completed Phases 0-3 of the plan outlined in the `Docker-Deliverables.md` file, and now we are ready to start Phase 4: Visual Novel Containerization. Engage!
+
+---
+
+You were interrupted, please continue.
+
+---
+
+You were immediately interrupted again. Please continue.
+
+---
+
+You have not followed all of the instructions in the `Docker-Deliverables.md` file. Please review the file and make sure you have followed all of the steps. There is documentation strategy, checking completed items, etc. I should not have to remind you of this, the `Docker-Deliverables.md` file is the most important document in this project. I noted it as "Important:" in the beginning of this conversation. Please do not forget it again.
+
+---
+
+We don't need a COMPLETION-STATUS.md file, you are supposed to update the `visual-novel/docs/submission/Docker-Deliverables.md` file so it is all in one place.  After you delete this new file and move it to its proper place, please step through testing our new container system for the visual novel to make sure everything works properly.  It is not your fault it keeps getting interrupted, push through the issues and continue.
+
+---
+
+You were interrupted again, but we've made substantial progress. Please continue.
+
+---
+
+Running the visual novel docker containers results in both the visual-novel-server and visual-novel-game containers running, but the visual-novel-game container is not serving the game. It just shows a plain webpage that says "Visual Novel Game Container. This is a simplified test container for the Visual Novel game. The full game build will be implemented here."
+
+---
+
+The game now plays, but it is missing ALL ASSETS (there are no images, only text). Are you not including the assets in the container?  Or perhaps this can be simplified - have you looked at the `visual-novel/phaser_game/package.json` file? There is an npm script that builds the game (via vite build), so perhaps we should just be building the game and packaging the resulting build?  What do you think is best here?
+
+---
+
+I realized that we built our docker container for visual-novel-game on a very old build of the game. I've now updated the game to the latest version and rebuilt it, but `docker compose up -d visual_novel_game visual_novel_server` still runs the old version. How do I "rebuild" the container? Also, since a new user with a new repository won't have the game built when they first git clone, how do I have the build process for the container run the ` npm --prefix phaser_game run build` command from the visual-novel/phaser_game directory?
+
+---
+
+I see, now when a new user runs `docker compose up -d visual_novel_game visual_novel_server`, since they've never run `docker compose build visual_novel_game visual_novel_server` before (and we don't appear to instruct them to), is that something that happens automatically as a result of the call to `docker compose` when no build is present?
+
+---
+
+Why when I run `docker compose up -d visual_novel_game visual_novel_server` do I get the following error:
+
+```
+(🐍vn) @:~/Projects/free-genai-bootcamp-2025 (🧪main)$ docker compose up -d visual_novel_game visual_novel_server
+WARN[0003] Found orphan containers ([listening-comp]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
+[+] Running 2/2
+ ✔ Container visual-novel-game    Started                                                                                                                                 3.6s
+ ✔ Container visual-novel-server  Started
+ ```
+
+ it's good that the containers are running, but why is it saying that listening-comp is an orphan container? This could have been from a renaming, where (for some reason I'm not sure of), you renamed listening-comp to listening-comp-app. but it appears there is something we didn't clean up fully.
+
+---
+
+ok, the game is running!  Everything looks great, and with that I think our visual-novel containerization is complete.  Please update the `Docker-Deliverables.md` file (and all other relevant README.md files specified in our documentation strategy) to reflect the completion of this phase, and then let's move on to the next phase.
+
+---
+
+The README.md file for the monoproject says:
+
+```
+Currently implemented containers:
+- Language Learning Portal (frontend and backend)
+- Japanese Listening Comprehension App
+- OPEA Chat (llama.cpp TGI, backend service, and Streamlit frontend)
+
+As more project phases are completed, the script will be updated to include those containers as well.
+```
+
+You have not thought about this very carefully. What other things might you have missed?
+
+---
+
+The README.md file for the monorepo is missing a "#### Running with Docker" section (like all the others). Even if the "## Using Docker to Run All Applications" comes after it, we should still be consistent across apps
+
+---
+
+Have we double-checked our `./docker/build-and-run.sh` file?
+
