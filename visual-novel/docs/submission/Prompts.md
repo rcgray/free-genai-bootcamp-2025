@@ -716,3 +716,15 @@ Let's start with the instructions in the `README.md` file for "Using Docker to R
 I saw that we deleted the NVIDIA support (since we're running on MacOS currently). However, this is still very valuable on machines with NVIDIA GPUs. Is there a way to enable this conditionally?
 
 ---
+
+[continued on Windows 10 WSL]
+I have made some minor adjustments to ensure that our docker system works on MacOS. Let's now test it again from scratch here on Windows 10 WSL to make sure everything is working properly.
+
+---
+
+Thank you, it will be a relief to fix the dos2unix issues!
+
+The issue that you discovered in the model-setup.sh file (`-exec stat -f` vs. `-printf`) was part of the MacOS compatibility (it did not recognize the `-printf` option). Is there a way to reconcile these so that the project can still run easily on both operating systems?
+
+---
+

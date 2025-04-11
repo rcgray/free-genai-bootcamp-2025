@@ -1,0 +1,12 @@
+# Auto-detect text files and handle line endings based on the core.autocrlf setting
+* text=auto
+
+# Explicitly force LF line endings for shell scripts, regardless of platform
+*.sh text eol=lf
+
+# Optional: Force LF for other script/config files for consistency
+*.py text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.{yaml,yml} text eol=lf
+*.md text eol=lf 
